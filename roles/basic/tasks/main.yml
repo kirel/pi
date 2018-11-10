@@ -1,6 +1,18 @@
 - hostname:
     name: pi
   become: yes
+  register: hostname
+- name: /etc/hosts
+  become: yes
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^127.0.1.1"
+    line: "127.0.1.1	pi"
+    state: "present"
+  register: hosts
+- reboot:
+  when: hostname.changed or hosts.changed
+  become: yes
 - name: /etc/locale.gen
   become: yes
   lineinfile:
