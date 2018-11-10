@@ -1,0 +1,9 @@
+---
+- hosts: pi
+  vars:
+    foo: bar
+  remote_user: pi
+  roles:
+    - basic
+    - timemachine
+    - media

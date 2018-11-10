@@ -1,0 +1,97 @@
+- name: Update all packages to the latest version
+  become: yes
+  apt:
+    upgrade: dist
+    update_cache: yes
+- name: Install hfs support
+  become: yes
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - hfsprogs
+    - hfsplus
+- name: create folder for mountmpoint
+  become: yes
+  file: path=/media/tm state=directory
+- name: Mount tm
+  become: yes
+  mount:
+    path: /media/tm
+    src: LABEL=Seagate
+    fstype: hfsplus
+    opts: force,rw,user,auto
+    state: mounted
+- name: Download Netatalk
+  get_url:
+    url: http://prdownloads.sourceforge.net/netatalk/netatalk-3.1.11.tar.gz
+    dest: /home/pi/netatalk-3.1.11.tar.gz
+- name: Unpack Netatalk
+  unarchive:
+    src: /home/pi/netatalk-3.1.11.tar.gz
+    dest: /home/pi/
+    remote_src: yes
+    creates: /home/pi/netatalk-3.1.11
+- name: Configure Netatalk
+  command: >
+    ./configure
+      --with-init-style=debian-systemd
+      --without-libevent
+      --without-tdb
+      --with-cracklib
+      --enable-krbV-uam
+      --with-pam-confdir=/etc/pam.d
+      --with-dbus-daemon=/usr/bin/dbus-daemon
+      --with-dbus-sysconf-dir=/etc/dbus-1/system.d
+      --with-tracker-pkgconfig-version=1.0
+  args:
+    chdir: /home/pi/netatalk-3.1.11
+    creates: /home/pi/netatalk-3.1.11/Makefile
+- name: Make
+  command: make
+  args:
+    chdir: /home/pi/netatalk-3.1.11
+    creates: /home/pi/netatalk-3.1.11/etc/netatalk/netatalk
+- name: Sudo make install
+  command: make install
+  args:
+    chdir: /home/pi/netatalk-3.1.11
+    creates: /usr/local/sbin/netatalk
+  become: yes
+- name: nsswitch.conf
+  become: yes
+  lineinfile:
+    dest: /etc/nsswitch.conf
+    regexp: "^hosts:"
+    line: "hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4 mdns"
+    state: present
+  notify: reload netatalk services
+- name: afpd.service
+  become: yes
+  template:
+    src: afpd.service
+    dest: /etc/avahi/services/afpd.service
+    owner: root
+    group: root
+  notify: reload netatalk services
+- name: afp.conf Global section
+  become: yes
+  blockinfile:
+    path: /usr/local/etc/afp.conf
+    marker_begin: "START [Global]"
+    marker_end: "END [Global]"
+    block: |
+      [Global]
+        mimic model = TimeCapsule6,106
+  notify: reload netatalk services
+- name: afp.conf Time Machine section
+  become: yes
+  blockinfile:
+    path: /usr/local/etc/afp.conf
+    marker_begin: "START [Time Machine]"
+    marker_end: "END [Time Machine]"
+    block: |
+      [Time Machine]
+        path = /media/tm
+        time machine = yes
+  notify: reload netatalk services

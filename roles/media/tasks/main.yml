@@ -1,0 +1,40 @@
+- name: install apt-transport-https
+  apt:
+    name: apt-transport-https
+  become: yes
+- apt_key:
+    url: https://dev2day.de/pms/dev2day-pms.gpg.key
+    state: present
+  become: yes
+- apt_repository:
+    repo: deb https://dev2day.de/pms/ stretch main
+    state: present
+    filename: pms
+  become: yes
+- apt:
+    name: plexmediaserver
+    state: latest
+    update_cache: yes
+  become: yes
+  notify: restart plex
+- name: create folder for mountpoint
+  become: yes
+  file: path=/media/media state=directory
+- name: Mount media
+  become: yes
+  mount:
+    path: /media/media
+    src: LABEL=MEDIEN
+    fstype: vfat
+    opts: defaults,uid=pi,gid=plex,umask=0002
+    state: mounted
+- name: afp.conf Media section
+  become: yes
+  blockinfile:
+    path: /usr/local/etc/afp.conf
+    marker_begin: "START [Media]"
+    marker_end: "END [Media]"
+    block: |
+      [Media]
+        path = /media/media
+  notify: reload netatalk services

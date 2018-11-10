@@ -1,0 +1,9 @@
+- name: reload netatalk services
+  become: yes
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+    - avahi-daemon
+    - netatalk

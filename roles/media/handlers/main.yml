@@ -1,0 +1,6 @@
+- name: restart plex
+  become: yes
+  service:
+    name: plexmediaserver
+    state: restarted
+    enabled: yes

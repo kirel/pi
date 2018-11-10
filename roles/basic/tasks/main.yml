@@ -1,0 +1,28 @@
+- hostname:
+    name: pi
+  become: yes
+- name: /etc/locale.gen
+  become: yes
+  lineinfile:
+    dest: /etc/locale.gen
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: "{{ item.state }}"
+  with_items:
+    - { regexp: '^#? ?de_DE.UTF-8 UTF-8', line: 'de_DE.UTF-8 UTF-8', state: present }
+    - { regexp: '^#? ?en_US.UTF-8 UTF-8', line: 'en_US.UTF-8 UTF-8', state: present }
+  notify:
+    - rebuild locales database
+- name: /etc/default/locale
+  become: yes
+  lineinfile:
+    dest: /etc/default/locale
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: "{{ item.state }}"
+  with_items:
+    - { regexp: '^LANG=', line: 'LANG=en_US.UTF-8', state: present }
+    - { regexp: '^LC_ALL=', line: 'LC_ALL=en_US.UTF-8', state: present }
+    - { regexp: '^LANGUAGE=', line: 'LANGUAGE=en_US.UTF-8', state: present }
+  notify:
+    - rebuild locales database

@@ -1,0 +1,10 @@
+- name: locale-gen
+  listen: rebuild locales database
+  locale_gen:
+    name: en_US.UTF-8
+    state: present
+  become: yes
+- name: dpkg-reconfigure
+  listen: rebuild locales database
+  command: dpkg-reconfigure locales -f noninteractive
+  become: yes
