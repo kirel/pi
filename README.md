@@ -1,5 +1,7 @@
 # README
 
+This is my pi config. Time machine and Plex media server.
+
 ## Pi from scratch
 
 1. Follow https://www.raspberrypi.org/documentation/installation/installing-images/
