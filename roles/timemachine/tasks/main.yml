@@ -1,3 +1,8 @@
+- name: create my user
+  user:
+    name: daniel
+    password: $6$Waw.j9utScDpMOm3$GT0JKw0jCeDL62f/WYENFZPZzbKEAKEjbYaBATTjw7j/IZxY1wDJlEvEi7Iw7mICJEG2Bx8KLV51cEGidfZv90
+  become: yes
 - name: Update all packages to the latest version
   become: yes
   apt:
@@ -32,6 +37,35 @@
     dest: /home/pi/
     remote_src: yes
     creates: /home/pi/netatalk-3.1.11
+- name: Install dependencies
+  become: yes
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - build-essential
+    - libevent-dev
+    - libssl-dev
+    - libgcrypt11-dev
+    - libkrb5-dev
+    - libpam0g-dev
+    - libwrap0-dev
+    - libdb-dev
+    - libtdb-dev
+    - default-libmysqlclient-dev
+    - avahi-daemon
+    - libavahi-client-dev
+    - libacl1-dev
+    - libldap2-dev
+    - libcrack2-dev
+    - systemtap-sdt-dev
+    - libdbus-1-dev
+    - libdbus-glib-1-dev
+    - libglib2.0-dev
+    - libio-socket-inet6-perl
+    - tracker
+    - libtracker-sparql-1.0-dev
+    - libtracker-miner-1.0-dev
 - name: Configure Netatalk
   command: >
     ./configure
@@ -94,4 +128,5 @@
       [Time Machine]
         path = /media/tm
         time machine = yes
+        valid users = daniel
   notify: reload netatalk services
