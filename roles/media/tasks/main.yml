@@ -12,9 +12,12 @@
     filename: pms
   become: yes
 - apt:
-    name: plexmediaserver
-    state: latest
     update_cache: yes
+  become: yes
+- name: Install plex
+  apt:
+    name: plexmediaserver-installer
+    state: latest
   become: yes
   notify: restart plex
 - name: create folder for mountpoint
@@ -38,3 +41,9 @@
       [Media]
         path = /media/media
   notify: reload netatalk services
+- name: add my user to plex group
+  user:
+    name: daniel
+    group: plex
+    append: yes
+  become: yes
