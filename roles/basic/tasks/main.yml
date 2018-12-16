@@ -38,3 +38,11 @@
     - { regexp: '^LANGUAGE=', line: 'LANGUAGE=en_US.UTF-8', state: present }
   notify:
     - rebuild locales database
+- name: create my user
+  user:
+    name: daniel
+    password: $6$Waw.j9utScDpMOm3$GT0JKw0jCeDL62f/WYENFZPZzbKEAKEjbYaBATTjw7j/IZxY1wDJlEvEi7Iw7mICJEG2Bx8KLV51cEGidfZv90
+    groups:
+      - sudo
+      - video
+  become: yes

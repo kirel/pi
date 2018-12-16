@@ -1,8 +1,3 @@
-- name: create my user
-  user:
-    name: daniel
-    password: $6$Waw.j9utScDpMOm3$GT0JKw0jCeDL62f/WYENFZPZzbKEAKEjbYaBATTjw7j/IZxY1wDJlEvEi7Iw7mICJEG2Bx8KLV51cEGidfZv90
-  become: yes
 - name: Update all packages to the latest version
   become: yes
   apt:
