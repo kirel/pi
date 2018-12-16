@@ -1,1 +1,2 @@
-pi ansible_user=pi
+[pi]
+pi.lan ansible_user=pi
