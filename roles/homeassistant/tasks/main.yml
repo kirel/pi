@@ -1,0 +1,31 @@
+- name: Reposess homeassistant config folder
+  ansible.builtin.file:
+    path: /media/Medien/home-assistant
+    owner: nobody
+    group: users
+    recurse: yes
+
+- name: Start home assistant
+  community.docker.docker_compose:
+    project_name: ha
+    definition:
+      version: '3'
+      services:
+        homeassistant:
+          container_name: homeassistant
+          image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:stable"
+          volumes:
+            - /media/Medien/home-assistant:/config
+            - /etc/localtime:/etc/localtime:ro
+          restart: unless-stopped
+          privileged: true
+          network_mode: host
+  register: output
+
+- ansible.builtin.debug:
+    var: output
+
+- ansible.builtin.assert:
+    that:
+      - "output.services.homeassistant.homeassistant.state.running"
+

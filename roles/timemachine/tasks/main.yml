@@ -1,127 +1,69 @@
 - name: Update all packages to the latest version
-  become: yes
   apt:
     upgrade: dist
     update_cache: yes
-- name: Install hfs support
-  become: yes
-  apt:
-    name: "{{ packages }}"
-  vars:
-    packages:
-    - hfsprogs
-    - hfsplus
-- name: create folder for mountmpoint
-  become: yes
-  file: path=/media/tm state=directory
-- name: Mount tm
-  become: yes
-  mount:
-    path: /media/tm
-    src: LABEL=Seagate
-    fstype: hfsplus
-    opts: force,rw,user,auto
-    state: mounted
-- name: Download Netatalk
-  get_url:
-    url: http://prdownloads.sourceforge.net/netatalk/netatalk-3.1.11.tar.gz
-    dest: /home/pi/netatalk-3.1.11.tar.gz
-- name: Unpack Netatalk
-  unarchive:
-    src: /home/pi/netatalk-3.1.11.tar.gz
-    dest: /home/pi/
-    remote_src: yes
-    creates: /home/pi/netatalk-3.1.11
-- name: Install dependencies
-  become: yes
-  apt:
-    name: "{{ packages }}"
-  vars:
-    packages:
-    - build-essential
-    - libevent-dev
-    - libssl-dev
-    - libgcrypt11-dev
-    - libkrb5-dev
-    - libpam0g-dev
-    - libwrap0-dev
-    - libdb-dev
-    - libtdb-dev
-    - default-libmysqlclient-dev
+
+- apt:
+    pkg:
+    - samba
     - avahi-daemon
-    - libavahi-client-dev
-    - libacl1-dev
-    - libldap2-dev
-    - libcrack2-dev
-    - systemtap-sdt-dev
-    - libdbus-1-dev
-    - libdbus-glib-1-dev
-    - libglib2.0-dev
-    - libio-socket-inet6-perl
-    - tracker
-    - libtracker-sparql-1.0-dev
-    - libtracker-miner-1.0-dev
-- name: Configure Netatalk
-  command: >
-    ./configure
-      --with-init-style=debian-systemd
-      --without-libevent
-      --without-tdb
-      --with-cracklib
-      --enable-krbV-uam
-      --with-pam-confdir=/etc/pam.d
-      --with-dbus-daemon=/usr/bin/dbus-daemon
-      --with-dbus-sysconf-dir=/etc/dbus-1/system.d
-      --with-tracker-pkgconfig-version=1.0
-  args:
-    chdir: /home/pi/netatalk-3.1.11
-    creates: /home/pi/netatalk-3.1.11/Makefile
-- name: Make
-  command: make
-  args:
-    chdir: /home/pi/netatalk-3.1.11
-    creates: /home/pi/netatalk-3.1.11/etc/netatalk/netatalk
-- name: Sudo make install
-  command: make install
-  args:
-    chdir: /home/pi/netatalk-3.1.11
-    creates: /usr/local/sbin/netatalk
-  become: yes
-- name: nsswitch.conf
-  become: yes
-  lineinfile:
-    dest: /etc/nsswitch.conf
-    regexp: "^hosts:"
-    line: "hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4 mdns"
-    state: present
-  notify: reload netatalk services
-- name: afpd.service
-  become: yes
+
+- name: create tm user
+  ansible.builtin.user:
+    name: tm
+
+- name: create folder for dreifuenf mountpoint
+  file: path=/media/tm state=directory
+
+- name: Mount dreifuenf
+  mount:
+    path: /media/dreifuenf
+    src: LABEL=dreifuenf
+    fstype: ext4
+    opts: noquota
+    state: mounted
+
+- name: create folder for share
+  file: path=/media/dreifuenf/tm/ state=directory
+
+- name: Reposess tm
+  ansible.builtin.file:
+    path: /media/dreifuenf/tm
+    owner: nobody
+    group: users
+    recurse: yes
+
+- name: create folder for Medien mountpoint
+  file: path=/media/Medien state=directory
+
+- name: Mount Medien
+  mount:
+    path: /media/Medien
+    src: LABEL=Medien
+    fstype: ext4
+    opts: noquota
+    state: mounted
+
+- name: Reposess Medien
+  ansible.builtin.file:
+    path: /media/Medien
+    owner: nobody
+    # recurse: yes
+
+
+- name: configure tm samba share
   template:
-    src: afpd.service
-    dest: /etc/avahi/services/afpd.service
+    src: smb.conf
+    dest: /etc/samba/smb.conf
     owner: root
     group: root
-  notify: reload netatalk services
-- name: afp.conf Global section
+  notify: reload smb
+
+- name: samba.service
   become: yes
-  blockinfile:
-    path: /usr/local/etc/afp.conf
-    marker_begin: "START [Global]"
-    marker_end: "END [Global]"
-    block: |
-      [Global]
-        mimic model = TimeCapsule6,106
-  notify: reload netatalk services
-- name: afp.conf Time Machine section
-  become: yes
-  blockinfile:
-    path: /usr/local/etc/afp.conf
-    marker_begin: "START [Time Machine]"
-    marker_end: "END [Time Machine]"
-    block: |
-      [Time Machine]
-        path = /media/tm
-        time machine = yes
-        valid users = daniel
-  notify: reload netatalk services
+  template:
+    src: samba.service
+    dest: /etc/avahi/services/samba.service
+    owner: root
+    group: root
+  notify: reload netatalk

@@ -1,2 +1,2 @@
-[pi]
-pi.lan ansible_user=pi
+[pi4]
+pi4.local ansible_user=pi ansible_python_interpreter=/usr/bin/python3

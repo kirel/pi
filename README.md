@@ -1,13 +1,16 @@
 # README
 
-This is my pi config. Time machine and Plex media server.
+This is my pi config. Time machine and Home Assistant
 
 ## Pi from scratch
 
 1. Follow https://www.raspberrypi.org/documentation/installation/installing-images/
 2. `touch /Volumes/boot/ssh`
-3. `scp ~/.ssh/id_rsa.pub pi@pi:~/.ssh/authorized_keys`
-4. `ssh pi@pi`
+3. `ssh pi@raspberrypi.local "mkdir -p ~/.ssh; chmod 700 ~/.ssh"`
+4. `scp ~/.ssh/id_rsa.pub pi@raspberrypi.local:~/.ssh/authorized_keys`
+5. `ssh pi@raspberrypi.local`
+6. `sudo raspi-config` then change host to pi4 and password
+7. reboot
 
 ## Setup
 
