@@ -13,5 +13,6 @@
 
     - { role: timemachine, become: yes, tags: ["tm"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
+    - { role: pihole, become: yes, tags: ["pihole"] }
 
     #- media

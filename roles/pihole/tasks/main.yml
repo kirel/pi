@@ -1,0 +1,38 @@
+- name: Start pihole
+  community.docker.docker_compose:
+    project_name: pihole
+    definition:
+      version: '3'
+      volumes:
+        pihole:
+        dnsmasq:
+      services:
+        pihole:
+          container_name: pihole
+          image: pihole/pihole:latest
+          ports:
+            - "53:53/tcp"
+            - "53:53/udp"
+            - "67:67/udp"
+            - "81:80/tcp"
+          environment:
+            TZ: 'Europe/Berlin'
+            # WEBPASSWORD: 'set a secure password here or it will be random'
+          # Volumes store your data between container upgrades
+          volumes:
+            - 'pihole:/etc/pihole/'
+            - 'dnsmasq:/etc/dnsmasq.d/'
+          # Recommended but not required (DHCP needs NET_ADMIN)
+          #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+          cap_add:
+            - NET_ADMIN
+          restart: unless-stopped
+  register: output
+
+- ansible.builtin.debug:
+    var: output
+
+- ansible.builtin.assert:
+    that:
+      - "output.services.pihole.pihole.state.running"
+
