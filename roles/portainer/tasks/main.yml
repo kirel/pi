@@ -14,3 +14,4 @@
       - "8000:8000"
       - "9000:9000"
     restart_policy: always
+    pull: yes

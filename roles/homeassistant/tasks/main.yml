@@ -8,6 +8,7 @@
 - name: Start home assistant
   community.docker.docker_compose:
     project_name: ha
+    build: yes
     definition:
       version: '3'
       services:

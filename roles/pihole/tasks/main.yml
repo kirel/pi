@@ -1,6 +1,7 @@
 - name: Start pihole
   community.docker.docker_compose:
     project_name: pihole
+    build: yes
     definition:
       version: '3'
       volumes:
