@@ -15,9 +15,10 @@
             - "53:53/tcp"
             - "53:53/udp"
             - "67:67/udp"
-            - "80:80/tcp"
+            - "81:80/tcp"
           environment:
             TZ: 'Europe/Berlin'
+            ServerIP: '192.168.50.5'
             # WEBPASSWORD: 'set a secure password here or it will be random'
           # Volumes store your data between container upgrades
           volumes:
