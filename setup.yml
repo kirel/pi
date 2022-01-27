@@ -12,6 +12,7 @@
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
 
     - { role: timemachine, become: yes, tags: ["tm"] }
+    - { role: caddy, become: yes, tags: ["caddy"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
     - { role: pihole, become: yes, tags: ["pihole"] }
 

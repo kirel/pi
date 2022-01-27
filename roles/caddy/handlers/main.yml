@@ -1,0 +1,6 @@
+- name: reload caddy config
+  become: yes
+  community.docker.docker_container_exec:
+    container: caddy
+    command: caddy reload
+    chdir: /etc/caddy

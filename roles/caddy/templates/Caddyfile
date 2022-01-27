@@ -1,0 +1,19 @@
+danishkirel.asuscomm.com {
+        reverse_proxy 192.168.50.5:8123
+        log
+}
+
+http://homeassistant.lan {
+        reverse_proxy 192.168.50.5:8123
+        log
+}
+
+http://portainer.lan {
+        reverse_proxy 192.168.50.5:9000
+        log
+}
+
+http://pi.hole {
+        reverse_proxy 192.168.50.5:81
+        log
+}

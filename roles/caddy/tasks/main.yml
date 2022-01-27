@@ -1,0 +1,51 @@
+- name: Creates directory
+  file:
+    path: /etc/caddy
+    state: directory
+
+- name: copy Caddyfile
+  template:
+    src: Caddyfile
+    dest: /etc/caddy/Caddyfile
+    owner: root
+    group: root
+  notify: reload caddy config
+
+- name: Create volume
+  docker_volume:
+    name: caddy_data
+
+# reload config via
+# docker exec -w /etc/caddy caddy caddy reload
+
+- name: Start caddy
+  community.docker.docker_compose:
+    project_name: caddy
+    build: yes
+    definition:
+      version: '3'
+      volumes:
+        caddy_data:
+          external: true
+        caddy_config:
+      services:
+        caddy:
+          container_name: caddy
+          image: caddy:latest
+          restart: unless-stopped
+          ports:
+            - "80:80"
+            - "443:443"
+          volumes:
+            - /etc/caddy/Caddyfile:/etc/caddy/Caddyfile
+            - caddy_data:/data
+            - caddy_config:/config
+  register: output
+
+- ansible.builtin.debug:
+    var: output
+
+- ansible.builtin.assert:
+    that:
+      - "output.services.caddy.caddy.state.running"
+
