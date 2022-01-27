@@ -4,6 +4,10 @@
     pip_package: python3-pip
     pip_install_packages:
       - name: docker
+    router_ip: "192.168.50.1"
+    pihole_http_port: 81
+    portainer_http_port: 9000
+    homeassistant_http_port: 8123
   remote_user: pi
   roles:
     - basic

@@ -1,19 +1,19 @@
 danishkirel.asuscomm.com {
-        reverse_proxy 192.168.50.5:8123
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ homeassistant_http_port }}
         log
 }
 
 http://homeassistant.lan {
-        reverse_proxy 192.168.50.5:8123
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ homeassistant_http_port }}
         log
 }
 
 http://portainer.lan {
-        reverse_proxy 192.168.50.5:9000
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ portainer_http_port }}
         log
 }
 
 http://pi.hole {
-        reverse_proxy 192.168.50.5:81
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ pihole_http_port }}
         log
 }

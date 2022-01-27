@@ -15,10 +15,15 @@
             - "53:53/tcp"
             - "53:53/udp"
             - "67:67/udp"
-            - "81:80/tcp"
+            - "{{ pihole_http_port }}:80/tcp"
           environment:
             TZ: 'Europe/Berlin'
-            ServerIP: '192.168.50.5'
+            ServerIP: '{{ ansible_default_ipv4.address }}'
+            PIHOLE_DNS_: '{{ router_ip }}'
+            DNS_BOGUS_PRIV: "true"
+            DNS_FQDN_REQUIRED: "false"
+            REV_SERVER: "false"
+            DHCP_ACTIVE: "false"
             # WEBPASSWORD: 'set a secure password here or it will be random'
           # Volumes store your data between container upgrades
           volumes:
