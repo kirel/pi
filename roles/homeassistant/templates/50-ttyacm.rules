@@ -1,0 +1,1 @@
+KERNEL=="ttyACM[0-9]*", SUBSYSTEM=="tty", SUBSYSTEMS=="usb", SYMLINK+="%k", ATTRS{idVendor}=="1cf1", ATTRS{idProduct}=="0030", MODE="0666"
