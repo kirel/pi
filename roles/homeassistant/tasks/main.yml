@@ -16,6 +16,17 @@
   with_items:
   - "{{homeassistant_config_folder}}"
   - "{{nodered_config_folder}}"
+  - "{{mosquitto_config_folder}}"
+  - "{{mosquitto_data_folder}}"
+  - "{{mosquitto_log_folder}}"
+
+- name: Add mosquitto config
+  template:
+    src: mosquitto.conf
+    dest: "{{mosquitto_config_folder}}/mosquitto.conf"
+    owner: ha
+    group: users
+  # notify: reload mosquitto
 
 - name: Checkout ha docker venv hack
   ansible.builtin.git:
@@ -31,6 +42,9 @@
   with_items:
   - "{{homeassistant_config_folder}}"
   - "{{nodered_config_folder}}"
+  - "{{mosquitto_config_folder}}"
+  - "{{mosquitto_data_folder}}"
+  - "{{mosquitto_log_folder}}"
 
 - name: Start home assistant
   community.docker.docker_compose:
@@ -63,7 +77,7 @@
           container_name: nodered
           image: nodered/node-red
           ports:
-            - "{{nodered_http_port}}:{{nodered_http_port}}"
+            - "{{nodered_http_port}}:1880"
           volumes:
             - "{{nodered_config_folder}}:/data"
           depends_on:
@@ -72,6 +86,16 @@
             TZ: "Europe/Amsterdam"
           user: "{{ha_user.uid}}:{{ha_user.group}}"
           restart: unless-stopped
+        mosquitto:
+          container_name: mosquitto
+          image: eclipse-mosquitto
+          ports:
+            - "{{mosquitto_port}}:1883"
+            - "{{mosquitto_websockets_port}}:9001"
+          volumes:
+            - "{{mosquitto_config_folder}}/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro"
+            - "{{mosquitto_data_folder}}:/mosquitto/data"
+            - "{{mosquitto_log_folder}}:/mosquitto/log"
   register: output
 
 - #ansible.builtin.debug:
@@ -86,4 +110,6 @@
 - ansible.builtin.assert:
     that:
       - "output.services.homeassistant.homeassistant.state.running"
+      - "output.services.mosquitto.mosquitto.state.running"
+      - "output.services.nodered.nodered.state.running"
 
