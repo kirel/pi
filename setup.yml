@@ -8,6 +8,10 @@
     pihole_http_port: 81
     portainer_http_port: 9000
     homeassistant_http_port: 8123
+    nodered_http_port: 1880
+    homeassistant_config_folder: "/media/Medien/home-assistant"
+    nodered_config_folder: "/media/Medien/node-red"
+
   remote_user: pi
   roles:
     - basic

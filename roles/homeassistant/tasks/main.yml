@@ -11,22 +11,31 @@
     group: root
   notify: reload udev rules
 
+- name: create folder config folders
+  file: path={{item}} state=directory
+  with_items:
+  - "{{homeassistant_config_folder}}"
+  - "{{nodered_config_folder}}"
+
 - name: Checkout ha docker venv hack
   ansible.builtin.git:
     repo: 'https://github.com/tribut/homeassistant-docker-venv'
     dest: /media/Medien/home-assistant/docker
 
-- name: Reposess homeassistant config folder
+- name: Reposess config folders
   ansible.builtin.file:
-    path: /media/Medien/home-assistant
+    path: "{{item}}"
     owner: ha
     group: users
     recurse: yes
+  with_items:
+  - "{{homeassistant_config_folder}}"
+  - "{{nodered_config_folder}}"
 
 - name: Start home assistant
   community.docker.docker_compose:
     project_name: ha
-    build: yes
+    pull: yes
     definition:
       version: '3'
       services:
@@ -34,8 +43,8 @@
           container_name: homeassistant
           image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:stable"
           volumes:
-            - /media/Medien/home-assistant:/config
-            - "/media/Medien/home-assistant/docker/run:/etc/services.d/home-assistant/run"
+            - "{{homeassistant_config_folder}}:/config"
+            - "{{homeassistant_config_folder}}/docker/run:/etc/services.d/home-assistant/run"
             - /etc/localtime:/etc/localtime:ro
           restart: unless-stopped
           privileged: true
@@ -43,15 +52,30 @@
             - NET_RAW
             - NET_ADMIN
           network_mode: host
+          devices:
+            - /dev/ttyACM0
           environment:
             - PUID={{ha_user.uid}}
             - PGID={{ha_user.group}}
             - UMASK=007
             - PACKAGES=sudo libcap
+        nodered:
+          container_name: nodered
+          image: nodered/node-red
+          ports:
+            - "{{nodered_http_port}}:{{nodered_http_port}}"
+          volumes:
+            - "{{nodered_config_folder}}:/data"
+          depends_on:
+            - homeassistant
+          environment:
+            TZ: "Europe/Amsterdam"
+          user: "{{ha_user.uid}}:{{ha_user.group}}"
+          restart: unless-stopped
   register: output
 
-#- ansible.builtin.debug:
-#    var: output
+- #ansible.builtin.debug:
+  #  var: output
 
 - name: enable non-root ble in containenr
   community.docker.docker_container_exec:

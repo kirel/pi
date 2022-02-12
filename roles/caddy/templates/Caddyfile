@@ -13,6 +13,11 @@ http://portainer.lan {
         log
 }
 
+http://nodered.lan {
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ nodered_http_port }}
+        log
+}
+
 http://pi.hole {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ pihole_http_port }}
         log
