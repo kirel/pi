@@ -29,7 +29,7 @@
 - name: Reposess tm
   ansible.builtin.file:
     path: /media/dreifuenf/tm
-    owner: nobody
+    owner: tm
     group: users
     recurse: yes
 
@@ -47,9 +47,9 @@
 - name: Reposess Medien
   ansible.builtin.file:
     path: /media/Medien
-    owner: nobody
-    # recurse: yes
-
+    owner: tm
+    group: users
+    recurse: yes
 
 - name: configure tm samba share
   template:
