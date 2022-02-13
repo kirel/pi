@@ -38,6 +38,7 @@
     path: "{{item}}"
     owner: ha
     group: users
+    mode: u=rwx,g=rwxs
     recurse: yes
   with_items:
   - "{{homeassistant_config_folder}}"
