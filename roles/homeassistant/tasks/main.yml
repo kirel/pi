@@ -97,6 +97,7 @@
             - "{{mosquitto_config_folder}}/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro"
             - "{{mosquitto_data_folder}}:/mosquitto/data"
             - "{{mosquitto_log_folder}}:/mosquitto/log"
+          restart: unless-stopped
   register: output
 
 - #ansible.builtin.debug:
