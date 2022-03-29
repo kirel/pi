@@ -11,6 +11,7 @@
 - name: create tm user
   ansible.builtin.user:
     name: tm
+    groups: users
 
 - name: create folder for dreifuenf mountpoint
   file: path=/media/tm state=directory
@@ -49,6 +50,7 @@
     path: /media/Medien
     owner: tm
     group: users
+    mode: 02775
     recurse: yes
 
 - name: configure tm samba share

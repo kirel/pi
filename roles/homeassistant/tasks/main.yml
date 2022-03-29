@@ -1,6 +1,7 @@
 - name: create ha user
   user:
     name: "ha"
+    groups: "users"
   register: ha_user
 
 - name: Allow conbee with non-root user
@@ -32,6 +33,7 @@
   ansible.builtin.git:
     repo: 'https://github.com/tribut/homeassistant-docker-venv'
     dest: /media/Medien/home-assistant/docker
+    force: yes
 
 - name: Reposess config folders
   ansible.builtin.file:
