@@ -16,6 +16,7 @@
   file: path={{item}} state=directory
   with_items:
   - "{{homeassistant_config_folder}}"
+  - "{{vscode_config_folder}}"
   - "{{nodered_config_folder}}"
   - "{{mosquitto_config_folder}}"
   - "{{mosquitto_data_folder}}"
@@ -44,6 +45,7 @@
     recurse: yes
   with_items:
   - "{{homeassistant_config_folder}}"
+  - "{{vscode_config_folder}}"
   - "{{nodered_config_folder}}"
   - "{{mosquitto_config_folder}}"
   - "{{mosquitto_data_folder}}"
@@ -76,6 +78,24 @@
             - PGID={{ha_user.group}}
             - UMASK=007
             - PACKAGES=sudo libcap
+        code-server:
+          image: lscr.io/linuxserver/code-server
+          container_name: code-server
+          environment:
+            - PUID={{ha_user.uid}}
+            - PGID={{ha_user.group}}
+            - TZ=Europe/London
+            - UMASK=007
+            #- PROXY_DOMAIN=code-server.my.domain #optional
+            #- DEFAULT_WORKSPACE=/config/workspace #optional
+          volumes:
+            - "{{vscode_config_folder}}:/config"
+            - "{{homeassistant_config_folder}}:/config/workspace"
+          ports:
+            - 8443:8443
+          security_opt:
+            - seccomp:unconfined # because strange PI issue see https://stackoverflow.com/questions/69775057/docker-image-fails-to-run-on-raspberry-pi-with-strange-node-error
+          restart: unless-stopped
         nodered:
           container_name: nodered
           image: nodered/node-red

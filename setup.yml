@@ -12,6 +12,7 @@
     mosquitto_port: 1883
     mosquitto_websockets_port: 9001
     homeassistant_config_folder: "/media/Medien/home-assistant"
+    vscode_config_folder: "/media/Medien/vscode"
     nodered_config_folder: "/media/Medien/node-red"
     mosquitto_config_folder: "/media/Medien/mosquitto/config"
     mosquitto_data_folder: "/media/Medien/mosquitto/data"
