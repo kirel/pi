@@ -3,22 +3,32 @@ danishkirel.asuscomm.com {
         log
 }
 
-http://homeassistant.lan {
+homeassistant.lan {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ homeassistant_http_port }}
+        tls internal
         log
 }
 
-http://portainer.lan {
+portainer.lan {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ portainer_http_port }}
+        tls internal
         log
 }
 
-http://nodered.lan {
+nodered.lan {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ nodered_http_port }}
+        tls internal
         log
 }
 
-http://pi.hole {
+vscode.lan {
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ vscode_http_port }}
+        tls internal
+        log
+}
+
+pi.hole {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ pihole_http_port }}
+        tls internal
         log
 }
