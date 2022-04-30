@@ -1,19 +1,17 @@
-- name: Creates directory
-  file:
-    path: /etc/caddy
-    state: directory
+- name: create folder config folders
+  file: path={{item}} state=directory
+  with_items:
+  - "{{caddy_folder}}"
+  - "{{caddy_data_folder}}"
+  - "{{caddy_config_folder}}"
 
 - name: copy Caddyfile
   template:
     src: Caddyfile
-    dest: /etc/caddy/Caddyfile
+    dest: "{{caddy_folder}}/Caddyfile"
     owner: root
     group: root
   notify: reload caddy config
-
-- name: Create volume
-  docker_volume:
-    name: caddy_data
 
 # reload config via
 # docker exec -w /etc/caddy caddy caddy reload
@@ -24,10 +22,6 @@
     build: yes
     definition:
       version: '3'
-      volumes:
-        caddy_data:
-          external: true
-        caddy_config:
       services:
         caddy:
           container_name: caddy
@@ -37,9 +31,9 @@
             - "80:80"
             - "443:443"
           volumes:
-            - /etc/caddy/Caddyfile:/etc/caddy/Caddyfile
-            - caddy_data:/data
-            - caddy_config:/config
+            - "{{caddy_folder}}/Caddyfile:/etc/caddy/Caddyfile"
+            - "{{caddy_data_folder}}:/data"
+            - "{{caddy_config_folder}}:/config"
   register: output
 
 - ansible.builtin.debug:
@@ -49,3 +43,10 @@
     that:
       - "output.services.caddy.caddy.state.running"
 
+- shell: "docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt"
+- name: Reposess root cert
+  ansible.builtin.file:
+    path: "{{caddy_folder}}/root.crt"
+    owner: ha
+    group: users
+    mode: u=rw,g=rw

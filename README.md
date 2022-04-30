@@ -16,8 +16,14 @@ This is my pi config. Time machine and Home Assistant
 
     pipenv install
     pipenv shell
+    ansible-galaxy install --force-with-deps -r requirements.yml
     ansible-playbook setup.yml
 
-Passwords generated with
+Configure pihole password
 
-    python -c "from passlib.hash import sha512_crypt; import getpass; print(sha512_crypt.using(rounds=5000).hash(getpass.getpass()))"
+    ssh pi4
+    sudo docker exec -it pihole pihole -a -p
+
+Copy the `root.cert` from `{{caddy_folder}}` to all the devices and trust it
+- https://support.apple.com/en-us/HT204477
+- https://httptoolkit.tech/blog/android-11-trust-ca-certificates/

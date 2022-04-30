@@ -30,6 +30,11 @@
     group: users
   # notify: reload mosquitto
 
+- name: Istall git
+  apt:
+    name: git
+    state: latest
+
 - name: Checkout ha docker venv hack
   ansible.builtin.git:
     repo: 'https://github.com/tribut/homeassistant-docker-venv'
@@ -67,9 +72,6 @@
             - /etc/localtime:/etc/localtime:ro
           restart: unless-stopped
           privileged: true
-          cap_add:
-            - NET_RAW
-            - NET_ADMIN
           network_mode: host
           devices:
             - /dev/ttyACM0
@@ -77,7 +79,6 @@
             - PUID={{ha_user.uid}}
             - PGID={{ha_user.group}}
             - UMASK=007
-            - PACKAGES=sudo libcap
         code-server:
           image: lscr.io/linuxserver/code-server
           container_name: code-server
@@ -124,12 +125,6 @@
 
 - #ansible.builtin.debug:
   #  var: output
-
-- name: enable non-root ble in containenr
-  community.docker.docker_container_exec:
-    user: root
-    container: homeassistant
-    command: setcap cap_net_raw,cap_net_admin+eip /usr/local/lib/python3.9/site-packages/bluepy/bluepy-helper
 
 - ansible.builtin.assert:
     that:

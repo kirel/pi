@@ -5,6 +5,7 @@
     pip_install_packages:
       - name: docker
     router_ip: "192.168.50.1"
+    cidr: "192.168.50.0/24"
     pihole_http_port: 81
     portainer_http_port: 9000
     homeassistant_http_port: 8123
@@ -18,6 +19,10 @@
     mosquitto_config_folder: "/media/Medien/mosquitto/config"
     mosquitto_data_folder: "/media/Medien/mosquitto/data"
     mosquitto_log_folder: "/media/Medien/mosquitto/log"
+    pihole_config_folder: "/media/Medien/pihole"
+    caddy_folder: "/media/Medien/caddy"
+    caddy_data_folder: "/media/Medien/caddy/data"
+    caddy_config_folder: "/media/Medien/caddy/config"
 
   remote_user: pi
   roles:
@@ -27,8 +32,8 @@
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
 
     - { role: timemachine, become: yes, tags: ["tm"] }
-    - { role: caddy, become: yes, tags: ["caddy"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
+    - { role: caddy, become: yes, tags: ["caddy"] }
     - { role: pihole, become: yes, tags: ["pihole"] }
 
     #- media

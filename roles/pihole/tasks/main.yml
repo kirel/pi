@@ -1,3 +1,15 @@
+- name: create folder config folders
+  file: path={{item}} state=directory
+  with_items:
+  - "{{pihole_config_folder}}"
+
+- template:
+    src: custom.list
+    dest: "{{pihole_config_folder}}/custom.list"
+    owner: ha
+    group: ha
+  notify: restart dns
+
 - name: Start pihole
   community.docker.docker_compose:
     project_name: pihole
@@ -20,15 +32,19 @@
             TZ: 'Europe/Berlin'
             ServerIP: '{{ ansible_default_ipv4.address }}'
             PIHOLE_DNS_: '{{ router_ip }}'
+            WEBPASSWORD: '{{ pihole_webpassword }}'
             DNS_BOGUS_PRIV: "false"
             DNS_FQDN_REQUIRED: "false"
-            REV_SERVER: "false"
+            REV_SERVER: "true"
+            REV_SERVER_DOMAIN: "lan"
+            REV_SERVER_TARGET: '{{ router_ip }}'
+            REV_SERVER_CIDR: '{{ cidr }}'
             DHCP_ACTIVE: "false"
-            # WEBPASSWORD: 'set a secure password here or it will be random'
           # Volumes store your data between container upgrades
           volumes:
             - 'pihole:/etc/pihole/'
             - 'dnsmasq:/etc/dnsmasq.d/'
+            - "{{pihole_config_folder}}/custom.list:/etc/pihole/custom.list"
           # Recommended but not required (DHCP needs NET_ADMIN)
           #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
           cap_add:
