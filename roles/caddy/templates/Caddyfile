@@ -27,6 +27,12 @@ vscode.lan {
         log
 }
 
+z2m.lan {
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ z2m_http_port }}
+        tls internal
+        log
+}
+
 pi.hole {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ pihole_http_port }}
         tls internal

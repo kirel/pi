@@ -21,6 +21,7 @@
   - "{{mosquitto_config_folder}}"
   - "{{mosquitto_data_folder}}"
   - "{{mosquitto_log_folder}}"
+  - "{{zigbee2mqtt_data_folder}}"
 
 - name: Add mosquitto config
   template:
@@ -29,6 +30,13 @@
     owner: ha
     group: users
   # notify: reload mosquitto
+
+- name: Add z2m config
+  template:
+    src: configuration.yaml
+    dest: "{{zigbee2mqtt_data_folder}}/configuration.yaml"
+    owner: ha
+    group: users
 
 - name: Istall git
   apt:
@@ -121,6 +129,19 @@
             - "{{mosquitto_data_folder}}:/mosquitto/data"
             - "{{mosquitto_log_folder}}:/mosquitto/log"
           restart: unless-stopped
+        zigbee2mqtt:
+          container_name: zigbee2mqtt
+          image: koenkk/zigbee2mqtt
+          restart: unless-stopped
+          volumes:
+            - "{{zigbee2mqtt_data_folder}}:/app/data"
+            - /run/udev:/run/udev:ro
+          ports:
+            - "{{z2m_http_port}}:8080"
+          environment:
+            - TZ=Europe/Berlin
+          devices:
+            - /dev/ttyUSB0:/dev/ttyACM1
   register: output
 
 - #ansible.builtin.debug:

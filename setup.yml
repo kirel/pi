@@ -13,12 +13,14 @@
     nodered_http_port: 1880
     mosquitto_port: 1883
     mosquitto_websockets_port: 9001
+    z2m_http_port: 8080
     homeassistant_config_folder: "/media/Medien/home-assistant"
     vscode_config_folder: "/media/Medien/vscode"
     nodered_config_folder: "/media/Medien/node-red"
     mosquitto_config_folder: "/media/Medien/mosquitto/config"
     mosquitto_data_folder: "/media/Medien/mosquitto/data"
     mosquitto_log_folder: "/media/Medien/mosquitto/log"
+    zigbee2mqtt_data_folder: "/media/Medien/z2m"
     pihole_config_folder: "/media/Medien/pihole"
     caddy_folder: "/media/Medien/caddy"
     caddy_data_folder: "/media/Medien/caddy/data"
