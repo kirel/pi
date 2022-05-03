@@ -42,9 +42,8 @@
             DHCP_ACTIVE: "false"
           # Volumes store your data between container upgrades
           volumes:
-            - 'pihole:/etc/pihole/'
+            - "{{pihole_config_folder}}:/etc/pihole/"
             - 'dnsmasq:/etc/dnsmasq.d/'
-            - "{{pihole_config_folder}}/custom.list:/etc/pihole/custom.list"
           # Recommended but not required (DHCP needs NET_ADMIN)
           #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
           cap_add:
