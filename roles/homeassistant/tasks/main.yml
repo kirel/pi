@@ -105,19 +105,19 @@
           security_opt:
             - seccomp:unconfined # because strange PI issue see https://stackoverflow.com/questions/69775057/docker-image-fails-to-run-on-raspberry-pi-with-strange-node-error
           restart: unless-stopped
-        nodered:
-          container_name: nodered
-          image: nodered/node-red
-          ports:
-            - "{{nodered_http_port}}:1880"
-          volumes:
-            - "{{nodered_config_folder}}:/data"
-          depends_on:
-            - homeassistant
-          environment:
-            TZ: "Europe/Amsterdam"
-          user: "{{ha_user.uid}}:{{ha_user.group}}"
-          restart: unless-stopped
+        # nodered:
+        #   container_name: nodered
+        #   image: nodered/node-red
+        #   ports:
+        #     - "{{nodered_http_port}}:1880"
+        #   volumes:
+        #     - "{{nodered_config_folder}}:/data"
+        #   depends_on:
+        #     - homeassistant
+        #   environment:
+        #     TZ: "Europe/Amsterdam"
+        #   user: "{{ha_user.uid}}:{{ha_user.group}}"
+        #   restart: unless-stopped
         mosquitto:
           container_name: mosquitto
           image: eclipse-mosquitto
@@ -151,5 +151,5 @@
     that:
       - "output.services.homeassistant.homeassistant.state.running"
       - "output.services.mosquitto.mosquitto.state.running"
-      - "output.services.nodered.nodered.state.running"
+      #- "output.services.nodered.nodered.state.running"
 
