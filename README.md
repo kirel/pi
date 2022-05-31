@@ -19,6 +19,10 @@ This is my pi config. Time machine and Home Assistant
     ansible-galaxy install --force-with-deps -r requirements.yml
     ansible-playbook setup.yml
 
+Edit secrets
+
+    pipenv run ansible-vault edit group_vars/all/secrets.yml
+
 Configure pihole password
 
     ssh pi4
