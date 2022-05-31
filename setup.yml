@@ -14,6 +14,8 @@
     mosquitto_port: 1883
     mosquitto_websockets_port: 9001
     z2m_http_port: 8080
+    octopi_address: 192.168.50.55
+    octopi_http_port: 80
     homeassistant_config_folder: "/media/Medien/home-assistant"
     vscode_config_folder: "/media/Medien/vscode"
     nodered_config_folder: "/media/Medien/node-red"

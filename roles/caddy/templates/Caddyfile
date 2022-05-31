@@ -38,3 +38,9 @@ pi.hole {
         tls internal
         log
 }
+
+octopi.local {
+        reverse_proxy {{ octopi_address }}:{{ octopi_http_port }}
+        tls internal
+        log
+}
