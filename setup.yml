@@ -16,23 +16,24 @@
     z2m_http_port: 8080
     octopi_address: 192.168.50.55
     octopi_http_port: 80
-    homeassistant_config_folder: "/media/Medien/home-assistant"
-    vscode_config_folder: "/media/Medien/vscode"
-    nodered_config_folder: "/media/Medien/node-red"
-    mosquitto_config_folder: "/media/Medien/mosquitto/config"
-    mosquitto_data_folder: "/media/Medien/mosquitto/data"
-    mosquitto_log_folder: "/media/Medien/mosquitto/log"
-    zigbee2mqtt_data_folder: "/media/Medien/z2m"
-    pihole_config_folder: "/media/Medien/pihole"
-    caddy_folder: "/media/Medien/caddy"
-    caddy_data_folder: "/media/Medien/caddy/data"
-    caddy_config_folder: "/media/Medien/caddy/config"
+    config_root: "/home/nuc/config"
+    homeassistant_config_folder: "{{config_root}}/home-assistant"
+    vscode_config_folder: "{{config_root}}/vscode"
+    nodered_config_folder: "{{config_root}}/node-red"
+    mosquitto_config_folder: "{{config_root}}/mosquitto/config"
+    mosquitto_data_folder: "{{config_root}}/mosquitto/data"
+    mosquitto_log_folder: "{{config_root}}/mosquitto/log"
+    zigbee2mqtt_data_folder: "{{config_root}}/z2m"
+    pihole_config_folder: "{{config_root}}/pihole"
+    caddy_folder: "{{config_root}}/caddy"
+    caddy_data_folder: "{{config_root}}/caddy/data"
+    caddy_config_folder: "{{config_root}}/caddy/config"
 
-  remote_user: pi
+  remote_user: nuc
   roles:
     - basic
     - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
-    - { role: geerlingguy.docker_arm, become: yes, tags: ["docker"] }
+    - { role: geerlingguy.docker, become: yes, tags: ["docker"] }
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
 
     - { role: timemachine, become: yes, tags: ["tm"] }
