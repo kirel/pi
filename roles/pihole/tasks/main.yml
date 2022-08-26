@@ -1,3 +1,21 @@
+- name: Disable stubresolver
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^#?DNSStubListener='
+    line: DNSStubListener=no
+  notify: restart resolved
+
+- name: Follow system netplan
+  ansible.builtin.file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: yes
+  notify: restart resolved
+
+- name: Flush handlers
+  meta: flush_handlers
+
 - name: create folder config folders
   file: path={{item}} state=directory
   with_items:
@@ -6,8 +24,7 @@
 - template:
     src: custom.list
     dest: "{{pihole_config_folder}}/custom.list"
-    owner: ha
-    group: ha
+    owner: "{{username}}"
   notify: restart dns
 
 - name: Start pihole

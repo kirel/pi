@@ -23,3 +23,8 @@
     - { regexp: '^LANGUAGE=', line: 'LANGUAGE=en_US.UTF-8', state: present }
   notify:
     - rebuild locales database
+- name: Add user
+  ansible.builtin.user:
+    name: "{{ username }}"
+    comment: John Doe
+    uid: "{{ uid }}"

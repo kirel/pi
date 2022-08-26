@@ -31,3 +31,9 @@ Configure pihole password
 Copy the `root.cert` from `{{caddy_folder}}` to all the devices and trust it
 - https://support.apple.com/en-us/HT204477
 - https://httptoolkit.tech/blog/android-11-trust-ca-certificates/
+
+## Migrate
+
+    ssh -A pi@192.168.50.5 sudo rsync -e "ssh" -vuar /media/Medien/{pihole,home-assistant,caddy,mosquitto,vscode,z2m} root@192.168.50.3:/home/nuc/config/
+    ssh root@192.168.50.3 sudo chown -R nuc:nuc /home/nuc/config
+    ssh root@192.168.50.3 .cargo/bin/exa -l --tree --level=2 /home/nuc/config/

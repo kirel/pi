@@ -1,5 +1,5 @@
 - name: create folder config folders
-  file: path={{item}} state=directory
+  file: path={{item}} state=directory owner={{username}}
   with_items:
   - "{{caddy_folder}}"
   - "{{caddy_data_folder}}"
@@ -9,8 +9,7 @@
   template:
     src: Caddyfile
     dest: "{{caddy_folder}}/Caddyfile"
-    owner: root
-    group: root
+    owner: "{{username}}"
   notify: reload caddy config
 
 # reload config via
@@ -43,10 +42,11 @@
     that:
       - "output.services.caddy.caddy.state.running"
 
-- shell: "docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt"
+- name: copy root certificate
+  shell: "docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt"
 - name: Reposess root cert
   ansible.builtin.file:
     path: "{{caddy_folder}}/root.crt"
-    owner: ha
+    owner: "{{ username }}"
     group: users
     mode: u=rw,g=rw

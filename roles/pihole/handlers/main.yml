@@ -1,2 +1,6 @@
 - name: restart dns
   shell: docker exec -it pihole pihole restartdns
+- name: restart resolved
+  ansible.builtin.systemd:
+    state: restarted
+    name: systemd-resolved

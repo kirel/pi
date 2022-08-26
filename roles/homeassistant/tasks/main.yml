@@ -1,9 +1,3 @@
-- name: create ha user
-  user:
-    name: "ha"
-    groups: "users"
-  register: ha_user
-
 - name: Allow conbee with non-root user
   template:
     src: 50-ttyacm.rules
@@ -13,7 +7,7 @@
   notify: reload udev rules
 
 - name: create folder config folders
-  file: path={{item}} state=directory
+  file: path={{item}} state=directory owner={{username}}
   with_items:
   - "{{homeassistant_config_folder}}"
   - "{{vscode_config_folder}}"
@@ -27,7 +21,7 @@
   template:
     src: mosquitto.conf
     dest: "{{mosquitto_config_folder}}/mosquitto.conf"
-    owner: ha
+    owner: "{{username}}"
     group: users
   # notify: reload mosquitto
 
@@ -35,7 +29,7 @@
   template:
     src: configuration.yaml
     dest: "{{zigbee2mqtt_data_folder}}/configuration.yaml"
-    owner: ha
+    owner: "{{username}}"
     group: users
 
 - name: Istall git
@@ -46,13 +40,15 @@
 - name: Checkout ha docker venv hack
   ansible.builtin.git:
     repo: 'https://github.com/tribut/homeassistant-docker-venv'
-    dest: /media/Medien/home-assistant/docker
+    dest: "{{homeassistant_config_folder}}/docker"
     force: yes
+  become: yes
+  become_user: "{{username}}"
 
 - name: Reposess config folders
   ansible.builtin.file:
     path: "{{item}}"
-    owner: ha
+    owner: "{{username}}"
     group: users
     mode: u=rwx,g=rwxs
     recurse: yes
@@ -73,7 +69,7 @@
       services:
         homeassistant:
           container_name: homeassistant
-          image: "ghcr.io/home-assistant/raspberrypi4-homeassistant:stable"
+          image: "ghcr.io/home-assistant/home-assistant:stable"
           volumes:
             - "{{homeassistant_config_folder}}:/config"
             - "{{homeassistant_config_folder}}/docker/run:/etc/services.d/home-assistant/run"
@@ -84,15 +80,15 @@
           devices:
             - /dev/ttyACM0
           environment:
-            - PUID={{ha_user.uid}}
-            - PGID={{ha_user.group}}
+            - PUID={{uid}}
+            - PGID={{uid}}
             - UMASK=007
         code-server:
           image: lscr.io/linuxserver/code-server
           container_name: code-server
           environment:
-            - PUID={{ha_user.uid}}
-            - PGID={{ha_user.group}}
+            - PUID={{uid}}
+            - PGID={{uid}}
             - TZ=Europe/London
             - UMASK=007
             #- PROXY_DOMAIN=code-server.my.domain #optional
@@ -121,6 +117,7 @@
         mosquitto:
           container_name: mosquitto
           image: eclipse-mosquitto
+          user: "{{uid}}:{{uid}}"
           ports:
             - "{{mosquitto_port}}:1883"
             - "{{mosquitto_websockets_port}}:9001"
@@ -133,6 +130,9 @@
           container_name: zigbee2mqtt
           image: koenkk/zigbee2mqtt
           restart: unless-stopped
+          user: "{{uid}}:{{uid}}"
+          group_add:
+            - dialout
           volumes:
             - "{{zigbee2mqtt_data_folder}}:/app/data"
             - /run/udev:/run/udev:ro

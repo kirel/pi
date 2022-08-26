@@ -1,9 +1,10 @@
 ---
-- hosts: pi4
+- hosts: nuc
   vars:
     pip_package: python3-pip
     pip_install_packages:
       - name: docker
+      - name: docker-compose
     router_ip: "192.168.50.1"
     cidr: "192.168.50.0/24"
     pihole_http_port: 81
@@ -11,12 +12,15 @@
     homeassistant_http_port: 8123
     vscode_http_port: 8443
     nodered_http_port: 1880
+    mosquitto_address: "{{ ansible_default_ipv4.address }}"
     mosquitto_port: 1883
     mosquitto_websockets_port: 9001
     z2m_http_port: 8080
     octopi_address: 192.168.50.55
     octopi_http_port: 80
-    config_root: "/home/nuc/config"
+    username: "nuc"
+    uid: 1000
+    config_root: "/home/{{username}}/config"
     homeassistant_config_folder: "{{config_root}}/home-assistant"
     vscode_config_folder: "{{config_root}}/vscode"
     nodered_config_folder: "{{config_root}}/node-red"
@@ -29,14 +33,14 @@
     caddy_data_folder: "{{config_root}}/caddy/data"
     caddy_config_folder: "{{config_root}}/caddy/config"
 
-  remote_user: nuc
+  #remote_user: root
   roles:
-    - basic
+    - { role: basic, become: yes, tags: ["basic"] }
     - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
-    - { role: geerlingguy.docker, become: yes, tags: ["docker"] }
+    - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
 
-    - { role: timemachine, become: yes, tags: ["tm"] }
+    #- { role: timemachine, become: yes, tags: ["tm"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
     - { role: caddy, become: yes, tags: ["caddy"] }
     - { role: pihole, become: yes, tags: ["pihole"] }
