@@ -20,8 +20,13 @@
     octopi_http_port: 80
     username: "nuc"
     uid: 1000
+    mount_root: "mnt"
+    shares:
+      - "Medien"
+      - "dreifuenf"
     config_root: "/home/{{username}}/config"
     homeassistant_config_folder: "{{config_root}}/home-assistant"
+    homeassistant_media_folder: "/{{mount_root}}/Medien/Musik"
     vscode_config_folder: "{{config_root}}/vscode"
     nodered_config_folder: "{{config_root}}/node-red"
     mosquitto_config_folder: "{{config_root}}/mosquitto/config"
@@ -41,6 +46,7 @@
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
 
     #- { role: timemachine, become: yes, tags: ["tm"] }
+    - { role: storage, become: yes, tags: ["storage"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
     - { role: caddy, become: yes, tags: ["caddy"] }
     - { role: pihole, become: yes, tags: ["pihole"] }

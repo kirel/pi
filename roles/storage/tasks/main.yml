@@ -1,0 +1,18 @@
+- name: utility present
+  ansible.builtin.package:
+    name: cifs-utils
+    state: present
+- name: create mount folders
+  ansible.builtin.file:
+    path: "/{{ mount_root }}/{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items: "{{ shares }}"
+- name: Mount network shares
+  ansible.posix.mount:
+    src: "//{{ router_ip }}/{{ item }}"
+    path: "/{{ mount_root }}/{{ item }}"
+    fstype: cifs
+    opts: "rw,guest,uid={{ uid }},vers=2.0"
+    state: mounted
+  with_items: "{{ shares }}"
