@@ -37,6 +37,11 @@
     name: git
     state: latest
 
+- name: Istall bluez
+  apt:
+    name: bluez
+    state: latest
+
 - name: Checkout ha docker venv hack
   ansible.builtin.git:
     repo: 'https://github.com/tribut/homeassistant-docker-venv'
@@ -75,6 +80,7 @@
             - "{{homeassistant_config_folder}}/docker/run:/etc/services.d/home-assistant/run"
             - "{{homeassistant_media_folder}}:/media"
             - /etc/localtime:/etc/localtime:ro
+            - /run/dbus:/run/dbus:ro
           restart: unless-stopped
           privileged: true
           network_mode: host
