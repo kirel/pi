@@ -148,7 +148,6 @@
         zigbee2mqtt:
           container_name: zigbee2mqtt
           image: koenkk/zigbee2mqtt
-          restart: unless-stopped
           user: "{{uid}}:{{uid}}"
           group_add:
             - dialout
@@ -161,6 +160,7 @@
             - TZ=Europe/Berlin
           devices:
             - /dev/ttyUSB0:/dev/ttyACM1
+          restart: unless-stopped
   register: output
 
 - #ansible.builtin.debug:
