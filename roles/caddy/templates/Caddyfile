@@ -9,6 +9,14 @@ homeassistant.lan {
         log
 }
 
+shortumation.lan {
+        rewrite * /web{path}
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ shortumation_http_port }}
+        tls internal
+        log
+}
+
+
 portainer.lan {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ portainer_http_port }}
         tls internal

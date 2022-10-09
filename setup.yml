@@ -10,6 +10,7 @@
     pihole_http_port: 81
     portainer_http_port: 9000
     homeassistant_http_port: 8123
+    shortumation_http_port: 8088
     vscode_http_port: 8443
     nodered_http_port: 1880
     mosquitto_address: "{{ ansible_default_ipv4.address }}"
