@@ -44,6 +44,11 @@
 
 - name: copy root certificate
   shell: "docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt"
+- fetch: 
+    src: "{{caddy_folder}}/root.crt"
+    dest: tmp/
+    flat: yes
+
 - name: Reposess root cert
   ansible.builtin.file:
     path: "{{caddy_folder}}/root.crt"
