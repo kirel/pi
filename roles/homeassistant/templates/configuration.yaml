@@ -21,3 +21,6 @@ serial:
 
 frontend:
   port: {{ z2m_http_port }}
+
+devices: devices.yml
+groups: groups.yml
