@@ -1,3 +1,8 @@
+{
+        email danishkirel@gmail.com
+}
+
+
 danishkirel.asuscomm.com {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ homeassistant_http_port }}
         log

@@ -2,3 +2,4 @@
 .venv
 *.retry
 .vault_pass
+tmp/root.crt

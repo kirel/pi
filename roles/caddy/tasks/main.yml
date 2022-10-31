@@ -5,6 +5,19 @@
   - "{{caddy_data_folder}}"
   - "{{caddy_config_folder}}"
 
+- name: Reposess config folders
+  ansible.builtin.file:
+    path: "{{item}}"
+    owner: "{{username}}"
+    group: users
+    mode: u=rwx,g=rwxs
+    recurse: yes
+  with_items:
+  - "{{caddy_folder}}"
+  - "{{caddy_data_folder}}"
+  - "{{caddy_config_folder}}"
+
+
 - name: copy Caddyfile
   template:
     src: Caddyfile
@@ -26,6 +39,10 @@
           container_name: caddy
           image: caddy:latest
           restart: unless-stopped
+          user: "{{uid}}:{{uid}}"
+          dns:
+            - 1.1.1.1
+            - 1.0.0.1
           ports:
             - "80:80"
             - "443:443"
