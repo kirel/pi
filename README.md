@@ -32,6 +32,14 @@ Copy the `root.cert` from `{{caddy_folder}}` to all the devices and trust it
 - https://support.apple.com/en-us/HT204477
 - https://httptoolkit.tech/blog/android-11-trust-ca-certificates/
 
+## Pihole whitelist
+
+    ssh nuc
+    cd /home/nuc
+    git clone https://github.com/anudeepND/whitelist.git
+    sudo python3 whitelist/scripts/whitelist.py --dir /home/nuc/config/pihole/ --docker
+    sudo whitelist/scripts/referral.sh --dir /home/nuc/config/pihole/ --docker
+
 ## Migrate
 
     ssh -A pi@192.168.50.5 sudo rsync -e "ssh" -vuar /media/Medien/{pihole,home-assistant,caddy,mosquitto,vscode,z2m} root@192.168.50.3:/home/nuc/config/
