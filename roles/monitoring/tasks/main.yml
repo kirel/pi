@@ -1,0 +1,32 @@
+- name: create folders
+  file: path={{item}} state=directory owner={{username}}
+  with_items:
+  - "{{uptime_kuma_data_folder}}"
+
+- name: Start uptime-kuma
+  community.docker.docker_compose:
+    project_name: uptime_kuma
+    build: yes
+    definition:
+      version: '3.3'
+      services:
+        uptime_kuma:
+          image: louislam/uptime-kuma:1
+          container_name: uptime_kuma
+          ports:
+            - "{{uptime_kuma_http_port}}:3001"
+          restart: always
+          volumes:
+            - "{{uptime_kuma_data_folder}}:/app/data"
+            - /var/run/docker.sock:/var/run/docker.sock
+          dns:
+            - "{{ ansible_default_ipv4.address }}"
+          network_mode: bridge
+  register: output
+
+- ansible.builtin.debug:
+    var: output
+
+- ansible.builtin.assert:
+    that:
+      - "output.services.uptime_kuma.uptime_kuma.state.running"
