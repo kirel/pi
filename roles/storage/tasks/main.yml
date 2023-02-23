@@ -8,11 +8,70 @@
     state: directory
     mode: '0755'
   with_items: "{{ shares }}"
-- name: Mount network shares
+- name: Mount drives by label
   ansible.posix.mount:
-    src: "//{{ router_ip }}/{{ item }}"
     path: "/{{ mount_root }}/{{ item }}"
-    fstype: cifs
-    opts: "rw,guest,uid={{ uid }},vers=2.0"
+    src: LABEL={{ item }}
+    fstype: ext4
     state: mounted
   with_items: "{{ shares }}"
+- name: create tm folder
+  ansible.builtin.file:
+    path: "/{{ mount_root }}/dreifuenf/timemachine"
+    state: directory
+    mode: '0755'
+
+- name: Reposess everything
+  ansible.builtin.file:
+    path: "/{{ mount_root }}/{{ item }}"
+    owner: "{{username}}"
+    group: users
+    mode: u=rwx,g=rwxs
+    recurse: yes
+  with_items: "{{ shares }}"
+- name: Start samba
+  community.docker.docker_compose:
+    project_name: samba
+    pull: yes
+    definition:
+      version: '3'
+      services:
+        samba:
+          container_name: samba
+          build: .
+          image: servercontainers/samba
+          restart: unless-stopped
+          network_mode: host
+          #cap_add:
+          #  - CAP_NET_ADMIN
+          environment:
+            MODEL: 'TimeCapsule'
+            AVAHI_NAME: nuc
+
+            SAMBA_CONF_LOG_LEVEL: 3
+
+            # uncomment to disable optional services
+            WSDD2_DISABLE: 1
+            #AVAHI_DISABLE: 1
+
+            ACCOUNT_nuc: nucpass
+            # UID_nuc: "{{ uid }}"
+
+            ACCOUNT_daniel: "daniel:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:361FA5DCDEC7F04CC65A84100D147EA0:[U          ]:LCT-63F7E3B6:"
+            UID_daniel: "1001"
+
+            SAMBA_GLOBAL_STANZA: "guest account = nuc"
+
+            SAMBA_VOLUME_CONFIG_Medien:     "[Medien]; path=/shares/Medien; valid users = daniel, nuc; browseable = yes; guest ok = yes; read only = no; force group = users; create mask = 0775; directory mask = 0755"
+            SAMBA_VOLUME_CONFIG_dreifuenf:  "[dreifuenf]; path=/shares/dreifuenf/timemachine/%U; valid users = daniel; guest ok = no; read only = no; browseable = yes; fruit:time machine = yes"
+          
+          volumes:
+            - /etc/avahi/services/:/external/avahi
+            
+            # avoid loops when mounting folders to /shares (I'd recommend explicit mapping for each share)
+            - /mnt/Medien:/shares/Medien
+            - /mnt/dreifuenf:/shares/dreifuenf
+- name: avahi present
+  ansible.builtin.package:
+    name: avahi-daemon
+    state: present
