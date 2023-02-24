@@ -17,6 +17,7 @@
     mosquitto_port: 1883
     mosquitto_websockets_port: 9001
     z2m_http_port: 8080
+    frigate_http_port: 5000
     octopi_address: 192.168.50.55
     octopi_http_port: 80
     username: "nuc"
@@ -28,6 +29,8 @@
     config_root: "/home/{{username}}/config"
     homeassistant_config_folder: "{{config_root}}/home-assistant"
     homeassistant_media_folder: "/{{mount_root}}/Medien/Musik"
+    frigate_config_folder: "{{config_root}}/frigate"
+    frigate_media_folder: "/{{mount_root}}/Medien/Frigate"
     vscode_config_folder: "{{config_root}}/vscode"
     nodered_config_folder: "{{config_root}}/node-red"
     mosquitto_config_folder: "{{config_root}}/mosquitto/config"

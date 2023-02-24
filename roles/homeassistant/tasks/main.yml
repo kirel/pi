@@ -10,6 +10,8 @@
   file: path={{item}} state=directory owner={{username}}
   with_items:
   - "{{homeassistant_config_folder}}"
+  - "{{frigate_config_folder}}"
+  - "{{frigate_media_folder}}"
   - "{{vscode_config_folder}}"
   - "{{nodered_config_folder}}"
   - "{{mosquitto_config_folder}}"
@@ -29,6 +31,13 @@
   template:
     src: configuration.yaml
     dest: "{{zigbee2mqtt_data_folder}}/configuration.yaml"
+    owner: "{{username}}"
+    group: users
+
+- name: Add frigate config
+  template:
+    src: frigate.yml
+    dest: "{{frigate_config_folder}}"
     owner: "{{username}}"
     group: users
 
@@ -59,6 +68,8 @@
     recurse: yes
   with_items:
   - "{{homeassistant_config_folder}}"
+  - "{{frigate_config_folder}}"
+  - "{{frigate_media_folder}}"
   - "{{vscode_config_folder}}"
   - "{{nodered_config_folder}}"
   - "{{mosquitto_config_folder}}"
@@ -70,7 +81,7 @@
     project_name: ha
     pull: yes
     definition:
-      version: '3'
+      version: '3.9'
       services:
         homeassistant:
           container_name: homeassistant
@@ -149,6 +160,27 @@
           devices:
             - /dev/ttyUSB0:/dev/ttyACM1
           restart: unless-stopped
+        frigate:
+          container_name: frigate
+          privileged: true # this may not be necessary for all setups
+          restart: unless-stopped
+          image: blakeblackshear/frigate:stable
+          shm_size: "64mb" # update for your cameras based on calculation above
+          devices:
+            - /dev/bus/usb:/dev/bus/usb
+          volumes:
+            - /etc/localtime:/etc/localtime:ro
+            - "{{frigate_config_folder}}/frigate.yml:/config/config.yml:ro"
+            - "{{frigate_media_folder}}:/media/frigate"
+            - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+              target: /tmp/cache
+              tmpfs:
+                size: 1000000000
+          ports:
+            - "{{frigate_http_port}}:5000"
+            - "1935:1935" # RTMP feeds
+          environment:
+            FRIGATE_RTSP_PASSWORD: "password"
   register: output
 
 - #ansible.builtin.debug:

@@ -44,6 +44,12 @@ z2m.lan {
         log
 }
 
+frigate.lan {
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ frigate_http_port }}
+        tls internal
+        log
+}
+
 pi.hole {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ pihole_http_port }}
         tls internal
