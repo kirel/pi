@@ -10,7 +10,6 @@
     pihole_http_port: 81
     portainer_http_port: 9000
     homeassistant_http_port: 8123
-    shortumation_http_port: 8088
     uptime_kuma_http_port: 3001
     vscode_http_port: 8443
     nodered_http_port: 1880

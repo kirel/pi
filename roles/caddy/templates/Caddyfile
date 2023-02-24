@@ -14,13 +14,6 @@ homeassistant.lan {
         log
 }
 
-shortumation.lan {
-        rewrite * /web{path}
-        reverse_proxy {{ ansible_default_ipv4.address }}:{{ shortumation_http_port }}
-        tls internal
-        log
-}
-
 uptime.lan {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ uptime_kuma_http_port }}
         tls internal
