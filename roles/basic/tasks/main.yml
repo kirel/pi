@@ -23,6 +23,9 @@
     - { regexp: '^LANGUAGE=', line: 'LANGUAGE=en_US.UTF-8', state: present }
   notify:
     - rebuild locales database
+- name: Set timezone to Europe/Berlin
+  community.general.timezone:
+    name: Europe/Berlin
 - name: Add user
   ansible.builtin.user:
     name: "{{ username }}"
