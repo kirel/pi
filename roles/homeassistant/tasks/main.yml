@@ -6,7 +6,7 @@
     group: root
   notify: reload udev rules
 
-- name: create folder config folders
+- name: create config folders
   file: path={{item}} state=directory owner={{username}}
   with_items:
   - "{{homeassistant_config_folder}}"
@@ -107,7 +107,7 @@
           environment:
             - PUID={{uid}}
             - PGID={{uid}}
-            - TZ=Europe/London
+            - TZ=Europe/Berlin
             - UMASK=007
             #- PROXY_DOMAIN=code-server.my.domain #optional
             #- DEFAULT_WORKSPACE=/config/workspace #optional
