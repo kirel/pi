@@ -18,6 +18,7 @@
     mosquitto_websockets_port: 9001
     z2m_http_port: 8080
     frigate_http_port: 5000
+    jellyfin_http_port: 8096
     octopi_address: 192.168.50.55
     octopi_http_port: 80
     username: "nuc"
@@ -42,6 +43,10 @@
     caddy_data_folder: "{{config_root}}/caddy/data"
     caddy_config_folder: "{{config_root}}/caddy/config"
     uptime_kuma_data_folder: "{{config_root}}/uptime-kuma/data"
+    jellyfin_config_folder: "{{config_root}}/jellyfin"
+    jellyfin_movie_folder: "/{{mount_root}}/Medien/Filme"
+    jellyfin_shows_folder: "/{{mount_root}}/Medien/Shows"
+    jellyfin_music_folder: "/{{mount_root}}/Medien/Musik"
 
   #remote_user: root
   roles:
@@ -52,6 +57,7 @@
 
     - { role: storage, become: yes, tags: ["storage"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
+    - { role: media, become: yes, tags: ["media"] }
     - { role: caddy, become: yes, tags: ["caddy"] }
     - { role: pihole, become: yes, tags: ["pihole"] }
     - { role: monitoring, become: yes, tags: ["monitoring"] }

@@ -1,49 +1,49 @@
-- name: install apt-transport-https
-  apt:
-    name: apt-transport-https
-  become: yes
-- apt_key:
-    url: https://dev2day.de/pms/dev2day-pms.gpg.key
-    state: present
-  become: yes
-- apt_repository:
-    repo: deb https://dev2day.de/pms/ stretch main
-    state: present
-    filename: pms
-  become: yes
-- apt:
-    update_cache: yes
-  become: yes
-- name: Install plex
-  apt:
-    name: plexmediaserver-installer
-    state: latest
-  become: yes
-  notify: restart plex
-- name: create folder for mountpoint
-  become: yes
-  file: path=/media/media state=directory
-- name: Mount media
-  become: yes
-  mount:
-    path: /media/media
-    src: LABEL=MEDIEN
-    fstype: vfat
-    opts: defaults,uid=pi,gid=plex,umask=0002
-    state: mounted
-- name: afp.conf Media section
-  become: yes
-  blockinfile:
-    path: /usr/local/etc/afp.conf
-    marker_begin: "START [Media]"
-    marker_end: "END [Media]"
-    block: |
-      [Media]
-        path = /media/media
-  notify: reload netatalk services
-- name: add my user to plex group
-  user:
-    name: daniel
-    group: plex
-    append: yes
-  become: yes
+- name: create jellyfin folders
+  file: path={{item}} state=directory owner={{username}}
+  with_items:
+  - "{{jellyfin_config_folder}}"
+  - "{{jellyfin_movie_folder}}"
+  - "{{jellyfin_shows_folder}}"
+  - "{{jellyfin_music_folder}}"
+
+- name: Reposess jellyfin folders
+  ansible.builtin.file:
+    path: "{{item}}"
+    owner: "{{username}}"
+    group: users
+    mode: u=rwx,g=rwxs
+    recurse: yes
+  with_items:
+  - "{{jellyfin_config_folder}}"
+  - "{{jellyfin_movie_folder}}"
+  - "{{jellyfin_shows_folder}}"
+  - "{{jellyfin_music_folder}}"
+
+- name: Start jellyfin
+  community.docker.docker_compose:
+    project_name: jellyfin
+    pull: yes
+    definition:
+
+      version: '3.5'
+      services:
+        jellyfin:
+          image: jellyfin/jellyfin
+          container_name: jellyfin
+          user: "{{uid}}:{{uid}}"
+          network_mode: 'host'
+          volumes:
+            - "{{jellyfin_config_folder}}:/config"
+            - jellyfin-cache:/cache
+            - "{{jellyfin_movie_folder}}:/movies"
+            - "{{jellyfin_shows_folder}}:/shows"
+            - "{{jellyfin_music_folder}}:/music"
+          restart: 'unless-stopped'
+          # Optional - alternative address used for autodiscovery
+          environment:
+            - JELLYFIN_PublishedServerUrl=http://192.168.50.5:8096
+          # Optional - may be necessary for docker healthcheck to pass if running in host network mode
+          extra_hosts:
+            - "host.docker.internal:host-gateway"
+      volumes:
+        jellyfin-cache:

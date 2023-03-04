@@ -50,6 +50,12 @@ frigate.lan {
         log
 }
 
+jellyfin.lan {
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ jellyfin_http_port }}
+        tls internal
+        log
+}
+
 pi.hole {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ pihole_http_port }}
         tls internal
