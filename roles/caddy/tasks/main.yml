@@ -17,16 +17,12 @@
   - "{{caddy_data_folder}}"
   - "{{caddy_config_folder}}"
 
-
 - name: copy Caddyfile
   template:
     src: Caddyfile
     dest: "{{caddy_folder}}/Caddyfile"
     owner: "{{username}}"
-  notify: reload caddy config
-
-# reload config via
-# docker exec -w /etc/caddy caddy caddy reload
+  notify: reload caddy
 
 - name: Start caddy
   community.docker.docker_compose:
