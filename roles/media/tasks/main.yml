@@ -5,6 +5,7 @@
   - "{{jellyfin_movie_folder}}"
   - "{{jellyfin_shows_folder}}"
   - "{{jellyfin_music_folder}}"
+  - "{{navidrome_data_folder}}"
 
 - name: Reposess jellyfin folders
   ansible.builtin.file:
@@ -18,8 +19,9 @@
   - "{{jellyfin_movie_folder}}"
   - "{{jellyfin_shows_folder}}"
   - "{{jellyfin_music_folder}}"
+  - "{{navidrome_data_folder}}"
 
-- name: Start jellyfin
+- name: Start media services
   community.docker.docker_compose:
     project_name: jellyfin
     pull: yes
@@ -45,5 +47,15 @@
           # Optional - may be necessary for docker healthcheck to pass if running in host network mode
           extra_hosts:
             - "host.docker.internal:host-gateway"
+        navidrome:
+          image: deluan/navidrome:latest
+          user: "{{uid}}:{{uid}}" # should be owner of volumes
+          ports:
+            - "{{ navidrome_http_port }}:4533"
+          restart: unless-stopped
+          #environment:
+          volumes:
+            - "{{navidrome_data_folder}}:/data"
+            - "{{jellyfin_music_folder}}:/music:ro"
       volumes:
         jellyfin-cache:

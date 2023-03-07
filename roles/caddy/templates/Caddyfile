@@ -62,6 +62,12 @@ jellyfin.lan {
         log
 }
 
+music.lan {
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ navidrome_http_port }}
+        tls internal
+        log
+}
+
 pi.hole {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ pihole_http_port }}
         tls internal

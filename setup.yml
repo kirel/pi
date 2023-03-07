@@ -20,6 +20,7 @@
     z2m_http_port: 8080
     frigate_http_port: 5000
     jellyfin_http_port: 8096
+    navidrome_http_port: 4533
     octopi_address: 192.168.50.55
     octopi_http_port: 80
     username: "nuc"
@@ -48,6 +49,7 @@
     jellyfin_movie_folder: "/{{mount_root}}/Medien/Filme"
     jellyfin_shows_folder: "/{{mount_root}}/Medien/Shows"
     jellyfin_music_folder: "/{{mount_root}}/Medien/Musik"
+    navidrome_data_folder: "{{config_root}}/navidrome"
 
   #remote_user: root
   roles:
