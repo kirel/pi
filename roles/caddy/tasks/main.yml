@@ -31,7 +31,7 @@
 - name: Start caddy
   community.docker.docker_compose:
     project_name: caddy
-    build: yes
+    pull: yes
     definition:
       version: '3'
       services:
@@ -50,6 +50,9 @@
             - "{{caddy_folder}}/Caddyfile:/etc/caddy/Caddyfile"
             - "{{caddy_data_folder}}:/data"
             - "{{caddy_config_folder}}:/config"
+          labels:
+            - 'wud.tag.include=latest'
+            - 'wud.watch.digest=true'
   register: output
 
 - ansible.builtin.debug:

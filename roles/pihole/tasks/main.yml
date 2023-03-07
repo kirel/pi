@@ -30,7 +30,7 @@
 - name: Start pihole
   community.docker.docker_compose:
     project_name: pihole
-    build: yes
+    pull: yes
     definition:
       version: '3'
       volumes:
@@ -66,6 +66,10 @@
           cap_add:
             - NET_ADMIN
           restart: unless-stopped
+          labels:
+            - 'wud.tag.include=latest'
+            - 'wud.watch.digest=true'
+
   register: output
 
 - ansible.builtin.debug:

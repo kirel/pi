@@ -20,6 +20,12 @@ uptime.lan {
         log
 }
 
+wud.lan {
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ wud_http_port }}
+        tls internal
+        log
+}
+
 portainer.lan {
         reverse_proxy {{ ansible_default_ipv4.address }}:{{ portainer_http_port }}
         tls internal

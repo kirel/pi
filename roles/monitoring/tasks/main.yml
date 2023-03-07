@@ -3,10 +3,10 @@
   with_items:
   - "{{uptime_kuma_data_folder}}"
 
-- name: Start uptime-kuma
+- name: Start monitoring
   community.docker.docker_compose:
-    project_name: uptime_kuma
-    build: yes
+    project_name: monitoring
+    pull: yes
     definition:
       version: '3.3'
       services:
@@ -22,6 +22,24 @@
           dns:
             - "{{ ansible_default_ipv4.address }}"
           network_mode: bridge
+          labels:
+            - 'wud.tag.include=^1$$'
+            - 'wud.watch.digest=true'
+        whatsupdocker:
+          image: fmartinou/whats-up-docker
+          container_name: wud
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+          ports:
+            - "{{wud_http_port}}:3000"
+          environment:
+            - WUD_TRIGGER_MQTT_MOSQUITTO_URL=mqtt://{{ mosquitto_address }}:{{ mosquitto_port }}
+            - WUD_TRIGGER_MQTT_MOSQUITTO_HASS_ENABLED=true
+            - WUD_REGISTRY_LSCR_USERNAME=kirel
+            - WUD_REGISTRY_LSCR_TOKEN={{ gh_access_token }}
+          labels:
+            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+            - 'wud.link.template=https://github.com/fmartinou/whats-up-docker/releases/tag/$${major}.$${minor}.$${patch}'
   register: output
 
 - ansible.builtin.debug:
@@ -30,3 +48,4 @@
 - ansible.builtin.assert:
     that:
       - "output.services.uptime_kuma.uptime_kuma.state.running"
+      - "output.services.whatsupdocker.wud.state.running"

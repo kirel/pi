@@ -101,6 +101,9 @@
             - PUID={{uid}}
             - PGID={{uid}}
             - UMASK=007
+          labels:
+            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+            - 'wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}'
         code-server:
           image: lscr.io/linuxserver/code-server
           container_name: code-server
@@ -134,7 +137,7 @@
         #   restart: unless-stopped
         mosquitto:
           container_name: mosquitto
-          image: eclipse-mosquitto
+          image: eclipse-mosquitto:latest
           user: "{{uid}}:{{uid}}"
           ports:
             - "{{mosquitto_port}}:1883"
@@ -144,9 +147,12 @@
             - "{{mosquitto_data_folder}}:/mosquitto/data"
             - "{{mosquitto_log_folder}}:/mosquitto/log"
           restart: unless-stopped
+          labels:
+            - 'wud.tag.include=latest'
+            - 'wud.watch.digest=true'
         zigbee2mqtt:
           container_name: zigbee2mqtt
-          image: koenkk/zigbee2mqtt
+          image: koenkk/zigbee2mqtt:latest
           user: "{{uid}}:{{uid}}"
           group_add:
             - dialout
@@ -160,6 +166,10 @@
           devices:
             - /dev/ttyUSB0:/dev/ttyACM1
           restart: unless-stopped
+          labels:
+            - 'wud.tag.include=latest'
+            - 'wud.watch.digest=true'
+
         frigate:
           container_name: frigate
           privileged: true # this may not be necessary for all setups
@@ -181,6 +191,9 @@
             - "1935:1935" # RTMP feeds
           environment:
             FRIGATE_RTSP_PASSWORD: "password"
+          labels:
+            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+            - 'wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}'
   register: output
 
 - #ansible.builtin.debug:
