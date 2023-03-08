@@ -1,6 +1,0 @@
-- name: reload caddy
-  become: yes
-  community.docker.docker_container:
-    name: caddy
-    state: started
-    restart: yes

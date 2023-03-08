@@ -22,12 +22,13 @@
     src: Caddyfile
     dest: "{{caddy_folder}}/Caddyfile"
     owner: "{{username}}"
-  notify: reload caddy
+  register: caddyfile
 
 - name: Start caddy
   community.docker.docker_compose:
     project_name: caddy
     pull: yes
+    restarted: "{{ caddyfile.changed | default(false) }}"
     definition:
       version: '3'
       services:
@@ -50,9 +51,6 @@
             - 'wud.tag.include=latest'
             - 'wud.watch.digest=true'
   register: output
-
-- ansible.builtin.debug:
-    var: output
 
 - ansible.builtin.assert:
     that:
