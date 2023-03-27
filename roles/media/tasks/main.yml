@@ -49,6 +49,7 @@
             - "host.docker.internal:host-gateway"
         navidrome:
           image: deluan/navidrome:latest
+          container_name: navidrome
           user: "{{uid}}:{{uid}}" # should be owner of volumes
           ports:
             - "{{ navidrome_http_port }}:4533"
