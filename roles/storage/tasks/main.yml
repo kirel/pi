@@ -57,7 +57,7 @@
             ACCOUNT_nuc: nucpass
             # UID_nuc: "{{ uid }}"
 
-            ACCOUNT_daniel: "daniel:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:361FA5DCDEC7F04CC65A84100D147EA0:[U          ]:LCT-63F7E3B6:"
+            ACCOUNT_daniel: "daniel:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:361FA5DCDEC7F04CC65A84100D147EA0:[U          ]:LCT-643D057C:"
             UID_daniel: "1001"
 
             SAMBA_GLOBAL_STANZA: "guest account = nuc"
