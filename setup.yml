@@ -23,6 +23,8 @@
     navidrome_http_port: 4533
     octopi_address: 192.168.50.55
     octopi_http_port: 80
+    sunshine_address: 192.168.50.33
+    sunshine_http_port: 47990
     username: "nuc"
     uid: 1000
     mount_root: "mnt"
