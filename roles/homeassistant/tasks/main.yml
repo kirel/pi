@@ -122,6 +122,9 @@
           security_opt:
             - seccomp:unconfined # because strange PI issue see https://stackoverflow.com/questions/69775057/docker-image-fails-to-run-on-raspberry-pi-with-strange-node-error
           restart: unless-stopped
+          labels:
+            - 'wud.tag.include=latest'
+            - 'wud.watch.digest=true'
         # nodered:
         #   container_name: nodered
         #   image: nodered/node-red
