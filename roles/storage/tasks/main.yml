@@ -1,3 +1,10 @@
+- name: Add user
+  ansible.builtin.user:
+    name: "{{ username_personal }}"
+    comment: John Doe
+    uid: "{{ uid_personal }}"
+    groups: users
+    append: yes
 - name: utility present
   ansible.builtin.package:
     name: cifs-utils
@@ -28,10 +35,25 @@
     group: users
     mode: u=rwx,g=rwxs
     recurse: yes
-  with_items: "{{ shares }}"
-- name: Start samba
+  with_items: "{{ shares.0 }}"
+
+- name: create user tm folder
+  ansible.builtin.file:
+    path: "/{{ mount_root }}/dreifuenf/timemachine/{{username_personal}}"
+    state: directory
+    owner: "{{username_personal}}"
+    mode: 'u=rwx,g=,o='
+
+- name: create config folders
+  file: path={{item}} state=directory owner={{username}}
+  with_items:
+  - "{{syncthing_config_folder}}"
+  - "{{syncthing_data_folder}}"
+
+
+- name: Start Storage
   community.docker.docker_compose:
-    project_name: samba
+    project_name: storage
     pull: yes
     definition:
       version: '3'
@@ -58,12 +80,12 @@
             # UID_nuc: "{{ uid }}"
 
             ACCOUNT_daniel: "daniel:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:361FA5DCDEC7F04CC65A84100D147EA0:[U          ]:LCT-643D057C:"
-            UID_daniel: "1001"
+            UID_daniel: "{{ uid_personal }}"
 
             SAMBA_GLOBAL_STANZA: "guest account = nuc"
 
             SAMBA_VOLUME_CONFIG_Medien:     "[Medien]; path=/shares/Medien; valid users = daniel, nuc; browseable = yes; guest ok = yes; read only = no; force group = users; create mask = 0775; directory mask = 0755"
-            SAMBA_VOLUME_CONFIG_dreifuenf:  "[dreifuenf]; path=/shares/dreifuenf/timemachine/%U; valid users = daniel; guest ok = no; read only = no; browseable = yes; fruit:time machine = yes"
+            SAMBA_VOLUME_CONFIG_dreifuenf:  "[TimeMachine]; path=/shares/dreifuenf/timemachine/%U; valid users = daniel; guest ok = no; read only = no; browseable = yes; fruit:time machine = yes"
           
           volumes:
             - /etc/avahi/services/:/external/avahi
@@ -71,6 +93,25 @@
             # avoid loops when mounting folders to /shares (I'd recommend explicit mapping for each share)
             - /mnt/Medien:/shares/Medien
             - /mnt/dreifuenf:/shares/dreifuenf
+        syncthing:
+          image: lscr.io/linuxserver/syncthing:latest
+          container_name: syncthing
+          # hostname: syncthing #optional
+          environment:
+            - "PUID={{ uid }}"
+            - "PGID={{ uid }}"
+            - TZ=Europe/Berlin
+          volumes:
+            - "{{syncthing_config_folder}}:/config"
+            - "{{syncthing_data_folder}}:/data"
+            - "/{{mount_root}}/Medien:/Medien"
+          ports:
+            - "{{ syncthing_http_port }}:8384"
+            - 22000:22000/tcp
+            - 22000:22000/udp
+            - 21027:21027/udp
+          restart: unless-stopped
+
 - name: avahi present
   ansible.builtin.package:
     name: avahi-daemon

@@ -1,13 +1,14 @@
-192.168.50.5 pi.hole
-192.168.50.5 homeassistant.lan
-192.168.50.5 uptime.lan
-192.168.50.5 wud.lan
-192.168.50.5 portainer.lan
-192.168.50.5 nodered.lan
-192.168.50.5 vscode.lan
-192.168.50.5 z2m.lan
-192.168.50.5 frigate.lan
-192.168.50.5 jellyfin.lan
-192.168.50.5 music.lan
-192.168.50.5 sunshine.lan
-192.168.50.1 router.asus.com
+{{ ansible_default_ipv4.address }} pi.hole
+{{ ansible_default_ipv4.address }} homeassistant.lan
+{{ ansible_default_ipv4.address }} uptime.lan
+{{ ansible_default_ipv4.address }} wud.lan
+{{ ansible_default_ipv4.address }} portainer.lan
+{{ ansible_default_ipv4.address }} nodered.lan
+{{ ansible_default_ipv4.address }} vscode.lan
+{{ ansible_default_ipv4.address }} z2m.lan
+{{ ansible_default_ipv4.address }} frigate.lan
+{{ ansible_default_ipv4.address }} jellyfin.lan
+{{ ansible_default_ipv4.address }} music.lan
+{{ ansible_default_ipv4.address }} syncthing.lan
+{{ ansible_default_ipv4.address }} sunshine.lan
+{{ router_ip }} router.asus.com

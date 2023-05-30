@@ -21,12 +21,15 @@
     frigate_http_port: 5000
     jellyfin_http_port: 8096
     navidrome_http_port: 4533
+    syncthing_http_port: 8384
     octopi_address: 192.168.50.55
     octopi_http_port: 80
     sunshine_address: 192.168.50.33
     sunshine_http_port: 47990
     username: "nuc"
     uid: 1000
+    username_personal: "daniel"
+    uid_personal: 1001
     mount_root: "mnt"
     shares:
       - "Medien"
@@ -52,6 +55,9 @@
     jellyfin_shows_folder: "/{{mount_root}}/Medien/Shows"
     jellyfin_music_folder: "/{{mount_root}}/Medien/Musik"
     navidrome_data_folder: "{{config_root}}/navidrome"
+    syncthing_config_folder: "{{config_root}}/syncthing/config"
+    syncthing_data_folder: "{{config_root}}/syncthing/data"
+
 
   #remote_user: root
   roles:

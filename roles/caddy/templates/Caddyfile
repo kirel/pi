@@ -68,6 +68,12 @@ music.lan {
         log
 }
 
+syncthing.lan {
+        reverse_proxy {{ ansible_default_ipv4.address }}:{{ syncthing_http_port }}
+        tls internal
+        log
+}
+
 sunshine.lan {
         reverse_proxy {{ sunshine_address }}:{{ sunshine_http_port }}
         tls internal
