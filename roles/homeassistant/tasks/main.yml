@@ -174,7 +174,7 @@
           container_name: frigate
           privileged: true # this may not be necessary for all setups
           restart: unless-stopped
-          image: blakeblackshear/frigate:stable
+          image: ghcr.io/blakeblackshear/frigate:stable
           shm_size: "64mb" # update for your cameras based on calculation above
           devices:
             - /dev/bus/usb:/dev/bus/usb
@@ -188,7 +188,9 @@
                 size: 1000000000
           ports:
             - "{{frigate_http_port}}:5000"
-            - "1935:1935" # RTMP feeds
+            - "8554:8554" # RTSP feeds
+            - "8555:8555/tcp" # WebRTC over tcp
+            - "8555:8555/udp" # WebRTC over udp
           environment:
             FRIGATE_RTSP_PASSWORD: "password"
           labels:
