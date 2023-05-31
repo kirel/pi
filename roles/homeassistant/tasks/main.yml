@@ -18,6 +18,7 @@
   - "{{mosquitto_data_folder}}"
   - "{{mosquitto_log_folder}}"
   - "{{zigbee2mqtt_data_folder}}"
+  - "{{ring_mqtt_config_folder}}"
 
 - name: Add mosquitto config
   template:
@@ -75,6 +76,7 @@
   - "{{mosquitto_config_folder}}"
   - "{{mosquitto_data_folder}}"
   - "{{mosquitto_log_folder}}"
+  - "{{ring_mqtt_config_folder}}"
 
 - name: Start home assistant
   community.docker.docker_compose:
@@ -172,6 +174,21 @@
           labels:
             - 'wud.tag.include=latest'
             - 'wud.watch.digest=true'
+
+        ring-mqtt:
+          container_name: ring-mqtt
+          restart: unless-stopped
+          image: tsightler/ring-mqtt
+          ports:
+            - "{{ring_mqtt_rtsp_port}}:8554" # Enable RTSP port for external media player access
+          volumes:
+            - "{{ring_mqtt_config_folder}}:/data" # Mapping of local folder to provide persistent storage
+          logging: #limit logs to 10m and 3 files
+            options:
+              max-size: 10m
+              max-file: "3"
+          labels:
+            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
 
         frigate:
           container_name: frigate

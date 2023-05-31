@@ -22,6 +22,7 @@
     jellyfin_http_port: 8096
     navidrome_http_port: 4533
     syncthing_http_port: 8384
+    ring_mqtt_rtsp_port: 8556
     octopi_address: 192.168.50.55
     octopi_http_port: 80
     sunshine_address: 192.168.50.33
@@ -57,7 +58,7 @@
     navidrome_data_folder: "{{config_root}}/navidrome"
     syncthing_config_folder: "{{config_root}}/syncthing/config"
     syncthing_data_folder: "{{config_root}}/syncthing/data"
-
+    ring_mqtt_config_folder: "{{config_root}}/ring-mqtt"
 
   #remote_user: root
   roles:
