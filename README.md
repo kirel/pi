@@ -15,9 +15,9 @@ This is my pi config. Time machine and Home Assistant
 ## Setup
 
     pipenv install
-    pipenv shell
-    ansible-galaxy install --force-with-deps -r requirements.yml
-    ansible-playbook setup.yml
+    pipenv shell # optional
+    pipenv run ansible-galaxy install --force-with-deps -r requirements.yml
+    pipenv run ansible-playbook setup.yml
 
 Edit secrets
 
