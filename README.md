@@ -32,6 +32,8 @@ Copy the `root.cert` from `{{caddy_folder}}` to all the devices and trust it
 - https://support.apple.com/en-us/HT204477
 - https://httptoolkit.tech/blog/android-11-trust-ca-certificates/
 
+    scp nuc:/home/nuc/config/caddy/root.crt tmp/
+
 ## Pihole whitelist
 
     ssh nuc
@@ -49,7 +51,12 @@ Copy the `root.cert` from `{{caddy_folder}}` to all the devices and trust it
 
 ## Troubleshooting
 
+### Fix bluetooth
+
+    pipenv run ansible-playbook fix_hass_bluetooth.yml
+
 Ring breaks:
+Probably the token has expired. Regenerate it with:
 ```
 ssh nuc
 HOST_PATH=/home/nuc/config/ring-mqtt/

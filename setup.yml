@@ -69,6 +69,7 @@
 
     - { role: storage, become: yes, tags: ["storage"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
+    - { role: fix_hass_bluetooth, become: yes, tags: ["ha"]}
     - { role: media, become: yes, tags: ["media"] }
     - { role: caddy, become: yes, tags: ["caddy"] }
     - { role: pihole, become: yes, tags: ["pihole"] }

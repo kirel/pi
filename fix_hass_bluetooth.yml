@@ -1,0 +1,4 @@
+---
+- hosts: nuc
+  roles:
+    - { role: fix_hass_bluetooth, become: yes, tags: ["ha"]}
