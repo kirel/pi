@@ -1,6 +1,6 @@
 ---
 static_dhcp:
-  pihole:
+  pihole-pi:
     mac: B8:27:EB:AB:F0:CC
     ip: "{{ pihole_ip }}"
   homelab:
@@ -9,3 +9,9 @@ static_dhcp:
   virtualhere:
     mac: "B8:27:EB:C1:21:9D"
     ip_suffix: "7"
+  raw:
+    mac: "2C:F0:5D:95:DD:14"
+    ip_suffix: "10"
+  xbox:
+    mac: "04:27:28:7D:C2:CD"
+    ip_suffix: "11"
