@@ -1,0 +1,17 @@
+{
+        email danishkirel@gmail.com
+}
+
+
+danishkirel.asuscomm.com {
+        reverse_proxy {{ homelab_ip }}:{{ homeassistant_http_port }}
+        log
+}
+
+{% for service, props in domains.items() %}
+{{ props.domain|default(service ~ ".lan") }} {
+  reverse_proxy {{ props.ip }}:{{ props.http_port }}
+  tls internal
+  log
+}
+{% endfor %}

@@ -19,7 +19,7 @@
 
 - name: copy Caddyfile
   template:
-    src: Caddyfile
+    src: Caddyfile.j2
     dest: "{{caddy_folder}}/Caddyfile"
     owner: "{{username}}"
   register: caddyfile

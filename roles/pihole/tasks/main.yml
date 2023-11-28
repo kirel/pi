@@ -1,29 +1,27 @@
-- name: Disable stubresolver
-  ansible.builtin.lineinfile:
-    path: /etc/systemd/resolved.conf
-    regexp: '^#?DNSStubListener='
-    line: DNSStubListener=no
-  notify: restart resolved
-
-- name: Follow system netplan
-  ansible.builtin.file:
-    src: /run/systemd/resolve/resolv.conf
-    dest: /etc/resolv.conf
-    state: link
-    force: yes
-  notify: restart resolved
-
-- name: Flush handlers
-  meta: flush_handlers
-
 - name: create folder config folders
   file: path={{item}} state=directory
   with_items:
   - "{{pihole_config_folder}}"
+  - "{{dnsmasq_config_folder}}"
 
-- template:
-    src: custom.list
+- name: Add custom dns list
+  template:
+    src: custom.list.j2
     dest: "{{pihole_config_folder}}/custom.list"
+    owner: "{{username}}"
+  notify: restart dns
+
+- name: Create dnsmasq config for static DHCP leases
+  template:
+    src: dhcp_conf.j2
+    dest: "{{dnsmasq_config_folder}}/04-static-dhcp.conf"
+    owner: "{{username}}"
+  notify: restart dns
+
+- name: Create dnsmasq config passing all DNS servers via DHCP
+  template:
+    src: dhcp_dns.j2
+    dest: "{{dnsmasq_config_folder}}/07-dhcp-options.conf"
     owner: "{{username}}"
   notify: restart dns
 
@@ -32,35 +30,48 @@
     project_name: pihole
     pull: yes
     definition:
-      version: '3'
-      volumes:
-        pihole:
-        dnsmasq:
+      version: '3.3'
+      networks:
+        backend:
+          ipam:
+            config:
+              - subnet: 172.31.0.0/16
+        proxy-tier:
+          external: true
       services:
         pihole:
           container_name: pihole
+          hostname: pihole
           image: pihole/pihole:latest
           ports:
             - "{{ ansible_default_ipv4.address }}:53:53/tcp"
             - "{{ ansible_default_ipv4.address }}:53:53/udp"
-            - "{{ ansible_default_ipv4.address }}:67:67/udp"
+            #- "{{ ansible_default_ipv4.address }}:67:67/udp" # used by the relay
             - "{{ pihole_http_port }}:80/tcp"
+          dns:
+            - 127.0.0.1
           environment:
             TZ: 'Europe/Berlin'
-            ServerIP: '{{ ansible_default_ipv4.address }}'
-            PIHOLE_DNS_: '{{ router_ip }}'
+            FTLCONF_LOCAL_IPV4: '{{ ansible_default_ipv4.address }}'
             WEBPASSWORD: '{{ pihole_webpassword }}'
+            PIHOLE_DNS_: '{{ router_ip }}'
+            VIRTUAL_HOST: "{{ pihole_virtual_host }}"
+            DNSMASQ_LISTENING: all
             DNS_BOGUS_PRIV: "false"
             DNS_FQDN_REQUIRED: "false"
             REV_SERVER: "true"
             REV_SERVER_DOMAIN: "lan"
             REV_SERVER_TARGET: '{{ router_ip }}'
             REV_SERVER_CIDR: '{{ cidr }}'
-            DHCP_ACTIVE: "false"
+            DHCP_ACTIVE: "true"
+            DHCP_START: "{{ dhcp_start }}"
+            DHCP_END: "{{ dhcp_end }}"
+            DHCP_ROUTER: "{{ router_ip }}"
+            PIHOLE_DOMAIN: "lan"
           # Volumes store your data between container upgrades
           volumes:
             - "{{pihole_config_folder}}:/etc/pihole/"
-            - 'dnsmasq:/etc/dnsmasq.d/'
+            - "{{dnsmasq_config_folder}}:/etc/dnsmasq.d/"
           # Recommended but not required (DHCP needs NET_ADMIN)
           #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
           cap_add:
@@ -69,6 +80,21 @@
           labels:
             - 'wud.tag.include=latest'
             - 'wud.watch.digest=true'
+          depends_on:
+            - dhcphelper
+          networks:
+            backend:
+              ipv4_address: '172.31.0.100'
+        dhcphelper:
+          restart: unless-stopped
+          container_name: dhcphelper
+          network_mode: "host"
+          image: homeall/dhcphelper:latest
+          environment:
+            IP: '172.31.0.100'
+            TZ: 'Europe/Berlin'
+          cap_add:
+            - NET_ADMIN
 
   register: output
 

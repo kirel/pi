@@ -1,0 +1,46 @@
+domains:
+  homeassistant:
+    ip: "{{ homelab_ip }}"
+    http_port: "{{ homeassistant_http_port }}"
+  uptime:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ uptime_kuma_http_port }}"
+  wud:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ wud_http_port }}"
+  portainer-homelab:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ portainer_http_port }}"
+  portainer-pihole:
+    ip: "{{ pihole_ip }}" 
+    http_port: "{{ portainer_http_port }}"
+  nodered:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ nodered_http_port }}"
+  vscode:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ vscode_http_port }}"
+  z2m:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ z2m_http_port }}"
+  frigate:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ frigate_http_port }}"
+  jellyfin:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ jellyfin_http_port }}"
+  music:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ navidrome_http_port }}"
+  syncthing:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ syncthing_http_port }}"
+  sunshine:
+    ip: "{{ sunshine_address }}" 
+    http_port: "{{ sunshine_http_port }}"
+  pihole:
+    ip: "{{ pihole_ip }}" 
+    http_port: "{{ pihole_http_port }}"
+  pihole-homelab:
+    ip: "{{ homelab_ip }}" 
+    http_port: "{{ pihole_http_port }}"

@@ -1,0 +1,4 @@
+{{ router_ip }} router.lan
+{% for service, props in domains.items() %}
+{{ props.ip }} {{ props.domain|default(service ~ ".lan") }}
+{% endfor %}

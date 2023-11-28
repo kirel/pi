@@ -1,15 +1,8 @@
-- name: /etc/locale.gen
-  become: yes
-  lineinfile:
-    dest: /etc/locale.gen
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    state: "{{ item.state }}"
-  with_items:
-    - { regexp: '^#? ?de_DE.UTF-8 UTF-8', line: 'de_DE.UTF-8 UTF-8', state: present }
-    - { regexp: '^#? ?en_US.UTF-8 UTF-8', line: 'en_US.UTF-8 UTF-8', state: present }
-  notify:
-    - rebuild locales database
+- name: Generate locale
+  locale_gen:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ locales }}"
 - name: /etc/default/locale
   become: yes
   lineinfile:
@@ -18,16 +11,11 @@
     line: "{{ item.line }}"
     state: "{{ item.state }}"
   with_items:
-    - { regexp: '^LANG=', line: 'LANG=en_US.UTF-8', state: present }
-    - { regexp: '^LC_ALL=', line: 'LC_ALL=en_US.UTF-8', state: present }
-    - { regexp: '^LANGUAGE=', line: 'LANGUAGE=en_US.UTF-8', state: present }
+    - { regexp: '^LANG=', line: 'LANG={{ locale }}', state: present }
+    - { regexp: '^LC_ALL=', line: 'LC_ALL={{ locale }}', state: present }
+    - { regexp: '^LANGUAGE=', line: 'LANGUAGE={{ locale }}', state: present }
   notify:
-    - rebuild locales database
+    - reconfigure locales
 - name: Set timezone to Europe/Berlin
   community.general.timezone:
     name: Europe/Berlin
-- name: Add user
-  ansible.builtin.user:
-    name: "{{ username }}"
-    comment: John Doe
-    uid: "{{ uid }}"

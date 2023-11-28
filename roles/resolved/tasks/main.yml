@@ -1,0 +1,17 @@
+- name: Disable stubresolver
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^#?DNSStubListener='
+    line: DNSStubListener=no
+  notify: restart resolved
+
+- name: Follow system netplan
+  ansible.builtin.file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: yes
+  notify: restart resolved
+
+- name: Flush handlers
+  meta: flush_handlers

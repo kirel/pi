@@ -1,0 +1,26 @@
+---
+- name: Update apt repo and cache on all Debian/Ubuntu boxes
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    upgrade: full
+  register: apt
+- debug: msg={{ apt.stdout.split('\n')[:-1] }}
+ 
+- name: Check if a reboot is needed on all servers
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+    get_checksum: no
+  register: reboot_required_file
+ 
+- name: Reboot the server (if required).
+  ansible.builtin.reboot:
+  when: reboot_required_file.stat.exists == true
+
+- name: Remove useless packages from the cache
+  apt:
+    autoclean: yes
+ 
+- name: Remove dependencies that are no longer required
+  apt:
+    autoremove: yes
