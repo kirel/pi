@@ -15,3 +15,6 @@ static_dhcp:
   xbox:
     mac: "04:27:28:7D:C2:CD"
     ip_suffix: "11"
+  p1s-1:
+    mac: "C0:4E:30:06:C3:54"
+    ip_suffix: "91"
