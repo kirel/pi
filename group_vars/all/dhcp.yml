@@ -1,6 +1,9 @@
 ---
 static_dhcp:
   # Infra .1-.9
+  powerline:
+    mac: "E8:48:B8:C6:CC:36"
+    ip_suffix: 2
   pihole-pi:
     mac: B8:27:EB:AB:F0:CC
     ip: "{{ pihole_ip }}"
