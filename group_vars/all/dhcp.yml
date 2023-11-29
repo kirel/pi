@@ -1,5 +1,6 @@
 ---
 static_dhcp:
+  # Infra .1-.9
   pihole-pi:
     mac: B8:27:EB:AB:F0:CC
     ip: "{{ pihole_ip }}"
@@ -9,12 +10,19 @@ static_dhcp:
   virtualhere:
     mac: "B8:27:EB:C1:21:9D"
     ip_suffix: "7"
+  # Media .10-.19
   raw:
     mac: "2C:F0:5D:95:DD:14"
     ip_suffix: "10"
   xbox:
     mac: "04:27:28:7D:C2:CD"
     ip_suffix: "11"
+  ## Smart Home
+  # Espresence .20-.29
+  # BT proxy .30-.39
+  # Shelly .40-.69
+  # IP Cam .70-.79
+  # Devices .80-.99
   p1s-1:
     mac: "C0:4E:30:06:C3:54"
     ip_suffix: "91"
