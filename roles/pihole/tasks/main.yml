@@ -11,17 +11,10 @@
     owner: "{{username}}"
   notify: restart dns
 
-- name: Create dnsmasq config for static DHCP leases
+- name: Create dnsmasq config for static DHCP leases and DNS
   template:
     src: dhcp_conf.j2
     dest: "{{dnsmasq_config_folder}}/04-static-dhcp.conf"
-    owner: "{{username}}"
-  notify: restart dns
-
-- name: Create dnsmasq config passing all DNS servers via DHCP
-  template:
-    src: dhcp_dns.j2
-    dest: "{{dnsmasq_config_folder}}/07-dhcp-options.conf"
     owner: "{{username}}"
   notify: restart dns
 
