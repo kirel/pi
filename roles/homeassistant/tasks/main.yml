@@ -216,6 +216,15 @@
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
             - 'wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}'
+        openwakeword:
+          container_name: openwakeword
+          image: rhasspy/wyoming-openwakeword
+          ports:
+            - "10400:10400"
+          command: --preload-model ok_nabu
+          labels:
+            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+            - 'wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/v$${major}.$${minor}.$${patch}'
   register: output
 
 - #ansible.builtin.debug:
