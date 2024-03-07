@@ -1,0 +1,21 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+
+{% set services_list = [] %}
+{% for service, props in services.items() %}
+    {% set merged = {'service': service}|combine(props) %}
+    {% set _ = services_list.append(merged) %}
+{% endfor %}
+
+{#
+{% for group, services_list in services_list|groupby('group') %}
+- {{ group }}:
+{% for service in services_list %}
+    - {{ service.name|default(service.service)|capitalize }}:
+        href: http://{{ service.service }}.lan
+        server: homelab-docker
+        container: {{service.service}}
+{% endfor %}
+{% endfor %}
+#}

@@ -28,18 +28,3 @@ snapshots:
     default: 7
 
 cameras:
-  picam: # <------ Name the camera
-    ffmpeg:
-      inputs:
-        - path: rtsp://192.168.50.6:8554/unicast
-          roles:
-            - detect
-            - rtmp
-            - record
-      output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
-        rtmp: -c:v copy -c:a aac -f flv
-    detect:
-      width: 1280
-      height: 720
-      fps: 5

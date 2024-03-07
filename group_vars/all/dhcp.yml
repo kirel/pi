@@ -4,12 +4,15 @@ static_dhcp:
   powerline:
     mac: "E8:48:B8:C6:CC:36"
     ip_suffix: 2
-  pihole-pi:
+  nameserver-pi:
     mac: B8:27:EB:AB:F0:CC
-    ip: "{{ pihole_ip }}"
-  homelab:
+    ip: "{{ nameserver_pi_ip }}"
+  homelab-nuc:
     mac: 1C:69:7A:0B:4A:8B
-    ip: "{{ homelab_ip }}"
+    ip: "{{ homelab_nuc_ip }}"
+  um:
+    mac: 58:47:CA:74:31:C1
+    ip_suffix: 6
   virtualhere:
     mac: "B8:27:EB:C1:21:9D"
     ip_suffix: 7

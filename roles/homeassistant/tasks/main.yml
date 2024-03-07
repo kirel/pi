@@ -97,6 +97,9 @@
           restart: unless-stopped
           privileged: true
           network_mode: host
+          dns:
+            - "{{ nameserver_pi_ip }}"
+            - "{{ homelab_nuc_ip }}"          
           devices:
             - /dev/ttyACM0
           environment:
@@ -106,6 +109,12 @@
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
             - 'wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}'
+            - "homepage.group={{services.homeassistant.group}}"
+            - "homepage.name={{services.homeassistant.name}}"
+            - "homepage.href=https://homeassistant.lan"
+            - "homepage.icon=home-assistant.png"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=homeassistant"
         code-server:
           image: lscr.io/linuxserver/code-server
           container_name: code-server
@@ -127,6 +136,12 @@
           labels:
             - 'wud.tag.include=latest'
             - 'wud.watch.digest=true'
+            - "homepage.group={{services.vscode.group}}"
+            - "homepage.name={{services.vscode.name}}"
+            - "homepage.href=https://vscode.lan"
+            - "homepage.icon=vscode.png"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=code-server"
         # nodered:
         #   container_name: nodered
         #   image: nodered/node-red
@@ -170,10 +185,16 @@
             - TZ=Europe/Berlin
           devices:
             - /dev/ttyUSB0:/dev/ttyACM1
-          restart: unless-stopped
+          restart: always
           labels:
             - 'wud.tag.include=latest'
             - 'wud.watch.digest=true'
+            - "homepage.group={{services.z2m.group}}"
+            - "homepage.name={{services.z2m.name}}"
+            - "homepage.href=https://z2m.lan"
+            - "homepage.icon=mdi-zigbee"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=zigbee2mqtt"
 
         ring-mqtt:
           container_name: ring-mqtt
@@ -200,7 +221,7 @@
             - /dev/bus/usb:/dev/bus/usb
           volumes:
             - /etc/localtime:/etc/localtime:ro
-            - "{{frigate_config_folder}}/frigate.yml:/config/config.yml:ro"
+            - "{{frigate_config_folder}}:/config"
             - "{{frigate_media_folder}}:/media/frigate"
             - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
               target: /tmp/cache
@@ -216,6 +237,12 @@
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
             - 'wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}'
+            - "homepage.group={{services.z2m.group}}"
+            - "homepage.name={{services.z2m.name}}"
+            - "homepage.href=https://z2m.lan"
+            - "homepage.icon=mdi-zigbee"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=zigbee2mqtt"
         openwakeword:
           container_name: openwakeword
           image: rhasspy/wyoming-openwakeword

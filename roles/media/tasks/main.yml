@@ -47,6 +47,14 @@
           # Optional - may be necessary for docker healthcheck to pass if running in host network mode
           extra_hosts:
             - "host.docker.internal:host-gateway"
+          labels:
+            - "homepage.group={{services.jellyfin.group}}"
+            - "homepage.name=jellyfin"
+            - "homepage.href=https://jellyfin.lan"
+            - "homepage.icon=jellyfin.png"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=jellyfin"
+
         navidrome:
           image: deluan/navidrome:latest
           container_name: navidrome

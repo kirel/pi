@@ -10,8 +10,10 @@ pip_install_packages:
   - name: docker-compose
 ip_prefix: "192.168.50."
 router_ip: "192.168.50.1"
-pihole_ip: "192.168.50.4"
-homelab_ip: "192.168.50.5"
+#nameserver_pi_ip: "192.168.50.4"
+#homelab_nuc_ip: "192.168.50.5"
+nameserver_pi_ip: "{{ hostvars['nameserver-pi'].ansible_host }}"
+homelab_nuc_ip: "{{ hostvars['homelab-nuc'].ansible_host }}"
 cidr: "192.168.50.0/24"
 pihole_http_port: 81
 portainer_http_port: 9000
@@ -29,8 +31,6 @@ jellyfin_http_port: 8096
 navidrome_http_port: 4533
 syncthing_http_port: 8384
 ring_mqtt_rtsp_port: 8556
-octopi_address: 192.168.50.55
-octopi_http_port: 80
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990
 uid: 1000

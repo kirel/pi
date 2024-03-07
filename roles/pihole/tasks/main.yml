@@ -1,3 +1,13 @@
+- set_fact:
+    pihole_service: "{{ services['pihole-'~inventory_hostname] }}"
+    leases_service: "{{ services['dnsmasq-leases-ui-'~inventory_hostname] }}"
+
+- debug: 
+    var: pihole_service
+- debug: 
+    var: leases_service
+
+
 - name: create folder config folders
   file: path={{item}} state=directory
   with_items:
@@ -73,6 +83,10 @@
           labels:
             - 'wud.tag.include=latest'
             - 'wud.watch.digest=true'
+            - "homepage.group={{pihole_service.group}}"
+            - "homepage.name={{pihole_service.name}}"
+            - "homepage.href=https://{{pihole_service.domain}}"
+            - "homepage.icon=mdi-pi-hole"
           depends_on:
             - dhcphelper
           networks:
@@ -88,6 +102,24 @@
             TZ: 'Europe/Berlin'
           cap_add:
             - NET_ADMIN
+        dnsmasq-leases-ui:
+          image: fschlag/dnsmasq-leases-ui:latest
+          container_name: dnsmasq_leases_ui
+          ports:
+            - "{{leases_service.http_port}}:5000"
+          volumes:
+            - "{{pihole_config_folder}}:/var/lib/misc:ro"
+          restart: unless-stopped
+          labels:
+            - 'wud.tag.include=latest'
+            - 'wud.watch.digest=true'
+            - "homepage.group={{leases_service.group}}"
+            - "homepage.name={{leases_service.name}}"
+            - "homepage.href=https://{{leases_service.domain}}"
+            - "homepage.icon=mdi-dns"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=dnsmasq_leases_ui"
+            
 
   register: output
 
@@ -98,3 +130,8 @@
     that:
       - "output.services.pihole.pihole.state.running"
 
+- name: Create symbolic link
+  ansible.builtin.file:
+    src: "dhcp.leases"
+    dest: "{{pihole_config_folder}}/dnsmasq.leases"
+    state: link

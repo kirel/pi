@@ -31,6 +31,9 @@
     restarted: "{{ caddyfile.changed | default(false) }}"
     definition:
       version: '3'
+      networks:
+        homepage:
+          external: true
       services:
         caddy:
           container_name: caddy
@@ -47,9 +50,21 @@
             - "{{caddy_folder}}/Caddyfile:/etc/caddy/Caddyfile"
             - "{{caddy_data_folder}}:/data"
             - "{{caddy_config_folder}}:/config"
+          environment:
+            CADDY_ADMIN: "0.0.0.0:2019"
+          networks:
+            - homepage
           labels:
             - 'wud.tag.include=latest'
             - 'wud.watch.digest=true'
+            - "homepage.group=Network"
+            - "homepage.name=Caddy"
+            - "homepage.icon=mdi-server"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=caddy"
+            - "homepage.widget.type=caddy"
+            - "homepage.widget.url=http://caddy:2019"
+
   register: output
 
 - ansible.builtin.assert:

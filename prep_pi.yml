@@ -1,4 +1,4 @@
-- name: prep pihole
+- name: prep nameserver pi
   hosts: localhost
   connection: local
   tasks:

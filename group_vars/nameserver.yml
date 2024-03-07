@@ -2,4 +2,4 @@
 username: "pi"
 dhcp_start: 192.168.50.100
 dhcp_end: 192.168.50.174
-pihole_virtual_host: pihole.lan
+pihole_virtual_host: pihole-nameserver.lan

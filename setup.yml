@@ -1,13 +1,4 @@
 ---
-- hosts: pihole
-  roles:
-    - { role: pi, become: yes, tags: ["pi"] }
-    - { role: basic, become: yes, tags: ["basic"] }
-    - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
-    - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
-    - { role: portainer, become: yes, tags: ["docker", "portainer"] }
-    - { role: pihole, become: yes, tags: ["pihole"] }
-
 - hosts: homelab
   #remote_user: root
   roles:
@@ -15,15 +6,28 @@
     - { role: basic, become: yes, tags: ["basic"] }
     - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
     - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
+    - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
 
     - { role: storage, become: yes, tags: ["storage"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
     - { role: fix_hass_bluetooth, become: yes, tags: ["ha"]}
     - { role: media, become: yes, tags: ["media"] }
+    - { role: monitoring, become: yes, tags: ["monitoring"] }
+    - { role: homepage, become: yes, tags: ["homepage"] }
     - { role: caddy, become: yes, tags: ["caddy"] }
     - { role: resolved, become: yes, tags: ["pihole"] }
     - { role: pihole, become: yes, tags: ["pihole"] }
-    - { role: monitoring, become: yes, tags: ["monitoring"] }
 
     #- media
+- hosts: nameserver
+  roles:
+    - { role: pi, become: yes, tags: ["pi"] }
+    - { role: basic, become: yes, tags: ["basic"] }
+    - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
+    - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
+    - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
+    - { role: portainer, become: yes, tags: ["docker", "portainer"] }
+    - { role: pihole, become: yes, tags: ["pihole"] }

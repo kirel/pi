@@ -1,6 +1,6 @@
 {{ router_ip }} router.lan router
-{{ homelab_ip }} homelab.lan homelab
-{{ pihole_ip }} pihole-pi.lan pihole-pi
-{% for service, props in domains.items() %}
-{{ homelab_ip }} {{ props.domain|default(service ~ ".lan") }}
+{{ homelab_nuc_ip }} homelab.lan homelab
+{{ nameserver_pi_ip }} pihole-pi.lan pihole-pi
+{% for service, props in services.items() %}
+{{ homelab_nuc_ip }} {{ props.domain|default(service ~ ".lan") }}
 {% endfor %}

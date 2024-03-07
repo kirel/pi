@@ -17,7 +17,7 @@ This is my homelab config. The repo is called `pi` because it started as a singl
 7. Write the image
 8. Eject and reinsert the memory card
 
-    pipenv run ansible-playbook prep_pihole.yml
+    pipenv run ansible-playbook prep_pi.yml
 
 ## Bootstrap the Homelab Server
 
@@ -30,6 +30,9 @@ TODO https://github.com/coreprocess/linux-unattended-installation
     pipenv run ansible-galaxy install --force-with-deps -r requirements.yml
     pipenv run ansible-playbook setup.yml --limit pihole
     pipenv run ansible-playbook setup.yml --limit homelab
+    pipenv run ansible-playbook setup.yml --tags pihole
+    pipenv run ansible-playbook setup.yml --tags ha
+    pipenv run ansible-playbook setup.yml --tags caddy,pihole,homepage
     pipenv run ansible-playbook setup.yml
 
 Edit secrets

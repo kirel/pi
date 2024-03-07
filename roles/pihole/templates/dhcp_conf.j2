@@ -5,5 +5,5 @@
 dhcp-host={{properties.mac}},{{properties.ip|default(ip_prefix ~ properties.ip_suffix if properties.ip_suffix is defined)}},{{properties.hostname|default(host)}}{% if properties.nopihole is defined and properties.nopihole %},set:nopihole{% endif %}
 {% endfor %}
 
-dhcp-option=option:dns-server,{{pihole_ip}},{{homelab_ip}}
+dhcp-option=option:dns-server,{{nameserver_pi_ip}},{{homelab_nuc_ip}},8.8.8.8
 dhcp-option=tag:nopihole,option:dns-server,{{router_ip}}
