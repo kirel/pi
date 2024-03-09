@@ -54,6 +54,9 @@
             - "homepage.icon=jellyfin.png"
             - "homepage.server={{ inventory_hostname }}"
             - "homepage.container=jellyfin"
+            - "homepage.widget.type=jellyfin"
+            - "homepage.widget.url=http://192.168.50.5:8096"
+            - "homepage.widget.key={{jellyfin_api_key}}"
 
         navidrome:
           image: deluan/navidrome:latest
@@ -66,5 +69,17 @@
           volumes:
             - "{{navidrome_data_folder}}:/data"
             - "{{jellyfin_music_folder}}:/music:ro"
+          labels:
+            - "homepage.group={{services.music.group}}"
+            - "homepage.name=Navidrome"
+            - "homepage.href=https://music.lan"
+            - "homepage.icon=navidrome.png"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=navidrome"
+            - "homepage.widget.type=navidrome"
+            - "homepage.widget.url=https://music.lan"
+            - "homepage.widget.user=daniel"
+            - "homepage.widget.token={{navidrome_token}}"
+            - "homepage.widget.salt={{navidrome_salt}}"
       volumes:
         jellyfin-cache:

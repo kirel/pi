@@ -24,4 +24,4 @@
       homepage.href: "https://portainer-{{inventory_hostname}}.lan"
       homepage.icon: "portainer.png"
       homepage.server: "{{ inventory_hostname }}"
-      homepage.container: "dnsmasq_leases_ui"
+      homepage.container: "portainer"

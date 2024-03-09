@@ -100,8 +100,8 @@
           dns:
             - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"          
-          devices:
-            - /dev/ttyACM0
+          #devices:
+          #  - /dev/ttyACM0 # zigbee coordinator - z2m uses this
           environment:
             - PUID={{uid}}
             - PGID={{uid}}

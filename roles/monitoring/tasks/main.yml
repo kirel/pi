@@ -54,6 +54,8 @@
             - "homepage.icon=mdi-docker"
             - "homepage.server={{ inventory_hostname }}"
             - "homepage.container=wud"
+            - "homepage.widget.type=whatsupdocker"
+            - "homepage.widget.url=https://wud.lan"
   register: output
 
 - ansible.builtin.debug:
