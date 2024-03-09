@@ -1,0 +1,55 @@
+- name: Start ai containers
+  community.docker.docker_compose:
+    project_name: ai
+    pull: yes
+    definition:
+      version: '3.8'
+      services:
+        ollama-service:
+          image: ollama/ollama:rocm
+          container_name: ollama
+          restart: unless-stopped
+          ports:
+            - "11434:11434"
+          devices:
+            - "/dev/dri:/dev/dri"
+            - "/dev/kfd:/dev/kfd"
+          environment:
+            - "HSA_OVERRIDE_GFX_VERSION=11.0.0"
+            #- "OLLAMA_DEBUG=1"
+          group_add:
+            - video
+          stdin_open: true
+          tty: true
+          volumes:
+            - ollama_data:/root/.ollama
+          ipc: host
+          privileged: true
+          cap_add:
+            - SYS_PTRACE
+          security_opt:
+            - seccomp=unconfined
+        open-webui:
+          image: ghcr.io/open-webui/open-webui:main
+          container_name: open-webui
+          restart: unless-stopped
+          depends_on:
+            - ollama-service
+          environment:
+            - OLLAMA_BASE_URL=http://ollama-service:11434
+          volumes:
+            - open-webui:/app/backend/data
+          ports:
+            - "{{ open_webui_http_port }}:8080"
+          labels:
+            - "homepage.group={{services['open-webui'].group}}"
+            - "homepage.name={{services['open-webui'].name}}"
+            - "homepage.href=https://ollama.lan"
+            - "homepage.icon=openai.png"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=open-webui"
+
+      volumes:
+        open-webui:
+        ollama_data:
+          external: true

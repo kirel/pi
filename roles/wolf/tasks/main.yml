@@ -1,0 +1,28 @@
+- name: Start wolf
+  community.docker.docker_compose:
+    project_name: wolf
+    pull: yes
+    definition:
+      version: "3.8"
+      services:
+        wolf:
+          image: ghcr.io/games-on-whales/wolf:stable
+          environment:
+            - WOLF_LOG_LEVEL=info
+            - WOLF_STOP_CONTAINER_ON_EXIT=TRUE
+            - XDG_RUNTIME_DIR=/tmp/sockets
+            - HOST_APPS_STATE_FOLDER=/etc/wolf
+          volumes:
+            - /etc/wolf/:/etc/wolf
+            - /tmp/sockets:/tmp/sockets:rw
+            - /var/run/docker.sock:/var/run/docker.sock:rw
+            - /dev/shm:/dev/shm:rw
+            - /dev/input:/dev/input:rw
+            - /run/udev:/run/udev:rw
+          devices:
+            - /dev/dri
+            - /dev/uinput
+          device_cgroup_rules:
+            - 'c 13:* rmw'
+          network_mode: host
+          restart: unless-stopped

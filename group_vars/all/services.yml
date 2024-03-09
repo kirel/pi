@@ -29,10 +29,10 @@ services:
     ip: "{{ nameserver_pi_ip }}" 
     http_port: "{{ portainer_http_port }}"
     group: Monitoring
-  portainer-um:
-    name: Portainer Elitemini
-    ip: "192.168.50.6"
-    http_port: 9443
+  portainer-ailab-um:
+    name: Portainer Ailab
+    ip: "{{ ailab_um_ip }}" 
+    http_port: "{{ portainer_http_port }}"
     group: Monitoring
   nodered:
     ip: "{{ homelab_nuc_ip }}" 
@@ -65,6 +65,12 @@ services:
     ip: "{{ homelab_nuc_ip }}" 
     http_port: "{{ syncthing_http_port }}"
     group: "NAS"
+  open-webui:
+    name: "Open WebUI"
+    ip: "{{ ailab_um_ip }}"
+    http_port: "{{ open_webui_http_port }}"
+    domain: ollama.lan
+    group: "AI"
   pihole-nameserver-pi:
     name: Pihole Nameserver
     ip: "{{ nameserver_pi_ip }}" 
