@@ -1,3 +1,7 @@
+- name: Create volume
+  docker_volume:
+    name: ollama_data
+
 - name: Start ai containers
   community.docker.docker_compose:
     project_name: ai
