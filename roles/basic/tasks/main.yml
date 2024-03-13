@@ -24,3 +24,5 @@
     path: /etc/systemd/journald.conf
     regexp: '^SystemMaxUse='
     line: SystemMaxUse=100M
+  notify:
+    - restart systemd-journald

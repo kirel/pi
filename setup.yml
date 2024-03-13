@@ -6,6 +6,7 @@
     - { role: basic, become: yes, tags: ["basic"] }
     - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
     - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockercleanup, become: yes, tags: ["docker"] }
     - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
     - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
@@ -27,6 +28,7 @@
     - { role: basic, become: yes, tags: ["basic"] }
     - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
     - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockercleanup, become: yes, tags: ["docker"] }
     - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
     - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
@@ -34,8 +36,10 @@
 
 - hosts: ailab
   roles:
+    - { role: basic, become: yes, tags: ["basic"] }
     - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
     - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockercleanup, become: yes, tags: ["docker"] }
     - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
     - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
