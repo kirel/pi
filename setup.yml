@@ -37,6 +37,7 @@
 - hosts: ailab
   roles:
     - { role: basic, become: yes, tags: ["basic"] }
+    - { role: disable_radios, become: yes, tags: ["radios"] }
     - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
     - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
     - { role: dockercleanup, become: yes, tags: ["docker"] }

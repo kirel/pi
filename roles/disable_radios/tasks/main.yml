@@ -1,0 +1,15 @@
+- name: Check WiFi status
+  shell: rfkill list wifi
+  register: wifi_status
+
+- name: Check Bluetooth status
+  shell: rfkill list bluetooth
+  register: bluetooth_status
+
+- name: Disable WiFi
+  command: rfkill block wifi
+  when: 'disable_wifi is defined and "Soft blocked: no" in wifi_status.stdout'
+
+- name: Disable Bluetooth
+  command: rfkill block bluetooth
+  when: 'disable_bluetooth is defined and "Soft blocked: no" in bluetooth_status.stdout'

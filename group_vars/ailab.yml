@@ -1,1 +1,3 @@
 ipv6_config: disable
+disable_wifi: yes
+disable_bluetooth: yes
