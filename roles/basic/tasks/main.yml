@@ -26,3 +26,8 @@
     line: SystemMaxUse=100M
   notify:
     - restart systemd-journald
+- name: Allow sudo without password prompt
+  lineinfile:
+    path: /etc/sudoers
+    line: "%sudo ALL=(ALL) NOPASSWD: ALL"
+    validate: 'visudo -cf %s'
