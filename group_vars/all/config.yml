@@ -18,6 +18,7 @@ ailab_um_ip: "{{hostvars['ailab-um'].ansible_host }}"
 cidr: "192.168.50.0/24"
 pihole_http_port: 81
 portainer_http_port: 9000
+glances_http_port: 61208
 homeassistant_http_port: 8123
 uptime_kuma_http_port: 3001
 wud_http_port: 3000

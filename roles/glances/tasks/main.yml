@@ -1,0 +1,29 @@
+- set_fact:
+    glances_service: "{{ services['glances-'~inventory_hostname] }}"
+
+- name: Start glances
+  community.docker.docker_compose:
+    project_name: glances
+    pull: yes
+    definition:
+      version: '3.8'
+      services:
+        glances:
+          image: nicolargo/glances:latest-full
+          container_name: glances
+          restart: always
+          ports:
+            - "61208-61209:61208-61209"
+          environment:
+            - GLANCES_OPT=-w
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - /etc/os-release:/etc/os-release:ro
+          pid: host
+          labels:
+            homepage.group: "{{glances_service.group}}"
+            homepage.name: "{{glances_service.name}}"
+            homepage.href: "https://glances-{{inventory_hostname}}.lan"
+            homepage.icon: "glances.png"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: "glances"

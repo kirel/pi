@@ -34,6 +34,21 @@ services:
     ip: "{{ ailab_um_ip }}" 
     http_port: "{{ portainer_http_port }}"
     group: Monitoring
+  glances-homelab-nuc:
+    name: Glances Homelab
+    ip: "{{ homelab_nuc_ip }}" 
+    http_port: "{{ glances_http_port }}"
+    group: Monitoring
+  glances-nameserver-pi:
+    name: Glances Nameserver
+    ip: "{{ nameserver_pi_ip }}" 
+    http_port: "{{ glances_http_port }}"
+    group: Monitoring
+  glances-ailab-um:
+    name: Glances Ailab
+    ip: "{{ ailab_um_ip }}" 
+    http_port: "{{ glances_http_port }}"
+    group: Monitoring
   nodered:
     ip: "{{ homelab_nuc_ip }}" 
     http_port: "{{ nodered_http_port }}"
