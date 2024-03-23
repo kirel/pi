@@ -103,7 +103,7 @@
           cap_add:
             - NET_ADMIN
         dnsmasq-leases-ui:
-          image: fschlag/dnsmasq-leases-ui:latest
+          image: kirel/dnsmasq-leases-ui:latest
           container_name: dnsmasq_leases_ui
           ports:
             - "{{leases_service.http_port}}:5000"
