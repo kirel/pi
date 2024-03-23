@@ -2,5 +2,6 @@
   listen: reconfigure locales
   command: dpkg-reconfigure locales -f noninteractive
   become: yes
-- name: Restart systemd-journald
+- name: restart systemd-journald
   service: name=systemd-journald state=restarted
+  become: yes
