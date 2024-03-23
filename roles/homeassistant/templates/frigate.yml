@@ -1,26 +1,25 @@
+# yaml-language-server: $schema=http://frigate.lan/api/config/schema.json
+
 mqtt:
   host: "{{ ansible_default_ipv4.address }}"
+
+ffmpeg:
+  hwaccel_args: preset-vaapi
 
 detectors:
   coral:
     type: edgetpu
     device: usb
 
-birdseye:
-  mode: continuous
-
-ffmpeg:
-  hwaccel_args: -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format yuv420p
-
-motion:
-  threshold: 15
-  improve_contrast: True
-
 record:
   enabled: True
   retain:
     days: 2
     mode: motion
+  events:
+    retain:
+      default: 30
+      mode: motion
 
 snapshots:
   enabled: True
@@ -28,3 +27,10 @@ snapshots:
     default: 7
 
 cameras:
+  dummy_camera: # <--- this will be changed to your actual camera later
+    enabled: False
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:554/rtsp
+          roles:
+            - detect

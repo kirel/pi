@@ -38,7 +38,7 @@
 - name: Add frigate config
   template:
     src: frigate.yml
-    dest: "{{frigate_config_folder}}"
+    dest: "{{frigate_config_folder}}/config.yml"
     owner: "{{username}}"
     group: users
 
@@ -237,15 +237,16 @@
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
             - 'wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}'
-            - "homepage.group={{services.z2m.group}}"
-            - "homepage.name={{services.z2m.name}}"
-            - "homepage.href=https://z2m.lan"
-            - "homepage.icon=mdi-zigbee"
+            - "homepage.group={{services.frigate.group}}"
+            - "homepage.name={{services.frigate.name}}"
+            - "homepage.href=https://frigate.lan"
+            - "homepage.icon=frigate.png"
             - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=zigbee2mqtt"
+            - "homepage.container=frigate"
         openwakeword:
           container_name: openwakeword
           image: rhasspy/wyoming-openwakeword
+          restart: unless-stopped
           ports:
             - "10400:10400"
           command: --preload-model ok_nabu
