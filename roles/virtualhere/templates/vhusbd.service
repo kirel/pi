@@ -1,0 +1,12 @@
+[Unit]
+Description=vhusbd
+After=network-online.target
+
+[Service]
+Restart=always
+User=root
+Group=root
+ExecStart=/usr/bin/vhusbd
+
+[Install]
+WantedBy=multi-user.target

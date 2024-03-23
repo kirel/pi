@@ -36,6 +36,12 @@
     - { role: glances, become: yes, tags: ["glances"] }
     - { role: pihole, become: yes, tags: ["pihole"] }
 
+- hosts: virtualhere
+  roles:
+    - { role: pi, become: yes, tags: ["pi"] }
+    - { role: basic, become: yes, tags: ["basic"] }
+    - { role: virtualhere, become: yes, tags: ["virtualhere"] }
+
 - hosts: ailab
   roles:
     - { role: basic, become: yes, tags: ["basic"] }
