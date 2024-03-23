@@ -28,12 +28,11 @@ TODO https://github.com/coreprocess/linux-unattended-installation
     pipenv install
     pipenv shell # optional
     pipenv run ansible-galaxy install --force-with-deps -r requirements.yml
-    pipenv run ansible-playbook setup.yml --limit pihole
-    pipenv run ansible-playbook setup.yml --limit homelab
-    pipenv run ansible-playbook setup.yml --tags pihole
-    pipenv run ansible-playbook setup.yml --tags ha
-    pipenv run ansible-playbook setup.yml --tags caddy,pihole,homepage
-    pipenv run ansible-playbook setup.yml
+    pipenv run ansible-playbook setup.yml # Update everything
+    pipenv run ansible-playbook setup.yml --tags ha # Update smart home
+    pipenv run ansible-playbook setup.yml --tags caddy,pihole,homepage # update dhcp, domains etc.
+    pipenv run ansible-playbook setup.yml --limit ailab
+    pipenv run ansible-playbook setup.yml --limit virtualhere
 
 Edit secrets
 
