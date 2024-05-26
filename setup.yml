@@ -37,9 +37,16 @@
     - { role: pihole, become: yes, tags: ["pihole"] }
 
 - hosts: virtualhere
+  ignore_unreachable: true
   roles:
     - { role: pi, become: yes, tags: ["pi"] }
     - { role: basic, become: yes, tags: ["basic"] }
+    - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
+    - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockercleanup, become: yes, tags: ["docker"] }
+    - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
+    - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
+    - { role: glances, become: yes, tags: ["glances"] }
     - { role: virtualhere, become: yes, tags: ["virtualhere"] }
 
 - hosts: ailab

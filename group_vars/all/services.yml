@@ -44,6 +44,11 @@ services:
     ip: "{{ nameserver_pi_ip }}" 
     http_port: "{{ glances_http_port }}"
     group: Monitoring
+  glances-virtualhere-pi:
+    name: Glances Virtualhere
+    ip: "{{ virtualhere_pi_ip }}" 
+    http_port: "{{ glances_http_port }}"
+    group: Monitoring
   glances-ailab-um:
     name: Glances Ailab
     ip: "{{ ailab_um_ip }}" 

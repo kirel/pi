@@ -41,6 +41,7 @@
             - "{{wud_http_port}}:3000"
           restart: always
           environment:
+            - WUD_WATCHER_NAMESERVERPI_HOST={{ nameserver_pi_ip }}
             - WUD_TRIGGER_MQTT_MOSQUITTO_URL=mqtt://{{ mosquitto_address }}:{{ mosquitto_port }}
             - WUD_TRIGGER_MQTT_MOSQUITTO_HASS_ENABLED=true
             - WUD_REGISTRY_GHCR_TOKEN={{ gh_access_token }}
