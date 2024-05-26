@@ -2,6 +2,17 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/latest/configs/bookmarks
 
+- Networking:
+    - Asus Router:
+        - abbr: ASUS
+          href: http://router.lan
+    - Powerline:
+        - abbr: PL
+          href: http://{{ static_dhcp.powerline.ip|default("192.168.50."~static_dhcp.powerline.ip_suffix) }}
+    - GL-MT3000:
+        - abbr: PL
+          href: http://{{ static_dhcp["gl-mt3000"].ip|default("192.168.50."~static_dhcp["gl-mt3000"].ip_suffix) }}
+
 - Gaming:
     - Sunshine Webinterface:
         - abbr: SH
