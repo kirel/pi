@@ -32,9 +32,12 @@ static_dhcp:
   receiver:
     mac: "00:09:B0:F2:F4:A4"
     ip_suffix: 15
-  dashboard:
+  dashboard-10:
     mac: "10:CE:02:F5:67:BC"
     ip_suffix: 17
+  dashboard-8:
+    mac: "A0:D0:DC:24:C9:E7"
+    ip_suffix: 18
   ## Smart Home
   # Espresence .20-.29
   # BT proxy .30-.39
