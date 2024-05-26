@@ -1,5 +1,24 @@
 {
         email danishkirel@gmail.com
+        order exec before respond
+}
+
+http://ollama-raw.lan:11434 {
+        reverse_proxy http://192.168.50.10:11434
+        tls internal
+        log
+        handle_errors {
+                @502 expression {err.status_code} == 502
+                handle @502 {
+                        #wake_on_lan 2C:F0:5D:95:DD:14
+                        exec curl -vk -XPOST https://homeassistant.lan/api/webhook/rawon {
+                                pass_thru
+                        }
+                        reverse_proxy http://192.168.50.10:11434 {
+                                lb_try_duration 120s
+                        }
+                }
+        }
 }
 
 danishkirel.asuscomm.com {
@@ -9,8 +28,8 @@ danishkirel.asuscomm.com {
 
 {% for service, props in services.items() %}
 {{ props.domain|default(service ~ ".lan") }} {
-  reverse_proxy {{ props.ip }}:{{ props.http_port }}
-  tls internal
-  log
+        reverse_proxy {{ props.ip }}:{{ props.http_port }}
+        tls internal
+        log
 }
 {% endfor %}
