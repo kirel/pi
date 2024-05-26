@@ -24,36 +24,53 @@
     owner: "{{username}}"
   register: caddyfile
 
+- name: copy Dockerfile
+  template:
+    src: Dockerfile
+    dest: "{{caddy_folder}}/Dockerfile"
+    owner: "{{username}}"
+  register: dockerfile
+
 - name: Start caddy
   community.docker.docker_compose:
     project_name: caddy
     pull: yes
+    build: "{{ dockerfile.changed | default(false) }}"
     restarted: "{{ caddyfile.changed | default(false) }}"
     definition:
       version: '3'
       networks:
         homepage:
           external: true
+        pihole_backend:
+          external: true
       services:
         caddy:
           container_name: caddy
-          image: caddy:latest
+          build:
+            context: "{{caddy_folder}}"
+            dockerfile: "{{caddy_folder}}/Dockerfile"
           restart: unless-stopped
           user: "{{uid}}:{{uid}}"
           dns:
+            - 172.31.0.100
             - 1.1.1.1
             - 1.0.0.1
           ports:
             - "80:80"
             - "443:443"
+            - "11434:11434"
           volumes:
             - "{{caddy_folder}}/Caddyfile:/etc/caddy/Caddyfile"
             - "{{caddy_data_folder}}:/data"
             - "{{caddy_config_folder}}:/config"
           environment:
             CADDY_ADMIN: "0.0.0.0:2019"
+          cap_add:
+            - NET_ADMIN
           networks:
             - homepage
+            - pihole_backend
           labels:
             - 'wud.tag.include=latest'
             - 'wud.watch.digest=true'
