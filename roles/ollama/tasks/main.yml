@@ -5,12 +5,12 @@
 - name: Start ai containers
   community.docker.docker_compose:
     project_name: ai
-    pull: yes
+    #pull: yes
     definition:
       version: '3.8'
       services:
         ollama-service:
-          image: ollama/ollama:rocm
+          image: ollama:apu
           container_name: ollama
           restart: unless-stopped
           ports:
@@ -20,7 +20,12 @@
             - "/dev/kfd:/dev/kfd"
           environment:
             - "HSA_OVERRIDE_GFX_VERSION=11.0.0"
-            #- "OLLAMA_DEBUG=1"
+            #- "HSA_ENABLE_SDMA=0"
+            - "OLLAMA_DEBUG=1"
+            #- "OLLAMA_MAX_VRAM=16106127360"
+            - "OLLAMA_NUM_PARALLEL=2"
+            - "OLLAMA_MAX_LOADED_MODELS=2"
+            - "OLLAMA_FLASH_ATTENTION=1"
           group_add:
             - video
           stdin_open: true
@@ -33,6 +38,8 @@
             - SYS_PTRACE
           security_opt:
             - seccomp=unconfined
+          labels:
+            - 'wud.tag.include=^\d+\.\d+\.\d+-rocm$$'
         open-webui:
           image: ghcr.io/open-webui/open-webui:main
           container_name: open-webui
@@ -46,6 +53,8 @@
           ports:
             - "{{ open_webui_http_port }}:8080"
           labels:
+            - 'wud.tag.include=main'
+            - 'wud.watch.digest=true'
             - "homepage.group={{services['open-webui'].group}}"
             - "homepage.name={{services['open-webui'].name}}"
             - "homepage.href=https://ollama.lan"
