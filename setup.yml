@@ -21,6 +21,7 @@
     - { role: caddy, become: yes, tags: ["caddy"] }
     - { role: resolved, become: yes, tags: ["pihole"] }
     - { role: pihole, become: yes, tags: ["pihole"] }
+    - { role: ollama, become: yes, tags: ["ollama"]}
 
     #- media
 - hosts: nameserver
