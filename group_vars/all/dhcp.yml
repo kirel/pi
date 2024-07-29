@@ -10,12 +10,13 @@ static_dhcp:
   homelab-nuc:
     mac: 1C:69:7A:0B:4A:8B
     ip: "{{ homelab_nuc_ip }}"
-  um:
-    mac: 58:47:CA:74:31:C1
-    ip_suffix: 6
-  virtualhere:
-    mac: "B8:27:EB:C1:21:9D"
+  micpi:
+    # mac: B8:27:EB:39:10:07 # Pi Zero
+    mac: "B8:27:EB:C1:21:9D" # Pi 3B
     ip_suffix: 7
+  # virtualhere:
+    # mac: "B8:27:EB:C1:21:9D"
+    # ip_suffix: 7
   gl-mt3000:
     mac: "94:83:C4:3A:71:DE"
     ip_suffix: 8

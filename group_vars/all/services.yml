@@ -29,11 +29,6 @@ services:
     ip: "{{ nameserver_pi_ip }}" 
     http_port: "{{ portainer_http_port }}"
     group: Monitoring
-  portainer-ailab-um:
-    name: Portainer Ailab
-    ip: "{{ ailab_um_ip }}" 
-    http_port: "{{ portainer_http_port }}"
-    group: Monitoring
   glances-homelab-nuc:
     name: Glances Homelab
     ip: "{{ homelab_nuc_ip }}" 
@@ -44,14 +39,9 @@ services:
     ip: "{{ nameserver_pi_ip }}" 
     http_port: "{{ glances_http_port }}"
     group: Monitoring
-  glances-virtualhere-pi:
-    name: Glances Virtualhere
-    ip: "{{ virtualhere_pi_ip }}" 
-    http_port: "{{ glances_http_port }}"
-    group: Monitoring
-  glances-ailab-um:
-    name: Glances Ailab
-    ip: "{{ ailab_um_ip }}" 
+  glances-micpi:
+    name: Glances Mic Pi
+    ip: "{{ micpi_ip }}" 
     http_port: "{{ glances_http_port }}"
     group: Monitoring
   nodered:
@@ -87,7 +77,7 @@ services:
     group: "NAS"
   open-webui:
     name: "Open WebUI"
-    ip: "{{ ailab_um_ip }}"
+    ip: "{{ homelab_nuc_ip }}"
     http_port: "{{ open_webui_http_port }}"
     domain: ollama.lan
     group: "AI"

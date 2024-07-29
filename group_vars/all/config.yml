@@ -13,9 +13,10 @@ router_ip: "192.168.50.1"
 #nameserver_pi_ip: "192.168.50.4"
 #homelab_nuc_ip: "192.168.50.5"
 nameserver_pi_ip: "{{ hostvars['nameserver-pi'].ansible_host }}"
-virtualhere_pi_ip: "{{ hostvars['virtualhere-pi'].ansible_host }}"
+#virtualhere_pi_ip: "{{ hostvars['virtualhere-pi'].ansible_host }}"
 homelab_nuc_ip: "{{ hostvars['homelab-nuc'].ansible_host }}"
-ailab_um_ip: "{{hostvars['ailab-um'].ansible_host }}"
+micpi_ip: "{{ hostvars['micpi'].ansible_host }}"
+#ailab_um_ip: "{{hostvars['ailab-um'].ansible_host }}"
 cidr: "192.168.50.0/24"
 pihole_http_port: 81
 portainer_http_port: 9000
@@ -34,7 +35,7 @@ jellyfin_http_port: 8096
 navidrome_http_port: 4533
 syncthing_http_port: 8384
 ring_mqtt_rtsp_port: 8556
-open_webui_http_port: 3002
+open_webui_http_port: 3123
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990
 uid: 1000
