@@ -19,6 +19,9 @@
   - "{{mosquitto_log_folder}}"
   - "{{zigbee2mqtt_data_folder}}"
   - "{{ring_mqtt_config_folder}}"
+  - "{{openwakeword_data_folder}}"
+  - "{{piper_data_folder}}"
+  - "{{whisper_data_folder}}"
 
 - name: Add mosquitto config
   template:
@@ -77,6 +80,9 @@
   - "{{mosquitto_data_folder}}"
   - "{{mosquitto_log_folder}}"
   - "{{ring_mqtt_config_folder}}"
+  - "{{openwakeword_data_folder}}"
+  - "{{piper_data_folder}}"
+  - "{{whisper_data_folder}}"
 
 - name: Start home assistant
   community.docker.docker_compose:
@@ -247,12 +253,36 @@
           container_name: openwakeword
           image: rhasspy/wyoming-openwakeword
           restart: unless-stopped
+          volumes:
+            - "{{openwakeword_data_folder}}:/custom"
           ports:
             - "10400:10400"
-          command: --preload-model ok_nabu
+          command: --preload-model jarvis_v2 --preload-model hey_rick --preload-model hey_nabu_v2 --custom-model-dir /custom --debug
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
             - 'wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/v$${major}.$${minor}.$${patch}'
+        whisper:
+          container_name: whisper
+          image: rhasspy/wyoming-whisper
+          command: --model tiny-int8 --language de
+          volumes:
+            - "{{whisper_data_folder}}:/data"
+          environment:
+            - TZ=Europe/Berlin
+          restart: unless-stopped
+          ports:
+            - 10300:10300
+        piper:
+          container_name: piper
+          image: rhasspy/wyoming-piper
+          command: --voice de_DE-karlsson-low
+          volumes:
+            - "{{piper_data_folder}}:/data"
+          environment:
+            - TZ=Europe/Berlin
+          restart: unless-stopped
+          ports:
+            - 10200:10200
   register: output
 
 - #ansible.builtin.debug:

@@ -33,6 +33,7 @@ TODO https://github.com/coreprocess/linux-unattended-installation
     pipenv run ansible-playbook setup.yml --tags ollama # Update smart home 
     pipenv run ansible-playbook setup.yml --tags caddy,pihole,homepage --limit homelab,nameserver # update dhcp, domains etc.
     pipenv run ansible-playbook setup.yml --limit virtualhere
+    pipenv run ansible-playbook setup.yml --limit mic-sattelites
 
 Edit secrets
 
@@ -91,3 +92,8 @@ docker run -it --rm --mount type=bind,source=$HOST_PATH,target=/data --entrypoin
 docker restart ring-mqtt
 ```
 TODO: create ansible script
+
+## Vader
+
+    ssh daniel@micpi
+    aplay -D pvader my_recording.wav
