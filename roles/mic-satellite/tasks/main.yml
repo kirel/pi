@@ -1,22 +1,145 @@
-- name: Install ALSA utilities
+- name: Install utilities
   package:
-    name: alsa-utils
+    name: "{{ item }}"
     state: latest
+  with_items:
+    - alsa-utils
+    - pulseaudio
+    - pulseaudio-utils
+    - ladspa-sdk
+    - swh-plugins
+    - tap-plugins
 
-- name: Install LADSPA SDK
-  package:
-    name: ladspa-sdk
-    state: latest
+- name: Disable global pulseaudio services and sockets
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: no
+    scope: global
+  with_items:
+    - pulseaudio.service
+    - pulseaudio.socket
 
-- name: Install SWH plugins
-  package:
-    name: swh-plugins
-    state: latest
+- name: Stop pulseaudio service
+  ansible.builtin.systemd:
+    name: pulseaudio.service
+    state: stopped
 
-- name: Install Tap plugins
-  package:
-    name: tap-plugins
-    state: latest
+- name: Create pulse user and add to audio group
+  user:
+    name: pulse
+    home: /var/run/pulse
+    groups: audio
+    state: present
+    append: yes
+
+- name: Set real-time audio processing limits
+  blockinfile:
+    path: /etc/security/limits.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK FOR AUDIO"
+    block: |
+      @audio   -  rtprio     99
+      @audio   -  memlock    unlimited
+      @audio   -  nice       -19
+  
+#- name: Ensure udev rule for USB audio devices
+#  copy:
+#      dest: /etc/udev/rules.d/91-pulseaudio-usb.rules
+#      content: |
+#        ACTION=="add|change", SUBSYSTEM=="sound", KERNEL=="card*", TAG+="systemd", ENV{SYSTEMD_WANTS}="pulseaudio.service"
+
+#- name: Reload udev rules
+#  command: udevadm control --reload-rules
+  
+- name: Ensure autospawn is set to no in client.conf
+  ansible.builtin.lineinfile:
+    path: /etc/pulse/client.conf
+    regexp: '^[#;]*\s*autospawn='
+    line: 'autospawn=no'
+    state: present
+
+- name: Run pulseaudio.service as system service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/pulseaudio.service
+    content: |
+      [Unit]
+      Description=PulseAudio system server
+
+      [Service]
+      Type=notify
+      ExecStart=pulseaudio --daemonize=no --system --realtime --log-target=journal --disallow-exit --disallow-module-loading
+      Restart=always
+      RestartSec=5s
+
+      [Install]
+      WantedBy=multi-user.target
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Deploy daemon.conf for PulseAudio
+  template:
+    src: daemon.conf
+    dest: /etc/pulse/daemon.conf
+    mode: '0644'
+
+- name: Comment out load-module module-suspend-on-idle
+  ansible.builtin.replace:
+    path: /etc/pulse/system.pa
+    regexp: '^(\s*)load-module module-suspend-on-idle'
+    replace: '\1# load-module module-suspend-on-idle'
+
+- name: Add PulseAudio modules block to system.pa
+  blockinfile:
+    path: /etc/pulse/system.pa
+    insertafter: EOF
+    block: |
+      #load-module module-native-protocol-tcp auth-anonymous=1
+      #load-module module-esound-protocol-tcp auth-anonymous=1
+      #load-module module-zeroconf-publish
+      load-module module-combine-sink
+
+      # Create the first effect sink (Pitch Shifter)
+      load-module module-ladspa-sink sink_name=pitch_shifter_sink plugin=tap_pitch label=tap_pitch control=-4,0,-90,0 channels=2
+
+      # Create the second effect sink (Equalizer) chained to the first
+      #load-module module-ladspa-sink sink_name=equalizer_sink sink_master=pitch_shifter_sink plugin=tap_eq label=tap_equalizer control=10,8,6,4,2,0,-2,-4,100,200,400,1000,3000,6000,12000,15000 channels=2
+
+      # Create the third effect sink (Reverb) chained to the second
+      load-module module-ladspa-sink sink_name=reverb_sink sink_master=pitch_shifter_sink plugin=tap_reverb label=tap_reverb control=1500,0,-10,1,1,1,1,0 channels=2
+
+      # Create the fourth effect sink (Compressor) chained to the third
+      load-module module-ladspa-sink sink_name=compressor_sink sink_master=reverb_sink plugin=sc4_1882 label=sc4 control=0,50,300,-20,4,2,5 channels=2
+
+      # Create the fifth effect sink (Delay) chained to the fourth
+      load-module module-ladspa-sink sink_name=delay_sink sink_master=compressor_sink plugin=delay label=delay_5s control=0.016,0.5 channels=2
+
+      # Create the final combined sink (vader-sink) chained to the fifth
+      load-module module-combine-sink sink_name=vader_sink slaves=delay_sink channels=2
+
+      set-default-source alsa_input.usb-eMeet_eMeet_Luna_20080411-00.mono-fallback
+
+      ### Enable Volume Ducking
+      #load-module module-role-ducking trigger_roles=announce,phone,notification,event ducking_roles=any_role volume=33%
+    marker: "# {mark} Managed by Ansible"
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Restart pulseaudio service
+  ansible.builtin.systemd:
+    name: pulseaudio.service
+    state: restarted
+    enabled: yes
+
+- name: Add users to pulse-access group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: pulse-access
+    append: yes
+  with_items:
+    - root
+    - daniel
 
 - name: Copy /etc/asound.conf
   template:
@@ -47,6 +170,35 @@
   with_fileglob:
     - "wakewords/*"
 
+- name: debug
+  shell: pwd
+  register: playbook_path_output
+- debug: var=playbook_path_output.stdout
+
+- name: Clone the Git repository
+  git:
+    repo: 'https://github.com/rhasspy/wyoming-satellite.git'
+    dest: /tmp/wyoming-satellite
+
+- name: Build the Docker image
+  community.docker.docker_image:
+    name: wyoming-satellite
+    build:
+      path: /tmp/wyoming-satellite
+    source: build
+
+- name: Copy Dockerfile
+  copy: src=Dockerfile dest=/tmp/wyoming-satellite-extras/
+
+- name: Build an image from a Dockerfile
+  community.docker.docker_image:
+    name: wyoming-satellite-extras
+    source: build
+    build:
+      path: /tmp/wyoming-satellite-extras/
+    force_source: yes
+    tag: latest
+
 - name: Start wyoming stack
   tags: alsa
   community.docker.docker_compose_v2:
@@ -54,127 +206,107 @@
     definition:
       version: '3.9'
       services:
-        microphone:
-          build: https://github.com/rhasspy/wyoming-mic-external.git
-          container_name: wyoming-mic-external
-          restart: unless-stopped
-          ports:
-            - "10600:10600"
-          volumes:
-            - /run/dbus:/run/dbus:ro
-            - /etc/asound.conf:/etc/asound.conf:ro
-          devices:
-            - /dev/snd:/dev/snd
-          group_add:
-            - audio
-          command:
-            - "--device"
-            - "default"
-            - "--debug"
-        playback:
-          build: https://github.com/rhasspy/wyoming-snd-external.git
-          container_name: wyoming-snd-external
-          restart: unless-stopped
-          ports:
-            - "10601:10601"
-          volumes:
-            - /run/dbus:/run/dbus:ro
-            - /etc/asound.conf:/etc/asound.conf:ro
-          devices:
-            - /dev/snd:/dev/snd
-          group_add:
-            - audio
-          command:
-            - --debug
-            - --device
-            - default
-        vader-playback:
-          build: https://github.com/rhasspy/wyoming-snd-external.git
-          container_name: wyoming-snd-external-vader
-          restart: unless-stopped
-          ports:
-            - "10602:10601"
-          volumes:
-            - /run/dbus:/run/dbus:ro
-            - /etc/asound.conf:/etc/asound.conf:ro
-          devices:
-            - /dev/snd:/dev/snd
-          group_add:
-            - audio
-          command:
-            - --debug
-            - --device
-            - pvader
         satellite-rick:
-          build: https://github.com/rhasspy/wyoming-satellite.git
+          image: wyoming-satellite-extras:latest
           container_name: wyoming-satellite-rick
           volumes:
             - /opt/sounds:/app/extra-sounds
+            - /run/dbus:/run/dbus:ro
+            - /etc/asound.conf:/etc/asound.conf:ro
+            - /var/run/pulse:/var/run/pulse
+          devices:
+            - /dev/snd:/dev/snd
+          environment:
+            PULSE_SERVER: "unix:/var/run/pulse/native"
+          group_add:
+            - audio
           ports:
             - "10700:10700"
           command:
             - "--name"
             - "Wohnzimmer Satellit Rick"
-            - "--mic-uri"
-            - "tcp://microphone:10600"
-            - "--snd-uri"
-            - "tcp://playback:10601"
+            - --mic-command
+            - 'arecord -r 16000 -c 1 -f S16_LE -t raw'
+            - --snd-command
+            - 'aplay -r 22050 -c 1 -f S16_LE -t raw'
             - --wake-uri
             - "tcp://openwakeword:10400"
             - --wake-word-name
             - 'hey_rick'
             - --awake-wav
             - extra-sounds/boop-852-mhz.wav
+            - --mic-no-mute-during-awake-wav
             - --done-wav
             - extra-sounds/boop-741-mhz.wav
             - --timer-finished-wav
             - extra-sounds/clock-alarm.wav
             - "--debug"
         satellite-nabu:
-          build: https://github.com/rhasspy/wyoming-satellite.git
+          image: wyoming-satellite-extras:latest
           container_name: wyoming-satellite-nabu
           volumes:
             - /opt/sounds:/app/extra-sounds
+            - /run/dbus:/run/dbus:ro
+            - /etc/asound.conf:/etc/asound.conf:ro
+            - /var/run/pulse:/var/run/pulse
+          devices:
+            - /dev/snd:/dev/snd
+          environment:
+            PULSE_SERVER: "unix:/var/run/pulse/native"
+          group_add:
+            - audio
           ports:
             - "10701:10700"
           command:
             - "--name"
             - "Wohnzimmer Satellit Nabu"
-            - "--mic-uri"
-            - "tcp://microphone:10600"
-            - "--snd-uri"
-            - "tcp://playback:10601"
+            - --mic-command
+            - 'arecord -r 16000 -c 1 -f S16_LE -t raw'
+            - --snd-command
+            - 'aplay -r 22050 -c 1 -f S16_LE -t raw'
             - --wake-uri
             - "tcp://openwakeword:10400"
             - --wake-word-name
             - 'hey_nabu_v2'
             - --awake-wav
             - extra-sounds/boop-852-mhz.wav
+            - --mic-no-mute-during-awake-wav
             - --done-wav
             - extra-sounds/boop-741-mhz.wav
             - --timer-finished-wav
             - extra-sounds/clock-alarm.wav
             - "--debug"
-        satellite-vader:
-          build: https://github.com/rhasspy/wyoming-satellite.git
-          container_name: wyoming-satellite-vader
+        satellite-darthvader:
+          image: wyoming-satellite-extras:latest
+          container_name: wyoming-satellite-darthvader
           volumes:
             - /opt/sounds:/app/extra-sounds
+            - /run/dbus:/run/dbus:ro
+            - /etc/asound.conf:/etc/asound.conf:ro
+            - /var/run/pulse:/var/run/pulse
+          devices:
+            - /dev/snd:/dev/snd
+          environment:
+            PULSE_SERVER: "unix:/var/run/pulse/native"
+            PULSE_SINK: vader_sink 
+          group_add:
+            - audio
           ports:
             - "10702:10700"
           command:
             - "--name"
             - "Wohnzimmer Satellit Vader"
-            - "--mic-uri"
-            - "tcp://microphone:10600"
-            - "--snd-uri"
-            - "tcp://vader-playback:10601"
+            - --mic-command
+            - 'arecord -r 16000 -c 1 -f S16_LE -t raw'
+            - --snd-command
+            - 'aplay -r 22050 -c 1 -f S16_LE -t raw'
             - --wake-uri
             - "tcp://openwakeword:10400"
             - --wake-word-name
             - 'Darth_Vader'
             - --awake-wav
             - extra-sounds/vader.wav
+            - --mic-no-mute-during-awake-wav
             - --done-wav
             - extra-sounds/g2.wav
             - --timer-finished-wav
