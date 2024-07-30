@@ -208,6 +208,7 @@
       services:
         satellite-rick:
           image: wyoming-satellite-extras:latest
+          restart: unless-stopped
           container_name: wyoming-satellite-rick
           volumes:
             - /opt/sounds:/app/extra-sounds
@@ -243,6 +244,7 @@
             - "--debug"
         satellite-nabu:
           image: wyoming-satellite-extras:latest
+          restart: unless-stopped
           container_name: wyoming-satellite-nabu
           volumes:
             - /opt/sounds:/app/extra-sounds
@@ -278,6 +280,7 @@
             - "--debug"
         satellite-darthvader:
           image: wyoming-satellite-extras:latest
+          restart: unless-stopped
           container_name: wyoming-satellite-darthvader
           volumes:
             - /opt/sounds:/app/extra-sounds
