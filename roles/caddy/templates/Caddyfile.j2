@@ -19,7 +19,7 @@ http://ollama-raw.lan:11434 {
                                 log stdout
                         }
                         reverse_proxy http://192.168.50.10:11434 {
-                                lb_try_duration 120s
+                                lb_try_duration 360s
                         }
                 }
         }
