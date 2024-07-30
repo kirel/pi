@@ -291,7 +291,6 @@
             - /dev/snd:/dev/snd
           environment:
             PULSE_SERVER: "unix:/var/run/pulse/native"
-            PULSE_SINK: vader_sink 
           group_add:
             - audio
           ports:
@@ -302,7 +301,7 @@
             - --mic-command
             - 'arecord -r 16000 -c 1 -f S16_LE -t raw'
             - --snd-command
-            - 'aplay -r 22050 -c 1 -f S16_LE -t raw'
+            - 'sh -c "PULSE_SINK=vader_sink aplay -r 22050 -c 1 -f S16_LE -t raw"'
             - --wake-uri
             - "tcp://openwakeword:10400"
             - --wake-word-name
@@ -323,7 +322,7 @@
             - /opt/wakewords:/custom
           ports:
             - "10400:10400"
-          command: --preload-model jarvis_v2 --preload-model hey_rick --preload-model hey_nabu_v2 --custom-model-dir /custom --debug
+          command: --preload-model Darth_Vader --preload-model hey_rick --preload-model hey_nabu_v2 --custom-model-dir /custom --debug
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
             - 'wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/v$${major}.$${minor}.$${patch}'
