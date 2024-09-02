@@ -34,6 +34,7 @@ TODO https://github.com/coreprocess/linux-unattended-installation
     pipenv run ansible-playbook setup.yml --tags caddy,pihole,homepage --limit homelab,nameserver # update dhcp, domains etc.
     pipenv run ansible-playbook setup.yml --limit virtualhere
     pipenv run ansible-playbook setup.yml --limit mic-sattelites
+    pipenv run ansible-playbook setup.yml --limit mic-sattelites -t wyoming --start-at-task="Start wyoming stack"
 
 Edit secrets
 
@@ -95,5 +96,4 @@ TODO: create ansible script
 
 ## Vader
 
-    ssh daniel@micpi
-    aplay -D pvader my_recording.wav
+    ssh daniel@micpi "PULSE_SINK=vader_sink paplay test.wav"

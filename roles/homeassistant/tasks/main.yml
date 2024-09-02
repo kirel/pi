@@ -264,7 +264,7 @@
         whisper:
           container_name: whisper
           image: rhasspy/wyoming-whisper
-          command: --model tiny-int8 --language de
+          command: --model small-int8 --language de
           volumes:
             - "{{whisper_data_folder}}:/data"
           environment:

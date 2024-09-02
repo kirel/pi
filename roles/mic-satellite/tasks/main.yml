@@ -1,3 +1,25 @@
+- name: Set configuration parameters in /boot/firmware/config.txt
+  lineinfile:
+    line: "{{ item.line }}"
+    regexp: "{{ item.regexp }}"
+    path: /boot/firmware/config.txt
+    create: yes
+    state: present
+    insertafter: '^\[all\]'
+  with_items:
+    - line: 'dwc_otg.fiq_fsm_mask=0x7'
+      regexp: '^dwc_otg.fiq_fsm_mask='
+    - line: 'dwc_otg.speed=1'
+      regexp: '^dwc_otg.speed='
+    - line: 'dtparam=audio=off'
+      regexp: '^dtparam=audio='
+    - line: 'dtoverlay=vc4-kms-v3d,audio=off'
+      regexp: '^dtoverlay=vc4-kms-v3d'
+  notify: Reboot
+
+- name: Flush handlers
+  meta: flush_handlers
+
 - name: Install utilities
   package:
     name: "{{ item }}"
@@ -19,10 +41,6 @@
     - pulseaudio.service
     - pulseaudio.socket
 
-- name: Stop pulseaudio service
-  ansible.builtin.systemd:
-    name: pulseaudio.service
-    state: stopped
 
 - name: Create pulse user and add to audio group
   user:
@@ -31,6 +49,7 @@
     groups: audio
     state: present
     append: yes
+    shell: /usr/sbin/nologin
 
 - name: Set real-time audio processing limits
   blockinfile:
@@ -40,16 +59,7 @@
       @audio   -  rtprio     99
       @audio   -  memlock    unlimited
       @audio   -  nice       -19
-  
-#- name: Ensure udev rule for USB audio devices
-#  copy:
-#      dest: /etc/udev/rules.d/91-pulseaudio-usb.rules
-#      content: |
-#        ACTION=="add|change", SUBSYSTEM=="sound", KERNEL=="card*", TAG+="systemd", ENV{SYSTEMD_WANTS}="pulseaudio.service"
-
-#- name: Reload udev rules
-#  command: udevadm control --reload-rules
-  
+    
 - name: Ensure autospawn is set to no in client.conf
   ansible.builtin.lineinfile:
     path: /etc/pulse/client.conf
@@ -75,62 +85,74 @@
     mode: '0644'
     owner: root
     group: root
+  notify: Reload systemd
 
 - name: Deploy daemon.conf for PulseAudio
   template:
     src: daemon.conf
     dest: /etc/pulse/daemon.conf
     mode: '0644'
+  notify: Restart PulseAudio
 
 - name: Comment out load-module module-suspend-on-idle
   ansible.builtin.replace:
     path: /etc/pulse/system.pa
-    regexp: '^(\s*)load-module module-suspend-on-idle'
-    replace: '\1# load-module module-suspend-on-idle'
+    regexp: '^(load-module module-suspend-on-idle)'
+    replace: '# \1'
+  notify: Restart PulseAudio
+
+- name: Comment out load-module module-detect in system.pa
+  replace:
+    path: /etc/pulse/system.pa
+    regexp: '^(load-module module-detect)'
+    replace: '# \1'
+  notify: Restart PulseAudio
+
+- name: Comment out load-module module-udev-detect in system.pa
+  replace:
+    path: /etc/pulse/system.pa
+    regexp: '^(load-module module-udev-detect)'
+    replace: '# \1'
+  notify: Restart PulseAudio
 
 - name: Add PulseAudio modules block to system.pa
   blockinfile:
     path: /etc/pulse/system.pa
     insertafter: EOF
     block: |
-      #load-module module-native-protocol-tcp auth-anonymous=1
-      #load-module module-esound-protocol-tcp auth-anonymous=1
-      #load-module module-zeroconf-publish
-      load-module module-combine-sink
+      load-module module-alsa-sink device=hw:0,0 rate=44100
+      load-module module-alsa-source device=hw:0,0 rate=44100
+
+      set-default-source alsa_input.hw_0_0
+      set-default-sink alsa_output.hw_0_0
+
+      #load-module module-combine-sink
 
       # Create the first effect sink (Pitch Shifter)
-      load-module module-ladspa-sink sink_name=pitch_shifter_sink plugin=tap_pitch label=tap_pitch control=-4,0,-90,0 channels=2
-
-      # Create the second effect sink (Equalizer) chained to the first
-      #load-module module-ladspa-sink sink_name=equalizer_sink sink_master=pitch_shifter_sink plugin=tap_eq label=tap_equalizer control=10,8,6,4,2,0,-2,-4,100,200,400,1000,3000,6000,12000,15000 channels=2
+      #load-module module-ladspa-sink sink_name=pitch_shifter_sink plugin=tap_pitch label=tap_pitch control=-4,0,-90,0 channels=2
 
       # Create the third effect sink (Reverb) chained to the second
-      load-module module-ladspa-sink sink_name=reverb_sink sink_master=pitch_shifter_sink plugin=tap_reverb label=tap_reverb control=1500,0,-10,1,1,1,1,0 channels=2
+      #load-module module-ladspa-sink sink_name=reverb_sink sink_master=pitch_shifter_sink plugin=tap_reverb label=tap_reverb control=1500,0,-10,1,1,1,1,0 channels=2
 
       # Create the fourth effect sink (Compressor) chained to the third
-      load-module module-ladspa-sink sink_name=compressor_sink sink_master=reverb_sink plugin=sc4_1882 label=sc4 control=0,50,300,-20,4,2,5 channels=2
+      # load-module module-ladspa-sink sink_name=compressor_sink sink_master=reverb_sink plugin=sc4_1882 label=sc4 control=0,50,300,-20,4,2,5 channels=2
 
       # Create the fifth effect sink (Delay) chained to the fourth
-      load-module module-ladspa-sink sink_name=delay_sink sink_master=compressor_sink plugin=delay label=delay_5s control=0.016,0.5 channels=2
+      #load-module module-ladspa-sink sink_name=delay_sink sink_master=pitch_shifter_sink plugin=delay label=delay_5s control=0.016,0.5 channels=2
 
       # Create the final combined sink (vader-sink) chained to the fifth
-      load-module module-combine-sink sink_name=vader_sink slaves=delay_sink channels=2
-
-      set-default-source alsa_input.usb-eMeet_eMeet_Luna_20080411-00.mono-fallback
+      #load-module module-combine-sink sink_name=vader_sink slaves=delay_sink channels=2
 
       ### Enable Volume Ducking
       #load-module module-role-ducking trigger_roles=announce,phone,notification,event ducking_roles=any_role volume=33%
     marker: "# {mark} Managed by Ansible"
+  notify: Restart PulseAudio
 
-- name: Reload systemd daemon
-  ansible.builtin.systemd:
-    daemon_reload: yes
-
-- name: Restart pulseaudio service
+- name: Enable pulseaudio service
   ansible.builtin.systemd:
     name: pulseaudio.service
-    state: restarted
     enabled: yes
+  notify: Restart PulseAudio
 
 - name: Add users to pulse-access group
   ansible.builtin.user:
@@ -147,6 +169,9 @@
     dest: /etc/asound.conf
   tags:
     - alsa
+
+- name: Flush handlers
+  meta: flush_handlers
 
 - name: Ensure the destination directory exists
   file:
@@ -169,11 +194,6 @@
     dest: "/opt/wakewords/{{ item | basename }}"
   with_fileglob:
     - "wakewords/*"
-
-- name: debug
-  shell: pwd
-  register: playbook_path_output
-- debug: var=playbook_path_output.stdout
 
 - name: Clone the Git repository
   git:
@@ -231,9 +251,9 @@
             - --snd-command
             - 'aplay -r 22050 -c 1 -f S16_LE -t raw'
             - --wake-uri
-            - "tcp://openwakeword:10400"
+            - "tcp://porcupine1:10400"
             - --wake-word-name
-            - 'hey_rick'
+            - stachelschwein
             - --awake-wav
             - extra-sounds/boop-852-mhz.wav
             - --mic-no-mute-during-awake-wav
@@ -267,9 +287,9 @@
             - --snd-command
             - 'aplay -r 22050 -c 1 -f S16_LE -t raw'
             - --wake-uri
-            - "tcp://openwakeword:10400"
+            - "tcp://porcupine1:10400"
             - --wake-word-name
-            - 'hey_nabu_v2'
+            - alexa
             - --awake-wav
             - extra-sounds/boop-852-mhz.wav
             - --mic-no-mute-during-awake-wav
@@ -278,51 +298,74 @@
             - --timer-finished-wav
             - extra-sounds/clock-alarm.wav
             - "--debug"
-        satellite-darthvader:
-          image: wyoming-satellite-extras:latest
+        # satellite-darthvader:
+        #   image: wyoming-satellite-extras:latest
+        #   restart: unless-stopped
+        #   container_name: wyoming-satellite-darthvader
+        #   #profiles:
+        #   #  - vader
+        #   volumes:
+        #     - /opt/sounds:/app/extra-sounds
+        #     - /run/dbus:/run/dbus:ro
+        #     - /etc/asound.conf:/etc/asound.conf:ro
+        #     - /var/run/pulse:/var/run/pulse
+        #   devices:
+        #     - /dev/snd:/dev/snd
+        #   environment:
+        #     PULSE_SERVER: "unix:/var/run/pulse/native"
+        #   group_add:
+        #     - audio
+        #   ports:
+        #     - "10702:10700"
+        #   command:
+        #     - "--name"
+        #     - "Wohnzimmer Satellit Vader"
+        #     - --mic-command
+        #     - 'arecord -r 16000 -c 1 -f S16_LE -t raw'
+        #     - --snd-command
+        #     - 'sh -c "PULSE_SINK=vader_sink aplay -r 22050 -c 1 -f S16_LE -t raw"'
+        #     - --wake-uri
+        #     - "tcp://openwakeword:10400"
+        #     - --wake-word-name
+        #     - 'Darth_Vader'
+        #     - --awake-wav
+        #     - extra-sounds/vader.wav
+        #     - --mic-no-mute-during-awake-wav
+        #     - --done-wav
+        #     - extra-sounds/g2.wav
+        #     - --timer-finished-wav
+        #     - sounds/timer_finished.wav
+        #     - "--debug"
+        porcupine1:
+          container_name: wyoming-porcupine1
+          image: rhasspy/wyoming-porcupine1
           restart: unless-stopped
-          container_name: wyoming-satellite-darthvader
-          volumes:
-            - /opt/sounds:/app/extra-sounds
-            - /run/dbus:/run/dbus:ro
-            - /etc/asound.conf:/etc/asound.conf:ro
-            - /var/run/pulse:/var/run/pulse
-          devices:
-            - /dev/snd:/dev/snd
-          environment:
-            PULSE_SERVER: "unix:/var/run/pulse/native"
-          group_add:
-            - audio
-          ports:
-            - "10702:10700"
-          command:
-            - "--name"
-            - "Wohnzimmer Satellit Vader"
-            - --mic-command
-            - 'arecord -r 16000 -c 1 -f S16_LE -t raw'
-            - --snd-command
-            - 'sh -c "PULSE_SINK=vader_sink aplay -r 22050 -c 1 -f S16_LE -t raw"'
-            - --wake-uri
-            - "tcp://openwakeword:10400"
-            - --wake-word-name
-            - 'Darth_Vader'
-            - --awake-wav
-            - extra-sounds/vader.wav
-            - --mic-no-mute-during-awake-wav
-            - --done-wav
-            - extra-sounds/g2.wav
-            - --timer-finished-wav
-            - sounds/timer_finished.wav
-            - "--debug"
-        openwakeword:
-          container_name: wyoming-openwakeword
-          image: rhasspy/wyoming-openwakeword
-          restart: unless-stopped
-          volumes:
-            - /opt/wakewords:/custom
           ports:
             - "10400:10400"
-          command: --preload-model Darth_Vader --preload-model hey_rick --preload-model hey_nabu_v2 --custom-model-dir /custom --debug
+          command:
+            - --debug
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/v$${major}.$${minor}.$${patch}'
+            - 'wud.link.template=https://github.com/rhasspy/wyoming-porcupine1/releases/tag/v$${major}.$${minor}.$${patch}'
+        # openwakeword:
+        #   container_name: wyoming-openwakeword
+        #   image: rhasspy/wyoming-openwakeword
+        #   restart: unless-stopped
+        #   volumes:
+        #     - /opt/wakewords:/custom
+        #   ports:
+        #     - "10401:10400"
+        #   command:
+        #     - --debug
+        #     - "--debug-probability"
+        #     - --custom-model-dir
+        #     - "/custom"
+        #     - --preload-model
+        #     - Darth_Vader
+        #   #  - --preload-model
+        #   #  - hey_rick
+        #   #  - --preload-model
+        #   #  - hey_nabu_v2
+        #   labels:
+        #     - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+        #     - 'wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/v$${major}.$${minor}.$${patch}'
