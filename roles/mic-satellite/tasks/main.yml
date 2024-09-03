@@ -31,6 +31,7 @@
     - ladspa-sdk
     - swh-plugins
     - tap-plugins
+    - at
 
 - name: Disable global pulseaudio services and sockets
   ansible.builtin.systemd:
@@ -40,7 +41,6 @@
   with_items:
     - pulseaudio.service
     - pulseaudio.socket
-
 
 - name: Create pulse user and add to audio group
   user:
@@ -76,7 +76,7 @@
 
       [Service]
       Type=notify
-      ExecStart=pulseaudio --daemonize=no --system --realtime --log-target=journal --disallow-exit --disallow-module-loading
+      ExecStart=pulseaudio --daemonize=no --system --realtime --log-target=journal
       Restart=always
       RestartSec=5s
 
@@ -85,7 +85,9 @@
     mode: '0644'
     owner: root
     group: root
-  notify: Reload systemd
+  notify:
+    - Reload systemd
+    - Restart PulseAudio
 
 - name: Deploy daemon.conf for PulseAudio
   template:
@@ -101,30 +103,12 @@
     replace: '# \1'
   notify: Restart PulseAudio
 
-- name: Comment out load-module module-detect in system.pa
-  replace:
-    path: /etc/pulse/system.pa
-    regexp: '^(load-module module-detect)'
-    replace: '# \1'
-  notify: Restart PulseAudio
-
-- name: Comment out load-module module-udev-detect in system.pa
-  replace:
-    path: /etc/pulse/system.pa
-    regexp: '^(load-module module-udev-detect)'
-    replace: '# \1'
-  notify: Restart PulseAudio
-
 - name: Add PulseAudio modules block to system.pa
   blockinfile:
     path: /etc/pulse/system.pa
     insertafter: EOF
     block: |
-      load-module module-alsa-sink device=hw:0,0 rate=44100
-      load-module module-alsa-source device=hw:0,0 rate=44100
-
-      set-default-source alsa_input.hw_0_0
-      set-default-sink alsa_output.hw_0_0
+      load-module module-switch-on-connect
 
       #load-module module-combine-sink
 
@@ -169,6 +153,28 @@
     dest: /etc/asound.conf
   tags:
     - alsa
+
+- name: Copy udev scripts
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    owner: root
+    group: root
+    mode: '0755'
+  with_items: 
+    - jabra_connected.sh
+    - jabra_connected_wrapper.sh
+
+- name: Create udev rule for Jabra Speak 510
+  copy:
+    src: 99-jabra.rules
+    dest: /etc/udev/rules.d/99-jabra.rules
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload udev
+    - Trigger udev
 
 - name: Flush handlers
   meta: flush_handlers

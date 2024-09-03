@@ -1,7 +1,12 @@
 - name: Reboot
   reboot:
     reboot_timeout: 600   # Time in seconds to wait for the system to come back online
-  become: yes
+
+- name: Reload udev
+  command: udevadm control --reload-rules
+
+- name: Trigger udev
+  command: udevadm trigger
 
 - name: Reload systemd
   ansible.builtin.systemd:
@@ -11,4 +16,3 @@
   service:
     name: pulseaudio
     state: restarted
-  become: yes

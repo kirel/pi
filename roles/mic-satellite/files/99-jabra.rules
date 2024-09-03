@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="usb", ATTR{product}=="Jabra SPEAK 510 USB", RUN+="/usr/local/bin/jabra_connected_wrapper.sh"
