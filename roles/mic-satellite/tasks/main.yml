@@ -230,7 +230,6 @@
   community.docker.docker_compose_v2:
     project_name: wyoming-stack
     definition:
-      version: '3.9'
       services:
         satellite-rick:
           image: wyoming-satellite-extras:latest
