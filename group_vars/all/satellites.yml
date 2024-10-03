@@ -1,0 +1,36 @@
+wyoming_audio_repos:
+  - wyoming-mic-external
+  - wyoming-snd-external
+wyoming_satellite_repos:
+  - wyoming-satellite
+satellites:
+  - name: alexa
+    port: 10700
+    mic_port: 10600
+    snd_port: 10601
+    wakeword_service: porcupine1
+    wake_word_name: alexa
+    awake_wav: extra-sounds/boop-852-mhz.wav
+    done_wav: extra-sounds/boop-741-mhz.wav
+    timer_finished_wav: extra-sounds/clock-alarm.wav
+  - name: stachelschwein
+    port: 10701
+    mic_port: 10602
+    snd_port: 10603
+    wakeword_service: porcupine1
+    wake_word_name: stachelschwein
+    awake_wav: extra-sounds/boop-852-mhz.wav
+    done_wav: extra-sounds/boop-741-mhz.wav
+    timer_finished_wav: extra-sounds/clock-alarm.wav
+  #- name: vader
+  #  port: 10702
+  #  mic_port: 10604
+  #  snd_port: 10605
+  #  sink: vader_sink
+  #  wakeword_service: openwakeword
+  #  wake_word_name: 'Darth_Vader'
+  #  awake_wav: extra-sounds/vader.wav
+  #  done_wav: extra-sounds/g2.wav
+  #  timer_finished_wav: sounds/timer_finished.wav
+    
+

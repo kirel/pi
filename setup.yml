@@ -15,6 +15,7 @@
     - { role: storage, become: yes, tags: ["storage"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
     - { role: fix_hass_bluetooth, become: yes, tags: ["ha"]}
+    - { role: wyoming, become: yes, tags: ["wyoming"] }
     - { role: media, become: yes, tags: ["media"] }
     - { role: monitoring, become: yes, tags: ["monitoring"] }
     - { role: homepage, become: yes, tags: ["homepage"] }
@@ -66,7 +67,7 @@
     - { role: ollama, become: yes, tags: ["ollama"]}
     - { role: wolf, become: yes, tags: ["wolf"]}
 
-- hosts: mic-sattelites
+- hosts: mic-satellites
   roles:
     - { role: pi, become: yes, tags: ["pi"] }
     - { role: basic, become: yes, tags: ["basic"] }
@@ -76,4 +77,4 @@
     - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
     - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
     - { role: glances, become: yes, tags: ["glances"] }
-    - { role: mic-satellite, become: yes, tags: ["wyoming"] }
+    - { role: satellite-audio, become: yes, tags: ["wyoming", "satellite-audio"] }

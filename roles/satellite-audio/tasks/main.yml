@@ -90,20 +90,33 @@
     - Restart PulseAudio
 
 - name: Deploy daemon.conf for PulseAudio
+  tags: pulse-config
   template:
     src: daemon.conf
     dest: /etc/pulse/daemon.conf
     mode: '0644'
   notify: Restart PulseAudio
 
-- name: Comment out load-module module-suspend-on-idle
-  ansible.builtin.replace:
+- name: Ensure load-module module-suspend-on-idle is uncommented
+  tags: pulse-config
+  ansible.builtin.lineinfile:
     path: /etc/pulse/system.pa
-    regexp: '^(load-module module-suspend-on-idle)'
-    replace: '# \1'
+    regexp: '^\s*#?\s*(load-module module-suspend-on-idle)'
+    line: '# load-module module-suspend-on-idle'
+    state: present
+  notify: Restart PulseAudio
+
+- name: Ensure udev detect module has tsched=0
+  tags: pulse-config
+  ansible.builtin.lineinfile:
+    path: /etc/pulse/system.pa
+    regexp: '^\s*#?\s*(load-module module-udev-detect)'
+    line: 'load-module module-udev-detect tsched=0'
+    state: present
   notify: Restart PulseAudio
 
 - name: Add PulseAudio modules block to system.pa
+  tags: pulse-config
   blockinfile:
     path: /etc/pulse/system.pa
     insertafter: EOF
@@ -179,64 +192,78 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- name: Ensure the destination directory exists
-  file:
-    path: "/opt/{{item}}/"
-    state: directory
-  with_items: 
-    - sounds
-    - wakewords
-
-- name: Copy sound files to the host
-  copy:
-    src: "{{ item }}"
-    dest: "/opt/sounds/{{ item | basename }}"
-  with_fileglob:
-    - "sounds/*"
-
-- name: Copy wake word files to the host
-  copy:
-    src: "{{ item }}"
-    dest: "/opt/wakewords/{{ item | basename }}"
-  with_fileglob:
-    - "wakewords/*"
-
-- name: Clone the Git repository
+- name: Clone git repositories
   git:
-    repo: 'https://github.com/rhasspy/wyoming-satellite.git'
-    dest: /tmp/wyoming-satellite
+    repo: "https://github.com/rhasspy/{{ item }}.git"
+    dest: "/tmp/{{ item }}"
+  loop: "{{ wyoming_audio_repos }}"
+  tags: stack
 
-- name: Build the Docker image
+- name: Build the Docker images
   community.docker.docker_image:
-    name: wyoming-satellite
+    name: "{{ item }}"
     build:
-      path: /tmp/wyoming-satellite
+      path: /tmp/{{ item }}
     source: build
-
-- name: Copy Dockerfile
-  copy: src=Dockerfile dest=/tmp/wyoming-satellite-extras/
-
-- name: Build an image from a Dockerfile
-  community.docker.docker_image:
-    name: wyoming-satellite-extras
-    source: build
-    build:
-      path: /tmp/wyoming-satellite-extras/
-    force_source: yes
     tag: latest
+    force_source: true
+  loop: "{{ wyoming_audio_repos }}"
+  tags: stack
+
+- name: Ensure destination directories exist
+  file:
+    path: "/tmp/{{ item }}-extras"
+    state: directory
+  loop: "{{ wyoming_audio_repos }}"
+  tags: stack
+
+- name: Copy Dockerfiles
+  copy: src=Dockerfile.{{ item }} dest=/tmp/{{item}}-extras/Dockerfile
+  loop: "{{ wyoming_audio_repos }}"
+  tags: stack
+
+- name: Build extras images
+  community.docker.docker_image:
+    name: "{{ item }}-extras"
+    source: build
+    build:
+      path: "/tmp/{{ item }}-extras/"
+    tag: latest
+    force_source: true
+  loop: "{{ wyoming_audio_repos }}"
+  tags: stack
 
 - name: Start wyoming stack
-  tags: alsa
   community.docker.docker_compose_v2:
-    project_name: wyoming-stack
+    project_name: "sattelite-audio-{{ item.name }}"
     definition:
       services:
-        satellite-rick:
-          image: wyoming-satellite-extras:latest
+        snd-external:
+          image: wyoming-snd-external-extras:latest
           restart: unless-stopped
-          container_name: wyoming-satellite-rick
+          container_name: "wyoming-snd-external-{{ item.name }}"
           volumes:
-            - /opt/sounds:/app/extra-sounds
+            - /run/dbus:/run/dbus:ro
+            - /etc/asound.conf:/etc/asound.conf:ro
+            - /var/run/pulse:/var/run/pulse
+          devices:
+            - /dev/snd:/dev/snd
+          environment:
+            PULSE_SERVER: "unix:/var/run/pulse/native"
+            PULSE_SINK: "{{ item.sink | default(omit) }}"
+          group_add:
+            - audio
+          ports:
+            - "{{ item.snd_port }}:10601"
+          command:
+            - "--device"
+            - "pulse"
+            - "--debug"
+        mic-external:
+          image: wyoming-mic-external-extras:latest
+          restart: unless-stopped
+          container_name: "wyoming-mic-external-{{ item.name }}"
+          volumes:
             - /run/dbus:/run/dbus:ro
             - /etc/asound.conf:/etc/asound.conf:ro
             - /var/run/pulse:/var/run/pulse
@@ -247,147 +274,10 @@
           group_add:
             - audio
           ports:
-            - "10700:10700"
+            - "{{ item.mic_port }}:10600"
           command:
-            - "--name"
-            - "Wohnzimmer Satellit Rick"
-            - --mic-command
-            - 'arecord -r 16000 -c 1 -f S16_LE -t raw'
-            - --snd-command-rate
-            - "48000"
-            - --snd-command
-            - 'aplay -r 48000 -c 1 -f S16_LE -t raw'
-            - --wake-uri
-            - "tcp://porcupine1:10400"
-            - --wake-word-name
-            - stachelschwein
-            - --awake-wav
-            - extra-sounds/boop-852-mhz.wav
-            - --mic-no-mute-during-awake-wav
-            - --done-wav
-            - extra-sounds/boop-741-mhz.wav
-            - --timer-finished-wav
-            - extra-sounds/clock-alarm.wav
-            - --mic-auto-gain
-            - "5"
-            - --mic-noise-suppression
-            - "2"
-            - --vad
+            - "--device"
+            - "pulse"
             - "--debug"
-        satellite-nabu:
-          image: wyoming-satellite-extras:latest
-          restart: unless-stopped
-          container_name: wyoming-satellite-nabu
-          volumes:
-            - /opt/sounds:/app/extra-sounds
-            - /run/dbus:/run/dbus:ro
-            - /etc/asound.conf:/etc/asound.conf:ro
-            - /var/run/pulse:/var/run/pulse
-          devices:
-            - /dev/snd:/dev/snd
-          environment:
-            PULSE_SERVER: "unix:/var/run/pulse/native"
-          group_add:
-            - audio
-          ports:
-            - "10701:10700"
-          command:
-            - "--name"
-            - "Wohnzimmer Satellit Nabu"
-            - --mic-command
-            - 'arecord -r 16000 -c 1 -f S16_LE -t raw'
-            - --snd-command-rate
-            - "48000"
-            - --snd-command
-            - 'aplay -r 48000 -c 1 -f S16_LE -t raw'
-            - --wake-uri
-            - "tcp://porcupine1:10400"
-            - --wake-word-name
-            - alexa
-            - --awake-wav
-            - extra-sounds/boop-852-mhz.wav
-            - --mic-no-mute-during-awake-wav
-            - --done-wav
-            - extra-sounds/boop-741-mhz.wav
-            - --timer-finished-wav
-            - extra-sounds/clock-alarm.wav
-            - --mic-auto-gain
-            - "5"
-            - --mic-noise-suppression
-            - "2"
-            - --vad
-            - "--debug"
-        # satellite-darthvader:
-        #   image: wyoming-satellite-extras:latest
-        #   restart: unless-stopped
-        #   container_name: wyoming-satellite-darthvader
-        #   #profiles:
-        #   #  - vader
-        #   volumes:
-        #     - /opt/sounds:/app/extra-sounds
-        #     - /run/dbus:/run/dbus:ro
-        #     - /etc/asound.conf:/etc/asound.conf:ro
-        #     - /var/run/pulse:/var/run/pulse
-        #   devices:
-        #     - /dev/snd:/dev/snd
-        #   environment:
-        #     PULSE_SERVER: "unix:/var/run/pulse/native"
-        #   group_add:
-        #     - audio
-        #   ports:
-        #     - "10702:10700"
-        #   command:
-        #     - "--name"
-        #     - "Wohnzimmer Satellit Vader"
-        #     - --mic-command
-        #     - 'arecord -r 16000 -c 1 -f S16_LE -t raw'
-        # .   - --snd-command-rate
-        #     - "48000"
-        #     - --snd-command
-        #     - 'sh -c "PULSE_SINK=vader_sink aplay -r 48000 -c 1 -f S16_LE -t raw"'
-        #     - --wake-uri
-        #     - "tcp://openwakeword:10400"
-        #     - --wake-word-name
-        #     - 'Darth_Vader'
-        #     - --awake-wav
-        #     - extra-sounds/vader.wav
-        #     - --mic-no-mute-during-awake-wav
-        #     - --done-wav
-        #     - extra-sounds/g2.wav
-        #     - --timer-finished-wav
-        #     - sounds/timer_finished.wav
-        #     - --mic-auto-gain
-        #     - "5"
-        #     - --mic-noise-suppression
-        #     - "2"
-        #     - --vad
-        #     - "--debug"
-        porcupine1:
-          container_name: wyoming-porcupine1
-          image: rhasspy/wyoming-porcupine1
-          restart: unless-stopped
-          ports:
-            - "10400:10400"
-          command:
-            - --debug
-          labels:
-            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/rhasspy/wyoming-porcupine1/releases/tag/v$${major}.$${minor}.$${patch}'
-        # openwakeword:
-        #   container_name: wyoming-openwakeword
-        #   image: rhasspy/wyoming-openwakeword
-        #   restart: unless-stopped
-        #   volumes:
-        #     - /opt/wakewords:/custom
-        #   ports:
-        #     - "10401:10400"
-        #   command:
-        #     - --debug
-        #     - "--debug-probability"
-        #     - --custom-model-dir
-        #     - "/custom"
-        #     - --preload-model
-        #     - Darth_Vader
-        #   labels:
-        #     - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-        #     - 'wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/v$${major}.$${minor}.$${patch}'
+  loop: "{{ satellites }}"
+  tags: stack
