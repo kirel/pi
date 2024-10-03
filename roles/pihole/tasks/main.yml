@@ -29,9 +29,10 @@
   notify: restart dns
 
 - name: Start pihole
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_name: pihole
-    pull: yes
+    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present  # Ensure the services are started
     definition:
       version: '3.3'
       networks:
@@ -49,7 +50,7 @@
           ports:
             - "{{ ansible_default_ipv4.address }}:53:53/tcp"
             - "{{ ansible_default_ipv4.address }}:53:53/udp"
-            #- "{{ ansible_default_ipv4.address }}:67:67/udp" # used by the relay
+            # - "{{ ansible_default_ipv4.address }}:67:67/udp" # used by the relay
             - "{{ pihole_http_port }}:80/tcp"
           dns:
             - 127.0.0.1
@@ -73,25 +74,25 @@
             PIHOLE_DOMAIN: "lan"
           # Volumes store your data between container upgrades
           volumes:
-            - "{{pihole_config_folder}}:/etc/pihole/"
-            - "{{dnsmasq_config_folder}}:/etc/dnsmasq.d/"
+            - "{{ pihole_config_folder }}:/etc/pihole/"
+            - "{{ dnsmasq_config_folder }}:/etc/dnsmasq.d/"
           # Recommended but not required (DHCP needs NET_ADMIN)
-          #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
           cap_add:
             - NET_ADMIN
           restart: unless-stopped
           labels:
-            - 'wud.tag.include=latest'
-            - 'wud.watch.digest=true'
-            - "homepage.group={{pihole_service.group}}"
-            - "homepage.name={{pihole_service.name}}"
-            - "homepage.href=https://{{pihole_service.domain}}"
-            - "homepage.icon=mdi-pi-hole"
+            wud.tag.include: latest
+            wud.watch.digest: true
+            homepage.group: "{{ pihole_service.group }}"
+            homepage.name: "{{ pihole_service.name }}"
+            homepage.href: "https://{{ pihole_service.domain }}"
+            homepage.icon: mdi-pi-hole
           depends_on:
             - dhcphelper
           networks:
             backend:
               ipv4_address: '172.31.0.100'
+
         dhcphelper:
           restart: unless-stopped
           container_name: dhcphelper
@@ -102,24 +103,24 @@
             TZ: 'Europe/Berlin'
           cap_add:
             - NET_ADMIN
+
         dnsmasq-leases-ui:
           image: kirel/dnsmasq-leases-ui:latest
           container_name: dnsmasq_leases_ui
           ports:
-            - "{{leases_service.http_port}}:5000"
+            - "{{ leases_service.http_port }}:5000"
           volumes:
-            - "{{pihole_config_folder}}:/var/lib/misc:ro"
+            - "{{ pihole_config_folder }}:/var/lib/misc:ro"
           restart: unless-stopped
           labels:
-            - 'wud.tag.include=latest'
-            - 'wud.watch.digest=true'
-            - "homepage.group={{leases_service.group}}"
-            - "homepage.name={{leases_service.name}}"
-            - "homepage.href=https://{{leases_service.domain}}"
-            - "homepage.icon=mdi-dns"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=dnsmasq_leases_ui"
-            
+            wud.tag.include: latest
+            wud.watch.digest: true
+            homepage.group: "{{ leases_service.group }}"
+            homepage.name: "{{ leases_service.name }}"
+            homepage.href: "https://{{ leases_service.domain }}"
+            homepage.icon: mdi-dns
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: dnsmasq_leases_ui
 
   register: output
 
@@ -128,10 +129,10 @@
 
 - ansible.builtin.assert:
     that:
-      - "output.services.pihole.pihole.state.running"
+      - output.containers | selectattr('Name', 'equalto', 'pihole') | map(attribute='State') | list | first == 'running'
 
 - name: Create symbolic link
   ansible.builtin.file:
     src: "dhcp.leases"
-    dest: "{{pihole_config_folder}}/dnsmasq.leases"
+    dest: "{{ pihole_config_folder }}/dnsmasq.leases"
     state: link

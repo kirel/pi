@@ -4,9 +4,10 @@
   - "{{uptime_kuma_data_folder}}"
 
 - name: Start monitoring
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_name: monitoring
-    pull: yes
+    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present  # Ensure the services are started
     definition:
       version: '3.3'
       services:
@@ -14,57 +15,58 @@
           image: louislam/uptime-kuma:1
           container_name: uptime_kuma
           ports:
-            - "{{uptime_kuma_http_port}}:3001"
+            - "{{ uptime_kuma_http_port }}:3001"
           restart: always
           volumes:
-            - "{{uptime_kuma_data_folder}}:/app/data"
+            - "{{ uptime_kuma_data_folder }}:/app/data"
             - /var/run/docker.sock:/var/run/docker.sock
           dns:
             - "{{ nameserver_pi_ip }}"
-            - "{{ homelab_nuc_ip }}"          
+            - "{{ homelab_nuc_ip }}"
           network_mode: bridge
           labels:
-            - 'wud.tag.include=^1$$'
-            - 'wud.watch.digest=true'
-            - "homepage.group={{services.uptime.group}}"
-            - "homepage.name={{services.uptime.name}}"
-            - "homepage.href=https://uptime.lan"
-            - "homepage.icon=mdi-server"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=uptime_kuma"
+            wud.tag.include: '^1$$'
+            wud.watch.digest: 'true'
+            homepage.group: "{{ services.uptime.group }}"
+            homepage.name: "{{ services.uptime.name }}"
+            homepage.href: "https://uptime.lan"
+            homepage.icon: "mdi-server"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: uptime_kuma
+
         whatsupdocker:
           image: fmartinou/whats-up-docker:6.3.0
           container_name: wud
           volumes:
             - /var/run/docker.sock:/var/run/docker.sock
           ports:
-            - "{{wud_http_port}}:3000"
+            - "{{ wud_http_port }}:3000"
           restart: always
           environment:
-            - WUD_WATCHER_LOCAL_SOCKET=/var/run/docker.sock
-            - WUD_WATCHER_NAMESERVERPI_HOST={{ nameserver_pi_ip }}
-            #- WUD_WATCHER_AILABUM_HOST={{ ailab_um_ip }}
-            - WUD_TRIGGER_MQTT_MOSQUITTO_URL=mqtt://{{ mosquitto_address }}:{{ mosquitto_port }}
-            - WUD_TRIGGER_MQTT_MOSQUITTO_HASS_ENABLED=true
-            - WUD_REGISTRY_GHCR_TOKEN={{ gh_access_token }}
-            - WUD_REGISTRY_LSCR_TOKEN={{ gh_access_token }}
+            WUD_WATCHER_LOCAL_SOCKET: /var/run/docker.sock
+            WUD_WATCHER_NAMESERVERPI_HOST: "{{ nameserver_pi_ip }}"
+            # - WUD_WATCHER_AILABUM_HOST={{ ailab_um_ip }}
+            WUD_TRIGGER_MQTT_MOSQUITTO_URL: "mqtt://{{ mosquitto_address }}:{{ mosquitto_port }}"
+            WUD_TRIGGER_MQTT_MOSQUITTO_HASS_ENABLED: "true"
+            WUD_REGISTRY_GHCR_TOKEN: "{{ gh_access_token }}"
+            WUD_REGISTRY_LSCR_TOKEN: "{{ gh_access_token }}"
           labels:
-            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/fmartinou/whats-up-docker/releases/tag/$${major}.$${minor}.$${patch}'
-            - "homepage.group={{services.wud.group}}"
-            - "homepage.name={{services.wud.name}}"
-            - "homepage.href=https://wud.lan"
-            - "homepage.icon=mdi-docker"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=wud"
-            - "homepage.widget.type=whatsupdocker"
-            - "homepage.widget.url=https://wud.lan"
+            wud.tag.include: '^\d+\.\d+\.\d+$$'
+            wud.link.template: "https://github.com/fmartinou/whats-up-docker/releases/tag/$${major}.$${minor}.$${patch}"
+            homepage.group: "{{ services.wud.group }}"
+            homepage.name: "{{ services.wud.name }}"
+            homepage.href: "https://wud.lan"
+            homepage.icon: "mdi-docker"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: wud
+            homepage.widget.type: whatsupdocker
+            homepage.widget.url: "https://wud.lan"
   register: output
 
-- ansible.builtin.debug:
+-  ansible.builtin.debug:
     var: output
 
-- ansible.builtin.assert:
+-  ansible.builtin.assert:
     that:
-      - "output.services.uptime_kuma.uptime_kuma.state.running"
-      - "output.services.whatsupdocker.wud.state.running"
+      - output.containers | selectattr('Name', 'equalto', 'uptime_kuma') | map(attribute='State') | list | first == 'running'
+      - output.containers | selectattr('Name', 'equalto', 'wud') | map(attribute='State') | list | first == 'running'

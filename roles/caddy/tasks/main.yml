@@ -32,11 +32,11 @@
   register: dockerfile
 
 - name: Start caddy
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_name: caddy
-    pull: yes
-    build: "{{ dockerfile.changed | default(false) }}"
-    restarted: "{{ caddyfile.changed | default(false) }}"
+    pull: "always"  # or "missing", "never", "policy" based on your needs
+    build: "policy"  # or "always", "never"
+    state: present  # Ensure the services are started
     definition:
       version: '3'
       networks:
@@ -48,10 +48,10 @@
         caddy:
           container_name: caddy
           build:
-            context: "{{caddy_folder}}"
-            dockerfile: "{{caddy_folder}}/Dockerfile"
+            context: "{{ caddy_folder }}"
+            dockerfile: "{{ caddy_folder }}/Dockerfile"
           restart: unless-stopped
-          user: "{{uid}}:{{uid}}"
+          user: "{{ uid }}:{{ uid }}"
           dns:
             - 172.31.0.100
             - 1.1.1.1
@@ -61,9 +61,9 @@
             - "443:443"
             - "11434:11434"
           volumes:
-            - "{{caddy_folder}}/Caddyfile:/etc/caddy/Caddyfile"
-            - "{{caddy_data_folder}}:/data"
-            - "{{caddy_config_folder}}:/config"
+            - "{{ caddy_folder }}/Caddyfile:/etc/caddy/Caddyfile"
+            - "{{ caddy_data_folder }}:/data"
+            - "{{ caddy_config_folder }}:/config"
           environment:
             CADDY_ADMIN: "0.0.0.0:2019"
           cap_add:
@@ -82,11 +82,17 @@
             - "homepage.widget.type=caddy"
             - "homepage.widget.url=http://caddy:2019"
 
+
   register: output
 
-- ansible.builtin.assert:
+- ansible.builtin.debug:
+    var: output
+
+-  ansible.builtin.assert:
     that:
-      - "output.services.caddy.caddy.state.running"
+      - output.containers | selectattr('Name', 'equalto', 'caddy') | list | length > 0
+      - output.containers | selectattr('Name', 'equalto', 'caddy') | map(attribute='State') | list | first == 'running'
+
 
 - name: copy root certificate
   shell: "docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt"

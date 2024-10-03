@@ -5,18 +5,19 @@
   notify: restart udev
   
 - name: Start wolf
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_name: wolf
-    pull: yes
+    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present  # Ensure the services are started
     definition:
       version: "3.8"
       services:
         wolf:
           image: ghcr.io/games-on-whales/wolf:stable
           environment:
-            - WOLF_LOG_LEVEL=debug
-            - XDG_RUNTIME_DIR=/tmp/sockets
-            - HOST_APPS_STATE_FOLDER=/etc/wolf
+            WOLF_LOG_LEVEL: debug
+            XDG_RUNTIME_DIR: /tmp/sockets
+            HOST_APPS_STATE_FOLDER: /etc/wolf
           volumes:
             - /etc/wolf/:/etc/wolf
             - /tmp/sockets:/tmp/sockets:rw

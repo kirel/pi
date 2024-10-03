@@ -1,66 +1,51 @@
-# - name: Create volume
-#   docker_volume:
-#     name: ollama_data
+- name: Create volume
+  community.docker.docker_volume:
+    name: ollama_data
 
-- name: Start ai containers
-  community.docker.docker_compose:
+- name: Start AI containers
+  community.docker.docker_compose_v2:
     project_name: ai
-    pull: yes
+    pull: "always"  # Options: "always", "missing", "never", or "policy"
+    state: present  # Ensure the services are started
     definition:
       version: '3.8'
       services:
-        # ollama-service:
-        #   image: ollama:apu
-        #   container_name: ollama
-        #   restart: unless-stopped
-        #   ports:
-        #     - "11434:11434"
-        #   devices:
-        #     - "/dev/dri:/dev/dri"
-        #     - "/dev/kfd:/dev/kfd"
-        #   environment:
-        #     - "HSA_OVERRIDE_GFX_VERSION=11.0.0"
-        #     #- "HSA_ENABLE_SDMA=0"
-        #     - "OLLAMA_DEBUG=1"
-        #     #- "OLLAMA_MAX_VRAM=16106127360"
-        #     - "OLLAMA_NUM_PARALLEL=2"
-        #     - "OLLAMA_MAX_LOADED_MODELS=2"
-        #     - "OLLAMA_FLASH_ATTENTION=1"
-        #   group_add:
-        #     - video
-        #   stdin_open: true
-        #   tty: true
-        #   volumes:
-        #     - ollama_data:/root/.ollama
-        #   ipc: host
-        #   privileged: true
-        #   cap_add:
-        #     - SYS_PTRACE
-        #   security_opt:
-        #     - seccomp=unconfined
-        #   labels:
-        #     - 'wud.tag.include=^\d+\.\d+\.\d+-rocm$$'
+        ollama-service:
+          image: ollama/ollama
+          container_name: ollama
+          restart: unless-stopped
+          ports:
+            - "11435:11434"
+          environment:
+            OLLAMA_DEBUG: "1"
+            OLLAMA_NUM_PARALLEL: "2"
+            OLLAMA_MAX_LOADED_MODELS: "2"
+          volumes:
+            - ollama_data:/root/.ollama
+          labels:
+            wud.tag.include: '^\d+\.\d+\.\d+$$'
+
         open-webui:
           image: ghcr.io/open-webui/open-webui:main
           container_name: open-webui
           restart: unless-stopped
           environment:
-            - OLLAMA_BASE_URL=http://ollama-raw.lan:11434
+            OLLAMA_BASE_URL: "http://ollama-raw.lan:11434"
           volumes:
             - open-webui:/app/backend/data
           ports:
             - "{{ open_webui_http_port }}:8080"
           labels:
-            - 'wud.tag.include=main'
-            - 'wud.watch.digest=true'
-            - "homepage.group={{services['open-webui'].group}}"
-            - "homepage.name={{services['open-webui'].name}}"
-            - "homepage.href=https://ollama.lan"
-            - "homepage.icon=openai.png"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=open-webui"
+            wud.tag.include: 'main'
+            wud.watch.digest: 'true'
+            homepage.group: "{{ services['open-webui'].group }}"
+            homepage.name: "{{ services['open-webui'].name }}"
+            homepage.href: "https://ollama.lan"
+            homepage.icon: openai.png
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: open-webui
 
       volumes:
-        open-webui:
-        # ollama_data:
-        #   external: true
+        ollama_data:
+          external: true  # External volume for persistent data
+        open-webui: {}  # Internal volume for web UI data

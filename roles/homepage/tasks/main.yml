@@ -16,9 +16,10 @@
     state: present
 
 - name: Start homepage
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_name: homepage
-    pull: yes
+    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present  # Ensure the services are started
     definition:
       version: '3.3'
       networks:
@@ -32,27 +33,27 @@
           container_name: homepage
           privileged: true
           environment:
-            PUID: "{{uid}}"
-            PGID: "{{uid}}"
+            PUID: "{{ uid }}"
+            PGID: "{{ uid }}"
           dns:
             - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"
           ports:
-            - "{{homepage_http_port}}:3000"
+            - "{{ homepage_http_port }}:3000"
           volumes:
-            - "{{homepage_config_folder}}:/app/config"
+            - "{{ homepage_config_folder }}:/app/config"
             - /var/run/docker.sock:/var/run/docker.sock:ro
           restart: unless-stopped
           networks:
             - dockerproxy
             - homepage
           labels: 
-            - wud.tag.include=^v\d+\.\d+\.\d+$$
+            wud.tag.include: "^v\\d+\\.\\d+\\.\\d+$$"
   register: output
 
-- ansible.builtin.debug:
+-  ansible.builtin.debug:
     var: output
 
-- ansible.builtin.assert:
+-  ansible.builtin.assert:
     that:
-      - "output.services.homepage.homepage.state.running"
+      - output.containers | selectattr('Name', 'equalto', 'homepage') | map(attribute='State') | list | first == 'running'  # Adjusted to check for running state
