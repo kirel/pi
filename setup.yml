@@ -78,3 +78,4 @@
     - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
     - { role: glances, become: yes, tags: ["glances"] }
     - { role: satellite-audio, become: yes, tags: ["wyoming", "satellite-audio"] }
+    - { role: cli-visualizer, become: yes, tags: ["vis"] }
