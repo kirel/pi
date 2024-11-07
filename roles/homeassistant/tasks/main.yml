@@ -18,7 +18,6 @@
   - "{{mosquitto_data_folder}}"
   - "{{mosquitto_log_folder}}"
   - "{{zigbee2mqtt_data_folder}}"
-  - "{{ring_mqtt_config_folder}}"
   - "{{piper_data_folder}}"
   - "{{whisper_data_folder}}"
 
@@ -78,7 +77,6 @@
   - "{{mosquitto_config_folder}}"
   - "{{mosquitto_data_folder}}"
   - "{{mosquitto_log_folder}}"
-  - "{{ring_mqtt_config_folder}}"
   - "{{openwakeword_data_folder}}"
   - "{{piper_data_folder}}"
   - "{{whisper_data_folder}}"
@@ -207,21 +205,6 @@
             - "homepage.icon=mdi-zigbee"
             - "homepage.server={{ inventory_hostname }}"
             - "homepage.container=zigbee2mqtt"
-
-        ring-mqtt:
-          container_name: ring-mqtt
-          restart: unless-stopped
-          image: tsightler/ring-mqtt
-          ports:
-            - "{{ring_mqtt_rtsp_port}}:8554" # Enable RTSP port for external media player access
-          volumes:
-            - "{{ring_mqtt_config_folder}}:/data" # Mapping of local folder to provide persistent storage
-          logging: #limit logs to 10m and 3 files
-            options:
-              max-size: 10m
-              max-file: "3"
-          labels:
-            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
 
         frigate:
           container_name: frigate
