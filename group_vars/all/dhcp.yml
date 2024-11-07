@@ -51,13 +51,16 @@ static_dhcp:
   fan:
     mac: "CC:B5:D1:6A:45:8F"
     ip_suffix: 81
+  daniels-mac:
+    mac: "BC:D0:74:27:D9:8F"
+    ip_suffix: 90
   p1s-1:
     mac: "C0:4E:30:06:C3:54"
     ip_suffix: 91
   daniels-iphone:
     mac: "78:64:C0:8B:41:AE"
     ip_suffix: 95
-  daniels-mac:
+  billie-mac:
     mac: "BC:D0:74:33:3D:EC"
     ip_suffix: 96
   sabines-tablet:
