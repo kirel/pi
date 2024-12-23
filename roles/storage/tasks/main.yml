@@ -57,12 +57,11 @@
     pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
     state: present  # Ensure the services are started
     definition:
-      version: '3'
       services:
         samba:
           container_name: samba
           build: .
-          image: servercontainers/samba
+          image: ghcr.io/servercontainers/samba
           restart: unless-stopped
           network_mode: host
           environment:

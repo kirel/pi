@@ -25,16 +25,34 @@ TODO https://github.com/coreprocess/linux-unattended-installation
 
 ## Setup
 
+### Basic Setup
+
     pipenv install
     pipenv shell # optional
     pipenv run ansible-galaxy install --force-with-deps -r requirements.yml
+
+### Everything
+
     pipenv run ansible-playbook setup.yml # Update everything
-    pipenv run ansible-playbook setup.yml --tags ha # Update smart home
-    pipenv run ansible-playbook setup.yml --tags ollama # Update smart home 
+
+### DNS etc
+
     pipenv run ansible-playbook setup.yml --tags caddy,pihole,homepage --limit homelab,nameserver # update dhcp, domains etc.
+
+### Home Assistant
+
+    pipenv run ansible-playbook setup.yml --tags ha # Update smart home
+    pipenv run ansible-playbook setup.yml --tags ollama # Update ollama
+
+    pipenv run ansible-playbook setup.yml --limit mic-satellites -t satellite-audio
+    pipenv run ansible-playbook setup.yml --limit mic-satellites -t wyoming --start-at-task="Start wyoming stack"
+
+### Virtualhere
+
     pipenv run ansible-playbook setup.yml --limit virtualhere
-    pipenv run ansible-playbook setup.yml --limit mic-sattelites
-    pipenv run ansible-playbook setup.yml --limit mic-sattelites -t wyoming --start-at-task="Start wyoming stack"
+
+
+## Secrets
 
 Edit secrets
 
@@ -94,6 +112,53 @@ docker restart ring-mqtt
 ```
 TODO: create ansible script
 
-## Vader
+## Satellites
 
-    ssh daniel@micpi "PULSE_SINK=vader_sink paplay test.wav"
+    pipenv run ansible-playbook setup.yml -l mic-satellites -t alsa,pulse
+    pipenv run ansible-playbook setup.yml -l mic-satellites -t stack
+    pipenv run ansible-playbook setup.yml -l mic-satellites -t vis
+
+### Test audio
+
+    ssh micpi pactl set-sink-volume @DEFAULT_SINK@ 80%
+    ssh micpi amixer set Master 90%
+    ssh micpi dmesg
+
+
+    ssh micpi 'TERM=xterm vis'
+    ssh micpi "aplay -D plughw:0,0 /usr/share/sounds/alsa/Front_Center.wav"
+    ssh micpi "paplay /usr/share/sounds/alsa/Front_Center.wav"
+    ssh micpi sudo docker exec wyoming-snd-external-alexa aplay /usr/share/sounds/alsa/Front_Center.wav
+
+    ssh micpi "sudo systemctl status pulseaudio"
+    ssh micpi "sudo systemctl restart pulseaudio"
+    ssh micpi "sudo systemctl stop pulseaudio"
+    ssh micpi "journalctl -xeu pulseaudio.service"
+    ssh micpi "pactl info"
+    ssh micpi "pactl list short sinks"
+    ssh micpi "pactl list short sources"
+
+
+## Debug wyoming
+
+    osascript <<EOF
+    tell application "iTerm2"
+         create window with default profile
+         tell current session of current window
+              delay 1
+              write text "zellij"
+          end tell
+    end tell
+EOF
+
+    zellij run -- ssh micpi sudo docker logs -f wyoming-snd-external-alexa
+    zellij run -- ssh micpi sudo docker logs -f wyoming-mic-external-alexa
+    zellij run -- ssh root@homelab-nuc.lan sudo docker logs -f wyoming-satellite-alexa
+    zellij run -- ssh root@homelab-nuc.lan sudo docker logs -f wyoming-porcupine1
+    zellij run -- ssh micpi tail -f /var/log/jabra_connected.log
+
+## Reset some things
+    
+    ssh micpi "sudo wget -O /boot/firmware/config.txt https://raw.githubusercontent.com/RPi-Distro/pi-gen/refs/heads/master/stage1/00-boot-files/files/config.txt"
+
+    ssh micpi "sudo rm -rf /etc/pulse && sudo apt -y purge pulseaudio pulseaudio-utils && sudo apt -y autoremove"

@@ -100,7 +100,7 @@
           image: "ghcr.io/home-assistant/home-assistant:latest"
           volumes:
             - "{{homeassistant_config_folder}}:/config"
-            #- "{{homeassistant_config_folder}}/docker/run:/etc/services.d/home-assistant/run"
+            - "{{homeassistant_config_folder}}/docker/run:/etc/services.d/home-assistant/run"
             - "{{homeassistant_media_folder}}:/media"
             - /etc/localtime:/etc/localtime:ro
             - /run/dbus:/run/dbus:ro
@@ -112,11 +112,11 @@
             - "{{ homelab_nuc_ip }}"          
           #devices:
           #  - /dev/ttyACM0 # zigbee coordinator - z2m uses this
-          #environment:
-            #- PUID={{uid}}
-            #- PGID={{uid}}
-            #- "PACKAGES=iputils"
-            #- UMASK=007
+          environment:
+            - PUID={{uid}}
+            - PGID={{uid}}
+            - "PACKAGES=iputils"
+            - UMASK=007
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
             - 'wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}'

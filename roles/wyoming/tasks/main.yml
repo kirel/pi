@@ -64,7 +64,7 @@
             - --debug
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/rhasspy/wyoming-porcupine1/releases/tag/v$${major}.$${minor}.$${patch}'
+            - 'wud.link.template=https://github.com/rhasspy/wyoming-porcupine1/releases/tag/$${major}.$${minor}.$${patch}'
         openwakeword:
           container_name: wyoming-openwakeword
           image: rhasspy/wyoming-openwakeword
@@ -83,7 +83,18 @@
             - Darth_Vader
           labels:
             - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/v$${major}.$${minor}.$${patch}'
+            - 'wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/$${major}.$${minor}.$${patch}'
+        #microwakeword:
+        #  container_name: wyoming-microwakeword
+        #  image: rhasspy/wyoming-microwakeword
+        #  restart: unless-stopped
+        #  networks:
+        #    ha:
+        #  ports:
+        #    - "10402:10400"
+        #  labels:
+        #    - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+        #    - 'wud.link.template=https://github.com/rhasspy/wyoming-microwakeword/releases/tag/$${major}.$${minor}.$${patch}'
         whisper:
           container_name: whisper
           image: rhasspy/wyoming-whisper

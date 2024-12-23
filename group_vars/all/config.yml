@@ -10,8 +10,6 @@ pip_install_packages:
   - name: docker-compose
 ip_prefix: "192.168.50."
 router_ip: "192.168.50.1"
-#nameserver_pi_ip: "192.168.50.4"
-#homelab_nuc_ip: "192.168.50.5"
 nameserver_pi_ip: "{{ hostvars['nameserver-pi'].ansible_host }}"
 #virtualhere_pi_ip: "{{ hostvars['virtualhere-pi'].ansible_host }}"
 homelab_nuc_ip: "{{ hostvars['homelab-nuc'].ansible_host }}"
