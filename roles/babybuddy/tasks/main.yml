@@ -1,0 +1,47 @@
+- name: create config folders
+  file: path={{item}} state=directory owner={{username}}
+  with_items:
+  - "{{babybuddy_config_folder}}"
+
+- name: Reposess config folders
+  ansible.builtin.file:
+    path: "{{item}}"
+    owner: "{{username}}"
+    group: users
+    mode: u=rwx,g=rwxs
+    recurse: yes
+  with_items:
+  - "{{babybuddy_config_folder}}"
+
+- name: Start babybuddy
+  community.docker.docker_compose_v2:
+    project_name: babybuddy
+    pull: always
+    definition:
+      networks:
+        ha:
+          external: true
+      services:
+        babybuddy:
+          image: lscr.io/linuxserver/babybuddy
+          container_name: babybuddy
+          environment:
+            - PUID={{uid}}
+            - PGID={{uid}}
+            - TZ=Europe/Berlin
+            - ALLOWED_HOSTS=bb.lan
+            - SECURE_PROXY_SSL_HEADER=True
+            - CSRF_TRUSTED_ORIGINS=https://bb.lan
+          volumes:
+            - "{{babybuddy_config_folder}}:/config"
+          ports:
+            - "{{babybuddy_http_port}}:8000"
+          restart: unless-stopped
+          labels:
+            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+            - "homepage.group={{services.babybuddy.group}}"
+            - "homepage.name={{services.babybuddy.name}}"
+            - "homepage.href=https://bb.lan"
+            #- "homepage.icon=home-assistant.png"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=babybuddy"

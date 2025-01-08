@@ -19,6 +19,12 @@ services:
     ip: "{{ homelab_nuc_ip }}" 
     http_port: "{{ wud_http_port }}"
     group: Monitoring
+  babybuddy:
+    name: Baby Buddy
+    ip: "http://{{ homelab_nuc_ip }}"
+    http_port: "{{ babybuddy_http_port }}"
+    domain: bb.lan
+    group: Family
   portainer-homelab-nuc:
     name: Portainer Homelab
     ip: "{{ homelab_nuc_ip }}" 
