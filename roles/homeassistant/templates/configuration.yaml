@@ -2,6 +2,14 @@
 homeassistant: true
 availability: true
 
+advanced:
+  homeassistant_legacy_entity_attributes: false
+  homeassistant_legacy_triggers: false
+  legacy_api: false
+  legacy_availability_payload: false
+device_options:
+  legacy: false
+
 # allow new devices to join
 permit_join: false
 
@@ -19,6 +27,7 @@ mqtt:
 serial:
   # Location of CC2531 USB sniffer
   port: /dev/ttyACM1
+  adapter: zstack # <-- Add this line
 
 frontend:
   port: {{ z2m_http_port }}
