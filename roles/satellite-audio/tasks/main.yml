@@ -6,25 +6,25 @@
     create: yes
     state: present
     insertafter: '^\[all\]'
-  with_items:
-    - line: 'dwc_otg.fiq_fsm_mask=0x7'
-      regexp: '^dwc_otg.fiq_fsm_mask='
-    - line: 'dwc_otg.speed=1'
-      regexp: '^dwc_otg.speed='
-    - line: 'dtparam=audio=off'
+  loop:
+    #- line: 'dtparam=audio=off'
+    - line: 'dtparam=audio=on'
       regexp: '^dtparam=audio='
-    - line: 'dtoverlay=vc4-kms-v3d,audio=off'
+    #- line: 'dtoverlay=vc4-kms-v3d,noaudio'
+    - line: 'dtoverlay=vc4-kms-v3d'
       regexp: '^dtoverlay=vc4-kms-v3d'
   notify: Reboot
+  tags: firmware
 
 - name: Flush handlers
   meta: flush_handlers
+  tags: firmware
 
-- name: Install utilities
+- name: Install essential audio utilities
   package:
     name: "{{ item }}"
     state: latest
-  with_items:
+  loop:
     - alsa-utils
     - pulseaudio
     - pulseaudio-utils
@@ -32,24 +32,6 @@
     - swh-plugins
     - tap-plugins
     - at
-
-- name: Disable global pulseaudio services and sockets
-  ansible.builtin.systemd:
-    name: "{{ item }}"
-    enabled: no
-    scope: global
-  with_items:
-    - pulseaudio.service
-    - pulseaudio.socket
-
-- name: Create pulse user and add to audio group
-  user:
-    name: pulse
-    home: /var/run/pulse
-    groups: audio
-    state: present
-    append: yes
-    shell: /usr/sbin/nologin
 
 - name: Set real-time audio processing limits
   blockinfile:
@@ -59,16 +41,114 @@
       @audio   -  rtprio     99
       @audio   -  memlock    unlimited
       @audio   -  nice       -19
-    
+
+## Alsa Configuration
+
+- name: Remove /etc/asound.conf
+  file:
+    path: /etc/asound.conf
+    state: absent
+  tags: alsa
+
+- name: Copy /etc/asound.docker.conf
+  template:
+    src: asound.docker.conf
+    dest: /etc/asound.docker.conf
+  tags: alsa
+
+## PulseAudio configuration
+
+- name: Create pulse user and add to audio group
+  user:
+    name: pulse
+    home: /var/run/pulse
+    groups: audio
+    state: present
+    append: yes
+    shell: /usr/sbin/nologin
+  tags: pulse
+
+- name: Add users to pulse-access group
+  user:
+    name: "{{ item }}"
+    groups:
+      - pulse
+      - pulse-access
+    append: yes
+  loop:
+    - root
+    - daniel
+
+- name: Copy /etc/pulse/system.pa
+  template:
+    src: system.pa
+    dest: /etc/pulse/system.pa
+  notify: Restart PulseAudio
+  tags: pulse
+
+- name: Touch /etc/pulse/client.conf to ensure it is not empty
+  file:
+    path: /etc/pulse/client.conf
+    state: touch
+  tags: pulse
+
 - name: Ensure autospawn is set to no in client.conf
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: /etc/pulse/client.conf
     regexp: '^[#;]*\s*autospawn='
     line: 'autospawn=no'
     state: present
+  notify: Restart PulseAudio
+  tags: pulse
 
-- name: Run pulseaudio.service as system service
-  ansible.builtin.copy:
+#- name: Deploy daemon.conf for PulseAudio
+#  template:
+#    src: daemon.conf
+#    dest: /etc/pulse/daemon.conf
+#    mode: '0644'
+#  notify: Restart PulseAudio
+#  tags: pulse
+
+## Udev configuration
+
+- name: Copy udev scripts
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    owner: root
+    group: root
+    mode: '0755'
+  loop: 
+    - jabra_connected.sh
+    - jabra_connected_wrapper.sh
+  tags: udev
+
+- name: Create udev rule for Jabra Speak 510
+  copy:
+    src: 99-jabra.rules
+    dest: /etc/udev/rules.d/99-jabra.rules
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload udev
+    - Trigger udev
+  tags: udev
+
+## PulseAudio configuration (systemd)
+
+- name: Disable global PulseAudio services and sockets
+  systemd:
+    name: "{{ item }}"
+    enabled: no
+    scope: global
+  loop:
+    - pulseaudio.service
+    - pulseaudio.socket
+  tags: systemd
+
+- name: Create PulseAudio system service
+  copy:
     dest: /etc/systemd/system/pulseaudio.service
     content: |
       [Unit]
@@ -88,109 +168,23 @@
   notify:
     - Reload systemd
     - Restart PulseAudio
-
-- name: Deploy daemon.conf for PulseAudio
-  tags: pulse-config
-  template:
-    src: daemon.conf
-    dest: /etc/pulse/daemon.conf
-    mode: '0644'
-  notify: Restart PulseAudio
-
-- name: Ensure load-module module-suspend-on-idle is uncommented
-  tags: pulse-config
-  ansible.builtin.lineinfile:
-    path: /etc/pulse/system.pa
-    regexp: '^\s*#?\s*(load-module module-suspend-on-idle)'
-    line: '# load-module module-suspend-on-idle'
-    state: present
-  notify: Restart PulseAudio
-
-- name: Ensure udev detect module has tsched=0
-  tags: pulse-config
-  ansible.builtin.lineinfile:
-    path: /etc/pulse/system.pa
-    regexp: '^\s*#?\s*(load-module module-udev-detect)'
-    line: 'load-module module-udev-detect tsched=0'
-    state: present
-  notify: Restart PulseAudio
-
-- name: Add PulseAudio modules block to system.pa
-  tags: pulse-config
-  blockinfile:
-    path: /etc/pulse/system.pa
-    insertafter: EOF
-    block: |
-      load-module module-switch-on-connect
-
-      load-module module-combine-sink
-
-      # Create the first effect sink (Pitch Shifter)
-      load-module module-ladspa-sink sink_name=pitch_shifter_sink plugin=tap_pitch label=tap_pitch control=-4,0,-90,0 channels=2
-
-      # Create the third effect sink (Reverb) chained to the second
-      load-module module-ladspa-sink sink_name=reverb_sink sink_master=pitch_shifter_sink plugin=tap_reverb label=tap_reverb control=1500,0,-10,1,1,1,1,0 channels=2
-
-      # Create the fourth effect sink (Compressor) chained to the third
-      load-module module-ladspa-sink sink_name=compressor_sink sink_master=reverb_sink plugin=sc4_1882 label=sc4 control=0,50,300,-20,4,2,5 channels=2
-
-      # Create the fifth effect sink (Delay) chained to the fourth
-      load-module module-ladspa-sink sink_name=delay_sink sink_master=compressor_sink plugin=delay label=delay_5s control=0.016,0.5 channels=2
-
-      # Create the final combined sink (vader-sink) chained to the fifth
-      load-module module-combine-sink sink_name=vader_sink slaves=delay_sink channels=2
-
-      ### Enable Volume Ducking
-      #load-module module-role-ducking trigger_roles=announce,phone,notification,event ducking_roles=any_role volume=33%
-    marker: "# {mark} Managed by Ansible"
-  notify: Restart PulseAudio
+  tags:
+    - systemd
 
 - name: Enable pulseaudio service
-  ansible.builtin.systemd:
+  systemd:
     name: pulseaudio.service
     enabled: yes
   notify: Restart PulseAudio
 
-- name: Add users to pulse-access group
-  ansible.builtin.user:
-    name: "{{ item }}"
-    groups: pulse-access
-    append: yes
-  with_items:
-    - root
-    - daniel
-
-- name: Copy /etc/asound.conf
-  template:
-    src: alsa.conf
-    dest: /etc/asound.conf
-  tags:
-    - alsa
-
-- name: Copy udev scripts
-  copy:
-    src: "{{ item }}"
-    dest: "/usr/local/bin/{{ item }}"
-    owner: root
-    group: root
-    mode: '0755'
-  with_items: 
-    - jabra_connected.sh
-    - jabra_connected_wrapper.sh
-
-- name: Create udev rule for Jabra Speak 510
-  copy:
-    src: 99-jabra.rules
-    dest: /etc/udev/rules.d/99-jabra.rules
-    owner: root
-    group: root
-    mode: '0644'
-  notify:
-    - Reload udev
-    - Trigger udev
-
 - name: Flush handlers
   meta: flush_handlers
+  tags:
+   - pulse
+   - udev
+   - systemd
+
+## Stack
 
 - name: Clone git repositories
   git:
@@ -218,7 +212,9 @@
   tags: stack
 
 - name: Copy Dockerfiles
-  copy: src=Dockerfile.{{ item }} dest=/tmp/{{item}}-extras/Dockerfile
+  copy:
+    src: Dockerfile.{{ item }}
+    dest: /tmp/{{ item }}-extras/Dockerfile
   loop: "{{ wyoming_audio_repos }}"
   tags: stack
 
@@ -244,7 +240,7 @@
           container_name: "wyoming-snd-external-{{ item.name }}"
           volumes:
             - /run/dbus:/run/dbus:ro
-            - /etc/asound.conf:/etc/asound.conf:ro
+            - /etc/asound.docker.conf:/etc/asound.conf:ro
             - /var/run/pulse:/var/run/pulse
           devices:
             - /dev/snd:/dev/snd
@@ -265,7 +261,7 @@
           container_name: "wyoming-mic-external-{{ item.name }}"
           volumes:
             - /run/dbus:/run/dbus:ro
-            - /etc/asound.conf:/etc/asound.conf:ro
+            - /etc/asound.docker.conf:/etc/asound.conf:ro
             - /var/run/pulse:/var/run/pulse
           devices:
             - /dev/snd:/dev/snd
@@ -281,3 +277,8 @@
             - "--debug"
   loop: "{{ satellites }}"
   tags: stack
+
+- name: Remove unused packages
+  apt:
+    autoremove: yes
+    purge: yes

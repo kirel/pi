@@ -1,0 +1,10 @@
+load-module module-native-protocol-unix
+
+load-module module-udev-detect tsched=0
+load-module module-null-sink sink_name=default_null_sink
+load-module module-always-sink
+
+load-module module-switch-on-connect
+
+### Enable Volume Ducking
+#load-module module-role-ducking trigger_roles=announce,phone,notification,event ducking_roles=any_role volume=33%

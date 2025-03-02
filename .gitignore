@@ -4,3 +4,4 @@
 .vault_pass
 tmp/root.crt
 .vscode
+.aider*
