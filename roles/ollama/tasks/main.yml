@@ -8,7 +8,6 @@
     pull: "always"  # Options: "always", "missing", "never", or "policy"
     state: present  # Ensure the services are started
     definition:
-      version: '3.8'
       services:
         ollama-service:
           image: ollama/ollama
