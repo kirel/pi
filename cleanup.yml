@@ -1,0 +1,12 @@
+---
+- name: Prune Docker Resources
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: Prune Docker resources
+    community.docker.docker_prune:
+      containers: true
+      images: true
+      networks: true
+      volumes: true
