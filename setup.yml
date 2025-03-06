@@ -69,6 +69,7 @@
     - { role: wolf, become: yes, tags: ["wolf"]}
 
 - hosts: mic-satellites
+  ignore_unreachable: true
   roles:
     - { role: pi, become: yes, tags: ["pi"] }
     - { role: basic, become: yes, tags: ["basic"] }
