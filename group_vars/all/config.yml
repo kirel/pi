@@ -77,3 +77,9 @@ satellite_data_folder: "{{config_root}}/satellite"
 piper_data_folder: "{{config_root}}/piper"
 whisper_data_folder: "{{config_root}}/whisper"
 babybuddy_config_folder: "{{config_root}}/babybuddy"
+
+todoist-mcp-server:
+  name: Todoist MCP Server
+  ip: "{{ homelab_nuc_ip }}"
+  http_port: "{{ todoist_mcp_proxy_port }}"
+  group: "AI"
