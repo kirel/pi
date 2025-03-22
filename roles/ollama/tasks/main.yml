@@ -2,8 +2,14 @@
   community.docker.docker_volume:
     name: ollama_data
 
-# build dockerfile Dockerfile.mcp-proxy and tag it mcp-base:latest, AI!
-
+- name: Build mcp-proxy base image                             
+  community.docker.docker_image:                               
+    name: mcp-base                                             
+    tag: latest                                                
+    build:                                                     
+      path: "{{ role_path }}" # AI! The image is built on the remot server so we actually need to copy over the Dockerfile to a temp location and build there                                  
+      dockerfile: Dockerfile.mcp-proxy                         
+    source: build
 
 - name: Start AI containers
   community.docker.docker_compose_v2:
@@ -46,6 +52,9 @@
             homepage.icon: openai.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: open-webui
+
+        todoist-mcp-server:
+          # 
 
       volumes:
         ollama_data:
