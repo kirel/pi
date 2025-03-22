@@ -2,13 +2,25 @@
   community.docker.docker_volume:
     name: ollama_data
 
-- name: Build mcp-proxy base image                             
-  community.docker.docker_image:                               
-    name: mcp-base                                             
-    tag: latest                                                
-    build:                                                     
-      path: "{{ role_path }}" # AI! The image is built on the remot server so we actually need to copy over the Dockerfile to a temp location and build there                                  
-      dockerfile: Dockerfile.mcp-proxy                         
+- name: Create temporary build directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: ollama_build
+  register: build_dir
+
+- name: Copy Dockerfile to build directory
+  ansible.builtin.copy:
+    src: "{{ role_path }}/Dockerfile.mcp-proxy"
+    dest: "{{ build_dir.path }}/Dockerfile.mcp-proxy"
+    mode: '0644'
+
+- name: Build mcp-proxy base image
+  community.docker.docker_image:
+    name: mcp-base
+    tag: latest
+    build:
+      path: "{{ build_dir.path }}"
+      dockerfile: Dockerfile.mcp-proxy
     source: build
 
 - name: Start AI containers
