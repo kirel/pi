@@ -69,9 +69,9 @@
           image: mcp-base:latest
           container_name: todoist-mcp-server
           restart: unless-stopped
-          command: sh -c "uvx mcp-proxy --sse-port={{ todoist_mcp_proxy_port }} --env TODOIST_API_TOKEN=$$TODOIST_API_TOKEN -- npx -y @chrusic/todoist-mcp-server-extended"
+          command: sh -c "uvx mcp-proxy --sse-port={{ todoist_mcp_proxy_port }} -- npx -y @chrusic/todoist-mcp-server-extended"
           environment:
-            TODOIST_API_TOKEN: "{{ secrets.todoist_api_token }}"
+            TODOIST_API_TOKEN: "{{ todoist_api_token }}"
           ports:
             - "{{ todoist_mcp_proxy_port }}:{{ todoist_mcp_proxy_port }}"
           labels:
