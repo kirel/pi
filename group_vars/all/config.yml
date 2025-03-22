@@ -14,12 +14,12 @@ nameserver_pi_ip: "{{ hostvars['nameserver-pi'].ansible_host }}"
 #virtualhere_pi_ip: "{{ hostvars['virtualhere-pi'].ansible_host }}"
 homelab_nuc_ip: "{{ hostvars['homelab-nuc'].ansible_host }}"
 micpi_ip: "{{ hostvars['micpi'].ansible_host }}"
-#ailab_um_ip: "{{hostvars['ailab-um'].ansible_host }}"
 cidr: "192.168.50.0/24"
 pihole_http_port: 81
 portainer_http_port: 9000
 glances_http_port: 61208
 homeassistant_http_port: 8123
+music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
 wud_http_port: 3000
 vscode_http_port: 8443
@@ -47,6 +47,8 @@ shares:
 config_root: "/home/{{username}}/config"
 homeassistant_config_folder: "{{config_root}}/home-assistant"
 homeassistant_media_folder: "/{{mount_root}}/Medien/Musik"
+music_assistant_data_folder: "{{config_root}}/music-assistant"
+music_assistant_media_folder: "/{{mount_root}}/Medien/Musik"
 frigate_config_folder: "{{config_root}}/frigate"
 frigate_media_folder: "/{{mount_root}}/Medien/Frigate"
 vscode_config_folder: "{{config_root}}/vscode"
