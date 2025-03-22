@@ -14,20 +14,14 @@
     dest: "{{ build_dir.path }}/Dockerfile.mcp-proxy"
     mode: '0644'
 
-- name: Build mcp-proxy base image
-  community.docker.docker_image:
-    name: mcp-base
-    tag: latest
-    build:
-      path: "{{ build_dir.path }}"
-      dockerfile: Dockerfile.mcp-proxy
-    source: build
 
 - name: Start AI containers
   community.docker.docker_compose_v2:
     project_name: ai
-    pull: "always"  # Options: "always", "missing", "never", or "policy"
-    state: present  # Ensure the services are started
+    pull: "always"  # Keep setting for other images
+    state: present
+    build:  # Build images with missing local ones
+      path: "{{ build_dir.path }}"
     definition:
       services:
         ollama-service:
@@ -66,7 +60,10 @@
             homepage.container: open-webui
 
         todoist-mcp-server:
-          image: mcp-base:latest
+          image: mcp-base:latest  # Prove this is already built
+          build:
+            context: "{{ build_dir.path }}"
+            dockerfile: Dockerfile.mcp-proxy
           container_name: todoist-mcp-server
           restart: unless-stopped
           command: sh -c "uvx mcp-proxy --sse-port={{ todoist_mcp_proxy_port }} -- npx -y @chrusic/todoist-mcp-server-extended"
