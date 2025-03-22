@@ -66,8 +66,21 @@
             homepage.container: open-webui
 
         todoist-mcp-server:
-          # AI! add a service that uses mcp-base and runs uvx mcp-proxy ... npx -y @chrusic/todoist-mcp-server-extended - see proxy params from https://github.com/sparfenyuk/mcp-proxy/blob/main/README.md and set env var TODOIST_API_TOKEN for the service
-          
+          image: mcp-base:latest
+          container_name: todoist-mcp-server
+          restart: unless-stopped
+          command: sh -c "uvx mcp-proxy --sse-port=3000 --env TODOIST_API_TOKEN=$$TODOIST_API_TOKEN -- npx -y @chrusic/todoist-mcp-server-extended"
+          environment:
+            TODOIST_API_TOKEN: "{{ secrets.todoist_api_token }}"
+          ports:
+            - "3000:3000"
+          labels:
+            homepage.group: "AI Services"
+            homepage.name: Todoist MCP Server
+            homepage.href: "http://{{ inventory_hostname }}:3000"
+            homepage.icon: todoist.png
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: todoist-mcp-server
 
       volumes:
         ollama_data:
