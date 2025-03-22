@@ -2,6 +2,9 @@
   community.docker.docker_volume:
     name: ollama_data
 
+# build dockerfile Dockerfile.mcp-proxy and tag it mcp-base:latest, AI!
+
+
 - name: Start AI containers
   community.docker.docker_compose_v2:
     project_name: ai
