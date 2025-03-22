@@ -69,15 +69,15 @@
           image: mcp-base:latest
           container_name: todoist-mcp-server
           restart: unless-stopped
-          command: sh -c "uvx mcp-proxy --sse-port={{ mcp_proxy_port }} --env TODOIST_API_TOKEN=$$TODOIST_API_TOKEN -- npx -y @chrusic/todoist-mcp-server-extended"
+          command: sh -c "uvx mcp-proxy --sse-port={{ todoist_mcp_proxy_port }} --env TODOIST_API_TOKEN=$$TODOIST_API_TOKEN -- npx -y @chrusic/todoist-mcp-server-extended"
           environment:
             TODOIST_API_TOKEN: "{{ secrets.todoist_api_token }}"
           ports:
-            - "{{ mcp_proxy_port }}:{{ mcp_proxy_port }}"
+            - "{{ todoist_mcp_proxy_port }}:{{ todoist_mcp_proxy_port }}"
           labels:
             homepage.group: "AI Services"
             homepage.name: Todoist MCP Server
-            homepage.href: "http://{{ inventory_hostname }}:{{ mcp_proxy_port }}"
+            homepage.href: "http://{{ inventory_hostname }}:{{ todoist_mcp_proxy_port }}"
             homepage.icon: todoist.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: todoist-mcp-server
