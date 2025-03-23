@@ -9,6 +9,13 @@ services:
     http_port: "{{ homeassistant_http_port }}"
     server: homelab
     group: Smart Home
+  musicassistant:
+    name: Music Assistant
+    ip: "{{ homelab_nuc_ip }}"
+    http_port: "{{ music_assistant_http_port }}"
+    server: homelab
+    tls_skip: true
+    group: Media
   uptime:
     name: Uptime Kuma
     group: Monitoring

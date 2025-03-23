@@ -10,6 +10,7 @@
   file: path={{item}} state=directory owner={{username}}
   with_items:
   - "{{homeassistant_config_folder}}"
+  - "{{music_assistant_data_folder}}"
   - "{{frigate_config_folder}}"
   - "{{frigate_media_folder}}"
   - "{{vscode_config_folder}}"
@@ -126,6 +127,30 @@
             - "homepage.icon=home-assistant.png"
             - "homepage.server={{ inventory_hostname }}"
             - "homepage.container=homeassistant"
+        music-assistant-server:
+          image: ghcr.io/music-assistant/server:latest
+          container_name: music-assistant-server
+          restart: unless-stopped
+          network_mode: host
+          volumes:
+            - "{{music_assistant_data_folder}}:/data/"
+            - "{{music_assistant_media_folder}}:/media/"
+          cap_add:
+            - SYS_ADMIN
+            - DAC_READ_SEARCH
+          security_opt:
+            - apparmor:unconfined
+          environment:
+           - LOG_LEVEL=info
+          labels:
+            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
+            - 'wud.link.template=https://github.com/music-assistant/server/releases/tag/$${major}.$${minor}.$${patch}'
+            - "homepage.group={{services.musicassistant.group}}"
+            - "homepage.name={{services.musicassistant.name}}"
+            - "homepage.href=https://musicassistant.lan"
+            - "homepage.icon=home-assistant.png"
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container=music-assistant-server"
         code-server:
           image: lscr.io/linuxserver/code-server
           container_name: code-server
