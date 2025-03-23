@@ -1,5 +1,3 @@
-version: '3'
-
 services:
 {% for service in mcp_services %}
   {{ service.name }}:
@@ -10,3 +8,4 @@ services:
     environment: {{ service.environment | default({}) | to_json }}
     ports: {{ service.ports | to_json }}
 {% endfor %}
+# AI? I want to add https://github.com/adamwattis/mcp-proxy-server/blob/main/README.md here that proxies to all of the mcp servers above - port should be 4000
