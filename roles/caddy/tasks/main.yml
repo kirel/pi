@@ -95,10 +95,21 @@
 
 - name: copy root certificate
   shell: "docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt"
+
 - fetch: 
     src: "{{caddy_folder}}/root.crt"
     dest: tmp/
     flat: yes
+
+- name: copy root certificate to ca authorities
+  copy:
+    src: "{{caddy_folder}}/root.crt"
+    dest: /usr/local/share/ca-certificates/root.crt
+    remote_src: true
+    mode: 0644
+
+- name: Update ca certificates
+  shell: "update-ca-certificates"
 
 - name: Reposess root cert
   ansible.builtin.file:
