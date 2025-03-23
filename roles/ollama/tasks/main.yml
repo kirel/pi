@@ -68,7 +68,8 @@
     state: present
     definition:
       services:
-        "{{ item.name }}":
+        service:
+          name: "{{ item.name }}"
           image: mcp-base:latest
           build:
             context: "{{ build_dir.path }}"
