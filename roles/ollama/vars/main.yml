@@ -1,0 +1,21 @@
+---
+# roles/ollama/vars/main.yml
+mcp_services:
+  - name: todoist-mcp-server
+    command: sh -c "uvx mcp-proxy --pass-environment --sse-host 0.0.0.0 --sse-port={{ todoist_mcp_proxy_port }} -- npx -y @chrusic/todoist-mcp-server-extended"
+    ports: 
+      - "{{ todoist_mcp_proxy_port }}:{{ todoist_mcp_proxy_port }}"
+    environment:
+      TODOIST_API_TOKEN: "{{ todoist_api_token }}"
+
+  - name: todoist-mcp-server-python
+    command: sh -c "uvx mcp-proxy --pass-environment --sse-host 0.0.0.0 --sse-port={{ todoist_mcp_py_proxy_port }} -- uvx --from https://github.com/kirel/todoist-mcp-python.git mcp-server-todoist"
+    ports: 
+      - "{{ todoist_mcp_py_proxy_port }}:{{ todoist_mcp_py_proxy_port }}"
+    environment:
+      TODOIST_API_TOKEN: "{{ todoist_api_token }}"
+
+  - name: memory-mcp-server
+    command: sh -c "uvx mcp-proxy --pass-environment --sse-host 0.0.0.0 --sse-port={{ memory_mcp_proxy_port }} -- npx -y @modelcontextprotocol/server-memory"
+    ports: 
+      - "{{ memory_mcp_proxy_port }}:{{ memory_mcp_proxy_port }}"
