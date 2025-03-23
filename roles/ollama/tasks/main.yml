@@ -66,7 +66,7 @@
     build: always
     pull: always
     state: present
-    definition:
+    definition: # AI! Use project_src and a docker compose template consructed with jinja2 - see https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_v2_module.html
       services:
         service:
           name: "{{ item.name }}"
