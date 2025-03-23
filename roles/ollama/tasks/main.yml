@@ -2,28 +2,6 @@
   community.docker.docker_volume:
     name: ollama_data
 
-- name: Create temporary build directory
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: ollama_build
-  register: build_dir
-
-- name: Copy Dockerfile to build directory
-  ansible.builtin.copy:
-    src: "{{ role_path }}/Dockerfile.mcp-proxy"
-    dest: "{{ build_dir.path }}/Dockerfile.mcp-proxy"
-    mode: '0644'
-
-- name: Build MCP proxy image
-  community.docker.docker_image:
-    build:
-      path: "{{ build_dir.path }}"
-      dockerfile: Dockerfile.mcp-proxy
-    name: mcp-proxy
-    tag: latest
-    source: build
-  when: build_dir.path is defined
-
 - name: Start core AI containers
   community.docker.docker_compose_v2:
     project_name: ai-core
@@ -70,6 +48,29 @@
           external: true
         open-webui: {}
 
+- name: Create temporary build directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: ollama_build
+  register: build_dir
+
+- name: Copy Dockerfile to build directory
+  ansible.builtin.copy:
+    src: "{{ role_path }}/Dockerfile.mcp-proxy"
+    dest: "{{ build_dir.path }}/Dockerfile.mcp-proxy"
+    mode: '0644'
+
+- name: Build MCP proxy image
+  community.docker.docker_image:
+    build:
+      path: "{{ build_dir.path }}"
+      dockerfile: Dockerfile.mcp-proxy
+    name: mcp-proxy
+    tag: latest
+    source: build
+  when: build_dir.path is defined
+
+
 - name: Generate docker-compose.mcp.yml from template
   ansible.builtin.template:
     src: docker-compose.mcp.yml.j2
@@ -80,6 +81,4 @@
   community.docker.docker_compose_v2:
     project_name: ai-mcp
     project_src: "{{ build_dir.path }}"
-    build: no
-    pull: no
     state: present
