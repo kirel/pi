@@ -22,7 +22,9 @@ homeassistant_http_port: 8123
 music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
 wud_http_port: 3000
-todoist_mcp_proxy_port: 4001  # Between wud (3000) and portainer (9000)
+todoist_mcp_proxy_port: 4001
+todoist_mcp_py_proxy_port: 4003
+memory_mcp_proxy_port: 4002
 vscode_http_port: 8443
 nodered_http_port: 1880
 mosquitto_address: "{{ ansible_default_ipv4.address }}"
@@ -77,9 +79,3 @@ satellite_data_folder: "{{config_root}}/satellite"
 piper_data_folder: "{{config_root}}/piper"
 whisper_data_folder: "{{config_root}}/whisper"
 babybuddy_config_folder: "{{config_root}}/babybuddy"
-
-todoist-mcp-server:
-  name: Todoist MCP Server
-  ip: "{{ homelab_nuc_ip }}"
-  http_port: "{{ todoist_mcp_proxy_port }}"
-  group: "AI"

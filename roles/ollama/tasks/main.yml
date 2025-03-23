@@ -19,9 +19,8 @@
   community.docker.docker_compose_v2:
     project_name: ai
     pull: "always"  # Keep setting for other images
+    build: "always"
     state: present
-    build:  # Build images with missing local ones
-      path: "{{ build_dir.path }}"
     definition:
       services:
         ollama-service:
@@ -60,24 +59,41 @@
             homepage.container: open-webui
 
         todoist-mcp-server:
-          image: mcp-base:latest  # Prove this is already built
+          image: mcp-base:latest
           build:
             context: "{{ build_dir.path }}"
             dockerfile: Dockerfile.mcp-proxy
           container_name: todoist-mcp-server
           restart: unless-stopped
-          command: sh -c "uvx mcp-proxy --sse-port={{ todoist_mcp_proxy_port }} -- npx -y @chrusic/todoist-mcp-server-extended"
+          command: sh -c "uvx mcp-proxy --pass-environment --sse-host 0.0.0.0 --sse-port={{ todoist_mcp_proxy_port }} -- npx -y @chrusic/todoist-mcp-server-extended"
           environment:
             TODOIST_API_TOKEN: "{{ todoist_api_token }}"
           ports:
             - "{{ todoist_mcp_proxy_port }}:{{ todoist_mcp_proxy_port }}"
-          labels:
-            homepage.group: "AI Services"
-            homepage.name: Todoist MCP Server
-            homepage.href: "http://{{ inventory_hostname }}:{{ todoist_mcp_proxy_port }}"
-            homepage.icon: todoist.png
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: todoist-mcp-server
+
+        todoist-mcp-server-python:
+          image: mcp-base:latest
+          build:
+            context: "{{ build_dir.path }}"
+            dockerfile: Dockerfile.mcp-proxy
+          container_name: todoist-mcp-server-python
+          restart: unless-stopped
+          command: sh -c "uvx mcp-proxy --pass-environment --sse-host 0.0.0.0 --sse-port={{ todoist_mcp_py_proxy_port }} -- uvx --from https://github.com/kirel/todoist-mcp-python.git mcp-server-todoist"
+          environment:
+            TODOIST_API_TOKEN: "{{ todoist_api_token }}"
+          ports:
+            - "{{ todoist_mcp_py_proxy_port }}:{{ todoist_mcp_py_proxy_port }}"
+
+        memory-mcp-server:
+          image: mcp-base:latest
+          build:
+            context: "{{ build_dir.path }}"
+            dockerfile: Dockerfile.mcp-proxy
+          container_name: memory-mcp-server
+          restart: unless-stopped
+          command: sh -c "uvx mcp-proxy --pass-environment --sse-host 0.0.0.0 --sse-port={{ memory_mcp_proxy_port }} -- npx -y @modelcontextprotocol/server-memory"
+          ports:
+            - "{{ memory_mcp_proxy_port }}:{{ memory_mcp_proxy_port }}"
 
       volumes:
         ollama_data:
