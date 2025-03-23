@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+{% for service in mcp_services %}
+  {{ service.name }}:
+    image: mcp-base:latest
+    build:
+      context: {{ build_dir.path }}
+      dockerfile: Dockerfile.mcp-proxy
+    container_name: {{ service.name }}
+    restart: unless-stopped
+    command: {{ service.command | to_json }}
+    environment: {{ service.environment | default({}) | to_json }}
+    ports: {{ service.ports | to_json }}
+{% endfor %}

@@ -60,25 +60,16 @@
           external: true
         open-webui: {}
 
+- name: Generate docker-compose.mcp.yml from template
+  ansible.builtin.template:
+    src: docker-compose.mcp.yml.j2
+    dest: "{{ build_dir.path }}/docker-compose.yml"
+    mode: '0644'
+
 - name: Deploy MCP proxy services
   community.docker.docker_compose_v2:
     project_name: ai-mcp
+    project_src: "{{ build_dir.path }}"
     build: always
     pull: always
     state: present
-    definition: # AI! Use project_src and a docker compose template consructed with jinja2 - see https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_v2_module.html
-      services:
-        service:
-          name: "{{ item.name }}"
-          image: mcp-base:latest
-          build:
-            context: "{{ build_dir.path }}"
-            dockerfile: Dockerfile.mcp-proxy
-          container_name: "{{ item.name }}"
-          restart: unless-stopped
-          command: "{{ item.command }}"
-          environment: "{{ item.environment | default({}) }}"
-          ports: "{{ item.ports }}"
-  loop: "{{ mcp_services }}"
-  loop_control:
-    label: "{{ item.name }}"
