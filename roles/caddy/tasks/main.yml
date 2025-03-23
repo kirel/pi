@@ -38,7 +38,6 @@
     build: "policy"  # or "always", "never"
     state: present  # Ensure the services are started
     definition:
-      version: '3'
       networks:
         homepage:
           external: true

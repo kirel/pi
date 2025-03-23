@@ -10,7 +10,6 @@
     pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
     state: present  # Ensure the services are started
     definition:
-      version: '3.3'
       networks:
         dockerproxy:
           external: true
