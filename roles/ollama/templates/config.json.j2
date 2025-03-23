@@ -1,0 +1,13 @@
+{
+  "servers": [
+  {% for service in mcp_services %}
+    {
+      "name": "{{ service.name }}",
+      "transport": {
+        "type": "sse", 
+        "url": "http://{{ service.name }}:{{ service.sse_port }}/sse"
+      }
+    }{% if not loop.last %},{% endif %}
+  {% endfor %}
+  ]
+}

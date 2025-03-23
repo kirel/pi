@@ -77,6 +77,12 @@
     dest: "{{ build_dir.path }}/docker-compose.yml"
     mode: '0644'
 
+- name: Generate MCP proxy config
+  ansible.builtin.template:
+    src: config.json.j2
+    dest: "{{ build_dir.path }}/config.json"
+    mode: '0644'
+
 - name: Deploy MCP proxy services
   community.docker.docker_compose_v2:
     project_name: ai-mcp
