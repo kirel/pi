@@ -59,7 +59,7 @@
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: open-webui
 
-        # Loop through MCP services
+        # AI! Jinja here is illegal - use loop: instead. Make second community.docker.docker_compose_v2 just for mcp servers
         {% for service in mcp_services %}
         {{ service.name }}:
           image: mcp-base:latest
