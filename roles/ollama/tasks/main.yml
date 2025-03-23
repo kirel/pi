@@ -77,8 +77,8 @@
           container_name: "{{ item.name }}"
           restart: unless-stopped
           command: "{{ item.command }}"
-          environment: "{{ item.environment | default([]) | to_nice_json }}"
-          ports: "{{ item.ports | to_nice_json }}"
+          environment: "{{ item.environment | default({}) }}"
+          ports: "{{ item.ports }}"
   loop: "{{ mcp_services }}"
   loop_control:
     label: "{{ item.name }}"
