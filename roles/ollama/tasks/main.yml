@@ -14,6 +14,7 @@
     dest: "{{ build_dir.path }}/Dockerfile.mcp-proxy"
     mode: '0644'
 
+# AI? In this file we have the same docker file built in three services - how to DRY it?
 
 - name: Start AI containers
   community.docker.docker_compose_v2:
