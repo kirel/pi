@@ -14,13 +14,11 @@
     dest: "{{ build_dir.path }}/Dockerfile.mcp-proxy"
     mode: '0644'
 
-# AI? In this file we have the same docker file built in three services - how to DRY it?
-
-- name: Start AI containers
+- name: Start core AI containers
   community.docker.docker_compose_v2:
-    project_name: ai
-    pull: "always"  # Keep setting for other images
-    build: "always"
+    project_name: ai-core
+    pull: always
+    build: always
     state: present
     definition:
       services:
@@ -38,7 +36,6 @@
             - ollama_data:/root/.ollama
           labels:
             wud.tag.include: '^\d+\.\d+\.\d+$$'
-
         open-webui:
           image: ghcr.io/open-webui/open-webui:main
           container_name: open-webui
@@ -58,24 +55,29 @@
             homepage.icon: openai.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: open-webui
+      volumes:
+        ollama_data:
+          external: true
+        open-webui: {}
 
-        # AI! Jinja here is illegal - use loop: instead. Make second community.docker.docker_compose_v2 just for mcp servers
-        {% for service in mcp_services %}
-        {{ service.name }}:
+- name: Deploy MCP proxy services
+  community.docker.docker_compose_v2:
+    project_name: ai-mcp
+    build: always
+    pull: always
+    state: present
+    definition:
+      services:
+        "{{ item.name }}":
           image: mcp-base:latest
           build:
             context: "{{ build_dir.path }}"
             dockerfile: Dockerfile.mcp-proxy
-          container_name: "{{ service.name }}"
+          container_name: "{{ item.name }}"
           restart: unless-stopped
-          command: "{{ service.command }}"
-          {% if service.environment is defined %}
-          environment: {{ service.environment | to_nice_json }}
-          {% endif %}
-          ports: {{ service.ports | to_nice_json }}
-        {% endfor %}
-
-      volumes:
-        ollama_data:
-          external: true  # External volume for persistent data
-        open-webui: {}  # Internal volume for web UI data
+          command: "{{ item.command }}"
+          environment: "{{ item.environment | default([]) | to_nice_json }}"
+          ports: "{{ item.ports | to_nice_json }}"
+  loop: "{{ mcp_services }}"
+  loop_control:
+    label: "{{ item.name }}"
