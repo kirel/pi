@@ -32,6 +32,7 @@
           container_name: homepage
           privileged: true
           environment:
+            HOMEPAGE_ALLOWED_HOSTS: "homepage.lan"
             PUID: "{{ uid }}"
             PGID: "{{ uid }}"
           dns:
