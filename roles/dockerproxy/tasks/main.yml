@@ -27,7 +27,7 @@
             SERVICES: "1"
             TASKS: "1"
             VOLUMES: "1"
-            DISABLE_IPV6: "1"
+            DISABLE_IPV6: "0"
           ports:
             - "2375:2375"
           networks:

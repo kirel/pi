@@ -19,6 +19,7 @@
   - "{{mosquitto_data_folder}}"
   - "{{mosquitto_log_folder}}"
   - "{{zigbee2mqtt_data_folder}}"
+  - "{{matter_server_data_folder}}"
   - "{{piper_data_folder}}"
   - "{{whisper_data_folder}}"
 
@@ -78,6 +79,7 @@
   - "{{mosquitto_config_folder}}"
   - "{{mosquitto_data_folder}}"
   - "{{mosquitto_log_folder}}"
+  - "{{matter_server_data_folder}}"
   - "{{openwakeword_data_folder}}"
   - "{{piper_data_folder}}"
   - "{{whisper_data_folder}}"
@@ -231,6 +233,19 @@
             - "homepage.icon=mdi-zigbee"
             - "homepage.server={{ inventory_hostname }}"
             - "homepage.container=zigbee2mqtt"
+        matter-server:
+          image: ghcr.io/home-assistant-libs/python-matter-server:stable
+          container_name: matter-server
+          restart: unless-stopped
+          # Required for mDNS to work correctly
+          network_mode: host
+          security_opt:
+            # Needed for Bluetooth via dbus
+            - apparmor:unconfined
+          volumes:
+            - "{{matter_server_data_folder}}:/data/"
+            # Required for Bluetooth via D-Bus
+            - /run/dbus:/run/dbus:ro
 
         frigate:
           container_name: frigate

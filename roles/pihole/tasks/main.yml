@@ -87,7 +87,7 @@
             wud.watch.digest: true
             homepage.group: "{{ pihole_service.group }}"
             homepage.name: "{{ pihole_service.name }}"
-            homepage.href: "https://{{ pihole_service.domain }}"
+            homepage.href: "https://{{ pihole_service.domain }}/admin/"
             homepage.icon: mdi-pi-hole
           depends_on:
             - dhcphelper

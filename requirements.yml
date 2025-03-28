@@ -1,3 +1,2 @@
 - src: geerlingguy.pip
 - src: geerlingguy.docker
-- src: dmotte.disable_ipv6

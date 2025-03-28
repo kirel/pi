@@ -64,7 +64,6 @@
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
     - { role: glances, become: yes, tags: ["glances"] }
 
-    - { role: dmotte.disable_ipv6, become: yes, tags: ["ipv6"] }
     - { role: ollama, become: yes, tags: ["ollama"]}
     - { role: wolf, become: yes, tags: ["wolf"]}
 
