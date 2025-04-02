@@ -118,3 +118,9 @@ services:
     domain: leases-homelab.lan
     ip: "{{ homelab_nuc_ip }}" 
     http_port: 5005
+  # mcp servers
+  mcp-proxy-server:
+    name: MCP Proxy Server
+    group: AI
+    ip: "{{ homelab_nuc_ip }}" 
+    http_port: "{{ mcp_proxy_server_port }}"
