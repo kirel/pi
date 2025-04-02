@@ -1,0 +1,36 @@
+---
+- name: Ensure CA certificates directory exists
+  ansible.builtin.file:
+    path: /usr/local/share/ca-certificates
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Check if Caddy local CA certificate exists on controller
+  ansible.builtin.stat:
+    path: "{{ playbook_dir }}/tmp/root.crt"
+  delegate_to: localhost
+  become: no
+  register: local_ca_cert_stat
+  check_mode: no # Always run this check
+
+- name: Copy Caddy local CA certificate to trust store
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/tmp/root.crt" # Assuming fetch destination is tmp/ relative to playbook
+    dest: /usr/local/share/ca-certificates/caddy_local_root.crt
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  register: ca_cert_copied
+  when: local_ca_cert_stat.stat.exists # Only run if the cert file exists on the controller
+
+- name: Update CA certificates store
+  ansible.builtin.command: update-ca-certificates
+  become: yes
+  when: ca_cert_copied.changed # Only run if the certificate was actually copied/updated
+  changed_when: true # Consider this command as always making a change if run
+  register: ca_update_result
+  until: ca_update_result.rc == 0 # Retry if update fails (e.g., lock file)
+  retries: 3
+  delay: 2

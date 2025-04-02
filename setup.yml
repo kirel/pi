@@ -11,7 +11,6 @@
     - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
     - { role: glances, become: yes, tags: ["glances"] }
-
     - { role: storage, become: yes, tags: ["storage"] }
     - { role: homeassistant, become: yes, tags: ["ha"] }
     - { role: babybuddy, become: yes, tags: ["babybuddy"] }
@@ -21,6 +20,7 @@
     - { role: monitoring, become: yes, tags: ["monitoring"] }
     - { role: homepage, become: yes, tags: ["homepage"] }
     - { role: caddy, become: yes, tags: ["caddy"] }
+    - { role: trust-internal-ca, become: yes, tags: ["caddy", "ca"] }
     - { role: resolved, become: yes, tags: ["pihole"] }
     - { role: pihole, become: yes, tags: ["pihole"] }
     - { role: ollama, become: yes, tags: ["ollama"]}
@@ -35,6 +35,7 @@
     - { role: dockercleanup, become: yes, tags: ["docker"] }
     - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
     - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
+    - { role: trust-internal-ca, become: yes, tags: ["caddy", "ca"] }
     - { role: portainer, become: yes, tags: ["docker", "portainer"] }
     - { role: glances, become: yes, tags: ["glances"] }
     - { role: pihole, become: yes, tags: ["pihole"] }
@@ -80,3 +81,4 @@
     - { role: glances, become: yes, tags: ["glances"] }
     - { role: satellite-audio, become: yes, tags: ["wyoming", "satellite-audio"] }
     - { role: cli-visualizer, become: yes, tags: ["vis"] }
+    - { role: trust-internal-ca, become: yes, tags: ["caddy", "ca"] }

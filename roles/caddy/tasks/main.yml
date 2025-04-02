@@ -101,19 +101,12 @@
     dest: tmp/
     flat: yes
 
-- name: copy root certificate to ca authorities
-  copy:
-    src: "{{caddy_folder}}/root.crt"
-    dest: /usr/local/share/ca-certificates/root.crt
-    remote_src: true
-    mode: 0644
+# Note: Installing the cert into the host's trust store is now handled by the 'trust-internal-ca' role.
+# The fetch task above is still needed so that role can access the cert.
 
-- name: Update ca certificates
-  shell: "update-ca-certificates"
-
-- name: Reposess root cert
+- name: Reposess root cert on host after docker cp
   ansible.builtin.file:
-    path: "{{caddy_folder}}/root.crt"
+    path: "{{caddy_folder}}/root.crt" # Path where docker cp placed it
     owner: "{{ username }}"
     group: users
     mode: u=rw,g=rw
