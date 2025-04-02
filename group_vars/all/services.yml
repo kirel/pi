@@ -14,7 +14,6 @@ services:
     ip: "{{ homelab_nuc_ip }}"
     http_port: "{{ music_assistant_http_port }}"
     server: homelab
-    tls_skip: true
     group: Media
   uptime:
     name: Uptime Kuma
