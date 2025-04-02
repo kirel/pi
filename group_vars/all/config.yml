@@ -22,6 +22,7 @@ homeassistant_http_port: 8123
 music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
 wud_http_port: 3000
+mcp_proxy_server_port: 4000
 todoist_mcp_proxy_port: 4001
 todoist_mcp_py_proxy_port: 4003
 memory_mcp_proxy_port: 4002
