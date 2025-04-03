@@ -103,7 +103,7 @@
           image: "ghcr.io/home-assistant/home-assistant:latest"
           volumes:
             - "{{homeassistant_config_folder}}:/config"
-            - "{{ caddy_data_folder }}/pki/authorities/local/root.crt:/config/additional_ca/caddy_local_root.crt:ro"
+            - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
             - "{{homeassistant_config_folder}}/docker/run:/etc/services.d/home-assistant/run"
             - "{{homeassistant_media_folder}}:/media"
             - /etc/localtime:/etc/localtime:ro
@@ -139,6 +139,7 @@
           volumes:
             - "{{music_assistant_data_folder}}:/data/"
             - "{{music_assistant_media_folder}}:/media/"
+            - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro # Mount host CA bundle
           cap_add:
             - SYS_ADMIN
             - DAC_READ_SEARCH
