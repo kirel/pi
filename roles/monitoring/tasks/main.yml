@@ -23,6 +23,8 @@
           dns:
             - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"
+          environment:
+            NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
           network_mode: bridge
           labels:
             wud.tag.include: '^1$$'
