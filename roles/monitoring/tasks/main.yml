@@ -19,6 +19,7 @@
           volumes:
             - "{{ uptime_kuma_data_folder }}:/app/data"
             - /var/run/docker.sock:/var/run/docker.sock
+            - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro # Mount host CA bundle
           dns:
             - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"
