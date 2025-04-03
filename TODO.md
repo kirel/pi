@@ -39,8 +39,8 @@ This list tracks suggested improvements and refactoring tasks for the Ansible co
 ## Low Priority / Consider
 
 7.  **Implement Linting/Testing**
-    *   [ ] Add `ansible-lint` to the project and fix reported issues.
-    *   [ ] Add `yamllint` for consistent YAML formatting.
+    *   [x] Add `ansible-lint` to the project and fix reported issues (via pre-commit).
+    *   [x] Add `yamllint` for consistent YAML formatting (via pre-commit).
     *   [ ] Consider `molecule` for role testing if roles are intended to be highly reusable or complex.
 
 8.  **Review Role Granularity**

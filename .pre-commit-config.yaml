@@ -1,0 +1,26 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0 # Use the latest stable version or one suitable for your project
+    hooks:
+    -   id: check-yaml
+        args: [--allow-multiple-documents]
+    -   id: check-added-large-files
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: check-merge-conflict
+
+-   repo: https://github.com/ansible/ansible-lint
+    rev: v6.22.2 # Use the latest stable version or one suitable for your project
+    hooks:
+    -   id: ansible-lint
+        files: \.(yaml|yml)$
+        # Optional: Add arguments like --profile production or --skip-list=rule_id
+        # args: ["--profile", "min"]
+
+-   repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1 # Use the latest stable version or one suitable for your project
+    hooks:
+    -   id: yamllint
+        args: ['-c', '.yamllint.yaml'] # Point to your yamllint config

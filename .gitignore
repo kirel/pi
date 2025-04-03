@@ -5,3 +5,5 @@
 tmp/root.crt
 .vscode
 .aider*
+.ansible
+.pre-commit-config.yaml.lock
