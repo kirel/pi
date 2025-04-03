@@ -17,7 +17,7 @@ This is my homelab config. The repo is called `pi` because it started as a singl
 7. Write the image
 8. Eject and reinsert the memory card
 
-    pipenv run ansible-playbook prep_pi.yml
+    uv run ansible-playbook prep_pi.yml
 
 ## Bootstrap the Homelab Server
 
@@ -27,36 +27,37 @@ TODO https://github.com/coreprocess/linux-unattended-installation
 
 ### Basic Setup
 
-    pipenv install
-    pipenv shell # optional
-    pipenv run ansible-galaxy install --force-with-deps -r requirements.yml
+    # Install dependencies using uv
+    uv pip sync requirements.txt requirements-dev.txt
+    # Install Ansible Galaxy roles
+    uv run ansible-galaxy install --force-with-deps -r requirements.yml
 
 ### Everything
 
-    pipenv run ansible-playbook setup.yml # Update everything
+    uv run ansible-playbook setup.yml # Update everything
 
 ### DNS etc
 
-    pipenv run ansible-playbook setup.yml --tags caddy,pihole,homepage --limit homelab,nameserver # update dhcp, domains etc.
+    uv run ansible-playbook setup.yml --tags caddy,pihole,homepage --limit homelab,nameserver # update dhcp, domains etc.
 
 ### Home Assistant
 
-    pipenv run ansible-playbook setup.yml --tags ha # Update smart home
-    pipenv run ansible-playbook setup.yml --tags ollama # Update ollama
+    uv run ansible-playbook setup.yml --tags ha # Update smart home
+    uv run ansible-playbook setup.yml --tags ollama # Update ollama
 
-    pipenv run ansible-playbook setup.yml --limit mic-satellites -t satellite-audio
-    pipenv run ansible-playbook setup.yml --limit mic-satellites -t wyoming --start-at-task="Start wyoming stack"
+    uv run ansible-playbook setup.yml --limit mic-satellites -t satellite-audio
+    uv run ansible-playbook setup.yml --limit mic-satellites -t wyoming --start-at-task="Start wyoming stack"
 
 ### Virtualhere
 
-    pipenv run ansible-playbook setup.yml --limit virtualhere
+    uv run ansible-playbook setup.yml --limit virtualhere
 
 
 ## Secrets
 
 Edit secrets
 
-    pipenv run ansible-vault edit group_vars/all/secrets.yml
+    uv run ansible-vault edit group_vars/all/secrets.yml
 
 Configure pihole password
 
@@ -99,7 +100,7 @@ TODO create ansible script and make it work for both pihole and homelab.
 
 ### Fix bluetooth
 
-    pipenv run ansible-playbook fix_hass_bluetooth.yml
+    uv run ansible-playbook fix_hass_bluetooth.yml
 
 ### Ring breaks:
 
@@ -114,9 +115,9 @@ TODO: create ansible script
 
 ## Satellites
 
-    pipenv run ansible-playbook setup.yml -l mic-satellites -t alsa,pulse
-    pipenv run ansible-playbook setup.yml -l mic-satellites -t stack
-    pipenv run ansible-playbook setup.yml -l mic-satellites -t vis
+    uv run ansible-playbook setup.yml -l mic-satellites -t alsa,pulse
+    uv run ansible-playbook setup.yml -l mic-satellites -t stack
+    uv run ansible-playbook setup.yml -l mic-satellites -t vis
 
 ### Test audio
 

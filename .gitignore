@@ -7,3 +7,4 @@ tmp/root.crt
 .aider*
 .ansible
 .pre-commit-config.yaml.lock
+.uv_cache/
