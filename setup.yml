@@ -28,6 +28,7 @@
 
 #- media
 - hosts: nameserver
+  name: Setup nameserver
   roles:
     - { role: pi, become: true, tags: ["pi"] }
     - { role: basic, become: true, tags: ["basic"] }

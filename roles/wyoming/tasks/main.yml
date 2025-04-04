@@ -19,7 +19,7 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ openwakeword_data_folder }}/{{ item | basename }}"
-    mode: '0644'
+    mode: "0644"
   with_fileglob:
     - "wakewords/*"
 
