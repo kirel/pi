@@ -171,5 +171,5 @@
             - "5"
             - --mic-noise-suppression
             - "2"
-            #- --vad
+            # - --vad
             - --debug

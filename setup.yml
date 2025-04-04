@@ -1,6 +1,5 @@
 ---
 - name: Set up homelab
-  #remote_user: root
   hosts: homelab
   roles:
     - { role: nuc, become: true, tags: [nuc] }
@@ -26,7 +25,6 @@
     - { role: pihole, become: true, tags: [pihole] }
     - { role: ollama, become: true, tags: [ollama] }
 
-#- media
 - name: Setup nameserver
   hosts: nameserver
   roles:
@@ -56,8 +54,8 @@
     - { role: glances, become: true, tags: [glances] }
     - { role: virtualhere, become: true, tags: [virtualhere] }
 
-- name: Setup ailab
-  hosts: ailab
+- name: Setup ailabs
+  hosts: ailabs
   roles:
     - { role: basic, become: true, tags: [basic] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
@@ -68,7 +66,7 @@
     - { role: portainer, become: true, tags: [docker, portainer] }
     - { role: glances, become: true, tags: [glances] }
 
-    - { role: ollama, become: true, tags: [ollama] }
+    - { role: ollama-arc, become: true, tags: [ollama-arc] }
     - { role: wolf, become: true, tags: [wolf] }
 
 - name: Setup mic sattelites

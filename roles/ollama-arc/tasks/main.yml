@@ -1,0 +1,49 @@
+---
+# tasks file for ollama-arc
+
+- name: Ensure models directory exists
+  ansible.builtin.file:
+    path: "{{ ollama_arc_models_path }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Pull the latest ipex-llm-inference-cpp-xpu image
+  community.docker.docker_image:
+    name: "{{ ollama_arc_image }}"
+    source: pull
+    tag: latest
+  become: true
+
+- name: Define base container environment variables
+  ansible.builtin.set_fact:
+    ollama_arc_base_env_vars:
+      no_proxy: "{{ ollama_arc_no_proxy }}"
+      DEVICE: "{{ ollama_arc_device_type }}"
+
+- name: Conditionally add benchmark model environment variable
+  ansible.builtin.set_fact:
+    ollama_arc_bench_env_var: "{% if ollama_arc_benchmark_model | length > 0 %}{'bench_model': '{{ ollama_arc_benchmark_model }}'}{% else %}{}{% endif %}"
+
+- name: Combine environment variables
+  ansible.builtin.set_fact:
+    ollama_arc_env_vars: "{{ ollama_arc_base_env_vars | combine(ollama_arc_bench_env_var) }}"
+
+- name: Start the ipex-llm-inference-cpp-xpu container
+  community.docker.docker_container:
+    name: "{{ ollama_arc_container_name }}"
+    image: "{{ ollama_arc_image }}"
+    state: started
+    detach: true
+    interactive: true # Corresponds to -it, though detach=true makes -t less relevant
+    tty: true # Corresponds to -it
+    network_mode: host
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - "{{ ollama_arc_models_path }}:/models"
+    env: "{{ ollama_arc_env_vars }}"
+    memory: "{{ ollama_arc_memory }}"
+    shm_size: "{{ ollama_arc_shm_size }}"
+    restart_policy: "{{ ollama_arc_restart_policy }}"
+  become: true

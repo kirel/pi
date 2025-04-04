@@ -1,0 +1,11 @@
+---
+# defaults file for ollama-arc
+ollama_arc_image: intelanalytics/ipex-llm-inference-cpp-xpu:latest
+ollama_arc_container_name: ipex-llm-inference-cpp-xpu-container
+ollama_arc_models_path: /opt/ollama-models # Default path on host, override in group_vars if needed
+ollama_arc_memory: 32G
+ollama_arc_shm_size: 16g
+ollama_arc_device_type: Arc # Or Flex, Max, iGPU
+ollama_arc_benchmark_model: "" # Set to a model filename like "mistral-7b-v0.1.Q4_0.gguf" to enable benchmark env var
+ollama_arc_no_proxy: localhost,127.0.0.1
+ollama_arc_restart_policy: always

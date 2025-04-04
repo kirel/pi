@@ -2,3 +2,7 @@
 ipv6_config: enable
 disable_wifi: true
 disable_bluetooth: true
+# ollama-arc specific vars
+ollama_arc_models_path: /data/ai/models/ollama-arc # Specific path for ailab host
+# ollama_arc_memory: "64G" # Optional: Override default memory if needed
+# ollama_arc_shm_size: "32g" # Optional: Override default shm size if needed

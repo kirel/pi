@@ -1,5 +1,7 @@
 ---
+# handlers file for wolf
 - name: Restart udev
+  ansible.builtin.service:
+    name: udev
+    state: restarted
   become: true
-  ansible.builtin.command: udevadm control --reload-rules && udevadm trigger
-  changed_when: true

@@ -42,6 +42,18 @@ services:
     ip: "{{ nameserver_pi_ip }}"
     http_port: "{{ portainer_http_port }}"
     group: Monitoring
+  portainer-ailab:
+    name: Portainer AI Lab
+    ip: "{{ ailab_ip }}"
+    http_port: "{{ portainer_http_port }}"
+    group: Monitoring # Or 'AI Lab' if you prefer
+    icon: portainer.png
+  glances-ailab:
+    name: Glances AI Lab
+    ip: "{{ ailab_ip }}"
+    http_port: "{{ glances_http_port }}"
+    group: Monitoring # Or 'AI Lab'
+    icon: glances.png # Assuming icon name
   glances-homelab-nuc:
     name: Glances Homelab
     ip: "{{ homelab_nuc_ip }}"

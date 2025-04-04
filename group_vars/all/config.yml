@@ -13,6 +13,7 @@ router_ip: 192.168.50.1
 nameserver_pi_ip: "{{ hostvars['nameserver-pi'].ansible_host }}"
 # virtualhere_pi_ip: "{{ hostvars['virtualhere-pi'].ansible_host }}"
 homelab_nuc_ip: "{{ hostvars['homelab-nuc'].ansible_host }}"
+ailab_ip: "{{ hostvars['ailab'].ansible_host }}"
 micpi_ip: "{{ hostvars['micpi'].ansible_host }}"
 cidr: 192.168.50.0/24
 pihole_http_port: 81
