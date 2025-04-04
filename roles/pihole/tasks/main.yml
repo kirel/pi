@@ -21,14 +21,14 @@
     src: custom.list.j2
     dest: "{{ pihole_config_folder }}/custom.list"
     owner: "{{ username }}"
-  notify: restart dns
+  notify: Restart dns
 
 - name: Create dnsmasq config for static DHCP leases and DNS
   ansible.builtin.template:
     src: dhcp_conf.j2
     dest: "{{ dnsmasq_config_folder }}/04-static-dhcp.conf"
     owner: "{{ username }}"
-  notify: restart dns
+  notify: Restart dns
 
 - name: Start pihole
   community.docker.docker_compose_v2:
