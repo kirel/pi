@@ -15,8 +15,8 @@ static_dhcp:
     mac: "B8:27:EB:C1:21:9D" # Pi 3B
     ip_suffix: 7
   # virtualhere:
-    # mac: "B8:27:EB:C1:21:9D"
-    # ip_suffix: 7
+  # mac: "B8:27:EB:C1:21:9D"
+  # ip_suffix: 7
   gl-mt3000:
     mac: "94:83:C4:3A:71:DE"
     ip_suffix: 8

@@ -1,84 +1,87 @@
 ---
-- hosts: homelab
+- name: Set up homelab
   #remote_user: root
+  hosts: homelab
   roles:
-    - { role: nuc, become: yes, tags: ["nuc"] }
-    - { role: basic, become: yes, tags: ["basic"] }
-    - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
-    - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: yes, tags: ["docker"] }
-    - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
-    - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
-    - { role: portainer, become: yes, tags: ["docker", "portainer"] }
-    - { role: glances, become: yes, tags: ["glances"] }
-    - { role: storage, become: yes, tags: ["storage"] }
-    - { role: homeassistant, become: yes, tags: ["ha"] }
-    - { role: babybuddy, become: yes, tags: ["babybuddy"] }
-    - { role: fix_hass_bluetooth, become: yes, tags: ["ha"]}
-    - { role: wyoming, become: yes, tags: ["wyoming"] }
-    - { role: media, become: yes, tags: ["media"] }
-    - { role: monitoring, become: yes, tags: ["monitoring"] }
-    - { role: homepage, become: yes, tags: ["homepage"] }
-    - { role: caddy, become: yes, tags: ["caddy"] }
-    - { role: trust-internal-ca, become: yes, tags: ["caddy", "ca"] }
-    - { role: resolved, become: yes, tags: ["pihole"] }
-    - { role: pihole, become: yes, tags: ["pihole"] }
-    - { role: ollama, become: yes, tags: ["ollama"]}
+    - { role: nuc, become: true, tags: ["nuc"] }
+    - { role: basic, become: true, tags: ["basic"] }
+    - { role: geerlingguy.pip, become: true, tags: ["docker"] }
+    - { role: geerlingguy.docker, become: true, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockercleanup, become: true, tags: ["docker"] }
+    - { role: dockerhub, become: true, tags: ["docker", "dockerhub"] }
+    - { role: dockerproxy, become: true, tags: ["docker", "dockerproxy", "portainer"] }
+    - { role: portainer, become: true, tags: ["docker", "portainer"] }
+    - { role: glances, become: true, tags: ["glances"] }
+    - { role: storage, become: true, tags: ["storage"] }
+    - { role: homeassistant, become: true, tags: ["ha"] }
+    - { role: babybuddy, become: true, tags: ["babybuddy"] }
+    - { role: fix_hass_bluetooth, become: true, tags: ["ha"] }
+    - { role: wyoming, become: true, tags: ["wyoming"] }
+    - { role: media, become: true, tags: ["media"] }
+    - { role: monitoring, become: true, tags: ["monitoring"] }
+    - { role: homepage, become: true, tags: ["homepage"] }
+    - { role: caddy, become: true, tags: ["caddy"] }
+    - { role: trust-internal-ca, become: true, tags: ["caddy", "ca"] }
+    - { role: resolved, become: true, tags: ["pihole"] }
+    - { role: pihole, become: true, tags: ["pihole"] }
+    - { role: ollama, become: true, tags: ["ollama"] }
 
-    #- media
+#- media
 - hosts: nameserver
   roles:
-    - { role: pi, become: yes, tags: ["pi"] }
-    - { role: basic, become: yes, tags: ["basic"] }
-    - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
-    - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: yes, tags: ["docker"] }
-    - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
-    - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
-    - { role: trust-internal-ca, become: yes, tags: ["caddy", "ca"] }
-    - { role: portainer, become: yes, tags: ["docker", "portainer"] }
-    - { role: glances, become: yes, tags: ["glances"] }
-    - { role: pihole, become: yes, tags: ["pihole"] }
+    - { role: pi, become: true, tags: ["pi"] }
+    - { role: basic, become: true, tags: ["basic"] }
+    - { role: geerlingguy.pip, become: true, tags: ["docker"] }
+    - { role: geerlingguy.docker, become: true, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockercleanup, become: true, tags: ["docker"] }
+    - { role: dockerhub, become: true, tags: ["docker", "dockerhub"] }
+    - { role: dockerproxy, become: true, tags: ["docker", "dockerproxy", "portainer"] }
+    - { role: trust-internal-ca, become: true, tags: ["caddy", "ca"] }
+    - { role: portainer, become: true, tags: ["docker", "portainer"] }
+    - { role: glances, become: true, tags: ["glances"] }
+    - { role: pihole, become: true, tags: ["pihole"] }
 
-- hosts: virtualhere
+- name: Setup virtualhere Pi
+  hosts: virtualhere
   ignore_unreachable: true
   roles:
-    - { role: pi, become: yes, tags: ["pi"] }
-    - { role: basic, become: yes, tags: ["basic"] }
-    - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
-    - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: yes, tags: ["docker"] }
-    - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
-    - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
-    - { role: glances, become: yes, tags: ["glances"] }
-    - { role: virtualhere, become: yes, tags: ["virtualhere"] }
+    - { role: pi, become: true, tags: ["pi"] }
+    - { role: basic, become: true, tags: ["basic"] }
+    - { role: geerlingguy.pip, become: true, tags: ["docker"] }
+    - { role: geerlingguy.docker, become: true, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockercleanup, become: true, tags: ["docker"] }
+    - { role: dockerhub, become: true, tags: ["docker", "dockerhub"] }
+    - { role: dockerproxy, become: true, tags: ["docker", "dockerproxy", "portainer"] }
+    - { role: glances, become: true, tags: ["glances"] }
+    - { role: virtualhere, become: true, tags: ["virtualhere"] }
 
-- hosts: ailab
+- name: Setup ailab
+  hosts: ailab
   roles:
-    - { role: basic, become: yes, tags: ["basic"] }
-    - { role: disable_radios, become: yes, tags: ["radios"] }
-    - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
-    - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: yes, tags: ["docker"] }
-    - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
-    - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
-    - { role: portainer, become: yes, tags: ["docker", "portainer"] }
-    - { role: glances, become: yes, tags: ["glances"] }
+    - { role: basic, become: true, tags: ["basic"] }
+    - { role: geerlingguy.pip, become: true, tags: ["docker"] }
+    - { role: geerlingguy.docker, become: true, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockercleanup, become: true, tags: ["docker"] }
+    - { role: dockerhub, become: true, tags: ["docker", "dockerhub"] }
+    - { role: dockerproxy, become: true, tags: ["docker", "dockerproxy", "portainer"] }
+    - { role: portainer, become: true, tags: ["docker", "portainer"] }
+    - { role: glances, become: true, tags: ["glances"] }
 
-    - { role: ollama, become: yes, tags: ["ollama"]}
-    - { role: wolf, become: yes, tags: ["wolf"]}
+    - { role: ollama, become: true, tags: ["ollama"] }
+    - { role: wolf, become: true, tags: ["wolf"] }
 
-- hosts: mic-satellites
+- name: Setup mic sattelites
+  hosts: mic-satellites
   ignore_unreachable: true
   roles:
-    - { role: pi, become: yes, tags: ["pi"] }
-    - { role: basic, become: yes, tags: ["basic"] }
-    - { role: geerlingguy.pip, become: yes, tags: ["docker"] }
-    - { role: geerlingguy.docker, become: yes, tags: ["docker"], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: yes, tags: ["docker"] }
-    - { role: dockerhub, become: yes, tags: ["docker", "dockerhub"] }
-    - { role: dockerproxy, become: yes, tags: ["docker", "dockerproxy", "portainer"] }
-    - { role: glances, become: yes, tags: ["glances"] }
-    - { role: satellite-audio, become: yes, tags: ["wyoming", "satellite-audio"] }
-    - { role: cli-visualizer, become: yes, tags: ["vis"] }
-    - { role: trust-internal-ca, become: yes, tags: ["caddy", "ca"] }
+    - { role: pi, become: true, tags: ["pi"] }
+    - { role: basic, become: true, tags: ["basic"] }
+    - { role: geerlingguy.pip, become: true, tags: ["docker"] }
+    - { role: geerlingguy.docker, become: true, tags: ["docker"], vars: { docker_install_compose: true } }
+    - { role: dockercleanup, become: true, tags: ["docker"] }
+    - { role: dockerhub, become: true, tags: ["docker", "dockerhub"] }
+    - { role: dockerproxy, become: true, tags: ["docker", "dockerproxy", "portainer"] }
+    - { role: glances, become: true, tags: ["glances"] }
+    - { role: satellite-audio, become: true, tags: ["wyoming", "satellite-audio"] }
+    - { role: cli-visualizer, become: true, tags: ["vis"] }
+    - { role: trust-internal-ca, become: true, tags: ["caddy", "ca"] }

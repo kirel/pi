@@ -1,26 +1,31 @@
-- name: create data folders
-  file: path={{item}} state=directory owner={{username}}
+---
+- name: Create data folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
   with_items:
-  - "{{ openwakeword_data_folder }}"
-  - "{{ satellite_data_folder }}"
+    - "{{ openwakeword_data_folder }}"
+    - "{{ satellite_data_folder }}"
 
 - name: Copy sound files to the host
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ satellite_data_folder }}/{{ item | basename }}"
   with_fileglob:
     - "sounds/*"
 
 - name: Copy wake word files to the host
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ openwakeword_data_folder }}/{{ item | basename }}"
+    mode: '0644'
   with_fileglob:
     - "wakewords/*"
 
 - name: Clone the Git repository
-  git:
-    repo: 'https://github.com/rhasspy/wyoming-satellite.git'
+  ansible.builtin.git:
+    repo: "https://github.com/rhasspy/wyoming-satellite.git"
     dest: /tmp/wyoming-satellite
 
 - name: Build the Docker image
@@ -31,7 +36,10 @@
     source: build
 
 - name: Copy Dockerfile
-  copy: src=Dockerfile dest=/tmp/wyoming-satellite-extras/
+  ansible.builtin.copy:
+    src: Dockerfile
+    dest: /tmp/wyoming-satellite-extras/
+    mode: "0644"
 
 - name: Build an image from a Dockerfile
   community.docker.docker_image:
@@ -39,9 +47,8 @@
     source: build
     build:
       path: /tmp/wyoming-satellite-extras/
-    force_source: yes
+    force_source: true
     tag: latest
-
 
 - name: Start wyoming stack
   tags: stack
@@ -63,8 +70,8 @@
           command:
             - --debug
           labels:
-            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/rhasspy/wyoming-porcupine1/releases/tag/$${major}.$${minor}.$${patch}'
+            - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+            - "wud.link.template=https://github.com/rhasspy/wyoming-porcupine1/releases/tag/$${major}.$${minor}.$${patch}"
         openwakeword:
           container_name: wyoming-openwakeword
           image: rhasspy/wyoming-openwakeword
@@ -72,7 +79,7 @@
           networks:
             ha:
           volumes:
-            - "{{openwakeword_data_folder}}:/custom"
+            - "{{ openwakeword_data_folder }}:/custom"
           ports:
             - "10401:10400"
           command:
@@ -82,8 +89,8 @@
             - --preload-model
             - Darth_Vader
           labels:
-            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/$${major}.$${minor}.$${patch}'
+            - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+            - "wud.link.template=https://github.com/rhasspy/wyoming-openwakeword/releases/tag/$${major}.$${minor}.$${patch}"
         #microwakeword:
         #  container_name: wyoming-microwakeword
         #  image: rhasspy/wyoming-microwakeword
@@ -102,7 +109,7 @@
           networks:
             ha:
           volumes:
-            - "{{whisper_data_folder}}:/data"
+            - "{{ whisper_data_folder }}:/data"
           environment:
             - TZ=Europe/Berlin
           restart: unless-stopped
@@ -115,7 +122,7 @@
           networks:
             ha:
           volumes:
-            - "{{piper_data_folder}}:/data"
+            - "{{ piper_data_folder }}:/data"
           environment:
             - TZ=Europe/Berlin
           restart: unless-stopped

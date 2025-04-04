@@ -1,25 +1,28 @@
-
-- name: create folders
-  file: path={{item}} state=directory owner={{username}}
+---
+- name: Create folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
   with_items:
-  - "{{homepage_config_folder}}"
+    - "{{ homepage_config_folder }}"
 
 - name: Copy all templates to destination
   ansible.builtin.template:
     src: "{{ item }}"
-    dest: "{{homepage_config_folder}}/{{ item | basename | regex_replace('.j2','') }}"
+    dest: "{{ homepage_config_folder }}/{{ item | basename | regex_replace('.j2', '') }}"
   loop: "{{ lookup('fileglob', 'templates/*.j2', wantlist=True) }}"
 
 - name: Create network
-  docker_network:
+  community.docker.docker_network:
     name: homepage
     state: present
 
 - name: Start homepage
   community.docker.docker_compose_v2:
     project_name: homepage
-    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
-    state: present  # Ensure the services are started
+    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present # Ensure the services are started
     definition:
       networks:
         dockerproxy:
@@ -47,13 +50,13 @@
           networks:
             - dockerproxy
             - homepage
-          labels: 
+          labels:
             wud.tag.include: "^v\\d+\\.\\d+\\.\\d+$$"
   register: output
 
--  ansible.builtin.debug:
+- ansible.builtin.debug:
     var: output
 
--  ansible.builtin.assert:
+- ansible.builtin.assert:
     that:
-      - output.containers | selectattr('Name', 'equalto', 'homepage') | map(attribute='State') | list | first == 'running'  # Adjusted to check for running state
+      - output.containers | selectattr('Name', 'equalto', 'homepage') | map(attribute='State') | list | first == 'running' # Adjusted to check for running state

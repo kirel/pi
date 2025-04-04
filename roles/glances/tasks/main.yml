@@ -1,11 +1,12 @@
-- set_fact:
+---
+- ansible.builtin.set_fact:
     glances_service: "{{ services['glances-'~inventory_hostname] }}"
 
 - name: Start glances
   community.docker.docker_compose_v2:
     project_name: glances
-    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
-    state: present  # Ensure the services are started
+    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present # Ensure the services are started
     definition:
       services:
         glances:
@@ -15,7 +16,7 @@
           ports:
             - "61208-61209:61208-61209"
           environment:
-            GLANCES_OPT: "-w"  # Use key-value pairs instead of list format
+            GLANCES_OPT: "-w" # Use key-value pairs instead of list format
           volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro
             - /etc/os-release:/etc/os-release:ro

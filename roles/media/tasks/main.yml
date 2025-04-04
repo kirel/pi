@@ -1,38 +1,42 @@
-- name: create jellyfin folders
-  file: path={{item}} state=directory owner={{username}}
+---
+- name: Create jellyfin folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
   with_items:
-  - "{{jellyfin_config_folder}}"
-  - "{{jellyfin_movie_folder}}"
-  - "{{jellyfin_shows_folder}}"
-  - "{{jellyfin_music_folder}}"
-  - "{{navidrome_data_folder}}"
+    - "{{ jellyfin_config_folder }}"
+    - "{{ jellyfin_movie_folder }}"
+    - "{{ jellyfin_shows_folder }}"
+    - "{{ jellyfin_music_folder }}"
+    - "{{ navidrome_data_folder }}"
 
 - name: Reposess jellyfin folders
   ansible.builtin.file:
-    path: "{{item}}"
-    owner: "{{username}}"
+    path: "{{ item }}"
+    owner: "{{ username }}"
     group: users
     mode: u=rwx,g=rwxs
-    recurse: yes
+    recurse: true
   with_items:
-  - "{{jellyfin_config_folder}}"
-  - "{{jellyfin_movie_folder}}"
-  - "{{jellyfin_shows_folder}}"
-  - "{{jellyfin_music_folder}}"
-  - "{{navidrome_data_folder}}"
+    - "{{ jellyfin_config_folder }}"
+    - "{{ jellyfin_movie_folder }}"
+    - "{{ jellyfin_shows_folder }}"
+    - "{{ jellyfin_music_folder }}"
+    - "{{ navidrome_data_folder }}"
 
 - name: Start media services
   community.docker.docker_compose_v2:
     project_name: jellyfin
-    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
-    state: present  # Ensure the services are started
+    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present # Ensure the services are started
     definition:
       services:
         jellyfin:
           image: jellyfin/jellyfin
           container_name: jellyfin
           user: "{{ uid }}:{{ uid }}"
-          network_mode: 'host'
+          network_mode: "host"
           volumes:
             - "{{ jellyfin_config_folder }}:/config"
             - jellyfin-cache:/cache
@@ -60,7 +64,7 @@
         navidrome:
           image: deluan/navidrome:latest
           container_name: navidrome
-          user: "{{ uid }}:{{ uid }}"  # should be owner of volumes
+          user: "{{ uid }}:{{ uid }}" # should be owner of volumes
           ports:
             - "{{ navidrome_http_port }}:4533"
           restart: unless-stopped
@@ -81,4 +85,4 @@
             homepage.widget.salt: "{{ navidrome_salt }}"
 
       volumes:
-        jellyfin-cache: {}  # Define the volume
+        jellyfin-cache: {} # Define the volume

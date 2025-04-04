@@ -8,7 +8,10 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["ipykernel"]
+dev = [
+    "ansible-lint>=25.2.1",
+    "ipykernel",
+]
 
 [tool.uv]
 package = false

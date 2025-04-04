@@ -1,13 +1,17 @@
-- name: create folders
-  file: path={{item}} state=directory owner={{username}}
+---
+- name: Create folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
   with_items:
-  - "{{uptime_kuma_data_folder}}"
+    - "{{ uptime_kuma_data_folder }}"
 
 - name: Start monitoring
   community.docker.docker_compose_v2:
     project_name: monitoring
-    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
-    state: present  # Ensure the services are started
+    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present # Ensure the services are started
     definition:
       services:
         uptime_kuma:
@@ -27,8 +31,8 @@
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
           network_mode: bridge
           labels:
-            wud.tag.include: '^1$$'
-            wud.watch.digest: 'true'
+            wud.tag.include: "^1$$"
+            wud.watch.digest: "true"
             homepage.group: "{{ services.uptime.group }}"
             homepage.name: "{{ services.uptime.name }}"
             homepage.href: "https://uptime.lan"
@@ -53,7 +57,7 @@
             WUD_REGISTRY_GHCR_TOKEN: "{{ gh_access_token }}"
             WUD_REGISTRY_LSCR_TOKEN: "{{ gh_access_token }}"
           labels:
-            wud.tag.include: '^\d+\.\d+\.\d+$$'
+            wud.tag.include: "^\\d+\\.\\d+\\.\\d+$$"
             wud.link.template: "https://github.com/fmartinou/whats-up-docker/releases/tag/$${major}.$${minor}.$${patch}"
             homepage.group: "{{ services.wud.group }}"
             homepage.name: "{{ services.wud.name }}"
@@ -65,10 +69,10 @@
             homepage.widget.url: "https://wud.lan"
   register: output
 
--  ansible.builtin.debug:
+- ansible.builtin.debug:
     var: output
 
--  ansible.builtin.assert:
+- ansible.builtin.assert:
     that:
       - output.containers | selectattr('Name', 'equalto', 'uptime_kuma') | map(attribute='State') | list | first == 'running'
       - output.containers | selectattr('Name', 'equalto', 'wud') | map(attribute='State') | list | first == 'running'

@@ -1,91 +1,95 @@
+---
 - name: Allow conbee with non-root user
-  template:
+  ansible.builtin.template:
     src: 50-ttyacm.rules
     dest: /etc/udev/rules.d/50-ttyacm.rules
     owner: root
     group: root
   notify: reload udev rules
 
-- name: create config folders
-  file: path={{item}} state=directory owner={{username}}
+- name: Create config folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
   with_items:
-  - "{{homeassistant_config_folder}}"
-  - "{{music_assistant_data_folder}}"
-  - "{{frigate_config_folder}}"
-  - "{{frigate_media_folder}}"
-  - "{{vscode_config_folder}}"
-  - "{{nodered_config_folder}}"
-  - "{{mosquitto_config_folder}}"
-  - "{{mosquitto_data_folder}}"
-  - "{{mosquitto_log_folder}}"
-  - "{{zigbee2mqtt_data_folder}}"
-  - "{{matter_server_data_folder}}"
-  - "{{piper_data_folder}}"
-  - "{{whisper_data_folder}}"
+    - "{{ homeassistant_config_folder }}"
+    - "{{ music_assistant_data_folder }}"
+    - "{{ frigate_config_folder }}"
+    - "{{ frigate_media_folder }}"
+    - "{{ vscode_config_folder }}"
+    - "{{ nodered_config_folder }}"
+    - "{{ mosquitto_config_folder }}"
+    - "{{ mosquitto_data_folder }}"
+    - "{{ mosquitto_log_folder }}"
+    - "{{ zigbee2mqtt_data_folder }}"
+    - "{{ matter_server_data_folder }}"
+    - "{{ piper_data_folder }}"
+    - "{{ whisper_data_folder }}"
 
 - name: Add mosquitto config
-  template:
+  ansible.builtin.template:
     src: mosquitto.conf
-    dest: "{{mosquitto_config_folder}}/mosquitto.conf"
-    owner: "{{username}}"
+    dest: "{{ mosquitto_config_folder }}/mosquitto.conf"
+    owner: "{{ username }}"
     group: users
   # notify: reload mosquitto
 
 - name: Add z2m config
-  template:
+  ansible.builtin.template:
     src: configuration.yaml
-    dest: "{{zigbee2mqtt_data_folder}}/configuration.yaml"
-    owner: "{{username}}"
+    dest: "{{ zigbee2mqtt_data_folder }}/configuration.yaml"
+    owner: "{{ username }}"
     group: users
 
 - name: Add frigate config
-  template:
+  ansible.builtin.template:
     src: frigate.yml
-    dest: "{{frigate_config_folder}}/config.yml"
-    owner: "{{username}}"
+    dest: "{{ frigate_config_folder }}/config.yml"
+    owner: "{{ username }}"
     group: users
 
 - name: Istall git
-  apt:
+  ansible.builtin.apt:
     name: git
     state: latest
 
 - name: Istall bluez
-  apt:
+  ansible.builtin.apt:
     name: bluez
     state: latest
 
 - name: Checkout ha docker venv hack
   ansible.builtin.git:
-    repo: 'https://github.com/tribut/homeassistant-docker-venv'
-    dest: "{{homeassistant_config_folder}}/docker"
-    force: yes
+    repo: "https://github.com/tribut/homeassistant-docker-venv"
+    dest: "{{ homeassistant_config_folder }}/docker"
+    force: true
   become: true
   become_user: "{{username}}"
 
 - name: Reposess config folders
   ansible.builtin.file:
-    path: "{{item}}"
-    owner: "{{username}}"
+    path: "{{ item }}"
+    owner: "{{ username }}"
     group: users
     mode: u=rwx,g=rwxs
-    recurse: yes
+    recurse: true
   with_items:
-  - "{{homeassistant_config_folder}}"
-  - "{{frigate_config_folder}}"
-  - "{{frigate_media_folder}}"
-  - "{{vscode_config_folder}}"
-  - "{{nodered_config_folder}}"
-  - "{{mosquitto_config_folder}}"
-  - "{{mosquitto_data_folder}}"
-  - "{{mosquitto_log_folder}}"
-  - "{{matter_server_data_folder}}"
-  - "{{openwakeword_data_folder}}"
-  - "{{piper_data_folder}}"
-  - "{{whisper_data_folder}}"
+    - "{{ homeassistant_config_folder }}"
+    - "{{ frigate_config_folder }}"
+    - "{{ frigate_media_folder }}"
+    - "{{ vscode_config_folder }}"
+    - "{{ nodered_config_folder }}"
+    - "{{ mosquitto_config_folder }}"
+    - "{{ mosquitto_data_folder }}"
+    - "{{ mosquitto_log_folder }}"
+    - "{{ matter_server_data_folder }}"
+    - "{{ openwakeword_data_folder }}"
+    - "{{ piper_data_folder }}"
+    - "{{ whisper_data_folder }}"
 
 - name: Create ha network
-  docker_network:
+  community.docker.docker_network:
     name: ha
     state: present
 
@@ -102,10 +106,10 @@
           container_name: homeassistant
           image: "ghcr.io/home-assistant/home-assistant:latest"
           volumes:
-            - "{{homeassistant_config_folder}}:/config"
+            - "{{ homeassistant_config_folder }}:/config"
             - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
-            - "{{homeassistant_config_folder}}/docker/run:/etc/services.d/home-assistant/run"
-            - "{{homeassistant_media_folder}}:/media"
+            - "{{ homeassistant_config_folder }}/docker/run:/etc/services.d/home-assistant/run"
+            - "{{ homeassistant_media_folder }}:/media"
             - /etc/localtime:/etc/localtime:ro
             - /run/dbus:/run/dbus:ro
           restart: unless-stopped
@@ -113,20 +117,20 @@
           network_mode: host
           dns:
             - "{{ nameserver_pi_ip }}"
-            - "{{ homelab_nuc_ip }}"          
+            - "{{ homelab_nuc_ip }}"
           #devices:
           #  - /dev/ttyACM0 # zigbee coordinator - z2m uses this
           environment:
-            - PUID={{uid}}
-            - PGID={{uid}}
+            - PUID={{ uid }}
+            - PGID={{ uid }}
             - "PACKAGES=iputils"
             - UMASK=007
             - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
           labels:
-            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}'
-            - "homepage.group={{services.homeassistant.group}}"
-            - "homepage.name={{services.homeassistant.name}}"
+            - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+            - "wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}"
+            - "homepage.group={{ services.homeassistant.group }}"
+            - "homepage.name={{ services.homeassistant.name }}"
             - "homepage.href=https://homeassistant.lan"
             - "homepage.icon=home-assistant.png"
             - "homepage.server={{ inventory_hostname }}"
@@ -137,8 +141,8 @@
           restart: unless-stopped
           network_mode: host
           volumes:
-            - "{{music_assistant_data_folder}}:/data/"
-            - "{{music_assistant_media_folder}}:/media/"
+            - "{{ music_assistant_data_folder }}:/data/"
+            - "{{ music_assistant_media_folder }}:/media/"
             - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro # Mount host CA bundle
           cap_add:
             - SYS_ADMIN
@@ -146,12 +150,12 @@
           security_opt:
             - apparmor:unconfined
           environment:
-           - LOG_LEVEL=info
+            - LOG_LEVEL=info
           labels:
-            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/music-assistant/server/releases/tag/$${major}.$${minor}.$${patch}'
-            - "homepage.group={{services.musicassistant.group}}"
-            - "homepage.name={{services.musicassistant.name}}"
+            - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+            - "wud.link.template=https://github.com/music-assistant/server/releases/tag/$${major}.$${minor}.$${patch}"
+            - "homepage.group={{ services.musicassistant.group }}"
+            - "homepage.name={{ services.musicassistant.name }}"
             - "homepage.href=https://musicassistant.lan"
             - "homepage.icon=home-assistant.png"
             - "homepage.server={{ inventory_hostname }}"
@@ -160,25 +164,25 @@
           image: lscr.io/linuxserver/code-server
           container_name: code-server
           environment:
-            - PUID={{uid}}
-            - PGID={{uid}}
+            - PUID={{ uid }}
+            - PGID={{ uid }}
             - TZ=Europe/Berlin
             - UMASK=007
             #- PROXY_DOMAIN=code-server.my.domain #optional
             #- DEFAULT_WORKSPACE=/config/workspace #optional
           volumes:
-            - "{{vscode_config_folder}}:/config"
-            - "{{homeassistant_config_folder}}:/config/workspace"
+            - "{{ vscode_config_folder }}:/config"
+            - "{{ homeassistant_config_folder }}:/config/workspace"
           ports:
             - 8443:8443
           security_opt:
             - seccomp:unconfined # because strange PI issue see https://stackoverflow.com/questions/69775057/docker-image-fails-to-run-on-raspberry-pi-with-strange-node-error
           restart: unless-stopped
           labels:
-            - 'wud.tag.include=latest'
-            - 'wud.watch.digest=true'
-            - "homepage.group={{services.vscode.group}}"
-            - "homepage.name={{services.vscode.name}}"
+            - "wud.tag.include=latest"
+            - "wud.watch.digest=true"
+            - "homepage.group={{ services.vscode.group }}"
+            - "homepage.name={{ services.vscode.name }}"
             - "homepage.href=https://vscode.lan"
             - "homepage.icon=vscode.png"
             - "homepage.server={{ inventory_hostname }}"
@@ -199,39 +203,39 @@
         mosquitto:
           container_name: mosquitto
           image: eclipse-mosquitto:latest
-          user: "{{uid}}:{{uid}}"
+          user: "{{ uid }}:{{ uid }}"
           ports:
-            - "{{mosquitto_port}}:1883"
-            - "{{mosquitto_websockets_port}}:9001"
+            - "{{ mosquitto_port }}:1883"
+            - "{{ mosquitto_websockets_port }}:9001"
           volumes:
-            - "{{mosquitto_config_folder}}/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro"
-            - "{{mosquitto_data_folder}}:/mosquitto/data"
-            - "{{mosquitto_log_folder}}:/mosquitto/log"
+            - "{{ mosquitto_config_folder }}/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro"
+            - "{{ mosquitto_data_folder }}:/mosquitto/data"
+            - "{{ mosquitto_log_folder }}:/mosquitto/log"
           restart: unless-stopped
           labels:
-            - 'wud.tag.include=latest'
-            - 'wud.watch.digest=true'
+            - "wud.tag.include=latest"
+            - "wud.watch.digest=true"
         zigbee2mqtt:
           container_name: zigbee2mqtt
           image: koenkk/zigbee2mqtt:latest
-          user: "{{uid}}:{{uid}}"
+          user: "{{ uid }}:{{ uid }}"
           group_add:
             - dialout
           volumes:
-            - "{{zigbee2mqtt_data_folder}}:/app/data"
+            - "{{ zigbee2mqtt_data_folder }}:/app/data"
             - /run/udev:/run/udev:ro
           ports:
-            - "{{z2m_http_port}}:8080"
+            - "{{ z2m_http_port }}:8080"
           environment:
             - TZ=Europe/Berlin
           devices:
             - /dev/ttyUSB0:/dev/ttyACM1
           restart: always
           labels:
-            - 'wud.tag.include=latest'
-            - 'wud.watch.digest=true'
-            - "homepage.group={{services.z2m.group}}"
-            - "homepage.name={{services.z2m.name}}"
+            - "wud.tag.include=latest"
+            - "wud.watch.digest=true"
+            - "homepage.group={{ services.z2m.group }}"
+            - "homepage.name={{ services.z2m.name }}"
             - "homepage.href=https://z2m.lan"
             - "homepage.icon=mdi-zigbee"
             - "homepage.server={{ inventory_hostname }}"
@@ -246,7 +250,7 @@
             # Needed for Bluetooth via dbus
             - apparmor:unconfined
           volumes:
-            - "{{matter_server_data_folder}}:/data/"
+            - "{{ matter_server_data_folder }}:/data/"
             # Required for Bluetooth via D-Bus
             - /run/dbus:/run/dbus:ro
 
@@ -260,24 +264,24 @@
             - /dev/bus/usb:/dev/bus/usb
           volumes:
             - /etc/localtime:/etc/localtime:ro
-            - "{{frigate_config_folder}}:/config"
-            - "{{frigate_media_folder}}:/media/frigate"
+            - "{{ frigate_config_folder }}:/config"
+            - "{{ frigate_media_folder }}:/media/frigate"
             - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
               target: /tmp/cache
               tmpfs:
                 size: 1000000000
           ports:
-            - "{{frigate_http_port}}:5000"
+            - "{{ frigate_http_port }}:5000"
             - "8554:8554" # RTSP feeds
             - "8555:8555/tcp" # WebRTC over tcp
             - "8555:8555/udp" # WebRTC over udp
           environment:
             FRIGATE_RTSP_PASSWORD: "password"
           labels:
-            - 'wud.tag.include=^\d+\.\d+\.\d+$$'
-            - 'wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}'
-            - "homepage.group={{services.frigate.group}}"
-            - "homepage.name={{services.frigate.name}}"
+            - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+            - "wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}"
+            - "homepage.group={{ services.frigate.group }}"
+            - "homepage.name={{ services.frigate.name }}"
             - "homepage.href=https://frigate.lan"
             - "homepage.icon=frigate.png"
             - "homepage.server={{ inventory_hostname }}"

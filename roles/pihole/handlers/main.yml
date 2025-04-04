@@ -1,2 +1,3 @@
-- name: restart dns
-  shell: docker exec -it pihole pihole restartdns
+---
+- name: Restart dns
+  ansible.builtin.command: docker exec -it pihole pihole restartdns

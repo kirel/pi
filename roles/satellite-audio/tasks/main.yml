@@ -1,27 +1,28 @@
+---
 - name: Set configuration parameters in /boot/firmware/config.txt
-  lineinfile:
+  ansible.builtin.lineinfile:
     line: "{{ item.line }}"
     regexp: "{{ item.regexp }}"
     path: /boot/firmware/config.txt
-    create: yes
+    create: true
     state: present
-    insertafter: '^\[all\]'
+    insertafter: "^\\[all\\]"
   loop:
     #- line: 'dtparam=audio=off'
-    - line: 'dtparam=audio=on'
-      regexp: '^dtparam=audio='
+    - line: "dtparam=audio=on"
+      regexp: "^dtparam=audio="
     #- line: 'dtoverlay=vc4-kms-v3d,noaudio'
-    - line: 'dtoverlay=vc4-kms-v3d'
-      regexp: '^dtoverlay=vc4-kms-v3d'
+    - line: "dtoverlay=vc4-kms-v3d"
+      regexp: "^dtoverlay=vc4-kms-v3d"
   notify: Reboot
   tags: firmware
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
   tags: firmware
 
 - name: Install essential audio utilities
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: latest
   loop:
@@ -34,7 +35,7 @@
     - at
 
 - name: Set real-time audio processing limits
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/security/limits.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK FOR AUDIO"
     block: |
@@ -45,13 +46,13 @@
 ## Alsa Configuration
 
 - name: Remove /etc/asound.conf
-  file:
+  ansible.builtin.file:
     path: /etc/asound.conf
     state: absent
   tags: alsa
 
 - name: Copy /etc/asound.docker.conf
-  template:
+  ansible.builtin.template:
     src: asound.docker.conf
     dest: /etc/asound.docker.conf
   tags: alsa
@@ -59,44 +60,44 @@
 ## PulseAudio configuration
 
 - name: Create pulse user and add to audio group
-  user:
+  ansible.builtin.user:
     name: pulse
     home: /var/run/pulse
     groups: audio
     state: present
-    append: yes
+    append: true
     shell: /usr/sbin/nologin
   tags: pulse
 
 - name: Add users to pulse-access group
-  user:
+  ansible.builtin.user:
     name: "{{ item }}"
     groups:
       - pulse
       - pulse-access
-    append: yes
+    append: true
   loop:
     - root
     - daniel
 
 - name: Copy /etc/pulse/system.pa
-  template:
+  ansible.builtin.template:
     src: system.pa
     dest: /etc/pulse/system.pa
   notify: Restart PulseAudio
   tags: pulse
 
 - name: Touch /etc/pulse/client.conf to ensure it is not empty
-  file:
+  ansible.builtin.file:
     path: /etc/pulse/client.conf
     state: touch
   tags: pulse
 
 - name: Ensure autospawn is set to no in client.conf
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/pulse/client.conf
-    regexp: '^[#;]*\s*autospawn='
-    line: 'autospawn=no'
+    regexp: "^[#;]*\\s*autospawn="
+    line: "autospawn=no"
     state: present
   notify: Restart PulseAudio
   tags: pulse
@@ -112,24 +113,24 @@
 ## Udev configuration
 
 - name: Copy udev scripts
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "/usr/local/bin/{{ item }}"
     owner: root
     group: root
-    mode: '0755'
-  loop: 
+    mode: "0755"
+  loop:
     - jabra_connected.sh
     - jabra_connected_wrapper.sh
   tags: udev
 
 - name: Create udev rule for Jabra Speak 510
-  copy:
+  ansible.builtin.copy:
     src: 99-jabra.rules
     dest: /etc/udev/rules.d/99-jabra.rules
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify:
     - Reload udev
     - Trigger udev
@@ -138,9 +139,9 @@
 ## PulseAudio configuration (systemd)
 
 - name: Disable global PulseAudio services and sockets
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ item }}"
-    enabled: no
+    enabled: false
     scope: global
   loop:
     - pulseaudio.service
@@ -148,7 +149,7 @@
   tags: systemd
 
 - name: Create PulseAudio system service
-  copy:
+  ansible.builtin.copy:
     dest: /etc/systemd/system/pulseaudio.service
     content: |
       [Unit]
@@ -162,7 +163,7 @@
 
       [Install]
       WantedBy=multi-user.target
-    mode: '0644'
+    mode: "0644"
     owner: root
     group: root
   notify:
@@ -172,22 +173,22 @@
     - systemd
 
 - name: Enable pulseaudio service
-  systemd:
+  ansible.builtin.systemd:
     name: pulseaudio.service
-    enabled: yes
+    enabled: true
   notify: Restart PulseAudio
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
   tags:
-   - pulse
-   - udev
-   - systemd
+    - pulse
+    - udev
+    - systemd
 
 ## Stack
 
 - name: Clone git repositories
-  git:
+  ansible.builtin.git:
     repo: "https://github.com/rhasspy/{{ item }}.git"
     dest: "/tmp/{{ item }}"
   loop: "{{ wyoming_audio_repos }}"
@@ -205,14 +206,14 @@
   tags: stack
 
 - name: Ensure destination directories exist
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item }}-extras"
     state: directory
   loop: "{{ wyoming_audio_repos }}"
   tags: stack
 
 - name: Copy Dockerfiles
-  copy:
+  ansible.builtin.copy:
     src: Dockerfile.{{ item }}
     dest: /tmp/{{ item }}-extras/Dockerfile
   loop: "{{ wyoming_audio_repos }}"
@@ -279,6 +280,6 @@
   tags: stack
 
 - name: Remove unused packages
-  apt:
-    autoremove: yes
-    purge: yes
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true

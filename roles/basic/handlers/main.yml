@@ -1,7 +1,10 @@
-- name: dpkg-reconfigure
+---
+- name: Dpkg-reconfigure
   listen: reconfigure locales
-  command: dpkg-reconfigure locales -f noninteractive
-  become: yes
-- name: restart systemd-journald
-  service: name=systemd-journald state=restarted
-  become: yes
+  ansible.builtin.command: dpkg-reconfigure locales -f noninteractive
+  become: true
+- name: Restart systemd-journald
+  ansible.builtin.service:
+    name: systemd-journald
+    state: restarted
+  become: true

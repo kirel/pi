@@ -1,39 +1,40 @@
 ---
 - name: Increase swap size
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/dphys-swapfile
-    regexp: '^CONF_SWAPSIZE='
+    regexp: "^CONF_SWAPSIZE="
     insertbefore: EOF
-    line: 'CONF_SWAPSIZE=1024'
+    line: "CONF_SWAPSIZE=1024"
   register: swap
 
-- name: run swap setup if file was changed
-  command: dphys-swapfile setup
+- name: Run swap setup if file was changed
+  ansible.builtin.command: dphys-swapfile setup
   become: true
   when: swap.changed
 
 - name: Update apt repo and cache on all Debian/Ubuntu boxes
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
     upgrade: full
   register: apt
-- debug: msg={{ apt.stdout.split('\n')[:-1] }}
- 
+- ansible.builtin.debug:
+    msg: "{{"
+    cmd: apt.stdout.split('\n')[:-1] }}
 - name: Check if a reboot is needed on all servers
   ansible.builtin.stat:
     path: /var/run/reboot-required
-    get_checksum: no
+    get_checksum: false
   register: reboot_required_file
- 
+
 - name: Reboot the server (if required).
   ansible.builtin.reboot:
   when: reboot_required_file.stat.exists == true
 
 - name: Remove useless packages from the cache
-  apt:
-    autoclean: yes
- 
+  ansible.builtin.apt:
+    autoclean: true
+
 - name: Remove dependencies that are no longer required
-  apt:
-    autoremove: yes
+  ansible.builtin.apt:
+    autoremove: true

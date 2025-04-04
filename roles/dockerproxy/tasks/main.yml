@@ -1,14 +1,14 @@
-
+---
 - name: Create network
-  docker_network:
+  community.docker.docker_network:
     name: dockerproxy
     state: present
 
 - name: Start dockerproxy
   community.docker.docker_compose_v2:
     project_name: dockerproxy
-    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
-    state: present  # Ensure the services are started
+    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present # Ensure the services are started
     definition:
       networks:
         dockerproxy:
@@ -33,15 +33,14 @@
           networks:
             - dockerproxy
           volumes:
-            - /var/run/docker.sock:/var/run/docker.sock:ro  # Mounted as read-only
+            - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
           restart: unless-stopped
   register: output
 
+- ansible.builtin.debug:
+    var: output # Print the entire output variable to understand its structure
 
--  ansible.builtin.debug:
-    var: output  # Print the entire output variable to understand its structure
-
--  ansible.builtin.assert:
+- ansible.builtin.assert:
     that:
-      - output.containers | selectattr('Name', 'equalto', 'dockerproxy') | list | length > 0  # Ensure the container exists
-      - output.containers | selectattr('Name', 'equalto', 'dockerproxy') | map(attribute='State') | list | first == 'running'  # Check if the container is running
+      - output.containers | selectattr('Name', 'equalto', 'dockerproxy') | list | length > 0 # Ensure the container exists
+      - output.containers | selectattr('Name', 'equalto', 'dockerproxy') | map(attribute='State') | list | first == 'running' # Check if the container is running

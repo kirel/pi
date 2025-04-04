@@ -1,19 +1,20 @@
+---
 - name: Download vhusbd
-  get_url:
+  ansible.builtin.get_url:
     url: "https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarmpi3"
     dest: "/usr/bin/vhusbd"
-    mode: 0755
+    mode: "0755"
   register: download
 
 - name: Create systemd unit file
-  template:
+  ansible.builtin.template:
     src: vhusbd.service
     dest: /etc/systemd/system/vhusbd.service
   register: unit
 
 - name: Reload systemd
   ansible.builtin.systemd_service:
-    daemon_reload: true  
+    daemon_reload: true
   when: unit.changed
 
 - name: Enable and start vhusbd service

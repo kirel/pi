@@ -1,3 +1,4 @@
+---
 - name: Create volume
   community.docker.docker_volume:
     name: ollama_data
@@ -23,7 +24,7 @@
           volumes:
             - ollama_data:/root/.ollama
           labels:
-            wud.tag.include: '^\d+\.\d+\.\d+$$'
+            wud.tag.include: "^\\d+\\.\\d+\\.\\d+$$"
         open-webui:
           image: ghcr.io/open-webui/open-webui:main
           container_name: open-webui
@@ -35,8 +36,8 @@
           ports:
             - "{{ open_webui_http_port }}:8080"
           labels:
-            wud.tag.include: 'main'
-            wud.watch.digest: 'true'
+            wud.tag.include: "main"
+            wud.watch.digest: "true"
             homepage.group: "{{ services['open-webui'].group }}"
             homepage.name: "{{ services['open-webui'].name }}"
             homepage.href: "https://ollama.lan"
@@ -58,7 +59,7 @@
   ansible.builtin.copy:
     src: "{{ role_path }}/Dockerfile.mcp-proxy"
     dest: "{{ build_dir.path }}/Dockerfile.mcp-proxy"
-    mode: '0644'
+    mode: "0644"
 
 - name: Build MCP proxy image
   community.docker.docker_image:
@@ -70,18 +71,17 @@
     source: build
   when: build_dir.path is defined
 
-
 - name: Generate docker-compose.mcp.yml from template
   ansible.builtin.template:
     src: docker-compose.mcp.yml.j2
     dest: "{{ build_dir.path }}/docker-compose.yml"
-    mode: '0644'
+    mode: "0644"
 
 - name: Generate MCP proxy config
   ansible.builtin.template:
     src: config.json.j2
     dest: "{{ build_dir.path }}/config.json"
-    mode: '0644'
+    mode: "0644"
 
 - name: Deploy MCP proxy services
   community.docker.docker_compose_v2:

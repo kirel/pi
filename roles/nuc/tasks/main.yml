@@ -1,3 +1,4 @@
+---
 - name: Add user
   ansible.builtin.user:
     name: "{{ username }}"

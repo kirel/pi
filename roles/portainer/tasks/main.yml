@@ -1,4 +1,5 @@
-- set_fact:
+---
+- ansible.builtin.set_fact:
     portainer_service: "{{ services['portainer-'~inventory_hostname] }}"
 
 - name: Create volume
@@ -17,11 +18,11 @@
       - "8000:8000"
       - "{{ portainer_http_port }}:9000"
     restart_policy: always
-    pull: yes
+    pull: true
     labels:
-      homepage.group: "{{portainer_service.group}}"
-      homepage.name: "{{portainer_service.name}}"
-      homepage.href: "https://portainer-{{inventory_hostname}}.lan"
+      homepage.group: "{{ portainer_service.group }}"
+      homepage.name: "{{ portainer_service.name }}"
+      homepage.href: "https://portainer-{{ inventory_hostname }}.lan"
       homepage.icon: "portainer.png"
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: "portainer"

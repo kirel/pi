@@ -1,33 +1,34 @@
+---
 - name: Generate locale
-  locale_gen:
+  community.general.locale_gen:
     name: "{{ item }}"
     state: present
   with_items: "{{ locales }}"
 - name: /etc/default/locale
-  become: yes
-  lineinfile:
+  become: true
+  ansible.builtin.lineinfile:
     dest: /etc/default/locale
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: "{{ item.state }}"
   with_items:
-    - { regexp: '^LANG=', line: 'LANG={{ locale }}', state: present }
-    - { regexp: '^LC_ALL=', line: 'LC_ALL={{ locale }}', state: present }
-    - { regexp: '^LANGUAGE=', line: 'LANGUAGE={{ locale }}', state: present }
+    - { regexp: "^LANG=", line: "LANG={{ locale }}", state: present }
+    - { regexp: "^LC_ALL=", line: "LC_ALL={{ locale }}", state: present }
+    - { regexp: "^LANGUAGE=", line: "LANGUAGE={{ locale }}", state: present }
   notify:
     - reconfigure locales
 - name: Set timezone to Europe/Berlin
   community.general.timezone:
     name: Europe/Berlin
 - name: Update journald config file to limit journal size
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/systemd/journald.conf
-    regexp: '^SystemMaxUse='
+    regexp: "^SystemMaxUse="
     line: SystemMaxUse=100M
   notify:
     - restart systemd-journald
 - name: Allow sudo without password prompt
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/sudoers
     line: "%sudo ALL=(ALL) NOPASSWD: ALL"
-    validate: 'visudo -cf %s'
+    validate: "visudo -cf %s"

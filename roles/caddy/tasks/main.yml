@@ -1,42 +1,46 @@
-- name: create folder config folders
-  file: path={{item}} state=directory owner={{username}}
+---
+- name: Create folder config folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
   with_items:
-  - "{{caddy_folder}}"
-  - "{{caddy_data_folder}}"
-  - "{{caddy_config_folder}}"
+    - "{{ caddy_folder }}"
+    - "{{ caddy_data_folder }}"
+    - "{{ caddy_config_folder }}"
 
 - name: Reposess config folders
   ansible.builtin.file:
-    path: "{{item}}"
-    owner: "{{username}}"
+    path: "{{ item }}"
+    owner: "{{ username }}"
     group: users
     mode: u=rwx,g=rwxs
-    recurse: yes
+    recurse: true
   with_items:
-  - "{{caddy_folder}}"
-  - "{{caddy_data_folder}}"
-  - "{{caddy_config_folder}}"
+    - "{{ caddy_folder }}"
+    - "{{ caddy_data_folder }}"
+    - "{{ caddy_config_folder }}"
 
-- name: copy Caddyfile
-  template:
+- name: Copy Caddyfile
+  ansible.builtin.template:
     src: Caddyfile.j2
-    dest: "{{caddy_folder}}/Caddyfile"
-    owner: "{{username}}"
+    dest: "{{ caddy_folder }}/Caddyfile"
+    owner: "{{ username }}"
   register: caddyfile
 
-- name: copy Dockerfile
-  template:
+- name: Copy Dockerfile
+  ansible.builtin.template:
     src: Dockerfile
-    dest: "{{caddy_folder}}/Dockerfile"
-    owner: "{{username}}"
+    dest: "{{ caddy_folder }}/Dockerfile"
+    owner: "{{ username }}"
   register: dockerfile
 
 - name: Start caddy
   community.docker.docker_compose_v2:
     project_name: caddy
-    pull: "always"  # or "missing", "never", "policy" based on your needs
-    build: "policy"  # or "always", "never"
-    state: present  # Ensure the services are started
+    pull: "always" # or "missing", "never", "policy" based on your needs
+    build: "policy" # or "always", "never"
+    state: present # Ensure the services are started
     definition:
       networks:
         homepage:
@@ -71,8 +75,8 @@
             - homepage
             - pihole_backend
           labels:
-            - 'wud.tag.include=latest'
-            - 'wud.watch.digest=true'
+            - "wud.tag.include=latest"
+            - "wud.watch.digest=true"
             - "homepage.group=Network"
             - "homepage.name=Caddy"
             - "homepage.icon=mdi-server"
@@ -81,32 +85,29 @@
             - "homepage.widget.type=caddy"
             - "homepage.widget.url=http://caddy:2019"
 
-
   register: output
 
 - ansible.builtin.debug:
     var: output
 
--  ansible.builtin.assert:
+- ansible.builtin.assert:
     that:
       - output.containers | selectattr('Name', 'equalto', 'caddy') | list | length > 0
       - output.containers | selectattr('Name', 'equalto', 'caddy') | map(attribute='State') | list | first == 'running'
 
-
-- name: copy root certificate
-  shell: "docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt"
-
-- fetch: 
-    src: "{{caddy_folder}}/root.crt"
+- name: Copy root certificate
+  ansible.builtin.command: "docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt"
+- ansible.builtin.fetch:
+    src: "{{ caddy_folder }}/root.crt"
     dest: tmp/
-    flat: yes
+    flat: true
 
 # Note: Installing the cert into the host's trust store is now handled by the 'trust-internal-ca' role.
 # The fetch task above is still needed so that role can access the cert.
 
 - name: Reposess root cert on host after docker cp
   ansible.builtin.file:
-    path: "{{caddy_folder}}/root.crt" # Path where docker cp placed it
+    path: "{{ caddy_folder }}/root.crt" # Path where docker cp placed it
     owner: "{{ username }}"
     group: users
     mode: u=rw,g=rw

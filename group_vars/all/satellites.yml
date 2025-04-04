@@ -1,3 +1,4 @@
+---
 wyoming_audio_repos:
   - wyoming-mic-external
   - wyoming-snd-external
@@ -32,5 +33,3 @@ satellites:
   #  awake_wav: extra-sounds/vader.wav
   #  done_wav: extra-sounds/g2.wav
   #  timer_finished_wav: sounds/timer_finished.wav
-    
-

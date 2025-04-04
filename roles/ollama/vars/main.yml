@@ -7,7 +7,7 @@ mcp_services:
   - name: todoist-mcp-server-extended
     command: npx -y @chrusic/todoist-mcp-server-extended
     sse_port: "{{ todoist_mcp_proxy_port }}"
-    ports: 
+    ports:
       - "{{ todoist_mcp_proxy_port }}:{{ todoist_mcp_proxy_port }}"
     environment:
       TODOIST_API_TOKEN: "{{ todoist_api_token }}"
@@ -15,7 +15,7 @@ mcp_services:
   - name: todoist-mcp-python
     command: uvx --from https://github.com/kirel/todoist-mcp-python.git mcp-server-todoist
     sse_port: "{{ todoist_mcp_py_proxy_port }}"
-    ports: 
+    ports:
       - "{{ todoist_mcp_py_proxy_port }}:{{ todoist_mcp_py_proxy_port }}"
     environment:
       TODOIST_API_TOKEN: "{{ todoist_api_token }}"
@@ -23,5 +23,5 @@ mcp_services:
   - name: server-memory
     command: npx -y @modelcontextprotocol/server-memory
     sse_port: "{{ memory_mcp_proxy_port }}"
-    ports: 
+    ports:
       - "{{ memory_mcp_proxy_port }}:{{ memory_mcp_proxy_port }}"

@@ -1,38 +1,40 @@
-- set_fact:
+---
+- ansible.builtin.set_fact:
     pihole_service: "{{ services['pihole-'~inventory_hostname] }}"
     leases_service: "{{ services['dnsmasq-leases-ui-'~inventory_hostname] }}"
 
-- debug: 
+- ansible.builtin.debug:
     var: pihole_service
-- debug: 
+- ansible.builtin.debug:
     var: leases_service
 
-
-- name: create folder config folders
-  file: path={{item}} state=directory
+- name: Create folder config folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
   with_items:
-  - "{{pihole_config_folder}}"
-  - "{{dnsmasq_config_folder}}"
+    - "{{ pihole_config_folder }}"
+    - "{{ dnsmasq_config_folder }}"
 
 - name: Add custom dns list
-  template:
+  ansible.builtin.template:
     src: custom.list.j2
-    dest: "{{pihole_config_folder}}/custom.list"
-    owner: "{{username}}"
+    dest: "{{ pihole_config_folder }}/custom.list"
+    owner: "{{ username }}"
   notify: restart dns
 
 - name: Create dnsmasq config for static DHCP leases and DNS
-  template:
+  ansible.builtin.template:
     src: dhcp_conf.j2
-    dest: "{{dnsmasq_config_folder}}/04-static-dhcp.conf"
-    owner: "{{username}}"
+    dest: "{{ dnsmasq_config_folder }}/04-static-dhcp.conf"
+    owner: "{{ username }}"
   notify: restart dns
 
 - name: Start pihole
   community.docker.docker_compose_v2:
     project_name: pihole
-    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
-    state: present  # Ensure the services are started
+    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present # Ensure the services are started
     definition:
       networks:
         backend:
@@ -54,20 +56,20 @@
           dns:
             - 127.0.0.1
           environment:
-            TZ: 'Europe/Berlin'
-            FTLCONF_dns_reply_host_IPv4: '{{ ansible_default_ipv4.address }}'
-            FTLCONF_webserver_api_password: '{{ pihole_webpassword }}'
-            FTLCONF_dns_upstreams: '{{ router_ip }}'
+            TZ: "Europe/Berlin"
+            FTLCONF_dns_reply_host_IPv4: "{{ ansible_default_ipv4.address }}"
+            FTLCONF_webserver_api_password: "{{ pihole_webpassword }}"
+            FTLCONF_dns_upstreams: "{{ router_ip }}"
             FTLCONF_dns_listeningMode: all
             FTLCONF_dns_bogusPriv: "false"
             FTLCONF_dns_domainNeeded: "false"
-            FTLCONF_dns_revServers: 'true,{{ cidr }},{{ router_ip }},lan'
+            FTLCONF_dns_revServers: "true,{{ cidr }},{{ router_ip }},lan"
             FTLCONF_dhcp_active: "true"
             FTLCONF_dhcp_start: "{{ dhcp_start }}"
             FTLCONF_dhcp_end: "{{ dhcp_end }}"
             FTLCONF_dhcp_router: "{{ router_ip }}"
             FTLCONF_dns_domain: "lan"
-            FTLCONF_misc_etc_dnsmasq_d: 'true'
+            FTLCONF_misc_etc_dnsmasq_d: "true"
           # Volumes store your data between container upgrades
           volumes:
             - "{{ pihole_config_folder }}:/etc/pihole/"
@@ -93,7 +95,7 @@
             - dhcphelper
           networks:
             backend:
-              ipv4_address: '172.31.0.100'
+              ipv4_address: "172.31.0.100"
 
         dhcphelper:
           restart: unless-stopped
@@ -101,8 +103,8 @@
           network_mode: "host"
           image: homeall/dhcphelper:latest
           environment:
-            IP: '172.31.0.100'
-            TZ: 'Europe/Berlin'
+            IP: "172.31.0.100"
+            TZ: "Europe/Berlin"
           cap_add:
             - NET_ADMIN
 

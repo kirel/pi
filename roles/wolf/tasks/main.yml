@@ -1,14 +1,15 @@
+---
 - name: Copy udev rules
   ansible.builtin.template:
     src: "85-wolf-virtual-inputs.rules"
     dest: "/etc/udev/rules.d/85-wolf-virtual-inputs.rules"
   notify: restart udev
-  
+
 - name: Start wolf
   community.docker.docker_compose_v2:
     project_name: wolf
-    pull: "always"  # Set to "always", "missing", "never", or "policy" based on your needs
-    state: present  # Ensure the services are started
+    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    state: present # Ensure the services are started
     definition:
       services:
         wolf:
@@ -28,6 +29,6 @@
             - /dev/dri
             - /dev/uinput
           device_cgroup_rules:
-            - 'c 13:* rmw'
+            - "c 13:* rmw"
           network_mode: host
           restart: unless-stopped

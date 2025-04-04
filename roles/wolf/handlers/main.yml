@@ -1,3 +1,5 @@
-- name: restart udev
+---
+- name: Restart udev
   become: true
-  command: "udevadm control --reload-rules && udevadm trigger"
+  ansible.builtin.command: "udevadm control --reload-rules && udevadm trigger"
+  changed_when: true
