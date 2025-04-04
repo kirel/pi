@@ -4,9 +4,6 @@ extends: default
 rules:
   # Disable line length check (often problematic for Ansible)
   line-length: disable
-  # Allow """ style blocks for multiline strings often used in Ansible
-  multiline-strings:
-    level: warning
   # Increase indentation flexibility slightly if needed
   # indentation:
   #   spaces: 2 # or 4, depending on preference

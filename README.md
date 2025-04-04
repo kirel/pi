@@ -28,7 +28,7 @@ TODO https://github.com/coreprocess/linux-unattended-installation
 ### Basic Setup
 
     # Install dependencies using uv
-    uv pip sync requirements.txt requirements-dev.txt
+    uv pip sync
     # Install Ansible Galaxy roles
     uv run ansible-galaxy install --force-with-deps -r requirements.yml
 
