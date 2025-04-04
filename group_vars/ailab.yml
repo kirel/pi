@@ -6,3 +6,9 @@ disable_bluetooth: true
 ollama_arc_models_path: /data/ai/models/ollama-arc # Specific path for ailab host
 # ollama_arc_memory: "64G" # Optional: Override default memory if needed
 # ollama_arc_shm_size: "32g" # Optional: Override default shm size if needed
+
+# Override config_root specifically for ailab
+config_root: /home/{{ username_personal }}/config
+
+# comfyui specific vars
+comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage # Specific path for ailab host in user home

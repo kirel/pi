@@ -1,0 +1,37 @@
+---
+# tasks file for comfyui
+- name: Ensure ComfyUI storage directory exists
+  ansible.builtin.file:
+    path: "{{ comfyui_storage_path }}"
+    state: directory
+    mode: "0755"
+
+- name: Ensure ComfyUI service is running using inline definition
+  community.docker.docker_compose_v2:
+    project_name: "{{ comfyui_container_name }}"
+    definition:
+      services:
+        comfyui:
+          init: true
+          container_name: "{{ comfyui_container_name }}"
+          image: "{{ comfyui_image }}"
+          ports:
+            - "{{ comfyui_port }}:8188"
+          volumes:
+            - "{{ comfyui_storage_path }}:/root"
+          environment:
+            - CLI_ARGS={{ comfyui_cli_args }}
+          devices:
+            - /dev/dri:/dev/dri # Ensure device mapping is correct
+          ipc: host
+          security_opt:
+            - label:disable
+          restart: unless-stopped
+    state: present
+    pull: missing # Pull if image is not present locally
+  register: compose_output
+
+- name: Debug compose output
+  ansible.builtin.debug:
+    var: compose_output
+    verbosity: 1

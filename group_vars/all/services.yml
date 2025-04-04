@@ -106,6 +106,13 @@ services:
     http_port: "{{ open_webui_http_port }}"
     domain: ollama.lan
     group: AI
+  comfyui:
+    name: ComfyUI
+    ip: "{{ ailab_ip }}"
+    http_port: "{{ comfyui_port }}" # From comfyui role defaults
+    domain: comfyui.lan # Optional: Define a local domain
+    group: AI
+    icon: comfyui.png # Optional: Define an icon
   pihole-nameserver-pi:
     name: Pihole Nameserver
     ip: "{{ nameserver_pi_ip }}"

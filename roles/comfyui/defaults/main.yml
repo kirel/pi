@@ -1,0 +1,8 @@
+---
+# defaults file for comfyui
+comfyui_config_dir: /etc/comfyui # Static default config dir
+comfyui_storage_path: /opt/comfyui/storage # Static default storage path
+comfyui_image: yanwk/comfyui-boot:xpu
+comfyui_port: 8188
+comfyui_cli_args: --lowvram --oneapi-device-selector=level_zero:0
+comfyui_container_name: comfyui-xpu
