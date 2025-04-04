@@ -12,26 +12,26 @@
     state: present
 - name: Create mount folders
   ansible.builtin.file:
-    path: "/{{ mount_root }}/{{ item }}"
+    path: /{{ mount_root }}/{{ item }}
     state: directory
     mode: "0755"
   with_items: "{{ shares }}"
 - name: Mount drives by label
   ansible.posix.mount:
-    path: "/{{ mount_root }}/{{ item }}"
+    path: /{{ mount_root }}/{{ item }}
     src: LABEL={{ item }}
     fstype: ext4
     state: mounted
   with_items: "{{ shares }}"
 - name: Create tm folder
   ansible.builtin.file:
-    path: "/{{ mount_root }}/dreifuenf/timemachine"
+    path: /{{ mount_root }}/dreifuenf/timemachine
     state: directory
     mode: "0755"
 
 - name: Reposess everything
   ansible.builtin.file:
-    path: "/{{ mount_root }}/{{ item }}"
+    path: /{{ mount_root }}/{{ item }}
     owner: "{{ username }}"
     group: users
     mode: u=rwx,g=rwxs
@@ -40,10 +40,10 @@
 
 - name: Create user tm folder
   ansible.builtin.file:
-    path: "/{{ mount_root }}/dreifuenf/timemachine/{{ username_personal }}"
+    path: /{{ mount_root }}/dreifuenf/timemachine/{{ username_personal }}
     state: directory
     owner: "{{ username_personal }}"
-    mode: "u=rwx,g=,o="
+    mode: u=rwx,g=,o=
 
 - name: Create config folders
   ansible.builtin.file:
@@ -57,7 +57,7 @@
 - name: Start Storage
   community.docker.docker_compose_v2:
     project_name: storage
-    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    pull: always # Set to "always", "missing", "never", or "policy" based on your needs
     state: present # Ensure the services are started
     definition:
       services:
@@ -68,14 +68,14 @@
           restart: unless-stopped
           network_mode: host
           environment:
-            MODEL: "TimeCapsule"
+            MODEL: TimeCapsule
             AVAHI_NAME: nuc
             SAMBA_CONF_LOG_LEVEL: 3
             WSDD2_DISABLE: 1 # uncomment to disable optional services
             ACCOUNT_nuc: nucpass
             ACCOUNT_daniel: "daniel:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:361FA5DCDEC7F04CC65A84100D147EA0:[U          ]:LCT-643D057C:"
             UID_daniel: "{{ uid_personal }}"
-            SAMBA_GLOBAL_STANZA: "guest account = {{ username }}"
+            SAMBA_GLOBAL_STANZA: guest account = {{ username }}
             SAMBA_VOLUME_CONFIG_Medien: "[Medien]; path=/shares/Medien; valid users = daniel, nuc; browseable = yes; guest ok = yes; read only = no; force group =
               users; create mask = 0775; directory mask = 0755"
             SAMBA_VOLUME_CONFIG_dreifuenf: "[TimeMachine]; path=/shares/dreifuenf/timemachine/%U; valid users = daniel; guest ok = no; read only = no; browseable
@@ -98,7 +98,7 @@
           volumes:
             - "{{ syncthing_config_folder }}:/config"
             - "{{ syncthing_data_folder }}:/data"
-            - "/{{ mount_root }}/Medien:/Medien"
+            - /{{ mount_root }}/Medien:/Medien
           ports:
             - "{{ syncthing_http_port }}:8384"
             - 22000:22000/tcp

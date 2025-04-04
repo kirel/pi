@@ -1,8 +1,8 @@
 ---
 # roles/ollama/vars/main.yml
 proxy_command_prefix: "npx -y supergateway --cors --port "
-proxy_command_middle: " --stdio \""
-proxy_command_postfix: "\""
+proxy_command_middle: ' --stdio "'
+proxy_command_postfix: '"'
 mcp_services:
   - name: todoist-mcp-server-extended
     command: npx -y @chrusic/todoist-mcp-server-extended

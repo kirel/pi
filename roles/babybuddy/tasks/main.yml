@@ -42,10 +42,10 @@
             - "{{ babybuddy_http_port }}:8000"
           restart: unless-stopped
           labels:
-            - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
-            - "homepage.group={{ services.babybuddy.group }}"
-            - "homepage.name={{ services.babybuddy.name }}"
-            - "homepage.href=https://bb.lan"
+            - wud.tag.include=^\d+\.\d+\.\d+$$
+            - homepage.group={{ services.babybuddy.group }}
+            - homepage.name={{ services.babybuddy.name }}
+            - homepage.href=https://bb.lan
             #- "homepage.icon=home-assistant.png"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=babybuddy"
+            - homepage.server={{ inventory_hostname }}
+            - homepage.container=babybuddy

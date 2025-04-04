@@ -1,8 +1,8 @@
 ---
 - name: Download vhusbd
   ansible.builtin.get_url:
-    url: "https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarmpi3"
-    dest: "/usr/bin/vhusbd"
+    url: https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarmpi3
+    dest: /usr/bin/vhusbd
     mode: "0755"
   register: download
 

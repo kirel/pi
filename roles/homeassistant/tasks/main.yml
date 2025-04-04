@@ -33,7 +33,7 @@
     dest: "{{ mosquitto_config_folder }}/mosquitto.conf"
     owner: "{{ username }}"
     group: users
-  # notify: reload mosquitto
+# notify: reload mosquitto
 
 - name: Add z2m config
   ansible.builtin.template:
@@ -61,7 +61,7 @@
 
 - name: Checkout ha docker venv hack
   ansible.builtin.git:
-    repo: "https://github.com/tribut/homeassistant-docker-venv"
+    repo: https://github.com/tribut/homeassistant-docker-venv
     dest: "{{ homeassistant_config_folder }}/docker"
     force: true
   become: true
@@ -104,7 +104,7 @@
       services:
         homeassistant:
           container_name: homeassistant
-          image: "ghcr.io/home-assistant/home-assistant:latest"
+          image: ghcr.io/home-assistant/home-assistant:latest
           volumes:
             - "{{ homeassistant_config_folder }}:/config"
             - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
@@ -123,18 +123,18 @@
           environment:
             - PUID={{ uid }}
             - PGID={{ uid }}
-            - "PACKAGES=iputils"
+            - PACKAGES=iputils
             - UMASK=007
             - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
           labels:
-            - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
-            - "wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}"
-            - "homepage.group={{ services.homeassistant.group }}"
-            - "homepage.name={{ services.homeassistant.name }}"
-            - "homepage.href=https://homeassistant.lan"
-            - "homepage.icon=home-assistant.png"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=homeassistant"
+            - wud.tag.include=^\d+\.\d+\.\d+$$
+            - wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}
+            - homepage.group={{ services.homeassistant.group }}
+            - homepage.name={{ services.homeassistant.name }}
+            - homepage.href=https://homeassistant.lan
+            - homepage.icon=home-assistant.png
+            - homepage.server={{ inventory_hostname }}
+            - homepage.container=homeassistant
         music-assistant-server:
           image: ghcr.io/music-assistant/server:latest
           container_name: music-assistant-server
@@ -152,14 +152,14 @@
           environment:
             - LOG_LEVEL=info
           labels:
-            - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
-            - "wud.link.template=https://github.com/music-assistant/server/releases/tag/$${major}.$${minor}.$${patch}"
-            - "homepage.group={{ services.musicassistant.group }}"
-            - "homepage.name={{ services.musicassistant.name }}"
-            - "homepage.href=https://musicassistant.lan"
-            - "homepage.icon=home-assistant.png"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=music-assistant-server"
+            - wud.tag.include=^\d+\.\d+\.\d+$$
+            - wud.link.template=https://github.com/music-assistant/server/releases/tag/$${major}.$${minor}.$${patch}
+            - homepage.group={{ services.musicassistant.group }}
+            - homepage.name={{ services.musicassistant.name }}
+            - homepage.href=https://musicassistant.lan
+            - homepage.icon=home-assistant.png
+            - homepage.server={{ inventory_hostname }}
+            - homepage.container=music-assistant-server
         code-server:
           image: lscr.io/linuxserver/code-server
           container_name: code-server
@@ -179,14 +179,14 @@
             - seccomp:unconfined # because strange PI issue see https://stackoverflow.com/questions/69775057/docker-image-fails-to-run-on-raspberry-pi-with-strange-node-error
           restart: unless-stopped
           labels:
-            - "wud.tag.include=latest"
-            - "wud.watch.digest=true"
-            - "homepage.group={{ services.vscode.group }}"
-            - "homepage.name={{ services.vscode.name }}"
-            - "homepage.href=https://vscode.lan"
-            - "homepage.icon=vscode.png"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=code-server"
+            - wud.tag.include=latest
+            - wud.watch.digest=true
+            - homepage.group={{ services.vscode.group }}
+            - homepage.name={{ services.vscode.name }}
+            - homepage.href=https://vscode.lan
+            - homepage.icon=vscode.png
+            - homepage.server={{ inventory_hostname }}
+            - homepage.container=code-server
         # nodered:
         #   container_name: nodered
         #   image: nodered/node-red
@@ -213,8 +213,8 @@
             - "{{ mosquitto_log_folder }}:/mosquitto/log"
           restart: unless-stopped
           labels:
-            - "wud.tag.include=latest"
-            - "wud.watch.digest=true"
+            - wud.tag.include=latest
+            - wud.watch.digest=true
         zigbee2mqtt:
           container_name: zigbee2mqtt
           image: koenkk/zigbee2mqtt:latest
@@ -232,14 +232,14 @@
             - /dev/ttyUSB0:/dev/ttyACM1
           restart: always
           labels:
-            - "wud.tag.include=latest"
-            - "wud.watch.digest=true"
-            - "homepage.group={{ services.z2m.group }}"
-            - "homepage.name={{ services.z2m.name }}"
-            - "homepage.href=https://z2m.lan"
-            - "homepage.icon=mdi-zigbee"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=zigbee2mqtt"
+            - wud.tag.include=latest
+            - wud.watch.digest=true
+            - homepage.group={{ services.z2m.group }}
+            - homepage.name={{ services.z2m.name }}
+            - homepage.href=https://z2m.lan
+            - homepage.icon=mdi-zigbee
+            - homepage.server={{ inventory_hostname }}
+            - homepage.container=zigbee2mqtt
         matter-server:
           image: ghcr.io/home-assistant-libs/python-matter-server:stable
           container_name: matter-server
@@ -259,7 +259,7 @@
           privileged: true # this may not be necessary for all setups
           restart: unless-stopped
           image: ghcr.io/blakeblackshear/frigate:stable
-          shm_size: "64mb" # update for your cameras based on calculation above
+          shm_size: 64mb # update for your cameras based on calculation above
           devices:
             - /dev/bus/usb:/dev/bus/usb
           volumes:
@@ -272,17 +272,17 @@
                 size: 1000000000
           ports:
             - "{{ frigate_http_port }}:5000"
-            - "8554:8554" # RTSP feeds
-            - "8555:8555/tcp" # WebRTC over tcp
-            - "8555:8555/udp" # WebRTC over udp
+            - 8554:8554 # RTSP feeds
+            - 8555:8555/tcp # WebRTC over tcp
+            - 8555:8555/udp # WebRTC over udp
           environment:
-            FRIGATE_RTSP_PASSWORD: "password"
+            FRIGATE_RTSP_PASSWORD: password
           labels:
-            - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
-            - "wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}"
-            - "homepage.group={{ services.frigate.group }}"
-            - "homepage.name={{ services.frigate.name }}"
-            - "homepage.href=https://frigate.lan"
-            - "homepage.icon=frigate.png"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=frigate"
+            - wud.tag.include=^\d+\.\d+\.\d+$$
+            - wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}
+            - homepage.group={{ services.frigate.group }}
+            - homepage.name={{ services.frigate.name }}
+            - homepage.href=https://frigate.lan
+            - homepage.icon=frigate.png
+            - homepage.server={{ inventory_hostname }}
+            - homepage.container=frigate

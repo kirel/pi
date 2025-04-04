@@ -5,7 +5,7 @@
 - name: Start glances
   community.docker.docker_compose_v2:
     project_name: glances
-    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    pull: always # Set to "always", "missing", "never", or "policy" based on your needs
     state: present # Ensure the services are started
     definition:
       services:
@@ -14,9 +14,9 @@
           container_name: glances
           restart: always
           ports:
-            - "61208-61209:61208-61209"
+            - 61208-61209:61208-61209
           environment:
-            GLANCES_OPT: "-w" # Use key-value pairs instead of list format
+            GLANCES_OPT: -w # Use key-value pairs instead of list format
           volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro
             - /etc/os-release:/etc/os-release:ro
@@ -24,7 +24,7 @@
           labels:
             homepage.group: "{{ glances_service.group }}"
             homepage.name: "{{ glances_service.name }}"
-            homepage.href: "https://glances-{{ inventory_hostname }}.lan"
-            homepage.icon: "glances.png"
+            homepage.href: https://glances-{{ inventory_hostname }}.lan
+            homepage.icon: glances.png
             homepage.server: "{{ inventory_hostname }}"
-            homepage.container: "glances"
+            homepage.container: glances

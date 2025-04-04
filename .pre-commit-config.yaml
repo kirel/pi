@@ -17,9 +17,10 @@ repos:
     hooks:
       - id: ansible-lint
         files: \.(yaml|yml)$
+        args: [--fix]
 
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.35.1 # Use the latest stable version or one suitable for your project
     hooks:
       - id: yamllint
-        args: ["-c", ".yamllint.yaml"] # Point to your yamllint config
+        args: [-c, .yamllint.yaml] # Point to your yamllint config

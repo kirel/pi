@@ -38,8 +38,8 @@
 - name: Start caddy
   community.docker.docker_compose_v2:
     project_name: caddy
-    pull: "always" # or "missing", "never", "policy" based on your needs
-    build: "policy" # or "always", "never"
+    pull: always # or "missing", "never", "policy" based on your needs
+    build: policy # or "always", "never"
     state: present # Ensure the services are started
     definition:
       networks:
@@ -60,9 +60,9 @@
             - 1.1.1.1
             - 1.0.0.1
           ports:
-            - "80:80"
-            - "443:443"
-            - "11434:11434"
+            - 80:80
+            - 443:443
+            - 11434:11434
           volumes:
             - "{{ caddy_folder }}/Caddyfile:/etc/caddy/Caddyfile"
             - "{{ caddy_data_folder }}:/data"
@@ -75,15 +75,15 @@
             - homepage
             - pihole_backend
           labels:
-            - "wud.tag.include=latest"
-            - "wud.watch.digest=true"
-            - "homepage.group=Network"
-            - "homepage.name=Caddy"
-            - "homepage.icon=mdi-server"
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container=caddy"
-            - "homepage.widget.type=caddy"
-            - "homepage.widget.url=http://caddy:2019"
+            - wud.tag.include=latest
+            - wud.watch.digest=true
+            - homepage.group=Network
+            - homepage.name=Caddy
+            - homepage.icon=mdi-server
+            - homepage.server={{ inventory_hostname }}
+            - homepage.container=caddy
+            - homepage.widget.type=caddy
+            - homepage.widget.url=http://caddy:2019
 
   register: output
 
@@ -96,7 +96,7 @@
       - output.containers | selectattr('Name', 'equalto', 'caddy') | map(attribute='State') | list | first == 'running'
 
 - name: Copy root certificate
-  ansible.builtin.command: "docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt"
+  ansible.builtin.command: docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt
 - ansible.builtin.fetch:
     src: "{{ caddy_folder }}/root.crt"
     dest: tmp/

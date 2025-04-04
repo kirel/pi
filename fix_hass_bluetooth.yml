@@ -1,5 +1,5 @@
 ---
-- hosts: nuc
-  name: Fix hass bluetooth
+- name: Fix hass bluetooth
+  hosts: nuc
   roles:
-    - { role: fix_hass_bluetooth, become: true, tags: ["ha"] }
+    - { role: fix_hass_bluetooth, become: true, tags: [ha] }

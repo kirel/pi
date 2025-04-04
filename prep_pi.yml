@@ -4,13 +4,13 @@
   connection: local
   tasks:
     - name: Check if the line contains "ip="
-      ansible.builtin.shell: 'grep -q "^.*\bip=" /Volumes/bootfs/cmdline.txt'
+      ansible.builtin.shell: grep -q "^.*\bip=" /Volumes/bootfs/cmdline.txt
       register: grep_result
       failed_when: false
       changed_when: false
     - name: Set static ip
       ansible.builtin.lineinfile:
         path: /Volumes/bootfs/cmdline.txt
-        regexp: "^.*$"
-        line: "\\0 ip=192.168.50.4::192.168.50.1::255.255.255.0::eth0:off"
+        regexp: ^.*$
+        line: \0 ip=192.168.50.4::192.168.50.1::255.255.255.0::eth0:off
       when: grep_result.rc != 0

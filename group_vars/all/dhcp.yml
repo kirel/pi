@@ -2,7 +2,7 @@
 static_dhcp:
   # Infra .1-.9
   powerline:
-    mac: "E8:48:B8:C6:CC:36"
+    mac: E8:48:B8:C6:CC:36
     ip_suffix: 2
   nameserver-pi:
     mac: B8:27:EB:AB:F0:CC
@@ -12,32 +12,32 @@ static_dhcp:
     ip: "{{ homelab_nuc_ip }}"
   micpi:
     # mac: B8:27:EB:39:10:07 # Pi Zero
-    mac: "B8:27:EB:C1:21:9D" # Pi 3B
+    mac: B8:27:EB:C1:21:9D # Pi 3B
     ip_suffix: 7
   # virtualhere:
   # mac: "B8:27:EB:C1:21:9D"
   # ip_suffix: 7
   gl-mt3000:
-    mac: "94:83:C4:3A:71:DE"
+    mac: 94:83:C4:3A:71:DE
     ip_suffix: 8
   # Media .10-.19
   raw:
-    mac: "2C:F0:5D:95:DD:14"
+    mac: 2C:F0:5D:95:DD:14
     ip_suffix: 10
   xbox:
     mac: "04:27:28:7D:C2:CD"
     ip_suffix: 11
   beamer:
-    mac: "44:D2:44:E0:16:DF"
+    mac: 44:D2:44:E0:16:DF
     ip_suffix: 14
   receiver:
     mac: "00:09:B0:F2:F4:A4"
     ip_suffix: 15
   dashboard-10:
-    mac: "10:CE:02:F5:67:BC"
+    mac: 10:CE:02:F5:67:BC
     ip_suffix: 17
   dashboard-8:
-    mac: "A0:D0:DC:24:C9:E7"
+    mac: A0:D0:DC:24:C9:E7
     ip_suffix: 18
   ## Smart Home
   # Espresence .20-.29
@@ -46,28 +46,28 @@ static_dhcp:
   # IP Cam .70-.79
   # Devices .80-.99
   vacuum:
-    mac: "D4:D2:D6:F7:BF:60"
+    mac: D4:D2:D6:F7:BF:60
     ip_suffix: 80
   fan:
-    mac: "CC:B5:D1:6A:45:8F"
+    mac: CC:B5:D1:6A:45:8F
     ip_suffix: 81
   daniels-mac:
-    mac: "BC:D0:74:27:D9:8F"
+    mac: BC:D0:74:27:D9:8F
     ip_suffix: 90
   p1s-1:
-    mac: "C0:4E:30:06:C3:54"
+    mac: C0:4E:30:06:C3:54
     ip_suffix: 91
   daniels-iphone:
-    mac: "78:64:C0:8B:41:AE"
+    mac: 78:64:C0:8B:41:AE
     ip_suffix: 95
   billie-mac:
-    mac: "BC:D0:74:33:3D:EC"
+    mac: BC:D0:74:33:3D:EC
     ip_suffix: 96
   sabines-tablet:
-    mac: "B8:31:B5:77:91:EA"
+    mac: B8:31:B5:77:91:EA
     ip_suffix: 98
     nopihole: true
   sabines-handy:
-    mac: "A8:34:6A:22:E7:7C"
+    mac: A8:34:6A:22:E7:7C
     ip_suffix: 99
     nopihole: true

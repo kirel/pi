@@ -33,7 +33,7 @@
 - name: Start pihole
   community.docker.docker_compose_v2:
     project_name: pihole
-    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    pull: always # Set to "always", "missing", "never", or "policy" based on your needs
     state: present # Ensure the services are started
     definition:
       networks:
@@ -56,19 +56,19 @@
           dns:
             - 127.0.0.1
           environment:
-            TZ: "Europe/Berlin"
+            TZ: Europe/Berlin
             FTLCONF_dns_reply_host_IPv4: "{{ ansible_default_ipv4.address }}"
             FTLCONF_webserver_api_password: "{{ pihole_webpassword }}"
             FTLCONF_dns_upstreams: "{{ router_ip }}"
             FTLCONF_dns_listeningMode: all
             FTLCONF_dns_bogusPriv: "false"
             FTLCONF_dns_domainNeeded: "false"
-            FTLCONF_dns_revServers: "true,{{ cidr }},{{ router_ip }},lan"
+            FTLCONF_dns_revServers: true,{{ cidr }},{{ router_ip }},lan
             FTLCONF_dhcp_active: "true"
             FTLCONF_dhcp_start: "{{ dhcp_start }}"
             FTLCONF_dhcp_end: "{{ dhcp_end }}"
             FTLCONF_dhcp_router: "{{ router_ip }}"
-            FTLCONF_dns_domain: "lan"
+            FTLCONF_dns_domain: lan
             FTLCONF_misc_etc_dnsmasq_d: "true"
           # Volumes store your data between container upgrades
           volumes:
@@ -89,22 +89,22 @@
             wud.watch.digest: true
             homepage.group: "{{ pihole_service.group }}"
             homepage.name: "{{ pihole_service.name }}"
-            homepage.href: "https://{{ pihole_service.domain }}/admin/"
+            homepage.href: https://{{ pihole_service.domain }}/admin/
             homepage.icon: mdi-pi-hole
           depends_on:
             - dhcphelper
           networks:
             backend:
-              ipv4_address: "172.31.0.100"
+              ipv4_address: 172.31.0.100
 
         dhcphelper:
           restart: unless-stopped
           container_name: dhcphelper
-          network_mode: "host"
+          network_mode: host
           image: homeall/dhcphelper:latest
           environment:
-            IP: "172.31.0.100"
-            TZ: "Europe/Berlin"
+            IP: 172.31.0.100
+            TZ: Europe/Berlin
           cap_add:
             - NET_ADMIN
 
@@ -121,7 +121,7 @@
             wud.watch.digest: true
             homepage.group: "{{ leases_service.group }}"
             homepage.name: "{{ leases_service.name }}"
-            homepage.href: "https://{{ leases_service.domain }}"
+            homepage.href: https://{{ leases_service.domain }}
             homepage.icon: mdi-dns
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: dnsmasq_leases_ui
@@ -137,6 +137,6 @@
 
 - name: Create symbolic link
   ansible.builtin.file:
-    src: "dhcp.leases"
+    src: dhcp.leases
     dest: "{{ pihole_config_folder }}/dnsmasq.leases"
     state: link

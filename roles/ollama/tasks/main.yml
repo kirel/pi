@@ -16,7 +16,7 @@
           container_name: ollama
           restart: unless-stopped
           ports:
-            - "11435:11434"
+            - 11435:11434
           environment:
             OLLAMA_DEBUG: "1"
             OLLAMA_NUM_PARALLEL: "2"
@@ -24,23 +24,23 @@
           volumes:
             - ollama_data:/root/.ollama
           labels:
-            wud.tag.include: "^\\d+\\.\\d+\\.\\d+$$"
+            wud.tag.include: ^\d+\.\d+\.\d+$$
         open-webui:
           image: ghcr.io/open-webui/open-webui:main
           container_name: open-webui
           restart: unless-stopped
           environment:
-            OLLAMA_BASE_URL: "http://ollama-raw.lan:11434"
+            OLLAMA_BASE_URL: http://ollama-raw.lan:11434
           volumes:
             - open-webui:/app/backend/data
           ports:
             - "{{ open_webui_http_port }}:8080"
           labels:
-            wud.tag.include: "main"
+            wud.tag.include: main
             wud.watch.digest: "true"
             homepage.group: "{{ services['open-webui'].group }}"
             homepage.name: "{{ services['open-webui'].name }}"
-            homepage.href: "https://ollama.lan"
+            homepage.href: https://ollama.lan
             homepage.icon: openai.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: open-webui

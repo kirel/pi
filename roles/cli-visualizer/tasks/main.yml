@@ -39,7 +39,7 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop:
-    - regexp: "^\\s*#*\\s*audio.sources="
-      line: "audio.sources=pulse"
-    - regexp: "^\\s*#*\\s*audio.pulse.source="
-      line: "audio.pulse.source={{ source_index }}"
+    - regexp: ^\s*#*\s*audio.sources=
+      line: audio.sources=pulse
+    - regexp: ^\s*#*\s*audio.pulse.source=
+      line: audio.pulse.source={{ source_index }}

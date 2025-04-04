@@ -2,7 +2,7 @@
 - name: Disable stubresolver
   ansible.builtin.lineinfile:
     path: /etc/systemd/resolved.conf
-    regexp: "^#?DNSStubListener="
+    regexp: ^#?DNSStubListener=
     line: DNSStubListener=no
   notify: restart resolved
 

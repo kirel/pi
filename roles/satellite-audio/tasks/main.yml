@@ -6,14 +6,14 @@
     path: /boot/firmware/config.txt
     create: true
     state: present
-    insertafter: "^\\[all\\]"
+    insertafter: ^\[all\]
   loop:
     #- line: 'dtparam=audio=off'
-    - line: "dtparam=audio=on"
-      regexp: "^dtparam=audio="
+    - line: dtparam=audio=on
+      regexp: ^dtparam=audio=
     #- line: 'dtoverlay=vc4-kms-v3d,noaudio'
-    - line: "dtoverlay=vc4-kms-v3d"
-      regexp: "^dtoverlay=vc4-kms-v3d"
+    - line: dtoverlay=vc4-kms-v3d
+      regexp: ^dtoverlay=vc4-kms-v3d
   notify: Reboot
   tags: firmware
 
@@ -96,8 +96,8 @@
 - name: Ensure autospawn is set to no in client.conf
   ansible.builtin.lineinfile:
     path: /etc/pulse/client.conf
-    regexp: "^[#;]*\\s*autospawn="
-    line: "autospawn=no"
+    regexp: ^[#;]*\s*autospawn=
+    line: autospawn=no
     state: present
   notify: Restart PulseAudio
   tags: pulse
@@ -115,7 +115,7 @@
 - name: Copy udev scripts
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "/usr/local/bin/{{ item }}"
+    dest: /usr/local/bin/{{ item }}
     owner: root
     group: root
     mode: "0755"
@@ -189,8 +189,8 @@
 
 - name: Clone git repositories
   ansible.builtin.git:
-    repo: "https://github.com/rhasspy/{{ item }}.git"
-    dest: "/tmp/{{ item }}"
+    repo: https://github.com/rhasspy/{{ item }}.git
+    dest: /tmp/{{ item }}
   loop: "{{ wyoming_audio_repos }}"
   tags: stack
 
@@ -207,7 +207,7 @@
 
 - name: Ensure destination directories exist
   ansible.builtin.file:
-    path: "/tmp/{{ item }}-extras"
+    path: /tmp/{{ item }}-extras
     state: directory
   loop: "{{ wyoming_audio_repos }}"
   tags: stack
@@ -224,7 +224,7 @@
     name: "{{ item }}-extras"
     source: build
     build:
-      path: "/tmp/{{ item }}-extras/"
+      path: /tmp/{{ item }}-extras/
     tag: latest
     force_source: true
   loop: "{{ wyoming_audio_repos }}"
@@ -232,13 +232,13 @@
 
 - name: Start wyoming stack
   community.docker.docker_compose_v2:
-    project_name: "sattelite-audio-{{ item.name }}"
+    project_name: sattelite-audio-{{ item.name }}
     definition:
       services:
         snd-external:
           image: wyoming-snd-external-extras:latest
           restart: unless-stopped
-          container_name: "wyoming-snd-external-{{ item.name }}"
+          container_name: wyoming-snd-external-{{ item.name }}
           volumes:
             - /run/dbus:/run/dbus:ro
             - /etc/asound.docker.conf:/etc/asound.conf:ro
@@ -246,20 +246,20 @@
           devices:
             - /dev/snd:/dev/snd
           environment:
-            PULSE_SERVER: "unix:/var/run/pulse/native"
+            PULSE_SERVER: unix:/var/run/pulse/native
             PULSE_SINK: "{{ item.sink | default(omit) }}"
           group_add:
             - audio
           ports:
             - "{{ item.snd_port }}:10601"
           command:
-            - "--device"
-            - "pulse"
-            - "--debug"
+            - --device
+            - pulse
+            - --debug
         mic-external:
           image: wyoming-mic-external-extras:latest
           restart: unless-stopped
-          container_name: "wyoming-mic-external-{{ item.name }}"
+          container_name: wyoming-mic-external-{{ item.name }}
           volumes:
             - /run/dbus:/run/dbus:ro
             - /etc/asound.docker.conf:/etc/asound.conf:ro
@@ -267,15 +267,15 @@
           devices:
             - /dev/snd:/dev/snd
           environment:
-            PULSE_SERVER: "unix:/var/run/pulse/native"
+            PULSE_SERVER: unix:/var/run/pulse/native
           group_add:
             - audio
           ports:
             - "{{ item.mic_port }}:10600"
           command:
-            - "--device"
-            - "pulse"
-            - "--debug"
+            - --device
+            - pulse
+            - --debug
   loop: "{{ satellites }}"
   tags: stack
 

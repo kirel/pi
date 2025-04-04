@@ -7,7 +7,7 @@
 - name: Start dockerproxy
   community.docker.docker_compose_v2:
     project_name: dockerproxy
-    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    pull: always # Set to "always", "missing", "never", or "policy" based on your needs
     state: present # Ensure the services are started
     definition:
       networks:
@@ -29,7 +29,7 @@
             VOLUMES: "1"
             DISABLE_IPV6: "0"
           ports:
-            - "2375:2375"
+            - 2375:2375
           networks:
             - dockerproxy
           volumes:

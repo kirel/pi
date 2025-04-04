@@ -28,7 +28,7 @@
 - name: Start media services
   community.docker.docker_compose_v2:
     project_name: jellyfin
-    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    pull: always # Set to "always", "missing", "never", or "policy" based on your needs
     state: present # Ensure the services are started
     definition:
       services:
@@ -36,7 +36,7 @@
           image: jellyfin/jellyfin
           container_name: jellyfin
           user: "{{ uid }}:{{ uid }}"
-          network_mode: "host"
+          network_mode: host
           volumes:
             - "{{ jellyfin_config_folder }}:/config"
             - jellyfin-cache:/cache
@@ -46,7 +46,7 @@
           restart: unless-stopped
           # Optional - alternative address used for autodiscovery
           environment:
-            JELLYFIN_PublishedServerUrl: "http://192.168.50.5:8096"
+            JELLYFIN_PublishedServerUrl: http://192.168.50.5:8096
           # Optional - may be necessary for docker healthcheck to pass if running in host network mode
           extra_hosts:
             host.docker.internal: host-gateway
@@ -58,7 +58,7 @@
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: jellyfin
             homepage.widget.type: jellyfin
-            homepage.widget.url: "http://192.168.50.5:8096"
+            homepage.widget.url: http://192.168.50.5:8096
             homepage.widget.key: "{{ jellyfin_api_key }}"
 
         navidrome:

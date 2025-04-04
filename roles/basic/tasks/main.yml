@@ -12,9 +12,9 @@
     line: "{{ item.line }}"
     state: "{{ item.state }}"
   with_items:
-    - { regexp: "^LANG=", line: "LANG={{ locale }}", state: present }
-    - { regexp: "^LC_ALL=", line: "LC_ALL={{ locale }}", state: present }
-    - { regexp: "^LANGUAGE=", line: "LANGUAGE={{ locale }}", state: present }
+    - { regexp: ^LANG=, line: "LANG={{ locale }}", state: present }
+    - { regexp: ^LC_ALL=, line: "LC_ALL={{ locale }}", state: present }
+    - { regexp: ^LANGUAGE=, line: "LANGUAGE={{ locale }}", state: present }
   notify:
     - reconfigure locales
 - name: Set timezone to Europe/Berlin
@@ -23,7 +23,7 @@
 - name: Update journald config file to limit journal size
   ansible.builtin.lineinfile:
     path: /etc/systemd/journald.conf
-    regexp: "^SystemMaxUse="
+    regexp: ^SystemMaxUse=
     line: SystemMaxUse=100M
   notify:
     - restart systemd-journald
@@ -31,4 +31,4 @@
   ansible.builtin.lineinfile:
     path: /etc/sudoers
     line: "%sudo ALL=(ALL) NOPASSWD: ALL"
-    validate: "visudo -cf %s"
+    validate: visudo -cf %s

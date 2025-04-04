@@ -10,7 +10,7 @@
 - name: Start monitoring
   community.docker.docker_compose_v2:
     project_name: monitoring
-    pull: "always" # Set to "always", "missing", "never", or "policy" based on your needs
+    pull: always # Set to "always", "missing", "never", or "policy" based on your needs
     state: present # Ensure the services are started
     definition:
       services:
@@ -31,12 +31,12 @@
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
           network_mode: bridge
           labels:
-            wud.tag.include: "^1$$"
+            wud.tag.include: ^1$$
             wud.watch.digest: "true"
             homepage.group: "{{ services.uptime.group }}"
             homepage.name: "{{ services.uptime.name }}"
-            homepage.href: "https://uptime.lan"
-            homepage.icon: "mdi-server"
+            homepage.href: https://uptime.lan
+            homepage.icon: mdi-server
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: uptime_kuma
 
@@ -52,21 +52,21 @@
             WUD_WATCHER_LOCAL_SOCKET: /var/run/docker.sock
             WUD_WATCHER_NAMESERVERPI_HOST: "{{ nameserver_pi_ip }}"
             # - WUD_WATCHER_AILABUM_HOST={{ ailab_um_ip }}
-            WUD_TRIGGER_MQTT_MOSQUITTO_URL: "mqtt://{{ mosquitto_address }}:{{ mosquitto_port }}"
+            WUD_TRIGGER_MQTT_MOSQUITTO_URL: mqtt://{{ mosquitto_address }}:{{ mosquitto_port }}
             WUD_TRIGGER_MQTT_MOSQUITTO_HASS_ENABLED: "true"
             WUD_REGISTRY_GHCR_TOKEN: "{{ gh_access_token }}"
             WUD_REGISTRY_LSCR_TOKEN: "{{ gh_access_token }}"
           labels:
-            wud.tag.include: "^\\d+\\.\\d+\\.\\d+$$"
-            wud.link.template: "https://github.com/fmartinou/whats-up-docker/releases/tag/$${major}.$${minor}.$${patch}"
+            wud.tag.include: ^\d+\.\d+\.\d+$$
+            wud.link.template: https://github.com/fmartinou/whats-up-docker/releases/tag/$${major}.$${minor}.$${patch}
             homepage.group: "{{ services.wud.group }}"
             homepage.name: "{{ services.wud.name }}"
-            homepage.href: "https://wud.lan"
-            homepage.icon: "mdi-docker"
+            homepage.href: https://wud.lan
+            homepage.icon: mdi-docker
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: wud
             homepage.widget.type: whatsupdocker
-            homepage.widget.url: "https://wud.lan"
+            homepage.widget.url: https://wud.lan
   register: output
 
 - ansible.builtin.debug:
