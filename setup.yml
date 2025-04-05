@@ -66,6 +66,7 @@
     - { role: portainer, become: true, tags: [docker, portainer] }
     - { role: glances, become: true, tags: [glances] }
 
+    - { role: intel-gpu-driver, become: true, tags: [intel-gpu, gpu-driver] }
     - { role: ollama-arc, become: true, tags: [ollama-arc] }
     - { role: wolf, become: true, tags: [wolf] }
     - { role: comfyui, become: true, tags: [comfyui] }
