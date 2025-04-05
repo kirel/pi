@@ -110,7 +110,7 @@
   become: true
   ansible.builtin.file:
     path: /usr/share/keyrings/intel-graphics.gpg
-    mode: '0644'
+    mode: "0644"
   when: key_download.changed # Only adjust permissions if we potentially modified the key
 
 # Clean up temporary key file

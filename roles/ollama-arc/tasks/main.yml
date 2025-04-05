@@ -20,6 +20,10 @@
     ollama_arc_base_env_vars:
       no_proxy: "{{ ollama_arc_no_proxy }}"
       DEVICE: "{{ ollama_arc_device_type }}"
+      OLLAMA_HOST: "0.0.0.0" # Listen on all interfaces
+      OLLAMA_MODELS: /models # Set Ollama's model storage path
+      OLLAMA_NUM_GPU: "999" # Use all available GPUs for Ollama (as string)
+      ZES_ENABLE_SYSMAN: "1" # Required for sysman metrics (as string)
 
 - name: Conditionally add benchmark model environment variable
   ansible.builtin.set_fact:
@@ -33,10 +37,14 @@
   community.docker.docker_container:
     name: "{{ ollama_arc_container_name }}"
     image: "{{ ollama_arc_image }}"
+    command: >
+      bash -c "mkdir -p /llm/ollama &&
+               cd /llm/ollama &&
+               source ipex-llm-init --gpu --device {{ ollama_arc_device_type }} &&
+               init-ollama &&
+               exec ./ollama serve"
     state: started
     detach: true
-    interactive: true # Corresponds to -it, though detach=true makes -t less relevant
-    tty: true # Corresponds to -it
     network_mode: host
     devices:
       - /dev/dri:/dev/dri
