@@ -30,7 +30,7 @@
           container_name: open-webui
           restart: unless-stopped
           environment:
-            OLLAMA_BASE_URL: http://ollama-raw.lan:11434
+            OLLAMA_BASE_URL: http://ollama-ailab.lan:11434
           volumes:
             - open-webui:/app/backend/data
           ports:

@@ -1,0 +1,27 @@
+---
+- name: Install autosuspend package
+  ansible.builtin.apt:
+    name: autosuspend
+    state: present
+  become: true
+
+- name: Configure autosuspend
+  ansible.builtin.template:
+    src: autosuspend.conf.j2
+    dest: /etc/autosuspend.conf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Restart autosuspend
+
+- name: Ensure autosuspend service is enabled and started
+  ansible.builtin.systemd:
+    name: autosuspend.service
+    enabled: true
+    state: started
+  become: true
+
+# Handler to restart the service if config changes
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

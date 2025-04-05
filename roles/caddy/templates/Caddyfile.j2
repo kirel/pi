@@ -4,8 +4,8 @@
 }
 
 # docker logs caddy --tail 20000 2>&1 | grep -v -e 'wud.lan' -e pihole -e homepage -e portainer -e Dload | grep -A 2 -E 'exec.*rawon' | grep -E 'rawon|ollama|remote_ip|$'
-http://ollama-raw.lan:11434 {
-        reverse_proxy http://192.168.50.10:11434
+http://ollama-ailab.lan:{{ ollama_port | default(11434) }} {
+        reverse_proxy http://{{ hostvars['ailab']['ansible_host'] }}:{{ ollama_port | default(11434) }}
         tls internal
         log {
                 output stdout
@@ -18,7 +18,7 @@ http://ollama-raw.lan:11434 {
                                 pass_thru
                                 log stdout
                         }
-                        reverse_proxy http://192.168.50.10:11434 {
+                        reverse_proxy http://{{ hostvars['ailab']['ansible_host'] }}:{{ ollama_port | default(11434) }} {
                                 lb_try_duration 360s
                         }
                 }
@@ -34,7 +34,7 @@ danishkirel.asuscomm.com {
 {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.domain|default(service ~ ".lan") }} {
         reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.ip }}:{{ props.http_port }}
         {% if not props.tls_skip | default(false) %}
-        tls internal                                                                               
+        tls internal
         {% endif %}
         log
 }

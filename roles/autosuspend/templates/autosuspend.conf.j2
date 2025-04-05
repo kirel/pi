@@ -1,0 +1,72 @@
+# Configuration for autosuspend managed by Ansible
+[general]
+# Check interval in seconds
+interval = 60
+# Idle time before suspending in seconds (15 minutes)
+idle_time = 900
+# Command to suspend the system
+suspend_cmd = /usr/bin/systemctl suspend
+# Command to schedule wake-up (leave empty if not using RTC wakeups)
+wakeup_cmd =
+# File used by systemd hook to signal wake-up
+woke_up_file = /run/autosuspend.woke_up
+# Lock file location
+lock_file = /var/lock/autosuspend.lock
+# Lock timeout in seconds
+lock_timeout = 30
+# Minimal sleep time in seconds (20 minutes)
+min_sleep_time = 1200
+# Wake up delta in seconds
+wakeup_delta = 30
+
+# --- Activity Checks ---
+
+# Check for active SSH connections
+[check.SSH]
+class = ActiveConnection
+enabled = true
+ports = 22
+
+# Check for active ComfyUI web connections (default port)
+[check.ComfyUI]
+class = ActiveConnection
+enabled = true
+ports = {{ comfyui_port | default(8188) }}
+
+# Check for active Ollama API connections (default port)
+[check.Ollama]
+class = ActiveConnection
+enabled = true
+ports = {{ ollama_port | default(11434) }}
+
+# Check for significant network activity on the primary interface
+[check.Network]
+class = NetworkBandwidth
+enabled = true
+interfaces = {{ ansible_default_ipv4.interface | default('eth0') }}
+# Threshold in bytes/second (e.g., 1 MiB/s)
+threshold_send = 1048576
+threshold_receive = 1048576
+
+# Check for high system load (adjust threshold based on CPU cores if needed)
+[check.Load]
+class = Load
+enabled = true
+threshold = 2.0
+
+# Check for active user sessions via logind (prevents sleep if someone is logged in and active)
+[check.Logind]
+class = LogindSessionsIdle
+enabled = true
+types = tty,x11,wayland
+states = active,online
+classes = user
+
+# --- Wake Up Checks ---
+# Add [wakeup.*] sections here if needed, e.g., for scheduled tasks
+# Example:
+# [wakeup.Calendar]
+# class = CalendarEvents
+# enabled = false
+# url = https://your-calendar-url/basic.ics
+# hours = 24 # Check for events within the next 24 hours

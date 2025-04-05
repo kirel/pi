@@ -69,6 +69,7 @@
     - { role: ollama-arc, become: true, tags: [ollama-arc] }
     - { role: wolf, become: true, tags: [wolf] }
     - { role: comfyui, become: true, tags: [comfyui] }
+    - { role: autosuspend, become: true, tags: [autosuspend] }
 
 - name: Setup mic sattelites
   hosts: mic-satellites

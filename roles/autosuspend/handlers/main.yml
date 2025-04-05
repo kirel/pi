@@ -1,0 +1,6 @@
+---
+- name: Restart autosuspend
+  ansible.builtin.systemd:
+    name: autosuspend.service
+    state: restarted
+  become: true
