@@ -1,7 +1,7 @@
 FROM caddy:builder AS builder
 
 RUN xcaddy build \
-    --with github.com/dulli/caddy-wol \
+    --with github.com/dulli/caddy-wol@latest \
     --with github.com/abiosoft/caddy-exec
 
 FROM caddy:latest

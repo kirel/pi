@@ -1,6 +1,6 @@
 {
         email danishkirel@gmail.com
-        order exec before respond
+        order wake_on_lan before respond
 }
 
 # docker logs caddy --tail 20000 2>&1 | grep -v -e 'wud.lan' -e pihole -e homepage -e portainer -e Dload | grep -A 2 -E 'exec.*rawon' | grep -E 'rawon|ollama|remote_ip|$'
@@ -13,11 +13,7 @@ http://ollama-ailab.lan:{{ ollama_port | default(11434) }} {
         handle_errors {
                 @502 expression {err.status_code} == 502
                 handle @502 {
-                        #wake_on_lan 2C:F0:5D:95:DD:14
-                        exec curl -vk -XPOST https://homeassistant.lan/api/webhook/rawon {
-                                pass_thru
-                                log stdout
-                        }
+                        wake_on_lan {{ ailab_mac_address }} # MAC address for ailab
                         reverse_proxy http://{{ hostvars['ailab']['ansible_host'] }}:{{ ollama_port | default(11434) }} {
                                 lb_try_duration 360s
                         }

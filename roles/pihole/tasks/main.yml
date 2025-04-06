@@ -16,19 +16,32 @@
     - "{{ pihole_config_folder }}"
     - "{{ dnsmasq_config_folder }}"
 
-- name: Add custom dns list
-  ansible.builtin.template:
-    src: custom.list.j2
-    dest: "{{ pihole_config_folder }}/custom.list"
-    owner: "{{ username }}"
-  notify: Restart dns
-
 - name: Create dnsmasq config for static DHCP leases and DNS
   ansible.builtin.template:
     src: dhcp_conf.j2
     dest: "{{ dnsmasq_config_folder }}/04-static-dhcp.conf"
     owner: "{{ username }}"
-  notify: Restart dns
+  notify: Reload pihole dns
+
+- name: Construct custom DNS entries list
+  ansible.builtin.set_fact:
+    custom_dns_list: >-
+      {%- set entries = [] -%}
+      {%- set _ = entries.append(router_ip ~ ' router.lan') -%}
+      {%- set _ = entries.append(homelab_nuc_ip ~ ' homelab-nuc.lan') -%}
+      {%- set _ = entries.append(nameserver_pi_ip ~ ' pihole-pi.lan') -%}
+      {%- set _ = entries.append(homelab_nuc_ip ~ ' ollama-ailab.lan') -%}
+      {%- set _ = entries.append('127.0.0.2 dummy.lan') -%}
+      {%- for service_name, props in services.items() -%}
+        {%- set domain = props.domain | default(service_name ~ '.lan') -%}
+        {%- set ip_address = homelab_nuc_ip -%}
+        {%- set _ = entries.append(ip_address ~ ' ' ~ domain) -%}
+      {%- endfor -%}
+      {{- entries | join(';') -}}
+
+- name: Debug custom_dns_list
+  ansible.builtin.debug:
+    var: custom_dns_list
 
 - name: Start pihole
   community.docker.docker_compose_v2:
@@ -55,6 +68,7 @@
             - "{{ pihole_http_port }}:80/tcp"
           dns:
             - 127.0.0.1
+            - 8.8.8.8
           environment:
             TZ: Europe/Berlin
             FTLCONF_dns_reply_host_IPv4: "{{ ansible_default_ipv4.address }}"
@@ -69,7 +83,8 @@
             FTLCONF_dhcp_end: "{{ dhcp_end }}"
             FTLCONF_dhcp_router: "{{ router_ip }}"
             FTLCONF_dns_domain: lan
-            FTLCONF_misc_etc_dnsmasq_d: "true"
+            FTLCONF_misc_etc_dnsmasq_d: "true" # Keep allowing dnsmasq.d for potential other configs
+            FTLCONF_dns_hosts: "{{ custom_dns_list }}"
           # Volumes store your data between container upgrades
           volumes:
             - "{{ pihole_config_folder }}:/etc/pihole/"
@@ -128,15 +143,6 @@
 
   register: output
 
-- ansible.builtin.debug:
-    var: output
-
 - ansible.builtin.assert:
     that:
       - output.containers | selectattr('Name', 'equalto', 'pihole') | map(attribute='State') | list | first == 'running'
-
-- name: Create symbolic link
-  ansible.builtin.file:
-    src: dhcp.leases
-    dest: "{{ pihole_config_folder }}/dnsmasq.leases"
-    state: link

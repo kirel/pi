@@ -1,3 +1,4 @@
 ---
-- name: Restart dns
-  ansible.builtin.command: docker exec -it pihole pihole restartdns
+- name: Reload pihole dns
+  # Use the internal pihole command to reload DNS config without restarting the server
+  ansible.builtin.command: docker exec pihole pihole reloaddns
