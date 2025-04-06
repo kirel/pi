@@ -16,12 +16,38 @@
     - "{{ pihole_config_folder }}"
     - "{{ dnsmasq_config_folder }}"
 
-- name: Create dnsmasq config for static DHCP leases and DNS
+- name: Create dnsmasq config for passing both Pihole instances as DNS servers
   ansible.builtin.template:
     src: dhcp_conf.j2
-    dest: "{{ dnsmasq_config_folder }}/04-static-dhcp.conf"
+    dest: "{{ dnsmasq_config_folder }}/04-dhcp-dns-failover.conf"
     owner: "{{ username }}"
   notify: Reload pihole dns
+
+- name: Construct static DHCP entries list
+  ansible.builtin.set_fact:
+    static_dhcp_list: >-
+      {%- set entries = [] -%}
+      {%- for host, properties in static_dhcp.items() -%}
+        {%- set ip = properties.ip | default(ip_prefix ~ properties.ip_suffix if (properties.ip_suffix is defined and ip_prefix is defined) else omit) -%}
+        {%- set hostname = properties.hostname | default(host) -%}
+        {%- set entry_parts = [properties.mac] -%}
+        {%- if ip is defined and ip -%}
+          {%- set _ = entry_parts.append(ip) -%}
+        {%- endif -%}
+        {%- if hostname is defined and hostname -%}
+          {%- set _ = entry_parts.append(hostname) -%}
+        {%- endif -%}
+        {%- if properties.nopihole is defined and properties.nopihole -%}
+          {%- set _ = entry_parts.append('set:nopihole') -%}
+        {%- endif -%}
+        {%- set _ = entries.append(entry_parts | join(',')) -%}
+      {%- endfor -%}
+      {{- entries | join(';') -}}
+
+- name: Debug static_dhcp_list
+  ansible.builtin.debug:
+    var: static_dhcp_list
+    verbosity: 1 # Only show in verbose mode
 
 - name: Construct custom DNS entries list
   ansible.builtin.set_fact:
@@ -31,7 +57,6 @@
       {%- set _ = entries.append(homelab_nuc_ip ~ ' homelab-nuc.lan') -%}
       {%- set _ = entries.append(nameserver_pi_ip ~ ' pihole-pi.lan') -%}
       {%- set _ = entries.append(homelab_nuc_ip ~ ' ollama-ailab.lan') -%}
-      {%- set _ = entries.append('127.0.0.2 dummy.lan') -%}
       {%- for service_name, props in services.items() -%}
         {%- set domain = props.domain | default(service_name ~ '.lan') -%}
         {%- set ip_address = homelab_nuc_ip -%}
@@ -66,25 +91,22 @@
             - "{{ ansible_default_ipv4.address }}:53:53/udp"
             # - "{{ ansible_default_ipv4.address }}:67:67/udp" # used by the relay
             - "{{ pihole_http_port }}:80/tcp"
-          dns:
-            - 127.0.0.1
-            - 8.8.8.8
           environment:
             TZ: Europe/Berlin
             FTLCONF_dns_reply_host_IPv4: "{{ ansible_default_ipv4.address }}"
             FTLCONF_webserver_api_password: "{{ pihole_webpassword }}"
-            FTLCONF_dns_upstreams: "{{ router_ip }}"
+            FTLCONF_dns_upstreams: "{{ google_dns_servers | join(';') }}"
             FTLCONF_dns_listeningMode: all
-            FTLCONF_dns_bogusPriv: "false"
-            FTLCONF_dns_domainNeeded: "false"
-            FTLCONF_dns_revServers: true,{{ cidr }},{{ router_ip }},lan
+            FTLCONF_dns_bogusPriv: "true"
+            FTLCONF_dns_domainNeeded: "true"
             FTLCONF_dhcp_active: "true"
             FTLCONF_dhcp_start: "{{ dhcp_start }}"
             FTLCONF_dhcp_end: "{{ dhcp_end }}"
             FTLCONF_dhcp_router: "{{ router_ip }}"
             FTLCONF_dns_domain: lan
-            FTLCONF_misc_etc_dnsmasq_d: "true" # Keep allowing dnsmasq.d for potential other configs
+            FTLCONF_misc_etc_dnsmasq_d: "true"
             FTLCONF_dns_hosts: "{{ custom_dns_list }}"
+            FTLCONF_dhcp_hosts: "{{ static_dhcp_list }}"
           # Volumes store your data between container upgrades
           volumes:
             - "{{ pihole_config_folder }}:/etc/pihole/"
@@ -129,7 +151,7 @@
           ports:
             - "{{ leases_service.http_port }}:5000"
           volumes:
-            - "{{ pihole_config_folder }}:/var/lib/misc:ro"
+            - "{{ pihole_config_folder }}/dhcp.leases:/var/lib/misc/dnsmasq.leases:ro"
           restart: unless-stopped
           labels:
             wud.tag.include: latest
