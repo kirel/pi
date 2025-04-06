@@ -1,0 +1,5 @@
+---
+# Default DNS servers to assign to clients tagged with 'nopihole'
+google_dns_servers:
+  - 8.8.8.8
+  - 8.8.4.4
