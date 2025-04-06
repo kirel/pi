@@ -56,17 +56,30 @@
       {%- set _ = entries.append(router_ip ~ ' router.lan') -%}
       {%- set _ = entries.append(homelab_nuc_ip ~ ' homelab-nuc.lan') -%}
       {%- set _ = entries.append(nameserver_pi_ip ~ ' pihole-pi.lan') -%}
+      {%- set _ = entries.append(ailab_ip ~ ' ailab.lan') -%}
       {%- set _ = entries.append(homelab_nuc_ip ~ ' ollama-ailab.lan') -%}
-      {%- for service_name, props in services.items() -%}
-        {%- set domain = props.domain | default(service_name ~ '.lan') -%}
-        {%- set ip_address = homelab_nuc_ip -%}
-        {%- set _ = entries.append(ip_address ~ ' ' ~ domain) -%}
-      {%- endfor -%}
       {{- entries | join(';') -}}
 
 - name: Debug custom_dns_list
   ansible.builtin.debug:
     var: custom_dns_list
+    verbosity: 1 # Only show in verbose mode
+
+- name: Construct custom CNAME entries list for services
+  ansible.builtin.set_fact:
+    custom_cname_list: >-
+      {%- set entries = [] -%}
+      {%- for service_name, props in services.items() -%}
+        {%- set cname = props.domain | default(service_name ~ '.lan') -%}
+        {%- set target = props.target | default('unknown.target.lan') -%} {# Use target property, fallback if missing #}
+        {%- set _ = entries.append(cname ~ ',' ~ target) -%}
+      {%- endfor -%}
+      {{- entries | join(';') -}}
+
+- name: Debug custom_cname_list
+  ansible.builtin.debug:
+    var: custom_cname_list
+    verbosity: 1 # Only show in verbose mode
 
 - name: Start pihole
   community.docker.docker_compose_v2:
@@ -106,6 +119,7 @@
             FTLCONF_dns_domain: lan
             FTLCONF_misc_etc_dnsmasq_d: "true"
             FTLCONF_dns_hosts: "{{ custom_dns_list }}"
+            FTLCONF_dns_cnameRecords: "{{ custom_cname_list }}"
             FTLCONF_dhcp_hosts: "{{ static_dhcp_list }}"
           # Volumes store your data between container upgrades
           volumes:

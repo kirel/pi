@@ -1,127 +1,123 @@
 ---
 services:
   homepage:
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: 3002
     group: Smart Home
   homeassistant:
     name: Home Assistant
-    ip: "{{ homelab_nuc_ip }}"
     http_port: "{{ homeassistant_http_port }}"
-    server: homelab
+    target: homelab-nuc.lan
     group: Smart Home
   musicassistant:
     name: Music Assistant
-    ip: "{{ homelab_nuc_ip }}"
     http_port: "{{ music_assistant_http_port }}"
-    server: homelab
+    target: homelab-nuc.lan
     group: Media
   uptime:
     name: Uptime Kuma
     group: Monitoring
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ uptime_kuma_http_port }}"
   wud:
     name: What's up Docker?
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ wud_http_port }}"
     group: Monitoring
   babybuddy:
     name: Baby Buddy
-    ip: http://{{ homelab_nuc_ip }}
+    target: homelab-nuc.lan
     http_port: "{{ babybuddy_http_port }}"
     domain: bb.lan
     group: Family
   portainer-homelab-nuc:
     name: Portainer Homelab
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ portainer_http_port }}"
     group: Monitoring
   portainer-nameserver-pi:
     name: Portainer Nameserver
-    ip: "{{ nameserver_pi_ip }}"
+    target: pihole-pi.lan
     http_port: "{{ portainer_http_port }}"
     group: Monitoring
   portainer-ailab:
     name: Portainer AI Lab
-    ip: "{{ ailab_ip }}"
+    target: ailab.lan
     http_port: "{{ portainer_http_port }}"
     group: Monitoring # Or 'AI Lab' if you prefer
     icon: portainer.png
   glances-ailab:
     name: Glances AI Lab
-    ip: "{{ ailab_ip }}"
+    target: ailab.lan
     http_port: "{{ glances_http_port }}"
     group: Monitoring # Or 'AI Lab'
     icon: glances.png # Assuming icon name
   glances-homelab-nuc:
     name: Glances Homelab
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ glances_http_port }}"
     group: Monitoring
   glances-nameserver-pi:
     name: Glances Nameserver
-    ip: "{{ nameserver_pi_ip }}"
+    target: pihole-pi.lan
     http_port: "{{ glances_http_port }}"
     group: Monitoring
   glances-micpi:
     name: Glances Mic Pi
-    ip: "{{ micpi_ip }}"
+    target: micpi.lan # Assuming micpi.lan is the target hostname
     http_port: "{{ glances_http_port }}"
     group: Monitoring
   nodered:
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ nodered_http_port }}"
     group: Smart Home
   vscode:
     name: Visual Studio Code
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ vscode_http_port }}"
     group: Config
   z2m:
     name: Zigbee2MQTT
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ z2m_http_port }}"
     group: Smart Home
   frigate:
     name: Frigate
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ frigate_http_port }}"
     group: Smart Home
   jellyfin:
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ jellyfin_http_port }}"
     group: Media
   music:
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ navidrome_http_port }}"
     group: Media
   syncthing:
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ syncthing_http_port }}"
     group: NAS
   open-webui:
     name: Open WebUI
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ open_webui_http_port }}"
-    domain: ollama.lan
     group: AI
   comfyui:
     name: ComfyUI
-    ip: "{{ ailab_ip }}"
+    target: ailab.lan
     http_port: "{{ comfyui_port }}" # From comfyui role defaults
-    domain: comfyui.lan # Optional: Define a local domain
     group: AI
     icon: comfyui.png # Optional: Define an icon
   pihole-nameserver-pi:
     name: Pihole Nameserver
-    ip: "{{ nameserver_pi_ip }}"
+    target: pihole-pi.lan
     http_port: "{{ pihole_http_port }}"
     domain: pihole-nameserver.lan
     group: Network
   pihole-homelab-nuc:
     name: Pihole Homelab
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ pihole_http_port }}"
     domain: pihole-homelab.lan
     group: Network
@@ -129,17 +125,17 @@ services:
     name: DHCP Leases Nameserver
     group: Network
     domain: leases-nameserver.lan
-    ip: "{{ nameserver_pi_ip }}"
+    target: pihole-pi.lan
     http_port: 5005
   dnsmasq-leases-ui-homelab-nuc:
     name: DHCP Leases Homelab
     group: Network
     domain: leases-homelab.lan
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: 5005
   # mcp servers
   mcp-proxy-server:
     name: MCP Proxy Server
     group: AI
-    ip: "{{ homelab_nuc_ip }}"
+    target: homelab-nuc.lan
     http_port: "{{ mcp_proxy_server_port }}"

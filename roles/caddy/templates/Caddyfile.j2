@@ -28,7 +28,7 @@ danishkirel.asuscomm.com {
 
 {% for service, props in services.items() %}
 {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.domain|default(service ~ ".lan") }} {
-        reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.ip }}:{{ props.http_port }}
+        reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.target }}:{{ props.http_port }}
         {% if not props.tls_skip | default(false) %}
         tls internal
         {% endif %}
