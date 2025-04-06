@@ -35,31 +35,9 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ portainer_http_port }}"
     group: Monitoring
-  portainer-nameserver-pi:
-    name: Portainer Nameserver
-    target: pihole-pi.lan
-    http_port: "{{ portainer_http_port }}"
-    group: Monitoring
-  portainer-ailab:
-    name: Portainer AI Lab
-    target: ailab.lan
-    http_port: "{{ portainer_http_port }}"
-    group: Monitoring # Or 'AI Lab' if you prefer
-    icon: portainer.png
-  glances-ailab:
-    name: Glances AI Lab
-    target: ailab.lan
-    http_port: "{{ glances_http_port }}"
-    group: Monitoring # Or 'AI Lab'
-    icon: glances.png # Assuming icon name
   glances-homelab-nuc:
     name: Glances Homelab
     target: homelab-nuc.lan
-    http_port: "{{ glances_http_port }}"
-    group: Monitoring
-  glances-nameserver-pi:
-    name: Glances Nameserver
-    target: pihole-pi.lan
     http_port: "{{ glances_http_port }}"
     group: Monitoring
   glances-micpi:
@@ -103,30 +81,12 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ open_webui_http_port }}"
     group: AI
-  comfyui:
-    name: ComfyUI
-    target: ailab.lan
-    http_port: "{{ comfyui_port }}" # From comfyui role defaults
-    group: AI
-    icon: comfyui.png # Optional: Define an icon
-  pihole-nameserver-pi:
-    name: Pihole Nameserver
-    target: pihole-pi.lan
-    http_port: "{{ pihole_http_port }}"
-    domain: pihole-nameserver.lan
-    group: Network
   pihole-homelab-nuc:
     name: Pihole Homelab
     target: homelab-nuc.lan
     http_port: "{{ pihole_http_port }}"
     domain: pihole-homelab.lan
     group: Network
-  dnsmasq-leases-ui-nameserver-pi:
-    name: DHCP Leases Nameserver
-    group: Network
-    domain: leases-nameserver.lan
-    target: pihole-pi.lan
-    http_port: 5005
   dnsmasq-leases-ui-homelab-nuc:
     name: DHCP Leases Homelab
     group: Network
@@ -139,3 +99,54 @@ services:
     group: AI
     target: homelab-nuc.lan
     http_port: "{{ mcp_proxy_server_port }}"
+  # nameserver
+  pihole-nameserver-pi:
+    name: Pihole Nameserver
+    target: pihole-pi.lan
+    http_port: "{{ pihole_http_port }}"
+    domain: pihole-nameserver.lan
+    group: Network
+  dnsmasq-leases-ui-nameserver-pi:
+    name: DHCP Leases Nameserver
+    group: Network
+    domain: leases-nameserver.lan
+    target: pihole-pi.lan
+    http_port: 5005
+  portainer-nameserver-pi:
+    name: Portainer Nameserver
+    target: pihole-pi.lan
+    http_port: "{{ portainer_http_port }}"
+    group: Monitoring
+  glances-nameserver-pi:
+    name: Glances Nameserver
+    target: pihole-pi.lan
+    http_port: "{{ glances_http_port }}"
+    group: Monitoring
+  # ailab
+  ollama-ailab:
+    name: Ollama AI Lab
+    proxy_port: "{{ ollama_port }}"
+    target: ailab.lan
+    http_port: "{{ ollama_port }}"
+    wol: "{{ ailab_mac_address }}"
+    try: 360s
+  comfyui:
+    name: ComfyUI
+    target: ailab.lan
+    http_port: "{{ comfyui_port }}" # From comfyui role defaults
+    group: AI
+    icon: comfyui.png # Optional: Define an icon
+    wol: "{{ ailab_mac_address }}"
+    try: 360s
+  portainer-ailab:
+    name: Portainer AI Lab
+    target: ailab.lan
+    http_port: "{{ portainer_http_port }}"
+    group: Monitoring # Or 'AI Lab' if you prefer
+    icon: portainer.png
+  glances-ailab:
+    name: Glances AI Lab
+    target: ailab.lan
+    http_port: "{{ glances_http_port }}"
+    group: Monitoring # Or 'AI Lab'
+    icon: glances.png # Assuming icon name

@@ -3,35 +3,28 @@
         order wake_on_lan before respond
 }
 
-# docker logs caddy --tail 20000 2>&1 | grep -v -e 'wud.lan' -e pihole -e homepage -e portainer -e Dload | grep -A 2 -E 'exec.*rawon' | grep -E 'rawon|ollama|remote_ip|$'
-http://ollama-ailab.lan:{{ ollama_port | default(11434) }} {
-        reverse_proxy http://{{ hostvars['ailab']['ansible_host'] }}:{{ ollama_port | default(11434) }}
-        tls internal
-        log {
-                output stdout
-        }
-        handle_errors {
-                @502 expression {err.status_code} == 502
-                handle @502 {
-                        wake_on_lan {{ ailab_mac_address }} # MAC address for ailab
-                        reverse_proxy http://{{ hostvars['ailab']['ansible_host'] }}:{{ ollama_port | default(11434) }} {
-                                lb_try_duration 360s
-                        }
-                }
-        }
-}
-
 danishkirel.asuscomm.com {
         reverse_proxy {{ homelab_nuc_ip }}:{{ homeassistant_http_port }}
         log
 }
 
 {% for service, props in services.items() %}
-{% if props.tls_skip | default(false) %}http://{% endif %}{{ props.domain|default(service ~ ".lan") }} {
+{% if props.tls_skip | default(false) %}http://{% endif %}{{ props.domain|default(service ~ ".lan") }}{% if props.proxy_port is defined %}:{{ props.proxy_port }}{% endif %} {
         reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.target }}:{{ props.http_port }}
         {% if not props.tls_skip | default(false) %}
         tls internal
         {% endif %}
         log
+        {% if props.wol is defined %}
+        handle_errors {
+                @502 expression {err.status_code} == 502
+                handle @502 {
+                        wake_on_lan {{ props.wol }} # MAC address from service definition
+                        reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.target }}:{{ props.http_port }} {
+                                lb_try_duration {{ props.try | default('30s') }}
+                        }
+                }
+        }
+        {% endif %}
 }
 {% endfor %}

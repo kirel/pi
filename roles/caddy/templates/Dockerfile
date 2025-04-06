@@ -7,5 +7,6 @@ RUN xcaddy build \
 FROM caddy:latest
 
 RUN apk --no-cache add curl
+RUN apk --no-cache add awake
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy

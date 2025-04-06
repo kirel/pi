@@ -39,30 +39,19 @@
   community.docker.docker_compose_v2:
     project_name: caddy
     pull: always # or "missing", "never", "policy" based on your needs
-    build: policy # or "always", "never"
+    build: always # or "always", "never"
     state: present # Ensure the services are started
     definition:
-      networks:
-        homepage:
-          external: true
-        pihole_backend:
-          external: true
+      # Networks are not used in host network mode for this service
       services:
         caddy:
+          network_mode: host
           container_name: caddy
           build:
             context: "{{ caddy_folder }}"
             dockerfile: "{{ caddy_folder }}/Dockerfile"
           restart: unless-stopped
           user: "{{ uid }}:{{ uid }}"
-          dns:
-            - 172.31.0.100
-            - 1.1.1.1
-            - 1.0.0.1
-          ports:
-            - 80:80
-            - 443:443
-            - 11434:11434
           volumes:
             - "{{ caddy_folder }}/Caddyfile:/etc/caddy/Caddyfile"
             - "{{ caddy_data_folder }}:/data"
@@ -71,9 +60,6 @@
             CADDY_ADMIN: "0.0.0.0:2019"
           cap_add:
             - NET_ADMIN
-          networks:
-            - homepage
-            - pihole_backend
           labels:
             - wud.tag.include=latest
             - wud.watch.digest=true
@@ -83,7 +69,7 @@
             - homepage.server={{ inventory_hostname }}
             - homepage.container=caddy
             - homepage.widget.type=caddy
-            - homepage.widget.url=http://caddy:2019
+            - homepage.widget.url=http://homelab-nuc.lan:2019 # Use host-resolvable name as Caddy is in host network mode
 
   register: output
 

@@ -4,8 +4,10 @@
 
 {% set services_list = [] %}
 {% for service, props in services.items() %}
-    {% set merged = {'service': service}|combine(props) %}
-    {% set _ = services_list.append(merged) %}
+    {% if props.group is defined %} {# Only include services that have a group defined #}
+        {% set merged = {'service': service}|combine(props) %}
+        {% set _ = services_list.append(merged) %}
+    {% endif %}
 {% endfor %}
 
 {#
