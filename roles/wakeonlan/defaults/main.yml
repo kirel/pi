@@ -1,0 +1,3 @@
+---
+# defaults file for wakeonlan
+wakeonlan_interface: enp9s0 # Default interface, override in host/group vars if needed

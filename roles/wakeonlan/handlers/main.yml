@@ -1,0 +1,6 @@
+---
+# handlers file for wakeonlan
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true

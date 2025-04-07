@@ -1,0 +1,25 @@
+---
+# tasks file for wakeonlan
+- name: Ensure ethtool is installed
+  ansible.builtin.package:
+    name: ethtool
+    state: present
+  become: true
+
+- name: Create wakeonlan systemd service file
+  ansible.builtin.template:
+    src: wakeonlan.service.j2
+    dest: /etc/systemd/system/wakeonlan-{{ wakeonlan_interface }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: Reload systemd
+
+- name: Enable and start wakeonlan service
+  ansible.builtin.systemd:
+    name: wakeonlan-{{ wakeonlan_interface }}.service
+    enabled: true
+    state: started
+    daemon_reload: true # Reload daemon if template changed
+  become: true
