@@ -1,0 +1,13 @@
+[Unit]
+Description=System Bridge
+After=network.target
+
+[Service]
+# Note: The .deb package installs the executable to /usr/bin/systembridge based on dpkg -L output
+ExecStart=/usr/bin/systembridge --no-gui
+# User=root # Removed, defaults to root. Let's see if this avoids the 217/USER error.
+Restart=on-failure
+# RemainAfterExit=yes # Removed, not typically needed for Type=simple services
+
+[Install]
+WantedBy=multi-user.target

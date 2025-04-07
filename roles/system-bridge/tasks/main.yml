@@ -1,0 +1,54 @@
+---
+# tasks file for system-bridge
+- name: Install System Bridge dependencies
+  become: true
+  ansible.builtin.apt:
+    name:
+      - inetutils-tools
+      - wlr-randr
+      - lshw
+    state: present
+    update_cache: true
+
+- name: Download System Bridge .deb package
+  ansible.builtin.get_url:
+    url: "{{ system_bridge_deb_url }}"
+    dest: "/tmp/system-bridge.deb"
+    mode: '0644'
+  register: download_result
+  until: download_result is succeeded
+  retries: 5
+  delay: 2
+
+- name: Install System Bridge .deb package
+  become: true
+  ansible.builtin.apt:
+    deb: "/tmp/system-bridge.deb"
+  when: download_result.changed
+  notify: "reload systemd" # Notify handler if package install might change service file implicitly
+
+- name: Deploy System Bridge service unit file from template
+  become: true
+  ansible.builtin.template:
+    src: system-bridge.service.j2
+    dest: "/etc/systemd/system/{{ system_bridge_service_name }}.service"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: # Notify handlers if the template changes
+    - "reload systemd"
+    - "restart system-bridge"
+
+- name: Ensure System Bridge service is enabled and started
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ system_bridge_service_name }}.service" # Ensure .service suffix is used
+    enabled: true
+    state: started
+    # daemon_reload: true # Removed, handled by handler
+
+- name: Clean up downloaded .deb file
+  ansible.builtin.file:
+    path: "/tmp/system-bridge.deb"
+    state: absent
+  when: download_result.changed # Only cleanup if we downloaded it

@@ -1,0 +1,4 @@
+---
+# defaults file for system-bridge
+system_bridge_deb_url: "https://github.com/timmo001/system-bridge/releases/download/4.1.13/System.Bridge_4.1.13_amd64.deb"
+system_bridge_service_name: "system-bridge" # Base name without .service
