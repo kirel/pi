@@ -1,6 +1,9 @@
 {
         email danishkirel@gmail.com
         order wake_on_lan before respond
+        log {
+                output stdout
+        }
 }
 
 danishkirel.asuscomm.com {
@@ -19,9 +22,16 @@ danishkirel.asuscomm.com {
         handle_errors {
                 @502 expression {err.status_code} == 502
                 handle @502 {
+                        # Add custom fields to the log entry generated when this error handler runs
+                        log_append wol_triggered "true"
+                        log_append wol_target "{{ props.target }}"
+                        log_append wol_mac "{{ props.wol }}"
+                        log_append wol_triggering_request "{http.request.method} {http.request.uri} from {http.request.remote.ip}"
+                        log_append wol_error_status "{err.status_code}"
+
                         wake_on_lan {{ props.wol }} # MAC address from service definition
                         reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.target }}:{{ props.http_port }} {
-                                lb_try_duration {{ props.try | default('30s') }}
+                                lb_try_duration {{ props.try | default('60s') }}
                         }
                 }
         }

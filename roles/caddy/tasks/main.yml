@@ -27,6 +27,7 @@
     dest: "{{ caddy_folder }}/Caddyfile"
     owner: "{{ username }}"
   register: caddyfile
+  notify: Reload Caddy
 
 - name: Copy Dockerfile
   ansible.builtin.template:
