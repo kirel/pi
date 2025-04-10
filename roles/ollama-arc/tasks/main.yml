@@ -12,6 +12,7 @@
   community.docker.docker_image:
     name: "{{ ollama_arc_image }}"
     source: pull
+    force_source: true # Ensure the image is always pulled
     tag: latest
   become: true
 

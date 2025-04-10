@@ -28,7 +28,7 @@
             - label:disable
           restart: unless-stopped
     state: present
-    pull: missing # Pull if image is not present locally
+    pull: always # Always pull the latest image
   register: compose_output
 
 - name: Debug compose output

@@ -22,12 +22,12 @@
             - /etc/wolf/:/etc/wolf
             - /tmp/sockets:/tmp/sockets:rw
             - /var/run/docker.sock:/var/run/docker.sock:rw
-            - /dev/shm:/dev/shm:rw
-            - /dev/input:/dev/input:rw
+            - /dev/:/dev/:rw
             - /run/udev:/run/udev:rw
           devices:
             - /dev/dri
             - /dev/uinput
+            - /dev/uhid
           device_cgroup_rules:
             - c 13:* rmw
           network_mode: host

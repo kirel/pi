@@ -12,6 +12,3 @@ config_root: /home/{{ username_personal }}/config
 
 # comfyui specific vars
 comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage # Specific path for ailab host in user home
-
-# wakeonlan specific vars
-wakeonlan_interface: enp9s0 # Interface to enable Wake-on-LAN for

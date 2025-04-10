@@ -65,7 +65,6 @@
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: portainer, become: true, tags: [docker, portainer] }
     - { role: glances, become: true, tags: [glances] }
-    - { role: wakeonlan, become: true, tags: [wakeonlan, wol] }
 
     - { role: intel-gpu-driver, become: true, tags: [intel-gpu, gpu-driver] }
     - { role: ollama-arc, become: true, tags: [ollama-arc] }
