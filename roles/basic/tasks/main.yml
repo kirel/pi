@@ -1,4 +1,9 @@
 ---
+- name: Allow sudo without password prompt
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "%sudo ALL=(ALL) NOPASSWD: ALL"
+    validate: visudo -cf %s
 - name: Generate locale
   community.general.locale_gen:
     name: "{{ item }}"
@@ -27,8 +32,3 @@
     line: SystemMaxUse=100M
   notify:
     - restart systemd-journald
-- name: Allow sudo without password prompt
-  ansible.builtin.lineinfile:
-    path: /etc/sudoers
-    line: "%sudo ALL=(ALL) NOPASSWD: ALL"
-    validate: visudo -cf %s
