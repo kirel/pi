@@ -1,0 +1,51 @@
+---
+extends: default
+
+rules:
+  # Relax line length limit slightly
+  line-length:
+    max: 120
+    level: warning # Warn instead of error for long lines
+
+  # Standard 2-space indentation for Ansible
+  indentation:
+    spaces: 2
+    indent-sequences: consistent
+    check-multi-line-strings: false
+
+  # Allow truthy values like 'yes', 'no', 'true', 'false'
+  truthy:
+    allowed-values: ["true", "false", "yes", "no"]
+  # Braces style for flow sequences/mappings
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Brackets style for flow sequences/mappings
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+
+  # Allow comments starting with # (standard)
+  comments:
+    require-starting-space: true
+    min-spaces-from-content: 1
+
+  # Allow empty lines at the end of the file
+  new-line-at-end-of-file: enable
+
+  # Disable document-start rule for includes etc.
+  document-start: disable
+
+ignore: |
+  .git/
+  .venv/
+  .tox/
+  galaxy_roles/
+  *.sops.*
+  roles/ollama/Dockerfile.mcp-proxy
+  roles/wyoming/Dockerfile
+  roles/satellite-audio/files/Dockerfile.*
+  roles/caddy/templates/Dockerfile
+  requirements.yml
+  uv.lock
