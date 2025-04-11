@@ -16,8 +16,8 @@ services:
     working_dir: /config
     environment:
       MCP_CONFIG_PATH: /config/config.json
-      PORT: "{{mcp_proxy_server_port}}"
+      PORT: "{{ mcp_proxy_server_port }}"
     ports:
-      - "{{mcp_proxy_server_port}}:{{mcp_proxy_server_port}}"
+      - "{{ mcp_proxy_server_port }}:{{ mcp_proxy_server_port }}"
     volumes:
       - ./config.json:/config/config.json

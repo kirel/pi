@@ -40,7 +40,7 @@ fi
 
 # Restart all Docker containers with 'wyoming' in their name
 log_message "Restarting Docker containers with 'wyoming' in their name..."
-if docker ps --filter "name=wyoming" --format "{{.Names}}" | xargs -r docker restart; then
+if docker ps --filter "name=wyoming" --format "{{ .Names }}" | xargs -r docker restart; then
     log_message "Docker containers restarted successfully."
 else
     log_message "Failed to restart Docker containers."

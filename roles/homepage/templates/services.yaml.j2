@@ -17,7 +17,7 @@
     - {{ service.name|default(service.service)|capitalize }}:
         href: http://{{ service.service }}.lan
         server: homelab-docker
-        container: {{service.service}}
+        container: {{ service.service }}
 {% endfor %}
 {% endfor %}
 #}

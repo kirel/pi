@@ -7,4 +7,4 @@ load-module module-always-sink
 load-module module-switch-on-connect
 
 ### Enable Volume Ducking
-#load-module module-role-ducking trigger_roles=announce,phone,notification,event ducking_roles=any_role volume=33%
+# load-module module-role-ducking trigger_roles=announce,phone,notification,event ducking_roles=any_role volume=33% # Correct comment format

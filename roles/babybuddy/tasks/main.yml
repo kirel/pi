@@ -46,6 +46,6 @@
             - homepage.group={{ services.babybuddy.group }}
             - homepage.name={{ services.babybuddy.name }}
             - homepage.href=https://bb.lan
-            #- "homepage.icon=home-assistant.png"
+            # - "homepage.icon=home-assistant.png"
             - homepage.server={{ inventory_hostname }}
             - homepage.container=babybuddy

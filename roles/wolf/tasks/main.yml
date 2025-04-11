@@ -1,5 +1,5 @@
 ---
-- name: Copy udev rules
+- name: Copy udev rules # ai! add permissions
   ansible.builtin.template:
     src: 85-wolf-virtual-inputs.rules
     dest: /etc/udev/rules.d/85-wolf-virtual-inputs.rules

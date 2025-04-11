@@ -20,7 +20,7 @@
     - { role: monitoring, become: true, tags: [monitoring] }
     - { role: homepage, become: true, tags: [homepage] }
     - { role: caddy, become: true, tags: [caddy] }
-    - { role: trust-internal-ca, become: true, tags: [caddy, ca] }
+    - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
     - { role: resolved, become: true, tags: [pihole] }
     - { role: pihole, become: true, tags: [pihole] }
     - { role: ollama, become: true, tags: [ollama] }
@@ -35,7 +35,7 @@
     - { role: dockercleanup, become: true, tags: [docker] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
-    - { role: trust-internal-ca, become: true, tags: [caddy, ca] }
+    - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
     - { role: portainer, become: true, tags: [docker, portainer] }
     - { role: glances, become: true, tags: [glances] }
     - { role: pihole, become: true, tags: [pihole] }
@@ -66,11 +66,11 @@
     - { role: portainer, become: true, tags: [docker, portainer] }
     - { role: glances, become: true, tags: [glances] }
 
-    - { role: intel-gpu-driver, become: true, tags: [intel-gpu, gpu-driver] }
-    - { role: ollama-arc, become: true, tags: [ollama-arc] }
+    - { role: intel_gpu_driver, become: true, tags: [intel-gpu, gpu-driver] } # Consider renaming tags too?
+    - { role: ollama_arc, become: true, tags: [ollama-arc] } # Consider renaming tag too?
     - { role: wolf, become: true, tags: [wolf] }
     - { role: comfyui, become: true, tags: [comfyui] }
-    - { role: system-bridge, become: true, tags: [system-bridge] }
+    - { role: system_bridge, become: true, tags: [system-bridge] } # Consider changing tag to system_bridge too?
     - { role: autosuspend, become: true, tags: [autosuspend] }
 
 - name: Setup mic sattelites
@@ -85,6 +85,6 @@
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: glances, become: true, tags: [glances] }
-    - { role: satellite-audio, become: true, tags: [wyoming, satellite-audio] }
-    - { role: cli-visualizer, become: true, tags: [vis] }
-    - { role: trust-internal-ca, become: true, tags: [caddy, ca] }
+    - { role: satellite_audio, become: true, tags: [wyoming, satellite-audio] } # Consider renaming tag too?
+    - { role: cli_visualizer, become: true, tags: [vis] }
+    - { role: trust_internal_ca, become: true, tags: [caddy, ca] }

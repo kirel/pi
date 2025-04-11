@@ -64,7 +64,7 @@ Configure pihole password
     ssh pi4
     sudo docker exec -it pihole pihole -a -p
 
-Copy the `root.cert` from `{{caddy_folder}}` to all the devices and trust it
+Copy the `root.cert` from `{{ caddy_folder }}` to all the devices and trust it
 - https://support.apple.com/en-us/HT204477
 - https://httptoolkit.tech/blog/android-11-trust-ca-certificates/
 

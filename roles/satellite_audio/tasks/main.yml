@@ -8,10 +8,10 @@
     state: present
     insertafter: ^\[all\]
   loop:
-    #- line: 'dtparam=audio=off'
+    # - line: 'dtparam=audio=off'
     - line: dtparam=audio=on
       regexp: ^dtparam=audio=
-    #- line: 'dtoverlay=vc4-kms-v3d,noaudio'
+    # - line: 'dtoverlay=vc4-kms-v3d,noaudio'
     - line: dtoverlay=vc4-kms-v3d
       regexp: ^dtoverlay=vc4-kms-v3d
   notify: Reboot

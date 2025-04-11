@@ -3,6 +3,7 @@
   listen: reconfigure locales
   ansible.builtin.command: dpkg-reconfigure locales -f noninteractive
   become: true
+  changed_when: false
 - name: Restart systemd-journald
   ansible.builtin.service:
     name: systemd-journald

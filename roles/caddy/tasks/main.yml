@@ -83,7 +83,7 @@
       - output.containers | selectattr('Name', 'equalto', 'caddy') | map(attribute='State') | list | first == 'running'
 
 - name: Copy root certificate
-  ansible.builtin.command: docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{caddy_folder}}/root.crt
+  ansible.builtin.command: docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{ caddy_folder }}/root.crt
 - ansible.builtin.fetch:
     src: "{{ caddy_folder }}/root.crt"
     dest: tmp/

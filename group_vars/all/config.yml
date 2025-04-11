@@ -52,36 +52,36 @@ mount_root: mnt
 shares:
   - Medien
   - dreifuenf
-config_root: /home/{{username}}/config
-homeassistant_config_folder: "{{config_root}}/home-assistant"
-homeassistant_media_folder: /{{mount_root}}/Medien/Musik
-music_assistant_data_folder: "{{config_root}}/music-assistant"
-music_assistant_media_folder: /{{mount_root}}/Medien/Musik
-frigate_config_folder: "{{config_root}}/frigate"
-frigate_media_folder: /{{mount_root}}/Medien/Frigate
-vscode_config_folder: "{{config_root}}/vscode"
-nodered_config_folder: "{{config_root}}/node-red"
-mosquitto_config_folder: "{{config_root}}/mosquitto/config"
-mosquitto_data_folder: "{{config_root}}/mosquitto/data"
-mosquitto_log_folder: "{{config_root}}/mosquitto/log"
-matter_server_data_folder: "{{config_root}}/matter/data"
-zigbee2mqtt_data_folder: "{{config_root}}/z2m"
-pihole_config_folder: "{{config_root}}/pihole"
-dnsmasq_config_folder: "{{config_root}}/dnsmasq"
-caddy_folder: "{{config_root}}/caddy"
-caddy_data_folder: "{{config_root}}/caddy/data"
-caddy_config_folder: "{{config_root}}/caddy/config"
-uptime_kuma_data_folder: "{{config_root}}/uptime-kuma/data"
-jellyfin_config_folder: "{{config_root}}/jellyfin"
-jellyfin_movie_folder: /{{mount_root}}/Medien/Filme
-jellyfin_shows_folder: /{{mount_root}}/Medien/Shows
-jellyfin_music_folder: /{{mount_root}}/Medien/Musik
-navidrome_data_folder: "{{config_root}}/navidrome"
-nextcloud_data_folder: "{{config_root}}/nextcloud"
-syncthing_config_folder: "{{config_root}}/syncthing/config"
-syncthing_data_folder: "{{config_root}}/syncthing/data"
-openwakeword_data_folder: "{{config_root}}/openwakeword"
-satellite_data_folder: "{{config_root}}/satellite"
-piper_data_folder: "{{config_root}}/piper"
-whisper_data_folder: "{{config_root}}/whisper"
-babybuddy_config_folder: "{{config_root}}/babybuddy"
+config_root: /home/{{ username }}/config
+homeassistant_config_folder: "{{ config_root }}/home-assistant"
+homeassistant_media_folder: /{{ mount_root }}/Medien/Musik
+music_assistant_data_folder: "{{ config_root }}/music-assistant"
+music_assistant_media_folder: /{{ mount_root }}/Medien/Musik
+frigate_config_folder: "{{ config_root }}/frigate"
+frigate_media_folder: /{{ mount_root }}/Medien/Frigate
+vscode_config_folder: "{{ config_root }}/vscode"
+nodered_config_folder: "{{ config_root }}/node-red"
+mosquitto_config_folder: "{{ config_root }}/mosquitto/config"
+mosquitto_data_folder: "{{ config_root }}/mosquitto/data"
+mosquitto_log_folder: "{{ config_root }}/mosquitto/log"
+matter_server_data_folder: "{{ config_root }}/matter/data"
+zigbee2mqtt_data_folder: "{{ config_root }}/z2m"
+pihole_config_folder: "{{ config_root }}/pihole"
+dnsmasq_config_folder: "{{ config_root }}/dnsmasq"
+caddy_folder: "{{ config_root }}/caddy"
+caddy_data_folder: "{{ config_root }}/caddy/data"
+caddy_config_folder: "{{ config_root }}/caddy/config"
+uptime_kuma_data_folder: "{{ config_root }}/uptime-kuma/data"
+jellyfin_config_folder: "{{ config_root }}/jellyfin"
+jellyfin_movie_folder: /{{ mount_root }}/Medien/Filme
+jellyfin_shows_folder: /{{ mount_root }}/Medien/Shows
+jellyfin_music_folder: /{{ mount_root }}/Medien/Musik
+navidrome_data_folder: "{{ config_root }}/navidrome"
+nextcloud_data_folder: "{{ config_root }}/nextcloud"
+syncthing_config_folder: "{{ config_root }}/syncthing/config"
+syncthing_data_folder: "{{ config_root }}/syncthing/data"
+openwakeword_data_folder: "{{ config_root }}/openwakeword"
+satellite_data_folder: "{{ config_root }}/satellite"
+piper_data_folder: "{{ config_root }}/piper"
+whisper_data_folder: "{{ config_root }}/whisper"
+babybuddy_config_folder: "{{ config_root }}/babybuddy"

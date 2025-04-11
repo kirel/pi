@@ -1,2 +1,2 @@
-dhcp-option=option:dns-server,{{nameserver_pi_ip}},{{homelab_nuc_ip}}
+dhcp-option=option:dns-server,{{ nameserver_pi_ip }},{{ homelab_nuc_ip }}
 dhcp-option=tag:nopihole,option:dns-server,{{ google_dns_servers | join(',') }}

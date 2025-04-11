@@ -42,7 +42,7 @@ static_dhcp:
   dashboard-8:
     mac: A0:D0:DC:24:C9:E7
     ip_suffix: 18
-  ## Smart Home
+  # # Smart Home
   # Espresence .20-.29
   # BT proxy .30-.39
   # Shelly .40-.69

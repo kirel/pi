@@ -65,7 +65,7 @@
     dest: "{{ homeassistant_config_folder }}/docker"
     force: true
   become: true
-  become_user: "{{username}}"
+  become_user: "{{ username }}"
 
 - name: Reposess config folders
   ansible.builtin.file:
@@ -118,7 +118,7 @@
           dns:
             - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"
-          #devices:
+          # devices:
           #  - /dev/ttyACM0 # zigbee coordinator - z2m uses this
           environment:
             - PUID={{ uid }}
@@ -168,8 +168,8 @@
             - PGID={{ uid }}
             - TZ=Europe/Berlin
             - UMASK=007
-            #- PROXY_DOMAIN=code-server.my.domain #optional
-            #- DEFAULT_WORKSPACE=/config/workspace #optional
+            # - PROXY_DOMAIN=code-server.my.domain # optional
+            # - DEFAULT_WORKSPACE=/config/workspace # optional
           volumes:
             - "{{ vscode_config_folder }}:/config"
             - "{{ homeassistant_config_folder }}:/config/workspace"
@@ -191,14 +191,14 @@
         #   container_name: nodered
         #   image: nodered/node-red
         #   ports:
-        #     - "{{nodered_http_port}}:1880"
+        #     - "{{ nodered_http_port }}:1880"
         #   volumes:
-        #     - "{{nodered_config_folder}}:/data"
+        #     - "{{ nodered_config_folder }}:/data"
         #   depends_on:
         #     - homeassistant
         #   environment:
         #     TZ: "Europe/Amsterdam"
-        #   user: "{{ha_user.uid}}:{{ha_user.group}}"
+        #   user: "{{ ha_user.uid }}:{{ ha_user.group }}"
         #   restart: unless-stopped
         mosquitto:
           container_name: mosquitto
