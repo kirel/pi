@@ -17,6 +17,9 @@ static_dhcp:
   # virtualhere:
   # mac: "B8:27:EB:C1:21:9D"
   # ip_suffix: 7
+  reisegeraet:
+    mac: 92:83:C4:4F:66:A2
+    ip_suffix: 6
   gl-mt3000:
     mac: 94:83:C4:3A:71:DE
     ip_suffix: 8
