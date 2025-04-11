@@ -8,11 +8,10 @@
     mode: "0755"
   become: true
 
-- name: Pull the latest ipex-llm-inference-cpp-xpu image
+- name: Ensure the ipex-llm-inference-cpp-xpu image is present locally
   community.docker.docker_image:
     name: "{{ ollama_arc_image }}"
-    source: pull
-    force_source: true # Ensure the image is always pulled
+    source: local # Use local image, do not pull
     tag: latest
   become: true
 
