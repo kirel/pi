@@ -76,12 +76,12 @@
             ACCOUNT_daniel: "daniel:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:361FA5DCDEC7F04CC65A84100D147EA0:[U          ]:LCT-643D057C:"
             UID_daniel: "{{ uid_personal }}"
             SAMBA_GLOBAL_STANZA: guest account = {{ username }}
-            SAMBA_VOLUME_CONFIG_Medien: "[Medien]; path=/shares/Medien; valid users = daniel, nuc; browseable = yes; guest ok = yes; read only = no; force group =
-              users; create mask = 0775; directory mask = 0755"
-            SAMBA_VOLUME_CONFIG_dreifuenf: "[TimeMachine]; path=/shares/dreifuenf/timemachine/%U; valid users = daniel; guest ok = no; read only = no; browseable
-              = yes; fruit:time machine = yes"
-            SAMBA_VOLUME_CONFIG_config: "[Config]; path=/shares/config; valid users = daniel; guest ok = no; read only = no; browseable = yes; create mask = 0775;
-              directory mask = 0755; force user = {{ username }}; force group = users;"
+            SAMBA_VOLUME_CONFIG_Medien: "[Medien]; path=/shares/Medien; valid users = daniel, nuc; browseable = yes; guest
+              ok = yes; read only = no; force group = users; create mask = 0775; directory mask = 0755"
+            SAMBA_VOLUME_CONFIG_dreifuenf: "[TimeMachine]; path=/shares/dreifuenf/timemachine/%U; valid users = daniel; guest
+              ok = no; read only = no; browseable = yes; fruit:time machine = yes"
+            SAMBA_VOLUME_CONFIG_config: "[Config]; path=/shares/config; valid users = daniel; guest ok = no; read only = no;
+              browseable = yes; create mask = 0775; directory mask = 0755; force user = {{ username }}; force group = users;"
           volumes:
             - /etc/avahi/services/:/external/avahi
             - /mnt/Medien:/shares/Medien

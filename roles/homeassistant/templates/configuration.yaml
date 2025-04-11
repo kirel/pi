@@ -27,7 +27,7 @@ mqtt:
 serial:
   # Location of CC2531 USB sniffer
   port: /dev/ttyACM1
-  adapter: zstack # <-- Add this line
+  adapter: zstack
 
 frontend:
   port: {{ z2m_http_port }}

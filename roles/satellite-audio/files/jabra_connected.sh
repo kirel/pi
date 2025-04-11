@@ -25,7 +25,7 @@ else
 fi
 
 log_message "Setting volume of $SINK..."
-if pactl set-sink-volume "$SINK" 74%; then 
+if pactl set-sink-volume "$SINK" 74%; then
     log_message "Successfully set volume of $SINK."
 else
     log_message "Failed to set volume of $SINK."

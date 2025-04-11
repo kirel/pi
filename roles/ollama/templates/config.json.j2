@@ -4,7 +4,7 @@
     {
       "name": "{{ service.name }}",
       "transport": {
-        "type": "sse", 
+        "type": "sse",
         "url": "http://192.168.50.5:{{ service.sse_port }}/sse"
       }
     }{% if not loop.last %},{% endif %}

@@ -28,7 +28,8 @@
     static_dhcp_list: >-
       {%- set entries = [] -%}
       {%- for host, properties in static_dhcp.items() -%}
-        {%- set ip = properties.ip | default(ip_prefix ~ properties.ip_suffix if (properties.ip_suffix is defined and ip_prefix is defined) else omit) -%}
+        {%- set ip = properties.ip | default(ip_prefix ~ properties.ip_suffix if (properties.ip_suffix is defined and ip_prefix
+      is defined) else omit) -%}
         {%- set hostname = properties.hostname | default(host) -%}
         {%- set entry_parts = [properties.mac] -%}
         {%- if ip is defined and ip -%}

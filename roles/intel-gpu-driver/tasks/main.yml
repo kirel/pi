@@ -125,7 +125,8 @@
 - name: Add Intel GPU repository (for Intel Core CPU / Arc A770)
   become: true
   ansible.builtin.apt_repository:
-    repo: deb [arch=amd64,i386 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/gpu/ubuntu {{ ansible_distribution_release }} client
+    repo: deb [arch=amd64,i386 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/gpu/ubuntu
+      {{ ansible_distribution_release }} client
     filename: intel-gpu-{{ ansible_distribution_release }}
     state: present
     update_cache: true

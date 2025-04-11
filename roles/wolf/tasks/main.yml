@@ -3,7 +3,7 @@
   ansible.builtin.template:
     src: 85-wolf-virtual-inputs.rules
     dest: /etc/udev/rules.d/85-wolf-virtual-inputs.rules
-  notify: restart udev
+  notify: Restart udev
 
 - name: Start wolf
   community.docker.docker_compose_v2:

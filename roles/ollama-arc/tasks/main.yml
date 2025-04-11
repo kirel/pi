@@ -27,7 +27,8 @@
 
 - name: Conditionally add benchmark model environment variable
   ansible.builtin.set_fact:
-    ollama_arc_bench_env_var: "{% if ollama_arc_benchmark_model | length > 0 %}{'bench_model': '{{ ollama_arc_benchmark_model }}'}{% else %}{}{% endif %}"
+    ollama_arc_bench_env_var: "{% if ollama_arc_benchmark_model | length > 0 %}{'bench_model': '{{ ollama_arc_benchmark_model
+      }}'}{% else %}{}{% endif %}"
 
 - name: Combine environment variables
   ansible.builtin.set_fact:

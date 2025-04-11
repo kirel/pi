@@ -36,8 +36,8 @@
     group: root
     mode: "0644"
   notify: # Notify handlers if the template changes
-    - reload systemd
-    - restart system-bridge
+    - Reload systemd
+    - Restart system-bridge
 
 - name: Ensure System Bridge service is enabled and started
   become: true

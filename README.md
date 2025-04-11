@@ -159,7 +159,7 @@ EOF
     zellij run -- ssh micpi tail -f /var/log/jabra_connected.log
 
 ## Reset some things
-    
+
     ssh micpi "sudo wget -O /boot/firmware/config.txt https://raw.githubusercontent.com/RPi-Distro/pi-gen/refs/heads/master/stage1/00-boot-files/files/config.txt"
 
     ssh micpi "sudo rm -rf /etc/pulse && sudo apt -y purge pulseaudio pulseaudio-utils && sudo apt -y autoremove"

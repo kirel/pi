@@ -8,16 +8,16 @@ services:
     environment: {{ service.environment | default({}) | to_json }}
     ports: {{ service.ports | to_json }}
 {% endfor %}
-  mcp-proxy-server:                                              
-    image: mcp-proxy:latest                                      
+  mcp-proxy-server:
+    image: mcp-proxy:latest
     container_name: mcp-proxy-server
-    restart: unless-stopped                                      
-    command: npx -y --package https://github.com/kirel/mcp-proxy-server.git -c 'mcp-proxy-sse-server'               
+    restart: unless-stopped
+    command: npx -y --package https://github.com/kirel/mcp-proxy-server.git -c 'mcp-proxy-sse-server'
     working_dir: /config
-    environment:                                                 
+    environment:
       MCP_CONFIG_PATH: /config/config.json
-      PORT: "{{mcp_proxy_server_port}}"     
-    ports:                                                       
-      - "{{mcp_proxy_server_port}}:{{mcp_proxy_server_port}}"                                              
-    volumes:                                                     
+      PORT: "{{mcp_proxy_server_port}}"
+    ports:
+      - "{{mcp_proxy_server_port}}:{{mcp_proxy_server_port}}"
+    volumes:
       - ./config.json:/config/config.json

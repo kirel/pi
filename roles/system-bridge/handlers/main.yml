@@ -4,11 +4,11 @@
   become: true
   ansible.builtin.systemd:
     daemon_reload: true
-  listen: reload systemd
+  listen: Reload systemd
 
 - name: Restart system-bridge service
   become: true
   ansible.builtin.systemd:
     name: "{{ system_bridge_service_name }}.service" # Ensure .service suffix
     state: restarted
-  listen: restart system-bridge
+  listen: Restart system-bridge
