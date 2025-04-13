@@ -71,6 +71,6 @@ static_dhcp:
     ip_suffix: 98
     nopihole: true
   sabines-handy:
-    mac: A8:34:6A:22:E7:7C
+    mac: AC:80:FB:CB:F9:E7
     ip_suffix: 99
     nopihole: true
