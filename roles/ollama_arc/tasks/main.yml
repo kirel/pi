@@ -8,12 +8,41 @@
     mode: "0755"
   become: true
 
-- name: Ensure the ipex-llm-inference-cpp-xpu image is present locally
-  community.docker.docker_image:
-    name: "{{ ollama_arc_image }}"
-    source: local # Use local image, do not pull
-    tag: latest
-  become: true
+# Block for building the image locally (always runs)
+- name: Build ipex-llm-inference-cpp-xpu image from source
+  become: true # Often needed for git checkout destination and docker build
+  block:
+    - name: Ensure git package is present for cloning
+      ansible.builtin.package:
+        name: git
+        state: present
+
+    - name: Ensure build destination directory exists
+      ansible.builtin.file:
+        path: "{{ ollama_arc_build_repo_dest | ansible.builtin.dirname }}" # Ensure parent dir exists
+        state: directory
+        mode: "0755"
+
+    - name: Clone or update the ipex-llm repository
+      ansible.builtin.git:
+        repo: "{{ ollama_arc_build_repo_url }}"
+        dest: "{{ ollama_arc_build_repo_dest }}"
+        version: "{{ ollama_arc_build_repo_version }}"
+        force: true # Ensure the correct version is checked out
+        depth: 1 # Perform a shallow clone
+
+    - name: Build the ipex-llm-inference-cpp-xpu image
+      community.docker.docker_image:
+        name: "{{ ollama_arc_image }}"
+        source: build
+        build:
+          path: "{{ ollama_arc_build_repo_dest }}/{{ ollama_arc_build_context_subdir }}"
+          args: "{{ ollama_arc_build_args }}" # Correct parameter name is 'args'
+          nocache: "{{ ollama_arc_build_nocache }}"
+          rm: "{{ ollama_arc_build_rm }}"
+          pull: true # Attempt to pull base images
+        state: present
+      # Note: This build can take a significant amount of time
 
 - name: Define base container environment variables
   ansible.builtin.set_fact:
