@@ -66,12 +66,12 @@
     - { role: portainer, become: true, tags: [docker, portainer] }
     - { role: glances, become: true, tags: [glances] }
 
+    - { role: autosuspend, become: true, tags: [autosuspend] }
+    - { role: system_bridge, become: true, tags: [system-bridge] } # Consider changing tag to system_bridge too?
     - { role: intel_gpu_driver, become: true, tags: [intel-gpu, gpu-driver] } # Consider renaming tags too?
     - { role: ollama_arc, become: true, tags: [ollama-arc] } # Consider renaming tag too?
     - { role: wolf, become: true, tags: [wolf] }
     - { role: comfyui, become: true, tags: [comfyui] }
-    - { role: system_bridge, become: true, tags: [system-bridge] } # Consider changing tag to system_bridge too?
-    - { role: autosuspend, become: true, tags: [autosuspend] }
 
 - name: Setup mic sattelites
   hosts: mic-satellites
