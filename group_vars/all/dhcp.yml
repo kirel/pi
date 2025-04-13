@@ -23,6 +23,9 @@ static_dhcp:
   gl-mt3000:
     mac: 94:83:C4:3A:71:DE
     ip_suffix: 8
+  ailab:
+    mac: "{{ ailab_mac_address }}"
+    ip_suffix: 9
   # Media .10-.19
   raw:
     mac: 2C:F0:5D:95:DD:14
