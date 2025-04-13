@@ -23,56 +23,56 @@
   when: kernel_check.failed
   notify: Reboot system
 
-# GRUB update is complex and potentially fragile. Using shell commands based on Intel's guide.
-# Ensure grub-customizer or similar tools are not interfering.
-- name: Get GRUB menu entries
-  become: true
-  ansible.builtin.command:
-    cmd: awk -F\' '/menuentry / {print $2}' /boot/grub/grub.cfg
-  register: grub_entries
-  changed_when: false
-  when: kernel_check.failed
-  check_mode: false # This command needs to run to get data
+# # GRUB update is complex and potentially fragile. Using shell commands based on Intel's guide.
+# # Ensure grub-customizer or similar tools are not interfering.
+# - name: Get GRUB menu entries
+#   become: true
+#   ansible.builtin.command:
+#     cmd: awk -F\' '/menuentry / {print $2}' /boot/grub/grub.cfg
+#   register: grub_entries
+#   changed_when: false
+#   when: kernel_check.failed
+#   check_mode: false # This command needs to run to get data
 
-- name: Calculate GRUB index for target kernel
-  become: true
-  ansible.builtin.command:
-    cmd: >
-      echo "$(awk -F\\' '/menuentry / {print $2}' /boot/grub/grub.cfg |
-      grep -no '{{ target_kernel_package_version }}-generic' | sed 's/:/\\n/g' | head -n 1)"
-  register: grub_index_raw
-  changed_when: false
-  when: kernel_check.failed and grub_entries.stdout is defined
-  check_mode: false
+# - name: Calculate GRUB index for target kernel
+#   become: true
+#   ansible.builtin.command:
+#     cmd: >
+#       echo "$(awk -F\\' '/menuentry / {print $2}' /boot/grub/grub.cfg |
+#       grep -no '{{ target_kernel_package_version }}-generic' | sed 's/:/\\n/g' | head -n 1)"
+#   register: grub_index_raw
+#   changed_when: false
+#   when: kernel_check.failed and grub_entries.stdout is defined
+#   check_mode: false
 
-- name: Set GRUB default entry index
-  ansible.builtin.set_fact:
-    grub_default_index: "{{ (grub_index_raw.stdout | int) - 1 }}" # awk index is 1-based, grub menu is 0-based? Let's re-check Intel's logic.
-    # Intel's logic: `$(($(awk ... | grep ... | head -n 1)-2))` - This seems to account for header entries?
-    # Let's try a simpler approach first: Set GRUB_DEFAULT directly to the menu entry title if possible, or use the calculated index carefully.
-    # Intel's command: GRUB_DEFAULT="1> $(echo $(($(awk ... | grep ... | head -n 1)-2)))"
-    # Let's replicate Intel's index calculation logic more closely.
-    grub_calculated_index_intel: "{{ (grub_index_raw.stdout | int) - 2 }}"
-  when: kernel_check.failed and grub_index_raw.stdout is defined and grub_index_raw.stdout | trim != ""
+# - name: Set GRUB default entry index
+#   ansible.builtin.set_fact:
+#     grub_default_index: "{{ (grub_index_raw.stdout | int) - 1 }}" # awk index is 1-based, grub menu is 0-based? Let's re-check Intel's logic.
+#     # Intel's logic: `$(($(awk ... | grep ... | head -n 1)-2))` - This seems to account for header entries?
+#     # Let's try a simpler approach first: Set GRUB_DEFAULT directly to the menu entry title if possible, or use the calculated index carefully.
+#     # Intel's command: GRUB_DEFAULT="1> $(echo $(($(awk ... | grep ... | head -n 1)-2)))"
+#     # Let's replicate Intel's index calculation logic more closely.
+#     grub_calculated_index_intel: "{{ (grub_index_raw.stdout | int) - 2 }}"
+#   when: kernel_check.failed and grub_index_raw.stdout is defined and grub_index_raw.stdout | trim != ""
 
-- name: Update GRUB default configuration
-  become: true
-  ansible.builtin.lineinfile:
-    path: /etc/default/grub
-    regexp: ^GRUB_DEFAULT=.*
-    line: GRUB_DEFAULT="1> {{ grub_calculated_index_intel }}"
-    state: present
-    backrefs: false # Replace the whole line regardless of previous content
-  register: grub_config_updated
-  when: kernel_check.failed and grub_calculated_index_intel is defined
+# - name: Update GRUB default configuration
+#   become: true
+#   ansible.builtin.lineinfile:
+#     path: /etc/default/grub
+#     regexp: ^GRUB_DEFAULT=.*
+#     line: GRUB_DEFAULT="1> {{ grub_calculated_index_intel }}"
+#     state: present
+#     backrefs: false # Replace the whole line regardless of previous content
+#   register: grub_config_updated
+#   when: kernel_check.failed and grub_calculated_index_intel is defined
 
-- name: Update GRUB bootloader configuration
-  become: true
-  ansible.builtin.command:
-    cmd: update-grub
-  when: grub_config_updated.changed
-  notify: Reboot system
-  changed_when: true # Assume changed if run
+# - name: Update GRUB bootloader configuration
+#   become: true
+#   ansible.builtin.command:
+#     cmd: update-grub
+#   when: grub_config_updated.changed
+#   notify: Reboot system
+#   changed_when: true # Assume changed if run
 
 - name: Install prerequisites for Intel GPU driver repository
   become: true
