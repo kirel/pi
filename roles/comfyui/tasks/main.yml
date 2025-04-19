@@ -6,6 +6,22 @@
     state: directory
     mode: "0755"
 
+- name: Define build context path on target
+  ansible.builtin.set_fact:
+    comfyui_build_context_path: "{{ comfyui_storage_path }}/build_context"
+
+- name: Ensure build context directory exists on target
+  ansible.builtin.file:
+    path: "{{ comfyui_build_context_path }}"
+    state: directory
+    mode: "0755"
+
+- name: Copy Docker build context to target
+  ansible.builtin.copy:
+    src: "{{ role_path }}/templates/" # Copy contents of templates dir
+    dest: "{{ comfyui_build_context_path }}"
+    mode: "0644"
+
 - name: Ensure ComfyUI service is running using inline definition
   community.docker.docker_compose_v2:
     project_name: "{{ comfyui_container_name }}"
@@ -15,7 +31,7 @@
           init: true
           container_name: "{{ comfyui_container_name }}"
           build:
-            context: "{{ role_path }}/templates" # Build from the Dockerfile in the templates dir # ai! templates is on this host - we need to build on the ansible host though
+            context: "{{ comfyui_build_context_path }}" # Build context copied to target host
           ports:
             - "{{ comfyui_port }}:8188"
           volumes:
