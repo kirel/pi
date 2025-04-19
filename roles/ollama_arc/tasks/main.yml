@@ -30,6 +30,7 @@
         version: "{{ ollama_arc_build_repo_version }}"
         force: true # Ensure the correct version is checked out
         depth: 1 # Perform a shallow clone
+      register: git_clone_result # Register the result
 
     - name: Build the ipex-llm-inference-cpp-xpu image
       community.docker.docker_image:
