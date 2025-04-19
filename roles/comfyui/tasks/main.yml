@@ -16,10 +16,10 @@
     state: directory
     mode: "0755"
 
-- name: Copy Docker build context to target
-  ansible.builtin.copy: # ai! use template
-    src: "{{ role_path }}/templates/" # Copy contents of templates dir
-    dest: "{{ comfyui_build_context_path }}"
+- name: Template Dockerfile to target build context
+  ansible.builtin.template:
+    src: Dockerfile.j2 # Template the Dockerfile
+    dest: "{{ comfyui_build_context_path }}/Dockerfile" # Place it in the build context dir
     mode: "0644"
 
 - name: Ensure ComfyUI service is running using inline definition
