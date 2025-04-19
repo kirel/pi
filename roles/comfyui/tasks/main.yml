@@ -15,7 +15,7 @@
           init: true
           container_name: "{{ comfyui_container_name }}"
           build:
-            context: "{{ role_path }}/templates" # Build from the Dockerfile in the templates dir
+            context: "{{ role_path }}/templates" # Build from the Dockerfile in the templates dir # ai! templates is on this host - we need to build on the ansible host though
           ports:
             - "{{ comfyui_port }}:8188"
           volumes:
