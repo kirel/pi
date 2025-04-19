@@ -54,9 +54,15 @@
             wud.tag.include: ^v\d+\.\d+\.\d+$$
   register: output
 
-- ansible.builtin.debug:
+- name: Debug docker compose output
+  ansible.builtin.debug:
     var: output
 
-- ansible.builtin.assert:
+- name: Assert homepage container is running
+  ansible.builtin.assert:
     that:
-      - output.containers | selectattr('Name', 'equalto', 'homepage') | map(attribute='State') | list | first == 'running' # Adjusted to check for running state
+      - >
+        output.containers
+        | selectattr('Name', 'equalto', 'homepage')
+        | map(attribute='State')
+        | list | first == 'running'

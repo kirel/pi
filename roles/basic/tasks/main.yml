@@ -31,4 +31,4 @@
     regexp: ^SystemMaxUse=
     line: SystemMaxUse=100M
   notify:
-    - restart systemd-journald
+    - Restart systemd-journald

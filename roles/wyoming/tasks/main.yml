@@ -27,8 +27,9 @@
 
 - name: Clone the Git repository
   ansible.builtin.git:
-    repo: https://github.com/rhasspy/wyoming-satellite.git@v1.4.1
+    repo: https://github.com/rhasspy/wyoming-satellite.git
     dest: /tmp/wyoming-satellite
+    version: v1.4.1
 
 - name: Build the Docker image
   community.docker.docker_image:

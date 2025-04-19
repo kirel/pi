@@ -5,9 +5,30 @@ After=docker.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/docker system prune -af --filter "until=744h"
+# First log the start of the pruning operation
+ExecStart=/bin/bash -c 'echo "Starting Docker pruning at $(date)" > /var/log/docker-prune.log'
 
-TimeoutSec=10m
+# Prune containers (older than 7 days)
+ExecStart=/bin/bash -c '/usr/bin/docker container prune -f --filter "until=168h" >> /var/log/docker-prune.log 2>&1'
+
+# Prune networks
+ExecStart=/bin/bash -c '/usr/bin/docker network prune -f >> /var/log/docker-prune.log 2>&1'
+
+# Prune images (older than 31 days to avoid removing recently used ones)
+ExecStart=/bin/bash -c '/usr/bin/docker image prune -a -f --filter "until=744h" >> /var/log/docker-prune.log 2>&1'
+
+# Prune volumes - Use with caution to avoid data loss!
+ExecStart=/bin/bash -c 'echo "Unused volumes that would be removed:" >> /var/log/docker-prune.log && /usr/bin/docker volume ls -qf dangling=true >> /var/log/docker-prune.log 2>&1'
+ExecStart=/bin/bash -c '/usr/bin/docker volume prune -f >> /var/log/docker-prune.log 2>&1'
+
+# Log disk usage after pruning
+ExecStart=/bin/bash -c 'echo "Docker disk usage after pruning:" >> /var/log/docker-prune.log && /usr/bin/docker system df >> /var/log/docker-prune.log 2>&1'
+ExecStart=/bin/bash -c 'echo "System disk usage after pruning:" >> /var/log/docker-prune.log && df -h / /mnt/dreifuenf >> /var/log/docker-prune.log 2>&1'
+ExecStart=/bin/bash -c 'echo "Pruning completed at $(date)" >> /var/log/docker-prune.log && echo "-----------------------------------" >> /var/log/docker-prune.log'
+
+TimeoutSec=30m
+Nice=19
+IOSchedulingClass=idle
 
 [Install]
 WantedBy=multi-user.target

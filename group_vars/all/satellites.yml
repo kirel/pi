@@ -23,13 +23,13 @@ satellites:
     awake_wav: extra-sounds/boop-852-mhz.wav
     done_wav: extra-sounds/boop-741-mhz.wav
     timer_finished_wav: extra-sounds/clock-alarm.wav
-  #- name: vader
-  #  port: 10702
-  #  mic_port: 10604
-  #  snd_port: 10605
-  #  sink: vader_sink
-  #  wakeword_service: openwakeword
-  #  wake_word_name: 'Darth_Vader'
-  #  awake_wav: extra-sounds/vader.wav
-  #  done_wav: extra-sounds/g2.wav
-  #  timer_finished_wav: sounds/timer_finished.wav
+  # - name: vader
+  #   port: 10702
+  #   mic_port: 10604
+  #   snd_port: 10605
+  #   sink: vader_sink
+  #   wakeword_service: openwakeword
+  #   wake_word_name: 'Darth_Vader'
+  #   awake_wav: extra-sounds/vader.wav
+  #   done_wav: extra-sounds/g2.wav
+  #   timer_finished_wav: sounds/timer_finished.wav

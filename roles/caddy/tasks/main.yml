@@ -4,6 +4,8 @@
     path: "{{ item }}"
     state: directory
     owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: "0755"
   with_items:
     - "{{ caddy_folder }}"
     - "{{ caddy_data_folder }}"
@@ -26,6 +28,7 @@
     src: Caddyfile.j2
     dest: "{{ caddy_folder }}/Caddyfile"
     owner: "{{ username }}"
+    mode: "0644"
   register: caddyfile
   notify: Reload Caddy
 
@@ -34,6 +37,7 @@
     src: Dockerfile
     dest: "{{ caddy_folder }}/Dockerfile"
     owner: "{{ username }}"
+    mode: "0644"
   register: dockerfile
 
 - name: Start caddy
@@ -74,17 +78,21 @@
 
   register: output
 
-- ansible.builtin.debug:
+- name: Debug docker compose output
+  ansible.builtin.debug:
     var: output
 
-- ansible.builtin.assert:
+- name: Assert caddy container is running
+  ansible.builtin.assert:
     that:
       - output.containers | selectattr('Name', 'equalto', 'caddy') | list | length > 0
       - output.containers | selectattr('Name', 'equalto', 'caddy') | map(attribute='State') | list | first == 'running'
 
-- name: Copy root certificate
+- name: Copy root certificate from container
   ansible.builtin.command: docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{ caddy_folder }}/root.crt
-- ansible.builtin.fetch:
+  changed_when: false
+- name: Fetch root certificate to controller
+  ansible.builtin.fetch:
     src: "{{ caddy_folder }}/root.crt"
     dest: tmp/
     flat: true
@@ -92,7 +100,7 @@
 # Note: Installing the cert into the host's trust store is now handled by the 'trust-internal-ca' role.
 # The fetch task above is still needed so that role can access the cert.
 
-- name: Reposess root cert on host after docker cp
+- name: Repossess root cert on host after docker cp
   ansible.builtin.file:
     path: "{{ caddy_folder }}/root.crt" # Path where docker cp placed it
     owner: "{{ username }}"

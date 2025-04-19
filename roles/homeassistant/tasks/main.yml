@@ -5,7 +5,7 @@
     dest: /etc/udev/rules.d/50-ttyacm.rules
     owner: root
     group: root
-  notify: reload udev rules
+  notify: Reload udev rules
 
 - name: Create config folders
   ansible.builtin.file:

@@ -18,9 +18,9 @@
     cache_valid_time: 3600
     upgrade: full
   register: apt
-- ansible.builtin.debug:
-    msg: "{{"
-    cmd: apt.stdout.split('\n')[:-1] }}
+- name: Debug apt output
+  ansible.builtin.debug:
+    msg: "{{ apt.stdout_lines | default([]) }}" # Correctly format the debug message and handle potential missing stdout
 - name: Check if a reboot is needed on all servers
   ansible.builtin.stat:
     path: /var/run/reboot-required

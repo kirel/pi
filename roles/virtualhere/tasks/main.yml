@@ -10,6 +10,9 @@
   ansible.builtin.template:
     src: vhusbd.service
     dest: /etc/systemd/system/vhusbd.service
+    owner: root
+    group: root
+    mode: "0644"
   register: unit
 
 - name: Reload systemd

@@ -180,6 +180,7 @@
 
   register: output
 
-- ansible.builtin.assert:
+- name: Assert pihole container is running
+  ansible.builtin.assert:
     that:
       - output.containers | selectattr('Name', 'equalto', 'pihole') | map(attribute='State') | list | first == 'running'

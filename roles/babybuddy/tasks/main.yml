@@ -4,6 +4,8 @@
     path: "{{ item }}"
     state: directory
     owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: "0755"
   with_items:
     - "{{ babybuddy_config_folder }}"
 

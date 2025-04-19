@@ -2,7 +2,10 @@
 Description=Run docker-prune daily
 
 [Timer]
-OnCalendar=daily
+# Run at 3:00 AM every day
+OnCalendar=*-*-* 03:00:00
+# Add randomization to avoid concurrent resource usage
+RandomizedDelaySec=1800
 Persistent=true
 
 [Install]

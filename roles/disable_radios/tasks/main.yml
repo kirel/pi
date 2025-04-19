@@ -2,15 +2,19 @@
 - name: Check WiFi status
   ansible.builtin.command: rfkill list wifi
   register: wifi_status
+  changed_when: false
 
 - name: Check Bluetooth status
   ansible.builtin.command: rfkill list bluetooth
   register: bluetooth_status
+  changed_when: false
 
 - name: Disable WiFi
   ansible.builtin.command: rfkill block wifi
   when: 'disable_wifi is defined and "Soft blocked: no" in wifi_status.stdout'
+  changed_when: '"Soft blocked: no" in wifi_status.stdout'
 
 - name: Disable Bluetooth
   ansible.builtin.command: rfkill block bluetooth
   when: 'disable_bluetooth is defined and "Soft blocked: no" in bluetooth_status.stdout'
+  changed_when: '"Soft blocked: no" in bluetooth_status.stdout'

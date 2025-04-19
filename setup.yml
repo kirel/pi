@@ -6,7 +6,7 @@
     - { role: basic, become: true, tags: [basic] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker] }
+    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: portainer, become: true, tags: [docker, portainer] }
@@ -32,7 +32,7 @@
     - { role: basic, become: true, tags: [basic] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker] }
+    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
@@ -48,7 +48,7 @@
     - { role: basic, become: true, tags: [basic] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker] }
+    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: glances, become: true, tags: [glances] }
@@ -56,11 +56,12 @@
 
 - name: Setup ailabs
   hosts: ailabs
+  ignore_unreachable: true
   roles:
     - { role: basic, become: true, tags: [basic] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker] }
+    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: portainer, become: true, tags: [docker, portainer] }
@@ -81,10 +82,9 @@
     - { role: basic, become: true, tags: [basic] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker] }
+    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: glances, become: true, tags: [glances] }
     - { role: satellite_audio, become: true, tags: [wyoming, satellite-audio] } # Consider renaming tag too?
-    - { role: cli_visualizer, become: true, tags: [vis] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }

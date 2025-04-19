@@ -45,7 +45,7 @@
     owner: "{{ username_personal }}"
     mode: u=rwx,g=,o=
 
-- name: Create config folders
+- name: Create config folders # ai! add permissions
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory

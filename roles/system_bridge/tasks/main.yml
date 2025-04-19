@@ -25,7 +25,7 @@
   ansible.builtin.apt:
     deb: /tmp/system-bridge.deb
   when: download_result.changed
-  notify: reload systemd # Notify handler if package install might change service file implicitly
+  notify: Reload systemd # Notify handler if package install might change service file implicitly
 
 - name: Deploy System Bridge service unit file from template
   become: true

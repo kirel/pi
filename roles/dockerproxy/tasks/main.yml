@@ -37,10 +37,21 @@
           restart: unless-stopped
   register: output
 
-- ansible.builtin.debug:
+- name: Debug docker compose output
+  ansible.builtin.debug:
     var: output # Print the entire output variable to understand its structure
 
-- ansible.builtin.assert:
+- name: Assert dockerproxy container is running
+  ansible.builtin.assert:
     that:
-      - output.containers | selectattr('Name', 'equalto', 'dockerproxy') | list | length > 0 # Ensure the container exists
-      - output.containers | selectattr('Name', 'equalto', 'dockerproxy') | map(attribute='State') | list | first == 'running' # Check if the container is running
+      # Ensure the container exists
+      - >
+        output.containers
+        | selectattr('Name', 'equalto', 'dockerproxy')
+        | list | length > 0
+      # Check if the container is running
+      - >
+        output.containers
+        | selectattr('Name', 'equalto', 'dockerproxy')
+        | map(attribute='State')
+        | list | first == 'running'

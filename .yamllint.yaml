@@ -4,7 +4,7 @@ extends: default
 rules:
   # Relax line length limit slightly
   line-length:
-    max: 120
+    max: 150
     level: warning # Warn instead of error for long lines
 
   # Standard 2-space indentation for Ansible

@@ -24,7 +24,7 @@
 - name: Install essential audio utilities
   ansible.builtin.package:
     name: "{{ item }}"
-    state: latest
+    state: present
   loop:
     - alsa-utils
     - pulseaudio
@@ -80,7 +80,7 @@
     - root
     - daniel
 
-- name: Copy /etc/pulse/system.pa
+- name: Copy /etc/pulse/system.pa # ai! add permissions
   ansible.builtin.template:
     src: system.pa
     dest: /etc/pulse/system.pa

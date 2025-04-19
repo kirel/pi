@@ -1,5 +1,6 @@
 ---
-- ansible.builtin.set_fact:
+- name: Set glances service fact
+  ansible.builtin.set_fact:
     glances_service: "{{ services['glances-'~inventory_hostname] }}"
 
 - name: Start glances

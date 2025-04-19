@@ -15,7 +15,7 @@
     - name: Ensure git package is present for cloning
       ansible.builtin.package:
         name: git
-        state: present
+        state: latest
 
     - name: Ensure build destination directory exists
       ansible.builtin.file:
