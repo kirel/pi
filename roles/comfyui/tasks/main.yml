@@ -17,7 +17,7 @@
     mode: "0755"
 
 - name: Copy Docker build context to target
-  ansible.builtin.copy:
+  ansible.builtin.copy: # ai! use template
     src: "{{ role_path }}/templates/" # Copy contents of templates dir
     dest: "{{ comfyui_build_context_path }}"
     mode: "0644"
