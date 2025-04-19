@@ -35,10 +35,11 @@
       community.docker.docker_image:
         name: "{{ ollama_arc_image }}"
         source: build
+        force_source: "{{ force_update | default(false) }}"
         build:
           path: "{{ ollama_arc_build_repo_dest }}/{{ ollama_arc_build_context_subdir }}"
           args: "{{ ollama_arc_build_args }}" # Correct parameter name is 'args'
-          nocache: "{{ ollama_arc_build_nocache }}"
+          nocache: "{{ force_update | default(false) }}" # ai? Should this be based on if the repo above is updated?
           rm: "{{ ollama_arc_build_rm }}"
           pull: true # Attempt to pull base images
         state: present

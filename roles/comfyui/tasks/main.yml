@@ -14,7 +14,7 @@
         comfyui:
           init: true
           container_name: "{{ comfyui_container_name }}"
-          image: "{{ comfyui_image }}"
+          image: "{{ comfyui_image }}" # ai! instead of this image I want to build the dockerfile in templates
           ports:
             - "{{ comfyui_port }}:8188"
           volumes:
