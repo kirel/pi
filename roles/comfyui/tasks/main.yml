@@ -14,7 +14,8 @@
         comfyui:
           init: true
           container_name: "{{ comfyui_container_name }}"
-          image: "{{ comfyui_image }}" # ai! instead of this image I want to build the dockerfile in templates
+          build:
+            context: "{{ role_path }}/templates" # Build from the Dockerfile in the templates dir
           ports:
             - "{{ comfyui_port }}:8188"
           volumes:
@@ -28,7 +29,6 @@
             - label:disable
           restart: unless-stopped
     state: present
-    pull: always # Always pull the latest image
   register: compose_output
 
 - name: Debug compose output

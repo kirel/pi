@@ -39,7 +39,7 @@
         build:
           path: "{{ ollama_arc_build_repo_dest }}/{{ ollama_arc_build_context_subdir }}"
           args: "{{ ollama_arc_build_args }}" # Correct parameter name is 'args'
-          nocache: "{{ force_update | default(false) }}" # ai? Should this be based on if the repo above is updated?
+          nocache: "{{ git_clone_result.changed or force_update | default(false) }}" # Rebuild if repo changed or forced
           rm: "{{ ollama_arc_build_rm }}"
           pull: true # Attempt to pull base images
         state: present
