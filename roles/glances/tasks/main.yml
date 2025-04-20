@@ -10,9 +10,10 @@
     state: present # Ensure the services are started
     definition:
       services:
-        glances: # ai! make it privileged
+        glances:
           image: nicolargo/glances:latest-full
           container_name: glances
+          privileged: true
           restart: always
           ports:
             - 61208-61209:61208-61209
