@@ -10,7 +10,7 @@
     state: present # Ensure the services are started
     definition:
       services:
-        glances:
+        glances: # ai! make it privileged
           image: nicolargo/glances:latest-full
           container_name: glances
           restart: always
