@@ -14,6 +14,8 @@
       services:
         wolf:
           image: ghcr.io/games-on-whales/wolf:stable
+          security_opt:
+            - apparmor:unconfined
           environment:
             WOLF_LOG_LEVEL: debug
             XDG_RUNTIME_DIR: /tmp/sockets

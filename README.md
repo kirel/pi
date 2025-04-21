@@ -52,6 +52,12 @@ TODO https://github.com/coreprocess/linux-unattended-installation
 
     uv run ansible-playbook setup.yml --limit virtualhere
 
+### Ailab
+
+    ansible-playbook setup.yml --limit ailab
+    # force ollama container update
+    ansible-playbook setup.yml --limit ailab -t ollama-arc -v --extra-vars "force_update=true"
+
 
 ## Secrets
 

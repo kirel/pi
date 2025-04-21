@@ -40,7 +40,7 @@
             wud.watch.digest: "true"
             homepage.group: "{{ services['open-webui'].group }}"
             homepage.name: "{{ services['open-webui'].name }}"
-            homepage.href: https://ollama.lan
+            homepage.href: https://open-webui.lan
             homepage.icon: openai.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: open-webui
