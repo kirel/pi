@@ -1,25 +1,60 @@
 ---
+- name: Update apt cache and install prerequisites
+  become: true
+  ansible.builtin.apt:
+    name: software-properties-common
+    state: present
+    update_cache: true
 
-# AI! add below as ansible
-# Refresh the local package index and install the package for managing software repositories.
+- name: Add Intel Graphics PPA repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:kobuk-team/intel-graphics
+    state: present
+    update_cache: true # Update cache after adding repo
 
-# apt-get update
-# apt-get install -y software-properties-common
-# Add the intel-graphics PPA.
+- name: Install essential Intel compute packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - libze-intel-gpu1
+      - libze1
+      - intel-metrics-discovery
+      - intel-opencl-icd
+      - clinfo
+      - intel-gsc
+    state: present
 
-# add-apt-repository -y ppa:kobuk-team/intel-graphics
-# Install the compute-related packages.
+- name: Install essential Intel media packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - intel-media-va-driver-non-free
+      - libmfx1
+      - libmfx-gen1
+      - libvpl2
+      - libvpl-tools
+      - libva-glx2
+      - va-driver-all
+      - vainfo
+    state: present
 
-# apt-get install -y libze-intel-gpu1 libze1 intel-metrics-discovery intel-opencl-icd clinfo intel-gsc
-# Install the media-related packages.
+# Optional packages based on variables (define these vars elsewhere)
+- name: Install PyTorch specific Intel packages (optional)
+  become: true
+  ansible.builtin.apt:
+    name:
+      - libze-dev
+      - intel-ocloc
+    state: present
+  when: install_pytorch_deps | default(false)
 
-# apt-get install -y intel-media-va-driver-non-free libmfx1 libmfx-gen1 libvpl2 libvpl-tools libva-glx2 va-driver-all vainfo
-# The commands listed above install all the essential packages needed for most users, aiming to minimize the installation of unnecessary packages. However, if you plan to use PyTorch, install libze-dev and intel-ocloc additionally:
-
-# apt-get install -y libze-dev intel-ocloc
-# If you wish to enable hardware ray tracing support, install intel-level-zero-gpu-raytracing additionally:
-
-# apt-get install -y intel-level-zero-gpu-raytracing
+- name: Install Intel ray tracing package (optional)
+  become: true
+  ansible.builtin.apt:
+    name: intel-level-zero-gpu-raytracing
+    state: present
+  when: install_raytracing_deps | default(false)
 
 - name: Ensure render group exists
   become: true
