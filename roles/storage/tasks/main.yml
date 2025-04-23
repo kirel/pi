@@ -45,11 +45,13 @@
     owner: "{{ username_personal }}"
     mode: u=rwx,g=,o=
 
-- name: Create config folders # ai! add permissions
+- name: Create config folders
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "{{ username }}"
+    group: users # Add group ownership
+    mode: "0775" # Add permissions (owner rwx, group rwx, others rx)
   with_items:
     - "{{ syncthing_config_folder }}"
     - "{{ syncthing_data_folder }}"

@@ -69,9 +69,14 @@
         name: "{{ vllm_image }}"
         source: build
         force_source: "{{ force_update | default(false) }}"
-        # ai! docker build -f docker/Dockerfile.xpu -t vllm-xpu-env --shm-size=4g .
-
-
+        build:
+          path: "{{ ollama_arc_build_repo_dest }}/docker/llm/serving/xpu/vllm" # Assuming vllm repo is cloned inside here
+          dockerfile: docker/Dockerfile.xpu
+          shm_size: "4g" # Add shm_size from comment
+          nocache: "{{ git_clone_result.changed or force_update | default(false) }}" # Keep nocache logic consistent
+          rm: "{{ ollama_arc_build_rm }}" # Keep rm logic consistent
+          pull: true # Keep pull logic consistent
+        state: present
 
 
 - name: Define base container environment variables
