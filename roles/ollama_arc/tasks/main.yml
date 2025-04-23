@@ -32,6 +32,12 @@
         depth: 1 # Perform a shallow clone
       register: git_clone_result # Register the result
 
+    - name: Clone or update the vllm repository
+      ansible.builtin.git:
+        repo: "https://github.com/vllm-project/vllm.git"
+        dest: "{{ ollama_arc_build_repo_dest }}/docker/llm/serving/xpu/
+        version : "{{ vllm_repo_version }}"
+
     - name: Build the ipex-llm-inference-cpp-xpu image
       community.docker.docker_image:
         name: "{{ ollama_arc_image }}"
@@ -44,7 +50,29 @@
           rm: "{{ ollama_arc_build_rm }}"
           pull: true # Attempt to pull base images
         state: present
-      # Note: This build can take a significant amount of time
+
+    - name: Build the ipex-llm-serving-xpu image
+      community.docker.docker_image:
+        name: "{{ ipex_vllm_image }}"
+        source: build
+        force_source: "{{ force_update | default(false) }}"
+        build:
+          path: "{{ ollama_arc_build_repo_dest }}/{{ ipex_vllm_build_context_subdir }}"
+          args: "{{ ollama_arc_build_args }}" # Correct parameter name is 'args'
+          nocache: "{{ git_clone_result.changed or force_update | default(false) }}" # Rebuild if repo changed or forced
+          rm: "{{ ollama_arc_build_rm }}"
+          pull: true # Attempt to pull base images
+        state: present
+
+    - name: Build official vllm xpu image
+      community.docker.docker_image:
+        name: "{{ vllm_image }}"
+        source: build
+        force_source: "{{ force_update | default(false) }}"
+        # ai! docker build -f docker/Dockerfile.xpu -t vllm-xpu-env --shm-size=4g .
+
+
+
 
 - name: Define base container environment variables
   ansible.builtin.set_fact:
@@ -56,14 +84,9 @@
       OLLAMA_NUM_GPU: "999" # Use all available GPUs for Ollama (as string)
       ZES_ENABLE_SYSMAN: "1" # Required for sysman metrics (as string)
 
-- name: Conditionally add benchmark model environment variable
-  ansible.builtin.set_fact:
-    ollama_arc_bench_env_var: "{% if ollama_arc_benchmark_model | length > 0 %}{'bench_model': '{{ ollama_arc_benchmark_model
-      }}'}{% else %}{}{% endif %}"
-
 - name: Combine environment variables
   ansible.builtin.set_fact:
-    ollama_arc_env_vars: "{{ ollama_arc_base_env_vars | combine(ollama_arc_bench_env_var) }}"
+    ollama_arc_env_vars: "{{ ollama_arc_base_env_vars }}"
 
 - name: Start the ipex-llm-inference-cpp-xpu container
   community.docker.docker_container:
