@@ -32,11 +32,14 @@
         depth: 1 # Perform a shallow clone
       register: git_clone_result # Register the result
 
-    - name: Clone or update the vllm repository
+    - name: Clone or update the vllm repository #
       ansible.builtin.git:
-        repo: "https://github.com/vllm-project/vllm.git"
-        dest: "{{ ollama_arc_build_repo_dest }}/docker/llm/serving/xpu/
+        repo: "{{ vllm_repo }}"
+        dest: "{{ vllm_repo_dest }}"
         version : "{{ vllm_repo_version }}"
+        force: true
+        depth: 1
+      register: vllm_clone_result
 
     - name: Build the ipex-llm-inference-cpp-xpu image
       community.docker.docker_image:
@@ -70,23 +73,27 @@
         source: build
         force_source: "{{ force_update | default(false) }}"
         build:
-          path: "{{ ollama_arc_build_repo_dest }}/docker/llm/serving/xpu/vllm" # Assuming vllm repo is cloned inside here
+          path: "{{ vllm_repo_dest }}"
           dockerfile: docker/Dockerfile.xpu
-          shm_size: "4g" # Add shm_size from comment
-          nocache: "{{ git_clone_result.changed or force_update | default(false) }}" # Keep nocache logic consistent
-          rm: "{{ ollama_arc_build_rm }}" # Keep rm logic consistent
-          pull: true # Keep pull logic consistent
+          shm_size: "4g"
+          rm: "{{ ollama_arc_build_rm }}"
+          pull: true
         state: present
 
-
-- name: Define base container environment variables
+- name: Define ollama container environment variables
   ansible.builtin.set_fact:
     ollama_arc_base_env_vars:
       no_proxy: "{{ ollama_arc_no_proxy }}"
       DEVICE: "{{ ollama_arc_device_type }}"
+      OLLAMA_DEBUG: "0"
       OLLAMA_HOST: "0.0.0.0" # Listen on all interfaces
       OLLAMA_MODELS: /models # Set Ollama's model storage path
       OLLAMA_NUM_GPU: "999" # Use all available GPUs for Ollama (as string)
+      OLLAMA_FLASH_ATTENTION: "1" # Not supported yet by ipex-llm
+      OLLAMA_KV_CACHE_TYPE: "q8_0" # Not supported yet by ipex-llm
+      OLLAMA_CONTEXT_LENGTH: "32768"
+      IPEX_LLM_NUM_CTX: "32768"
+      SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS: "1"
       ZES_ENABLE_SYSMAN: "1" # Required for sysman metrics (as string)
 
 - name: Combine environment variables

@@ -129,6 +129,7 @@ services:
     target: ailab.lan
     http_port: "{{ ollama_port }}"
     wol: "{{ ailab_mac_address }}"
+    tls_skip: true
     try: 360s
   comfyui:
     name: ComfyUI
