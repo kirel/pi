@@ -1,0 +1,42 @@
+# Use the OneAPI basekit image which includes necessary drivers and libraries
+FROM intel/oneapi-basekit:2025.0.1-0-devel-ubuntu22.04 AS builder
+
+# Arguments for the download URL and target directory
+ARG OLLAMA_PORTABLE_URL
+ARG EXTRACT_DIR=/opt/ollama-portable
+
+# Install necessary tools for downloading and extracting
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends wget tar ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download and extract the portable package
+WORKDIR /tmp
+RUN echo "Downloading from ${OLLAMA_PORTABLE_URL}" && \
+    wget -O ollama-portable.tgz "${OLLAMA_PORTABLE_URL}" && \
+    mkdir -p ${EXTRACT_DIR} && \
+    tar -xvf ollama-portable.tgz -C ${EXTRACT_DIR} --strip-components=1 && \
+    rm ollama-portable.tgz
+
+# Use a smaller runtime image if possible, but oneAPI basekit might be needed for runtime libs too.
+# For simplicity and ensuring all libs are present, we'll stick with the basekit for the final stage.
+FROM intel/oneapi-basekit:2025.0.1-0-devel-ubuntu22.04
+
+ARG EXTRACT_DIR=/opt/ollama-portable
+
+# Copy the extracted application from the builder stage
+COPY --from=builder ${EXTRACT_DIR} ${EXTRACT_DIR}
+
+# Set the working directory
+WORKDIR ${EXTRACT_DIR}
+
+# Expose the default Ollama port (though network_mode: host makes this less critical)
+EXPOSE 11434
+
+# Set environment variable defaults (can be overridden at runtime)
+# OLLAMA_HOST is set to 0.0.0.0 by start-ollama.sh implicitly
+# OLLAMA_MODELS defaults to ~/.ollama/models, ensure volume mount overrides this if needed.
+ENV OLLAMA_MODELS=/models
+
+# The start script handles environment setup and runs ollama serve
+ENTRYPOINT ["./start-ollama.sh"]
