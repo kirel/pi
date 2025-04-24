@@ -82,6 +82,40 @@
           pull: true
         state: present
 
+# --- Build the Portable Image (Added for testing) ---
+- name: Ensure remote build directory for portable Ollama exists
+  ansible.builtin.file:
+    path: "{{ ollama_arc_portable_build_dest }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Copy Dockerfile.portable to remote host
+  ansible.builtin.copy:
+    src: Dockerfile.portable # Assumes it's in roles/ollama_arc/
+    dest: "{{ ollama_arc_portable_build_dest }}/Dockerfile" # Destination filename on remote
+    mode: "0644"
+  become: true # May need become if dest dir requires root
+
+- name: Build the Ollama Portable XPU image on remote host
+  community.docker.docker_image:
+    name: "{{ ollama_arc_image_portable }}"
+    source: build
+    # Ensure this task runs on the remote host's Docker daemon
+    # This is usually implicit when running against remote hosts,
+    # but explicitly setting docker_host can help if needed.
+    # docker_host: "unix://var/run/docker.sock" # Usually default
+    build:
+      path: "{{ ollama_arc_portable_build_dest }}" # Use the remote build directory
+      dockerfile: Dockerfile # Use the copied Dockerfile name
+      args:
+        OLLAMA_PORTABLE_URL: "{{ ollama_arc_portable_download_url }}"
+      pull: true # Pull the base image
+    state: present
+    force_source: "{{ force_update | default(false) }}" # Rebuild if forced
+  become: true
+# --- End of Added Portable Image Build ---
+
 - name: Define ollama container environment variables
   ansible.builtin.set_fact:
     ollama_arc_base_env_vars:
