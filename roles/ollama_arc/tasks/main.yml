@@ -54,6 +54,8 @@
           pull: true # Attempt to pull base images
         state: present
 
+    - name: Build portable zip version of image # ai? Can you build FROM intel/oneapi-basekit:2025.0.1-0-devel-ubuntu22.04 and then https://github.com/intel/ipex-llm/blob/main/docs/mddocs/Quickstart/ollama_portable_zip_quickstart.md
+
     - name: Build the ipex-llm-serving-xpu image
       community.docker.docker_image:
         name: "{{ ipex_vllm_image }}"
