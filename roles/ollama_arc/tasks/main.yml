@@ -78,7 +78,7 @@
           shm_size: "4g"
           rm: "{{ ollama_arc_build_rm }}"
           pull: true
-          buildkit: true # <--- Add this line
+        buildkit: true # <--- Moved to correct level
         state: present
 
 # --- Build the Portable Image (Added for testing) ---
