@@ -67,20 +67,23 @@
           pull: true # Attempt to pull base images
         state: present
 
-    - name: Build official vllm xpu image # ai! make this a shell command
-      community.docker.docker_image:
-        name: "{{ vllm_image }}"
-        source: build
-        force_source: "{{ force_update | default(false) }}"
-        build:
-          path: "{{ vllm_repo_dest }}"
-          dockerfile: docker/Dockerfile.xpu
-          shm_size: "4g"
-          rm: "{{ ollama_arc_build_rm }}"
-          pull: true
-        state: present
+    - name: Build official vllm xpu image with shell
+      ansible.builtin.shell:
+        cmd: >
+          docker build
+          -t {{ vllm_image }}
+          -f docker/Dockerfile.xpu
+          --shm-size=4g
+          --pull
+          {% if ollama_arc_build_rm | default(true) %} --rm{% else %} --rm=false{% endif %}
+          {% if (vllm_clone_result.changed | default(false)) or (force_update | default(false)) %} --no-cache{% endif %}
+          .
+        chdir: "{{ vllm_repo_dest }}"
       environment:
         DOCKER_BUILDKIT: "1"
+      become: true # Docker build often needs elevated privileges
+      register: vllm_build_result
+      changed_when: "'Successfully built' in vllm_build_result.stdout or 'Successfully tagged' in vllm_build_result.stdout" # Check for success messages
 
 # --- Build the Portable Image (Added for testing) ---
 - name: Ensure remote build directory for portable Ollama exists
