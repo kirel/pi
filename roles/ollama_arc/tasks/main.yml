@@ -78,7 +78,8 @@
           shm_size: "4g"
           rm: "{{ ollama_arc_build_rm }}"
           pull: true
-        buildkit: true # <--- Moved to correct level
+        environment: # <--- Add environment variable
+          DOCKER_BUILDKIT: 1
         state: present
 
 # --- Build the Portable Image (Added for testing) ---
