@@ -67,7 +67,7 @@
           pull: true # Attempt to pull base images
         state: present
 
-    - name: Build official vllm xpu image
+    - name: Build official vllm xpu image # ai! make this a shell command
       community.docker.docker_image:
         name: "{{ vllm_image }}"
         source: build
@@ -78,9 +78,9 @@
           shm_size: "4g"
           rm: "{{ ollama_arc_build_rm }}"
           pull: true
-        environment: # <--- Add environment variable
-          DOCKER_BUILDKIT: 1
         state: present
+      environment:
+        DOCKER_BUILDKIT: "1"
 
 # --- Build the Portable Image (Added for testing) ---
 - name: Ensure remote build directory for portable Ollama exists
