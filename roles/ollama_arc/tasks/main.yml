@@ -54,8 +54,6 @@
           pull: true # Attempt to pull base images
         state: present
 
-    - name: Build portable zip version of image # ai? Can you build FROM intel/oneapi-basekit:2025.0.1-0-devel-ubuntu22.04 and then https://github.com/intel/ipex-llm/blob/main/docs/mddocs/Quickstart/ollama_portable_zip_quickstart.md
-
     - name: Build the ipex-llm-serving-xpu image
       community.docker.docker_image:
         name: "{{ ipex_vllm_image }}"
@@ -124,13 +122,14 @@
       OLLAMA_DEBUG: "0"
       OLLAMA_HOST: "0.0.0.0" # Listen on all interfaces
       OLLAMA_MODELS: /models # Set Ollama's model storage path
-      OLLAMA_NUM_GPU: "999" # Use all available GPUs for Ollama (as string)
+      # OLLAMA_NUM_GPU: "999" # Use all available GPUs for Ollama (as string)
       OLLAMA_FLASH_ATTENTION: "1" # Not supported yet by ipex-llm
       OLLAMA_KV_CACHE_TYPE: "q8_0" # Not supported yet by ipex-llm
       OLLAMA_CONTEXT_LENGTH: "32768"
       IPEX_LLM_NUM_CTX: "32768"
       SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS: "1"
       ZES_ENABLE_SYSMAN: "1" # Required for sysman metrics (as string)
+      CHANGE: "1"
 
 - name: Combine environment variables
   ansible.builtin.set_fact:
