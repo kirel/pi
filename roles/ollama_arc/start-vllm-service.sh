@@ -10,6 +10,7 @@ LOAD_IN_LOW_BIT=${LOAD_IN_LOW_BIT:-"fp8"}
 PORT=${PORT:-8000}
 VLLM_QUANTIZATION=${VLLM_QUANTIZATION:-""} # Default to empty (no -q argument)
 CACHE_DTYPE=${CACHE_DTYPE:-""} # Default to empty (no --kv-cache-dtype argument)
+DOWNLOAD_DIR=${DOWNLOAD_DIR:-"/llm/models"} # Default download directory
 
 echo "Starting service with model: $MODEL_PATH"
 echo "Served model name: $SERVED_MODEL_NAME"
@@ -29,6 +30,7 @@ if [[ -n "$CACHE_DTYPE" ]]; then
 else
   echo "KV Cache DType: Not specified (default)"
 fi
+echo "Download directory: $DOWNLOAD_DIR"
 
 export CCL_WORKER_COUNT=2
 export SYCL_CACHE_PERSISTENT=1
@@ -64,7 +66,7 @@ CMD_ARGS=(
   --tensor-parallel-size "$TENSOR_PARALLEL_SIZE"
   --disable-async-output-proc
   --distributed-executor-backend ray
-  --download-dir /llm/models # AI! make configurable via env var
+  --download-dir "$DOWNLOAD_DIR"
   --enable-prefix-caching
 )
 
