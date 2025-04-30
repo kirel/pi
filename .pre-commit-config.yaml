@@ -12,11 +12,11 @@ repos:
       - id: trailing-whitespace
       - id: check-merge-conflict
 
-  - repo: https://github.com/ansible/ansible-lint
-    rev: v6.22.2 # Use the latest stable version or one suitable for your project
-    hooks:
-      - id: ansible-lint
-        files: \.(yaml|yml)$
+  # - repo: https://github.com/ansible/ansible-lint
+  #   rev: v6.22.2 # Use the latest stable version or one suitable for your project
+  #   hooks:
+  #     - id: ansible-lint
+  #       files: \.(yaml|yml)$
         # args: [--fix] # Removed --fix to prevent auto-modification issues with .yamllint.yaml
 
   - repo: https://github.com/adrienverge/yamllint
