@@ -134,19 +134,65 @@
     restart_policy: "{{ ollama_arc_restart_policy }}"
   become: true
 
-  # AI! add this in the same way as above. copy the start-vllm-service.sh to the host, mount it into /llm in the container and use it as entrypoint
-    #   export DOCKER_IMAGE=intelanalytics/ipex-llm-serving-xpu:latest
-    # export CONTAINER_NAME=ipex-llm-serving-xpu-container
-    # sudo docker rm --force $CONTAINER_NAME
-    # sudo docker run -itd \
-    #     --net=host \
-    #     --privileged \
-    #     --device=/dev/dri \
-    #     -v /opt/vllm-models:/llm/models \
-    #     -v ~/.huggingface:/root/.huggingface \
-    #     -e no_proxy=localhost,127.0.0.1 \
-    #     --memory="32G" \
-    #     --name=$CONTAINER_NAME \
-    #     --shm-size="16g" \
-    #     --entrypoint /bin/bash \
-    #     $DOCKER_IMAGE
+- name: Ensure vLLM script destination directory exists
+  ansible.builtin.file:
+    path: "{{ vllm_script_host_path | dirname }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Copy vLLM start script to host
+  ansible.builtin.copy:
+    src: start-vllm-service.sh # Assumes file is in roles/ollama_arc/files/
+    dest: "{{ vllm_script_host_path }}"
+    mode: "0755"
+  become: true
+
+- name: Define vLLM container environment variables
+  ansible.builtin.set_fact:
+    vllm_env_vars:
+      MODEL_PATH: "{{ vllm_model_path | default('/llm/models/default_model') }}" # Example default
+      SERVED_MODEL_NAME: "{{ vllm_served_model_name | default('default_served_name') }}" # Example default
+      TENSOR_PARALLEL_SIZE: "{{ vllm_tensor_parallel_size | default(1) }}"
+      MAX_NUM_SEQS: "{{ vllm_max_num_seqs | default(256) }}"
+      MAX_NUM_BATCHED_TOKENS: "{{ vllm_max_num_batched_tokens | default(3000) }}"
+      MAX_MODEL_LEN: "{{ vllm_max_model_len | default(2000) }}"
+      LOAD_IN_LOW_BIT: "{{ vllm_load_in_low_bit | default('fp8') }}"
+      PORT: "{{ vllm_port | default(8000) }}"
+      VLLM_QUANTIZATION: "{{ vllm_quantization | default('') }}"
+      CACHE_DTYPE: "{{ vllm_cache_dtype | default('') }}"
+      DOWNLOAD_DIR: "{{ vllm_download_dir | default('/llm/models') }}"
+      PREFIX_CACHING: "{{ vllm_prefix_caching | default('0') }}"
+      no_proxy: "{{ ollama_arc_no_proxy | default('localhost,127.0.0.1') }}" # Reuse existing no_proxy or define vllm_no_proxy
+      # Add other necessary env vars like SYCL, CCL etc. if needed, inheriting from defaults or explicitly setting
+      SYCL_CACHE_PERSISTENT: "1"
+      SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS: "1" # Or 2 based on script
+      FI_PROVIDER: "shm"
+      CCL_ATL_TRANSPORT: "ofi"
+      CCL_ZE_IPC_EXCHANGE: "sockets"
+      CCL_ATL_SHM: "1"
+      USE_XETLA: "OFF"
+      TORCH_LLM_ALLREDUCE: "0"
+      CCL_SAME_STREAM: "1"
+      CCL_BLOCKING_WAIT: "0"
+
+- name: Start the ipex-llm-serving-xpu container
+  community.docker.docker_container:
+    name: "{{ vllm_container_name | default('ipex-llm-serving-xpu-container') }}"
+    image: "{{ ipex_vllm_image }}" # Use the image built earlier
+    state: started
+    detach: true
+    privileged: true # As per example command
+    network_mode: host
+    devices:
+      - /dev/dri:/dev/dri # Ensure device mapping if not covered by privileged
+    volumes:
+      - "{{ vllm_models_path | default(ollama_arc_models_path) }}:/llm/models:rw" # Mount models dir
+      - "{{ vllm_huggingface_path | default(ansible_user_dir + '/.huggingface') }}:/root/.huggingface:rw" # Mount Hugging Face cache
+      - "{{ vllm_script_host_path }}:{{ vllm_script_container_path | default('/llm/start-vllm-service.sh') }}:ro" # Mount start script read-only
+    env: "{{ vllm_env_vars }}"
+    entrypoint: ["/bin/bash", "{{ vllm_script_container_path | default('/llm/start-vllm-service.sh') }}"] # Use script as entrypoint
+    memory: "{{ vllm_memory | default('32g') }}"
+    shm_size: "{{ vllm_shm_size | default('16g') }}"
+    restart_policy: "{{ vllm_restart_policy | default('unless-stopped') }}"
+  become: true
