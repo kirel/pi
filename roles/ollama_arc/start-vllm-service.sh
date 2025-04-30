@@ -64,7 +64,7 @@ CMD_ARGS=(
   --tensor-parallel-size "$TENSOR_PARALLEL_SIZE"
   --disable-async-output-proc
   --distributed-executor-backend ray
-  --download-dir /llm/models
+  --download-dir /llm/models # AI! make configurable via env var
   --enable-prefix-caching
 )
 
