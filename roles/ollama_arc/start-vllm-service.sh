@@ -11,6 +11,7 @@ PORT=${PORT:-8000}
 VLLM_QUANTIZATION=${VLLM_QUANTIZATION:-""} # Default to empty (no -q argument)
 CACHE_DTYPE=${CACHE_DTYPE:-""} # Default to empty (no --kv-cache-dtype argument)
 DOWNLOAD_DIR=${DOWNLOAD_DIR:-"/llm/models"} # Default download directory
+PREFIX_CACHING=${PREFIX_CACHING:-"0"} # Default to 0 (disabled)
 
 echo "Starting service with model: $MODEL_PATH"
 echo "Served model name: $SERVED_MODEL_NAME"
@@ -31,6 +32,11 @@ else
   echo "KV Cache DType: Not specified (default)"
 fi
 echo "Download directory: $DOWNLOAD_DIR"
+if [[ "$PREFIX_CACHING" == "1" ]]; then
+  echo "Prefix Caching: Enabled"
+else
+  echo "Prefix Caching: Disabled"
+fi
 
 export CCL_WORKER_COUNT=2
 export SYCL_CACHE_PERSISTENT=1
@@ -67,7 +73,6 @@ CMD_ARGS=(
   --disable-async-output-proc
   --distributed-executor-backend ray
   --download-dir "$DOWNLOAD_DIR"
-  --enable-prefix-caching # ai! oly add if PREFIX_CACHING=1
 )
 
 # Conditionally add the quantization argument if VLLM_QUANTIZATION is set and not empty
@@ -78,6 +83,11 @@ fi
 # Conditionally add the kv cache dtype argument if CACHE_DTYPE is set and not empty
 if [[ -n "$CACHE_DTYPE" ]]; then
   CMD_ARGS+=(--kv-cache-dtype "$CACHE_DTYPE")
+fi
+
+# Conditionally add the prefix caching argument if PREFIX_CACHING is set to 1
+if [[ "$PREFIX_CACHING" == "1" ]]; then
+  CMD_ARGS+=(--enable-prefix-caching)
 fi
 
 # Execute the command
