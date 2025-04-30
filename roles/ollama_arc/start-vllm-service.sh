@@ -67,7 +67,7 @@ CMD_ARGS=(
   --disable-async-output-proc
   --distributed-executor-backend ray
   --download-dir "$DOWNLOAD_DIR"
-  --enable-prefix-caching
+  --enable-prefix-caching # ai! oly add if PREFIX_CACHING=1
 )
 
 # Conditionally add the quantization argument if VLLM_QUANTIZATION is set and not empty
