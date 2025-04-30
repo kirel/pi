@@ -67,7 +67,7 @@
           pull: true # Attempt to pull base images
         state: present
 
-    - name: Build official vllm xpu image with shell
+    - name: Build official vllm xpu image
       ansible.builtin.shell:
         cmd: >
           docker build
@@ -75,8 +75,6 @@
           -f docker/Dockerfile.xpu
           --shm-size=4g
           --pull
-          {% if ollama_arc_build_rm | default(true) %} --rm{% else %} --rm=false{% endif %}
-          {% if (vllm_clone_result.changed | default(false)) or (force_update | default(false)) %} --no-cache{% endif %}
           .
         chdir: "{{ vllm_repo_dest }}"
       environment:
@@ -84,40 +82,6 @@
       become: true # Docker build often needs elevated privileges
       register: vllm_build_result
       changed_when: "'Successfully built' in vllm_build_result.stdout or 'Successfully tagged' in vllm_build_result.stdout" # Check for success messages
-
-# --- Build the Portable Image (Added for testing) ---
-- name: Ensure remote build directory for portable Ollama exists
-  ansible.builtin.file:
-    path: "{{ ollama_arc_portable_build_dest }}"
-    state: directory
-    mode: "0755"
-  become: true
-
-- name: Copy Dockerfile.portable to remote host
-  ansible.builtin.copy:
-    src: Dockerfile.portable # Assumes it's in roles/ollama_arc/
-    dest: "{{ ollama_arc_portable_build_dest }}/Dockerfile" # Destination filename on remote
-    mode: "0644"
-  become: true # May need become if dest dir requires root
-
-- name: Build the Ollama Portable XPU image on remote host
-  community.docker.docker_image:
-    name: "{{ ollama_arc_image_portable }}"
-    source: build
-    # Ensure this task runs on the remote host's Docker daemon
-    # This is usually implicit when running against remote hosts,
-    # but explicitly setting docker_host can help if needed.
-    # docker_host: "unix://var/run/docker.sock" # Usually default
-    build:
-      path: "{{ ollama_arc_portable_build_dest }}" # Use the remote build directory
-      dockerfile: Dockerfile # Use the copied Dockerfile name
-      args:
-        OLLAMA_PORTABLE_URL: "{{ ollama_arc_portable_download_url }}"
-      pull: true # Pull the base image
-    state: present
-    force_source: "{{ force_update | default(false) }}" # Rebuild if forced
-  become: true
-# --- End of Added Portable Image Build ---
 
 - name: Define ollama container environment variables
   ansible.builtin.set_fact:
@@ -127,14 +91,15 @@
       OLLAMA_DEBUG: "0"
       OLLAMA_HOST: "0.0.0.0" # Listen on all interfaces
       OLLAMA_MODELS: /models # Set Ollama's model storage path
-      # OLLAMA_NUM_GPU: "999" # Use all available GPUs for Ollama (as string)
+      OLLAMA_NUM_GPU: "999" # Use all available GPUs for Ollama (as string)
       OLLAMA_FLASH_ATTENTION: "1" # Not supported yet by ipex-llm
       OLLAMA_KV_CACHE_TYPE: "q8_0" # Not supported yet by ipex-llm
-      OLLAMA_CONTEXT_LENGTH: "32768"
-      IPEX_LLM_NUM_CTX: "32768"
+      OLLAMA_CONTEXT_LENGTH: "16384" # "32768"
+      IPEX_LLM_NUM_CTX: "16384" # "32768"
+      SYCL_CACHE_PERSISTENT: "1"
       SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS: "1"
       ZES_ENABLE_SYSMAN: "1" # Required for sysman metrics (as string)
-      CHANGE: "1"
+      ONEAPI_DEVICE_SELECTOR: "level_zero:1"
 
 - name: Combine environment variables
   ansible.builtin.set_fact:
@@ -144,21 +109,44 @@
   community.docker.docker_container:
     name: "{{ ollama_arc_container_name }}"
     image: "{{ ollama_arc_image }}"
+    ulimits:
+      - 'memlock:-1:-1'
     command: >
       bash -c "mkdir -p /llm/ollama &&
                cd /llm/ollama &&
+               mkdir -p /llm/llama-cpp &&
+               cd /llm/llama-cpp &&
                source ipex-llm-init --gpu --device {{ ollama_arc_device_type }} &&
                init-ollama &&
-               exec ./ollama serve"
+               exec ./ollama serve
+               # init-llama-cpp &&
+               # exec ./llama-server -m /models/qwen2.5-0.5b-instruct-q4_k_m.gguf"
     state: started
     detach: true
     network_mode: host
     devices:
-      - /dev/dri:/dev/dri
+      - /dev/dri/
     volumes:
       - "{{ ollama_arc_models_path }}:/models"
-    env: "{{ ollama_arc_env_vars }}"
+    env: "{{ ollama_arc_env_vars|combine({\"OLLAMA_PORT\": \"11434\"}) }}"
     memory: "{{ ollama_arc_memory }}"
     shm_size: "{{ ollama_arc_shm_size }}"
     restart_policy: "{{ ollama_arc_restart_policy }}"
   become: true
+
+  # AI! add this in the same way as above. copy the start-vllm-service.sh to the host, mount it into /llm in the container and use it as entrypoint
+    #   export DOCKER_IMAGE=intelanalytics/ipex-llm-serving-xpu:latest
+    # export CONTAINER_NAME=ipex-llm-serving-xpu-container
+    # sudo docker rm --force $CONTAINER_NAME
+    # sudo docker run -itd \
+    #     --net=host \
+    #     --privileged \
+    #     --device=/dev/dri \
+    #     -v /opt/vllm-models:/llm/models \
+    #     -v ~/.huggingface:/root/.huggingface \
+    #     -e no_proxy=localhost,127.0.0.1 \
+    #     --memory="32G" \
+    #     --name=$CONTAINER_NAME \
+    #     --shm-size="16g" \
+    #     --entrypoint /bin/bash \
+    #     $DOCKER_IMAGE
