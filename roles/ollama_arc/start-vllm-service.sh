@@ -8,6 +8,7 @@ MAX_NUM_BATCHED_TOKENS=${MAX_NUM_BATCHED_TOKENS:-3000}
 MAX_MODEL_LEN=${MAX_MODEL_LEN:-2000}
 LOAD_IN_LOW_BIT=${LOAD_IN_LOW_BIT:-"fp8"}
 PORT=${PORT:-8000}
+VLLM_QUANTIZATION=${VLLM_QUANTIZATION:-""} # Default to empty (no -q argument)
 
 echo "Starting service with model: $MODEL_PATH"
 echo "Served model name: $SERVED_MODEL_NAME"
@@ -17,6 +18,11 @@ echo "Max num batched tokens: $MAX_NUM_BATCHED_TOKENS"
 echo "Max model length: $MAX_MODEL_LEN"
 echo "Load in low bit: $LOAD_IN_LOW_BIT"
 echo "Port: $PORT"
+if [[ -n "$VLLM_QUANTIZATION" ]]; then
+  echo "Quantization method: $VLLM_QUANTIZATION"
+else
+  echo "Quantization method: Not specified (default)"
+fi
 
 export CCL_WORKER_COUNT=2
 export SYCL_CACHE_PERSISTENT=1
@@ -34,24 +40,33 @@ export CCL_BLOCKING_WAIT=0
 
 source /opt/intel/1ccl-wks/setvars.sh
 
-python -m ipex_llm.vllm.xpu.entrypoints.openai.api_server \
-  --served-model-name $SERVED_MODEL_NAME \
-  --port $PORT \
-  --model $MODEL_PATH \
-  --trust-remote-code \
-  --block-size 8 \
-  --gpu-memory-utilization 0.95 \
-  --device xpu \
-  --dtype float16 \
-  --enforce-eager \
-  --load-in-low-bit $LOAD_IN_LOW_BIT \
-  --max-model-len $MAX_MODEL_LEN \
-  --max-num-batched-tokens $MAX_NUM_BATCHED_TOKENS \
-  --max-num-seqs $MAX_NUM_SEQS \
-  --tensor-parallel-size $TENSOR_PARALLEL_SIZE \
-  --disable-async-output-proc \
-  --distributed-executor-backend ray \
-  --download-dir /llm/models \
-  -q awq \ # ai! Can I make this configurable? via env var? Should defaulty to not passin -q but if the env var is set it's passing -q $QUANT
-  --kv-cache-dtype fp8 \
+# Build the command arguments dynamically
+CMD_ARGS=(
+  --served-model-name "$SERVED_MODEL_NAME"
+  --port "$PORT"
+  --model "$MODEL_PATH"
+  --trust-remote-code
+  --block-size 8
+  --gpu-memory-utilization 0.95
+  --device xpu
+  --dtype float16
+  --enforce-eager
+  --load-in-low-bit "$LOAD_IN_LOW_BIT"
+  --max-model-len "$MAX_MODEL_LEN"
+  --max-num-batched-tokens "$MAX_NUM_BATCHED_TOKENS"
+  --max-num-seqs "$MAX_NUM_SEQS"
+  --tensor-parallel-size "$TENSOR_PARALLEL_SIZE"
+  --disable-async-output-proc
+  --distributed-executor-backend ray
+  --download-dir /llm/models
+  --kv-cache-dtype fp8
   --enable-prefix-caching
+)
+
+# Conditionally add the quantization argument if VLLM_QUANTIZATION is set and not empty
+if [[ -n "$VLLM_QUANTIZATION" ]]; then
+  CMD_ARGS+=(-q "$VLLM_QUANTIZATION")
+fi
+
+# Execute the command
+python -m ipex_llm.vllm.xpu.entrypoints.openai.api_server "${CMD_ARGS[@]}"
