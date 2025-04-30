@@ -20,6 +20,7 @@
             WOLF_LOG_LEVEL: debug
             XDG_RUNTIME_DIR: /tmp/sockets
             HOST_APPS_STATE_FOLDER: /etc/wolf
+            WOLF_RENDER_NODE: /dev/dri/renderD128
           volumes:
             - /etc/wolf/:/etc/wolf
             - /tmp/sockets:/tmp/sockets:rw
