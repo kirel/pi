@@ -9,6 +9,7 @@ MAX_MODEL_LEN=${MAX_MODEL_LEN:-2000}
 LOAD_IN_LOW_BIT=${LOAD_IN_LOW_BIT:-"fp8"}
 PORT=${PORT:-8000}
 VLLM_QUANTIZATION=${VLLM_QUANTIZATION:-""} # Default to empty (no -q argument)
+CACHE_DTYPE=${CACHE_DTYPE:-""} # Default to empty (no --kv-cache-dtype argument)
 
 echo "Starting service with model: $MODEL_PATH"
 echo "Served model name: $SERVED_MODEL_NAME"
@@ -22,6 +23,11 @@ if [[ -n "$VLLM_QUANTIZATION" ]]; then
   echo "Quantization method: $VLLM_QUANTIZATION"
 else
   echo "Quantization method: Not specified (default)"
+fi
+if [[ -n "$CACHE_DTYPE" ]]; then
+  echo "KV Cache DType: $CACHE_DTYPE"
+else
+  echo "KV Cache DType: Not specified (default)"
 fi
 
 export CCL_WORKER_COUNT=2
@@ -59,13 +65,17 @@ CMD_ARGS=(
   --disable-async-output-proc
   --distributed-executor-backend ray
   --download-dir /llm/models
-  --kv-cache-dtype fp8 # ai! add confitionally if $CACHE_DTYPE is set
   --enable-prefix-caching
 )
 
 # Conditionally add the quantization argument if VLLM_QUANTIZATION is set and not empty
 if [[ -n "$VLLM_QUANTIZATION" ]]; then
   CMD_ARGS+=(-q "$VLLM_QUANTIZATION")
+fi
+
+# Conditionally add the kv cache dtype argument if CACHE_DTYPE is set and not empty
+if [[ -n "$CACHE_DTYPE" ]]; then
+  CMD_ARGS+=(--kv-cache-dtype "$CACHE_DTYPE")
 fi
 
 # Execute the command
