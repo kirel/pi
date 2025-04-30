@@ -59,7 +59,7 @@ CMD_ARGS=(
   --disable-async-output-proc
   --distributed-executor-backend ray
   --download-dir /llm/models
-  --kv-cache-dtype fp8
+  --kv-cache-dtype fp8 # ai! add confitionally if $CACHE_DTYPE is set
   --enable-prefix-caching
 )
 
