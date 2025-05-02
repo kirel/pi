@@ -1,0 +1,14 @@
+---
+# Netplan Static IP Configuration for host 'ailab'
+netplan_interface: "enp12s0" # Verify the correct interface name on your ailab host
+netplan_address_cidr: "192.168.50.9/24"
+netplan_gateway: "192.168.50.1"
+netplan_dns_servers:
+  - "192.168.50.4"
+  - "192.168.50.5"
+# netplan_config_filename: "40-static-ip.yaml" # Optional: only if you want to override the default filename
+netplan_wake_on_lan: true
+
+# You might consider moving other host-specific variables here too, e.g.:
+# comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage
+# ollama_arc_models_path: /data/ai/models/ollama-arc

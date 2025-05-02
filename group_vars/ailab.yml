@@ -13,12 +13,4 @@ config_root: /home/{{ username_personal }}/config
 # comfyui specific vars
 comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage # Specific path for ailab host in user home
 
-# Netplan Static IP Configuration
-netplan_interface: "enp12s0" # Verify the correct interface name on your ailab host
-netplan_address_cidr: "192.168.50.9/24"
-netplan_gateway: "192.168.50.1"
-netplan_dns_servers:
-  - "192.168.50.4"
-  - "192.168.50.5"
-# netplan_config_filename: "40-static-ip.yaml" # Optional: only if you want to override the default filename
-netplan_wake_on_lan: true
+# Note: Netplan configuration moved to host_vars/ailab.yml
