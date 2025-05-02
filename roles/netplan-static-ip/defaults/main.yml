@@ -1,0 +1,13 @@
+---
+# Default interface name
+netplan_interface: eth0
+# Default IP address and CIDR subnet mask
+netplan_address_cidr: "192.168.1.100/24"
+# Default gateway
+netplan_gateway: "192.168.1.1"
+# Default DNS servers
+netplan_dns_servers:
+  - "8.8.8.8"
+  - "1.1.1.1"
+# Filename for the netplan configuration
+netplan_config_filename: "40-static-ip.yaml"

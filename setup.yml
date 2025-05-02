@@ -59,6 +59,7 @@
   ignore_unreachable: true
   roles:
     - { role: basic, become: true, tags: [basic] }
+    - { role: netplan-static-ip, become: true, tags: [netplan, network] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockercleanup, become: true, tags: [docker, cleanup] }

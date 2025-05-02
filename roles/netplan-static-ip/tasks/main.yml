@@ -1,0 +1,21 @@
+---
+- name: Ensure netplan.io package is installed
+  ansible.builtin.package:
+    name: netplan.io
+    state: present
+  become: true
+
+- name: Configure static IP using netplan
+  ansible.builtin.template:
+    src: netplan-static.yaml.j2
+    dest: "/etc/netplan/{{ netplan_config_filename }}"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: Apply Netplan Configuration
+
+# We explicitly flush handlers here to ensure netplan apply runs before
+# any subsequent network-dependent tasks in the playbook might run.
+- name: Flush handlers to apply netplan config immediately
+  ansible.builtin.meta: flush_handlers

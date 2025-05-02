@@ -1,0 +1,11 @@
+network:
+    ethernets:
+        {{ netplan_interface }}:
+          dhcp4: no
+          addresses: [{{ netplan_address_cidr }}]
+          routes:
+            - to: default
+              via: {{ netplan_gateway }}
+          nameservers:
+            addresses: {{ netplan_dns_servers | to_yaml | indent(width=6, first=false) }}
+    version: 2
