@@ -116,9 +116,10 @@
 - name: Copy vLLM start script to host
   ansible.builtin.copy:
     src: start-vllm-service.sh # Assumes file is in roles/ollama_arc/files/
-    dest: "{{ ipex_vllm_script_host_path }}"
+    dest: "{{ ipex_vllm_script_host_path }}/start-vllm-service.sh" # Ensure full path
     mode: "0755"
   become: true
+  notify: Restart vLLM container
 
 - name: Define vLLM container environment variables
   ansible.builtin.set_fact:

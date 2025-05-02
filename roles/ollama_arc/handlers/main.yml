@@ -1,0 +1,6 @@
+---
+- name: Restart vLLM container
+  community.docker.docker_container:
+    name: "ipex-llm-serving-xpu-container"
+    state: restarted # Use 'restarted' state here
+  become: true
