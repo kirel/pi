@@ -17,21 +17,24 @@ ollama_arc_build_repo_url: https://github.com/intel/ipex-llm.git
 ollama_arc_build_repo_version: main # Or specific tag/commit
 ollama_arc_build_repo_dest: /opt/src/ipex-llm # Path on target host to clone the repo
 ollama_arc_build_context_subdir: docker/llm/inference-cpp # Subdirectory within the repo containing the Dockerfile
-ipex_vllm_build_context_subdir: docker/llm/serving/xpu/docker
-ollama_arc_build_nocache: false # Corresponds to --no-cache, usually false for automation
-ollama_arc_build_rm: true # Corresponds to --rm
+ollama_arc_build_nocache: true # Corresponds to --no-cache, usually false for automation
+ollama_arc_build_rm: false # Corresponds to --rm
 ollama_arc_build_args: # Corresponds to --build-arg
   http_proxy: "" # Set via group_vars/host_vars if needed
   https_proxy: "" # Set via group_vars/host_vars if needed
   no_proxy: "{{ ollama_arc_no_proxy }}" # Default to the container's no_proxy setting
 
+ipex_vllm_build_context_subdir: docker/llm/serving/xpu/docker
+ipex_vllm_script_host_path: /opt/vllm
+
+vllm_models_path: /opt/vllm/models # Default path on host, override in group_vars if needed
+
 vllm_repo: https://github.com/vllm-project/vllm.git
-vllm_repo_dest: /opt/src/vllm
+vllm_repo_dest: /opt/vllm/src
 vllm_image: vllm-xpu:latest
 vllm_repo_version: main
 vllm_build_context_subdir: docker
 vllm_build_dockerfile: Dockerfile.xpu
-vllm_models_path: /opt/vllm-models # Default path on host, override in group_vars if needed
 vllm_container_name: vllm-xpu
 
 # --- Portable Ollama Build Settings ---

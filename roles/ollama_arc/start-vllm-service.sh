@@ -8,6 +8,7 @@ MAX_NUM_BATCHED_TOKENS=${MAX_NUM_BATCHED_TOKENS:-3000}
 MAX_MODEL_LEN=${MAX_MODEL_LEN:-2000}
 LOAD_IN_LOW_BIT=${LOAD_IN_LOW_BIT:-"fp8"}
 PORT=${PORT:-8000}
+
 VLLM_QUANTIZATION=${VLLM_QUANTIZATION:-""} # Default to empty (no -q argument)
 CACHE_DTYPE=${CACHE_DTYPE:-""} # Default to empty (no --kv-cache-dtype argument)
 DOWNLOAD_DIR=${DOWNLOAD_DIR:-"/llm/models"} # Default download directory
@@ -51,6 +52,9 @@ export TORCH_LLM_ALLREDUCE=0
 
 export CCL_SAME_STREAM=1
 export CCL_BLOCKING_WAIT=0
+
+export VLLM_USE_V1=0
+export IPEX_LLM_LOWBIT=$LOAD_IN_LOW_BIT
 
 source /opt/intel/1ccl-wks/setvars.sh
 

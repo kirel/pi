@@ -56,7 +56,111 @@ TODO https://github.com/coreprocess/linux-unattended-installation
 
     ansible-playbook setup.yml --limit ailab
     # force ollama container update
-    ansible-playbook setup.yml --limit ailab -t ollama-arc -v --extra-vars "force_update=true"
+    ansible-playbook setup.yml --limit ailab -t ollama-arc --extra-vars "force_update=true"
+    ansible-playbook setup.yml --limit ailab -t ollama-arc --start-at-task "Define ollama container environment variables"
+
+    ssh -t ailab.lan 'while true; do sudo docker logs -f --tail=100 ipex-llm-inference-cpp-xpu-container || sleep 10; done'
+    sudo docker logs -f ipex-llm-inference-cpp-xpu-container
+    sudo docker exec -it ipex-llm-inference-cpp-xpu-container /bin/bash
+
+    ssh ailab.lan
+    export DOCKER_IMAGE=intelanalytics/ipex-llm-serving-xpu:latest
+    export CONTAINER_NAME=ipex-llm-serving-xpu-container
+    sudo docker rm --force $CONTAINER_NAME
+    sudo docker run -itd \
+        --net=host \
+        --privileged \
+        --device=/dev/dri \
+        -v /opt/vllm-models:/llm/models \
+        -v ~/.huggingface:/root/.huggingface \
+        -e no_proxy=localhost,127.0.0.1 \
+        --memory="32G" \
+        --name=$CONTAINER_NAME \
+        --shm-size="16g" \
+        --entrypoint /bin/bash \
+        $DOCKER_IMAGE
+    sudo docker exec -it ipex-llm-serving-xpu-container /bin/bash
+    cat ./start-vllm-service.sh
+    sed -i 's#ray#ray \\\n  --download-dir /llm/models \\\n  -q awq \\\n  --kv-cache-dtype fp8 \\\n  --enable-prefix-caching#g' ./start-vllm-service.sh
+    # sed -i 's/SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=2/SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=1/g' ./start-vllm-service.sh
+    # TODO -q AWQ
+    # TODO --enable-prefix-caching
+    # TODO --kv-cache-dtype fp8
+    vim ./start-vllm-service.sh
+
+    export ONEAPI_DEVICE_SELECTOR="level_zero:0"
+    export NUM_CTX=4096
+    export IPEX_LLM_NUM_CTX=$NUM_CTX
+    export MAX_NUM_SEQS=1
+    export MAX_MODEL_LEN=$NUM_CTX
+    export MAX_NUM_BATCHED_TOKENS=$((MAX_MODEL_LEN * MAX_NUM_SEQS))
+    export LOAD_IN_LOW_BIT=woq_int4
+    export LOAD_IN_LOW_BIT=int4_asym
+    unset LOAD_IN_LOW_BIT
+    export TENSOR_PARALLEL_SIZE=1
+    export PORT=8001
+
+    export HF_MODEL=Qwen/Qwen2.5-14B-Instruct
+    export HF_MODEL=Qwen/Qwen2.5-0.5B-Instruct-AWQ
+    
+    export HF_MODEL=Qwen/Qwen2.5-0.5B-Instruct
+    export MODEL_PATH=$HF_MODEL
+    export SERVED_MODEL_NAME=$HF_MODEL
+
+    bash ./start-vllm-service.sh
+
+    ---
+
+    export CCL_WORKER_COUNT=2
+    export SYCL_CACHE_PERSISTENT=1
+    export FI_PROVIDER=shm
+    export CCL_ATL_TRANSPORT=ofi
+    export CCL_ZE_IPC_EXCHANGE=sockets
+    export CCL_ATL_SHM=1
+
+    export USE_XETLA=OFF
+    export SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=1
+    export ONEAPI_DEVICE_SELECTOR="level_zero:1"
+    export TORCH_LLM_ALLREDUCE=0
+
+    export CCL_SAME_STREAM=1
+    export CCL_BLOCKING_WAIT=0
+
+    sudo docker run -it \
+            --rm \
+            --network=host \
+            --device /dev/dri \
+            -v /dev/dri/by-path:/dev/dri/by-path \
+            --memory="32G" \
+            --shm-size="16g" \
+            --entrypoint /bin/bash \
+            vllm-xpu:latest
+
+    sudo docker run -it \
+            --rm \
+            --network=host \
+            --device /dev/dri \
+            -v /dev/dri/by-path:/dev/dri/by-path \
+            -v /opt/vllm-models:/models \
+            --memory="32G" \
+            --shm-size="16g" \
+            -e PORT -e CCL_WORKER_COUNT -e FI_PROVIDER -e CCL_ATL_TRANSPORT -e CCL_ZE_IPC_EXCHANGE -e CCL_ATL_SHM -e USE_XETLA -e SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS -e SYNC_CACHE_PERSISTENT -e TORCH_LLM_ALLREDUCE -e CCL_SAME_STREAM -e CCL_BLOCKING_WAIT \
+            vllm-xpu:latest \
+            --port $PORT \
+            --trust-remote-code \
+            --enforce-eager \
+            --download-dir /models \
+            --dtype=float16 \
+            --device=xpu \
+            --disable-async-output-proc \
+            --max-model-len $MAX_MODEL_LEN \
+            --max-num-batched-tokens $MAX_NUM_BATCHED_TOKENS \
+            --max-num-seqs $MAX_NUM_SEQS \
+            --model $HF_MODEL
+
+
+
+
 
 
 ## Secrets
