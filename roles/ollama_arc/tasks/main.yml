@@ -32,15 +32,6 @@
         depth: 1 # Perform a shallow clone
       register: git_clone_result # Register the result
 
-    - name: Clone or update the vllm repository #
-      ansible.builtin.git:
-        repo: "{{ vllm_repo }}"
-        dest: "{{ vllm_repo_dest }}"
-        version : "{{ vllm_repo_version }}"
-        force: true
-        depth: 1
-      register: vllm_clone_result
-
     - name: Build the ipex-llm-inference-cpp-xpu image
       when: false
       community.docker.docker_image:
@@ -68,23 +59,6 @@
           pull: true # Attempt to pull base images
         state: present
 
-    - name: Build official vllm xpu image
-      when: false
-      ansible.builtin.shell:
-        cmd: >
-          docker build
-          -t {{ vllm_image }}
-          -f docker/Dockerfile.xpu
-          --shm-size=4g
-          --pull
-          .
-        chdir: "{{ vllm_repo_dest }}"
-      environment:
-        DOCKER_BUILDKIT: "1"
-      become: true # Docker build often needs elevated privileges
-      register: vllm_build_result
-      changed_when: "'Successfully built' in vllm_build_result.stdout or 'Successfully tagged' in vllm_build_result.stdout" # Check for success messages
-
 - name: Define ollama container environment variables
   ansible.builtin.set_fact:
     ollama_arc_env_vars:
@@ -101,7 +75,7 @@
       SYCL_CACHE_PERSISTENT: "1"
       SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS: "1"
       ZES_ENABLE_SYSMAN: "1" # Required for sysman metrics (as string)
-      ONEAPI_DEVICE_SELECTOR: "level_zero:1" # B580
+      ONEAPI_DEVICE_SELECTOR: "level_zero:2" # B580
 
 - name: Start the ipex-llm-inference-cpp-xpu container
   community.docker.docker_container:
@@ -149,6 +123,7 @@
 - name: Define vLLM container environment variables
   ansible.builtin.set_fact:
     vllm_env_vars:
+      ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # A770
       MODEL_PATH: "Qwen/Qwen3-14B"
       SERVED_MODEL_NAME: "Qwen/Qwen3-14B"
       # VLLM_QUANTIZATION: "awq"
@@ -156,23 +131,23 @@
       MAX_MODEL_LEN: "8192"
       MAX_NUM_SEQS: "1"
       LOAD_IN_LOW_BIT: "sym_int4"
-      PORT: "8001"
       CACHE_DTYPE: "fp8"
-      DOWNLOAD_DIR: "/llm/models"
-      PREFIX_CACHING: "1"
-      ONEAPI_DEVICE_SELECTOR: "level_zero:0" # A770
+      TENSOR_PARALLEL_SIZE: "2"
+      # PREFIX_CACHING: "1"
       CCL_DG2_ALLREDUCE: "1"
       # OMP_NUM_THREADS: "1"
       # NCCL_P2P_DISABLE: "1"
       # VLLM_LOGGING_LEVEL: DEBUG
       # VLLM_TRACE_FUNCTION: "1"
-      CHANGED: "3"
+      DOWNLOAD_DIR: "/llm/models"
+      PORT: "8001"
+      CHANGED: "4"
 
 - name: Start the ipex-llm-serving-xpu container
   community.docker.docker_container:
     name: "ipex-llm-serving-xpu-container"
     image: "{{ ipex_vllm_image }}"
-    state: started
+    state: started # ai? restarted if the start script changed?
     detach: true
     privileged: true
     network_mode: host
