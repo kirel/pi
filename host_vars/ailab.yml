@@ -1,6 +1,6 @@
 ---
 # Netplan Static IP Configuration for host 'ailab'
-netplan_interface: "enp12s0" # Verify the correct interface name on your ailab host
+netplan_interface: "enp8s0" # Verify the correct interface name on your ailab host
 netplan_address_cidr: "192.168.50.9/24"
 netplan_gateway: "192.168.50.1"
 netplan_dns_servers:

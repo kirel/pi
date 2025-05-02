@@ -59,6 +59,8 @@ TODO https://github.com/coreprocess/linux-unattended-installation
     ansible-playbook setup.yml --limit ailab -t ollama-arc --extra-vars "force_update=true"
     ansible-playbook setup.yml --limit ailab -t ollama-arc --start-at-task "Define ollama container environment variables"
 
+    ansible-playbook setup.yml --limit ailab -t ollama-arc --extra-vars "ollama_arc_build_repo_url=https://github.com/kirel/ipex-llm.git ollama_arc_build_repo_version=kirel-patch-1"
+
     ssh -t ailab.lan 'while true; do sudo docker logs -f --tail=100 ipex-llm-inference-cpp-xpu-container || sleep 10; done'
     sudo docker logs -f ipex-llm-inference-cpp-xpu-container
     sudo docker exec -it ipex-llm-inference-cpp-xpu-container /bin/bash
