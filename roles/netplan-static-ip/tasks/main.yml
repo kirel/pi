@@ -5,6 +5,15 @@
     state: present
   become: true
 
+- name: Disable cloud-init network configuration
+  ansible.builtin.copy:
+    content: "network: {config: disabled}\n"
+    dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
 - name: Configure static IP using netplan
   ansible.builtin.template:
     src: netplan-static.yaml.j2
