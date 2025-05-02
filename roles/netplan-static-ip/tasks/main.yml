@@ -5,6 +5,12 @@
     state: present
   become: true
 
+- name: Ensure ethtool is installed
+  ansible.builtin.package:
+    name: ethtool
+    state: present
+  become: true
+
 - name: Disable cloud-init network configuration
   ansible.builtin.copy:
     content: "network: {config: disabled}\n"

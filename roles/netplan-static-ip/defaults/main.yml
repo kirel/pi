@@ -11,3 +11,5 @@ netplan_dns_servers:
   - "1.1.1.1"
 # Filename for the netplan configuration
 netplan_config_filename: "40-static-ip.yaml"
+# Enable Wake-on-LAN for the interface
+netplan_wake_on_lan: false
