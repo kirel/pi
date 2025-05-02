@@ -20,6 +20,21 @@
     mode: '0644'
   become: true
 
+- name: Find potentially conflicting cloud-init installer network config
+  ansible.builtin.find:
+    paths: /etc/cloud/cloud.cfg.d/
+    patterns: "*-installer-network.cfg"
+  register: cloud_init_installer_network_config
+  become: true
+
+- name: Remove conflicting cloud-init installer network config if found
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ cloud_init_installer_network_config.files }}"
+  become: true
+  when: cloud_init_installer_network_config.files | length > 0
+
 - name: Configure static IP using netplan
   ansible.builtin.template:
     src: netplan-static.yaml.j2
