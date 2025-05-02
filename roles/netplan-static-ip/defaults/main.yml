@@ -13,3 +13,5 @@ netplan_dns_servers:
 netplan_config_filename: "40-static-ip.yaml"
 # Enable Wake-on-LAN for the interface
 netplan_wake_on_lan: false
+# MAC address to match for renaming the interface (optional)
+netplan_match_macaddress: null

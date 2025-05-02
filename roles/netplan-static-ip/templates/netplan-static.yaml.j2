@@ -1,7 +1,12 @@
 network:
   version: 2
   ethernets:
-    {{ netplan_interface }}:
+    {{ netplan_interface }}: # This will now be 'eth0' based on host_vars
+      {% if netplan_match_macaddress is defined and netplan_match_macaddress %}
+      match:
+        macaddress: {{ netplan_match_macaddress }} # Uses the variable set in host_vars
+      set-name: {{ netplan_interface }}
+      {% endif %}
       dhcp4: no
       addresses: [{{ netplan_address_cidr }}]
       routes:
