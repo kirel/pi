@@ -1,4 +1,5 @@
 network:
+    version: 2 # Correct indentation
     ethernets:
         {{ netplan_interface }}:
           dhcp4: no
@@ -11,4 +12,3 @@ network:
           {% if netplan_wake_on_lan %}
           wakeonlan: true
           {% endif %}
-    version: 2
