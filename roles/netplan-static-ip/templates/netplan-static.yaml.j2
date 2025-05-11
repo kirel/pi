@@ -2,18 +2,16 @@ network:
   version: 2
   ethernets:
     {{ netplan_interface }}: # This will now be 'eth0' based on host_vars
-      {% if netplan_match_macaddress is defined and netplan_match_macaddress %}
+      {% if netplan_match_macaddress is defined and netplan_match_macaddress -%}
       match:
         macaddress: {{ netplan_match_macaddress }} # Uses the variable set in host_vars
       set-name: {{ netplan_interface }}
-      {% endif %}
+      {% endif -%}
       dhcp4: no
       addresses: [{{ netplan_address_cidr }}]
       routes:
         - to: default
           via: {{ netplan_gateway }}
       nameservers:
-        addresses: {{ netplan_dns_servers | to_yaml | indent(width=6, first=false) }}
-{% if netplan_wake_on_lan %}
-      wakeonlan: true  # Ensure exactly 6 spaces before this line
-{% endif %}
+        addresses: {{ netplan_dns_servers | to_yaml | trim }}
+      {% if netplan_wake_on_lan %}wakeonlan: true{% endif -%}
