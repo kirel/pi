@@ -8,6 +8,7 @@ ExecStart=/usr/bin/systembridge --no-gui
 # User=root # Removed, defaults to root. Let's see if this avoids the 217/USER error.
 Restart=on-failure
 # RemainAfterExit=yes # Removed, not typically needed for Type=simple services
+TimeoutStopSec=10
 
 [Install]
 WantedBy=multi-user.target
