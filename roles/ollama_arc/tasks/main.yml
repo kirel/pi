@@ -47,6 +47,7 @@
         state: present
 
     - name: Build the ipex-llm-serving-xpu image
+      when: false
       community.docker.docker_image:
         name: "{{ ipex_vllm_image }}"
         source: build
@@ -67,20 +68,22 @@
       OLLAMA_DEBUG: "0"
       OLLAMA_HOST: "0.0.0.0" # Listen on all interfaces
       OLLAMA_MODELS: /models # Set Ollama's model storage path
-      OLLAMA_NUM_GPU: "999" # Use all available GPUs for Ollama (as string)
-      OLLAMA_FLASH_ATTENTION: "1" # Not supported yet by ipex-llm
-      OLLAMA_KV_CACHE_TYPE: "q8_0" # Not supported yet by ipex-llm
-      OLLAMA_CONTEXT_LENGTH: "16384" # "32768"
-      IPEX_LLM_NUM_CTX: "16384" # "32768"
+      OLLAMA_NUM_GPU: "999"
+      OLLAMA_NUM_PARALLEL: "1"
+      OLLAMA_NUM_CTX: "40960"
+      OLLAMA_FLASH_ATTENTION: "1" # Not yet supported on SYCL
+      OLLAMA_KV_CACHE_TYPE: "q8_0" # Not yet supported on SYCL
       SYCL_CACHE_PERSISTENT: "1"
       SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS: "1"
-      ZES_ENABLE_SYSMAN: "1" # Required for sysman metrics (as string)
-      ONEAPI_DEVICE_SELECTOR: "level_zero:2" # B580
+      ZES_ENABLE_SYSMAN: "1"
+      ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # Dual A770
+      SYCL_DEVICE_CHECK: "1"
+      change: "0"
 
 - name: Start the ipex-llm-inference-cpp-xpu container
   community.docker.docker_container:
     name: "{{ ollama_arc_container_name }}"
-    image: "{{ ollama_arc_image }}"
+    image: "intelanalytics/ipex-llm-inference-cpp-xpu:2.3.0-SNAPSHOT"
     ulimits:
       - 'memlock:-1:-1'
     command: >
@@ -90,7 +93,7 @@
                cd /llm/llama-cpp &&
                source ipex-llm-init --gpu --device {{ ollama_arc_device_type }} &&
                init-ollama &&
-               exec ./ollama serve
+               ./ollama serve
                # init-llama-cpp &&
                # exec ./llama-server -m /models/qwen2.5-0.5b-instruct-q4_k_m.gguf"
     state: started
@@ -100,8 +103,9 @@
       - /dev/dri/
     volumes:
       - "{{ ollama_arc_models_path }}:/models"
-    env: "{{ ollama_arc_env_vars|combine({\"OLLAMA_PORT\": \"11434\"}) }}"
+    env: "{{ ollama_arc_env_vars }}"
     memory: "{{ ollama_arc_memory }}"
+    memory_swap: "60g"
     shm_size: "{{ ollama_arc_shm_size }}"
     restart_policy: "{{ ollama_arc_restart_policy }}"
   become: true
@@ -124,31 +128,55 @@
 - name: Define vLLM container environment variables
   ansible.builtin.set_fact:
     vllm_env_vars:
-      ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # A770
-      MODEL_PATH: "Qwen/Qwen3-14B"
-      SERVED_MODEL_NAME: "Qwen/Qwen3-14B"
-      # VLLM_QUANTIZATION: "awq"
-      MAX_NUM_BATCHED_TOKENS: "8192"
-      MAX_MODEL_LEN: "8192"
+      ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # 2xA770
+      MODEL_PATH: "Qwen/Qwen3-14B" # "Qwen/Qwen3-14B"
+      SERVED_MODEL_NAME: "Qwen/Qwen3-14B" # "Qwen/Qwen3-14B"
+      #VLLM_QUANTIZATION: "awq"
+      MAX_NUM_BATCHED_TOKENS: "{{ 4096 * 6 }}" # 6
+      MAX_MODEL_LEN: "{{ 4096 * 4 }}" # 4
       MAX_NUM_SEQS: "1"
-      LOAD_IN_LOW_BIT: "sym_int4"
-      CACHE_DTYPE: "fp8"
+      LOAD_IN_LOW_BIT: "woq_int4" # "sym_int4"
+      CACHE_DTYPE: "fp8" # "fp8"
       TENSOR_PARALLEL_SIZE: "2"
       # PREFIX_CACHING: "1"
       CCL_DG2_ALLREDUCE: "1"
+      CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK: "1"
+      # RAY_IGNORE_UNHANDLED_ERRORS: "1"
       # OMP_NUM_THREADS: "1"
       # NCCL_P2P_DISABLE: "1"
       # VLLM_LOGGING_LEVEL: DEBUG
       # VLLM_TRACE_FUNCTION: "1"
       DOWNLOAD_DIR: "/llm/models"
       PORT: "8001"
-      CHANGED: "4"
+      CHANGED: "1"
+
+- name: Define vLLM Qwen3-14B settings for 1xA770
+  ansible.builtin.set_fact:
+    vllm_qwen3_14b_env_vars:
+      ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # 2xA770
+      MODEL_PATH: "Qwen/Qwen3-14B"
+      SERVED_MODEL_NAME: "Qwen/Qwen3-14B"
+      MAX_NUM_BATCHED_TOKENS: "4096 * 6"
+      MAX_MODEL_LEN: "4096 * 4"
+      MAX_NUM_SEQS: "1"
+      LOAD_IN_LOW_BIT: "woq_int4"
+      CACHE_DTYPE: "fp8"
+      TENSOR_PARALLEL_SIZE: "1"
+
+- name: Define AQW settings
+  ansible.builtin.set_fact:
+    vllm_awq_env_vars:
+      MODEL_PATH: "Qwen/Qwen3-14B-AWQ"
+      SERVED_MODEL_NAME: "Qwen/Qwen3-14B-AWQ"
+      VLLM_QUANTIZATION: "awq"
+      LOAD_IN_LOW_BIT: "asym_int4"
 
 - name: Start the ipex-llm-serving-xpu container
+  when: false
   community.docker.docker_container:
     name: "ipex-llm-serving-xpu-container"
-    image: "{{ ipex_vllm_image }}"
-    state: started # ai? restarted if the start script changed?
+    image: "intelanalytics/ipex-llm-serving-xpu:b18" # 0.8.3-b18 b12-usm
+    state: started
     detach: true
     privileged: true
     network_mode: host
@@ -156,10 +184,10 @@
       - /dev/dri:/dev/dri
     volumes:
       - "{{ vllm_models_path }}:/llm/models:rw"
-      - "/home/daniel/.huggingface:/root/.huggingface:rw" # Mount Hugging Face cache
-      - "{{ ipex_vllm_script_host_path }}/start-vllm-service.sh:/llm/start-vllm-service.sh:ro" # Mount start script read-only
-    env: "{{ vllm_env_vars }}"
-    # entrypoint: ["bash", "/llm/start-vllm-service.sh"] # AI? cd into /llm first
+      - "/home/daniel/.cache/huggingface:/root/.cache/huggingface:rw" # Mount Hugging Face cache
+      - "{{ ipex_vllm_script_host_path }}/start-vllm-service.sh:/llm/start-vllm-service-custom.sh:ro" # Mount start script read-only
+    entrypoint: ["/llm/start-vllm-service-custom.sh"]
+    env: "{{ vllm_env_vars|combine(vllm_qwen3_14b_env_vars) }}"
     memory: "48g"
     shm_size: "16g"
     restart_policy: "unless-stopped"

@@ -76,6 +76,8 @@ CMD_ARGS=(
   --tensor-parallel-size "$TENSOR_PARALLEL_SIZE"
   --disable-async-output-proc
   --distributed-executor-backend ray
+  --enable-reasoning
+  --reasoning-parser deepseek_r1
   --download-dir "$DOWNLOAD_DIR"
 )
 
@@ -95,4 +97,4 @@ if [[ "$PREFIX_CACHING" == "1" ]]; then
 fi
 
 # Execute the command
-python -m ipex_llm.vllm.xpu.entrypoints.openai.api_server "${CMD_ARGS[@]}"
+numactl -C 0-11 python ipex_llm.vllm.xpu.entrypoints.openai.api_server "${CMD_ARGS[@]}"
