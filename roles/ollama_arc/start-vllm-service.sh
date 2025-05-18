@@ -39,22 +39,22 @@ else
   echo "Prefix Caching: Disabled"
 fi
 
-export CCL_WORKER_COUNT=2
+export USE_XETLA=OFF
 export SYCL_CACHE_PERSISTENT=1
+export SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=2
 export FI_PROVIDER=shm
+export TORCH_LLM_ALLREDUCE=0
+
+export CCL_WORKER_COUNT=2
 export CCL_ATL_TRANSPORT=ofi
 export CCL_ZE_IPC_EXCHANGE=sockets
 export CCL_ATL_SHM=1
-
-export USE_XETLA=OFF
-export SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=2
-export TORCH_LLM_ALLREDUCE=0
-
 export CCL_SAME_STREAM=1
 export CCL_BLOCKING_WAIT=0
+export CCL_DG2_USM=1
 
-export VLLM_USE_V1=0
 export IPEX_LLM_LOWBIT=$LOAD_IN_LOW_BIT
+export VLLM_USE_V1=0
 
 source /opt/intel/1ccl-wks/setvars.sh
 
@@ -64,7 +64,6 @@ CMD_ARGS=(
   --port "$PORT"
   --model "$MODEL_PATH"
   --trust-remote-code
-  --block-size 8
   --gpu-memory-utilization 0.95
   --device xpu
   --dtype float16
@@ -74,8 +73,10 @@ CMD_ARGS=(
   --max-num-batched-tokens "$MAX_NUM_BATCHED_TOKENS"
   --max-num-seqs "$MAX_NUM_SEQS"
   --tensor-parallel-size "$TENSOR_PARALLEL_SIZE"
-  --disable-async-output-proc
+  --pipeline-parallel-size 1
+  --block-size 8
   --distributed-executor-backend ray
+  --disable-async-output-proc
   --enable-reasoning
   --reasoning-parser deepseek_r1
   --download-dir "$DOWNLOAD_DIR"
@@ -97,4 +98,4 @@ if [[ "$PREFIX_CACHING" == "1" ]]; then
 fi
 
 # Execute the command
-numactl -C 0-11 python ipex_llm.vllm.xpu.entrypoints.openai.api_server "${CMD_ARGS[@]}"
+python -m ipex_llm.vllm.xpu.entrypoints.openai.api_server "${CMD_ARGS[@]}"

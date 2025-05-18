@@ -8,8 +8,19 @@
     mode: "0755"
   become: true
 
+- name: Define Docker network name
+  ansible.builtin.set_fact:
+    ollama_arc_network_name: "ollama-arc-network"
+
+- name: Ensure Docker network exists
+  community.docker.docker_network:
+    name: "{{ ollama_arc_network_name }}"
+    state: present
+  become: true
+
 # Block for building the image locally (always runs)
 - name: Build ipex-llm-inference-cpp-xpu image from source
+  when: false
   become: true # Often needed for git checkout destination and docker build
   block:
     - name: Ensure git package is present for cloning
@@ -33,7 +44,6 @@
       register: git_clone_result # Register the result
 
     - name: Build the ipex-llm-inference-cpp-xpu image
-      when: false
       community.docker.docker_image:
         name: "{{ ollama_arc_image }}"
         source: build
@@ -47,7 +57,6 @@
         state: present
 
     - name: Build the ipex-llm-serving-xpu image
-      when: false
       community.docker.docker_image:
         name: "{{ ipex_vllm_image }}"
         source: build
@@ -65,20 +74,25 @@
     ollama_arc_env_vars:
       no_proxy: "{{ ollama_arc_no_proxy }}"
       DEVICE: "{{ ollama_arc_device_type }}"
-      OLLAMA_DEBUG: "0"
+      OLLAMA_DEBUG: "1"
       OLLAMA_HOST: "0.0.0.0" # Listen on all interfaces
       OLLAMA_MODELS: /models # Set Ollama's model storage path
       OLLAMA_NUM_GPU: "999"
       OLLAMA_NUM_PARALLEL: "1"
-      OLLAMA_NUM_CTX: "40960"
-      OLLAMA_FLASH_ATTENTION: "1" # Not yet supported on SYCL
-      OLLAMA_KV_CACHE_TYPE: "q8_0" # Not yet supported on SYCL
+      OLLAMA_NUM_CTX: "16384" # "40960"
+      #OLLAMA_FLASH_ATTENTION: "1" # Not yet supported on SYCL
+      #OLLAMA_KV_CACHE_TYPE: "q8_0" # Not yet supported on SYCL
+      #OLLAMA_SET_OT: "exps=CPU"
       SYCL_CACHE_PERSISTENT: "1"
       SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS: "1"
       ZES_ENABLE_SYSMAN: "1"
       ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # Dual A770
       SYCL_DEVICE_CHECK: "1"
-      change: "0"
+      change: "1"
+      LLAMA_ARG_BATCH: "1024"
+      QWEN3_32B_GGUF: "/models/blobs/sha256-8df67573b2c23484e02ec7af295e39bed7ee774f3771d5fda2978265b59370e7"
+      QWEN3_30B_GGUF: "/models/blobs/sha256-b99d9c80fb8278c79c355dc77a5299d73420022f332bc4d747c197207c24fc7c"
+      QWEN3_14B_GGUF: "/models/blobs/sha256-8cf51b9cafe0b107a61df6e3b230cb0cf7c47414e1e47340f626466dfad4e9e8"
 
 - name: Start the ipex-llm-inference-cpp-xpu container
   community.docker.docker_container:
@@ -95,10 +109,13 @@
                init-ollama &&
                ./ollama serve
                # init-llama-cpp &&
-               # exec ./llama-server -m /models/qwen2.5-0.5b-instruct-q4_k_m.gguf"
+               # exec ./llama-server -m $QWEN3_14B_GGUF -a "Qwen3-32B" --jinja -ngl 99 -t 11 -b 1024 --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 1.5 -c $OLLAMA_NUM_CTX -n 32768 --no-context-shift --host 0.0.0.0"
     state: started
     detach: true
-    network_mode: host
+    network_mode: "{{ ollama_arc_network_name }}"
+    published_ports:
+      - "11435:11434"
+      - "8080:8080"
     devices:
       - /dev/dri/
     volumes:
@@ -128,16 +145,7 @@
 - name: Define vLLM container environment variables
   ansible.builtin.set_fact:
     vllm_env_vars:
-      ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # 2xA770
-      MODEL_PATH: "Qwen/Qwen3-14B" # "Qwen/Qwen3-14B"
-      SERVED_MODEL_NAME: "Qwen/Qwen3-14B" # "Qwen/Qwen3-14B"
-      #VLLM_QUANTIZATION: "awq"
-      MAX_NUM_BATCHED_TOKENS: "{{ 4096 * 6 }}" # 6
-      MAX_MODEL_LEN: "{{ 4096 * 4 }}" # 4
-      MAX_NUM_SEQS: "1"
-      LOAD_IN_LOW_BIT: "woq_int4" # "sym_int4"
-      CACHE_DTYPE: "fp8" # "fp8"
-      TENSOR_PARALLEL_SIZE: "2"
+      ONEAPI_DEVICE_SELECTOR: "level_zero:0;level_zero:1" # 2xA770
       # PREFIX_CACHING: "1"
       CCL_DG2_ALLREDUCE: "1"
       CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK: "1"
@@ -150,33 +158,51 @@
       PORT: "8001"
       CHANGED: "1"
 
-- name: Define vLLM Qwen3-14B settings for 1xA770
+- name: vLLM Qwen3-14B settings for 2xA770
   ansible.builtin.set_fact:
-    vllm_qwen3_14b_env_vars:
-      ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # 2xA770
-      MODEL_PATH: "Qwen/Qwen3-14B"
-      SERVED_MODEL_NAME: "Qwen/Qwen3-14B"
-      MAX_NUM_BATCHED_TOKENS: "4096 * 6"
-      MAX_MODEL_LEN: "4096 * 4"
+    vllm_qwen3_14b:
+      MODEL_PATH: "Qwen/Qwen3-14B" # "Qwen/Qwen3-14B"
+      SERVED_MODEL_NAME: "Qwen/Qwen3-14B" # "Qwen/Qwen3-14B"
+      #VLLM_QUANTIZATION: "awq"
+      MAX_NUM_BATCHED_TOKENS: "{{ 4096 * 6 }}" # 6
+      MAX_MODEL_LEN: "{{ 4096 * 4 }}" # 4
       MAX_NUM_SEQS: "1"
-      LOAD_IN_LOW_BIT: "woq_int4"
-      CACHE_DTYPE: "fp8"
+      LOAD_IN_LOW_BIT: "woq_int4" # "sym_int4"
+      CACHE_DTYPE: "fp8" # "fp8"
       TENSOR_PARALLEL_SIZE: "1"
 
 - name: Define AQW settings
   ansible.builtin.set_fact:
-    vllm_awq_env_vars:
+    vllm_qwen3_14b_awq:
       MODEL_PATH: "Qwen/Qwen3-14B-AWQ"
       SERVED_MODEL_NAME: "Qwen/Qwen3-14B-AWQ"
       VLLM_QUANTIZATION: "awq"
+      MAX_NUM_BATCHED_TOKENS: "{{ 4096 * 4 }}" # 6
+      MAX_MODEL_LEN: "{{ 4096 * 4 }}" # 4
+      MAX_NUM_SEQS: "1"
       LOAD_IN_LOW_BIT: "asym_int4"
+      CACHE_DTYPE: "fp8" # "fp8"
+      TENSOR_PARALLEL_SIZE: "1"
+
+- name: Define 30B settings
+  ansible.builtin.set_fact:
+    vllm_qwen3_32b:
+      MODEL_PATH: "Qwen/Qwen3-32B"
+      SERVED_MODEL_NAME: "Qwen/Qwen3-32B"
+      MAX_NUM_BATCHED_TOKENS: "{{ 4096 * 4 }}" # 6
+      MAX_MODEL_LEN: "{{ 4096 * 4 }}" # 4
+      MAX_NUM_SEQS: "1"
+      LOAD_IN_LOW_BIT: "woq_int4"
+      CACHE_DTYPE: "fp8" # "fp8"
+      TENSOR_PARALLEL_SIZE: "1"
+
 
 - name: Start the ipex-llm-serving-xpu container
-  when: false
   community.docker.docker_container:
     name: "ipex-llm-serving-xpu-container"
-    image: "intelanalytics/ipex-llm-serving-xpu:b18" # 0.8.3-b18 b12-usm
-    state: started
+    image: "intelanalytics/ipex-llm-serving-xpu:0.8.3-b18" # 0.8.3-b18 b12-usm
+    image_name_mismatch: recreate
+    state: absent
     detach: true
     privileged: true
     network_mode: host
@@ -187,8 +213,68 @@
       - "/home/daniel/.cache/huggingface:/root/.cache/huggingface:rw" # Mount Hugging Face cache
       - "{{ ipex_vllm_script_host_path }}/start-vllm-service.sh:/llm/start-vllm-service-custom.sh:ro" # Mount start script read-only
     entrypoint: ["/llm/start-vllm-service-custom.sh"]
-    env: "{{ vllm_env_vars|combine(vllm_qwen3_14b_env_vars) }}"
+    env: "{{ vllm_env_vars|combine(vllm_qwen3_32b) }}"
     memory: "48g"
     shm_size: "16g"
+    restart_policy: "unless-stopped"
+  become: true
+
+- name: Define ollama-unthink-proxy configuration
+  ansible.builtin.set_fact:
+    ollama_unthink_proxy_repo_url: "https://gitlab.com/wiregate-public/ollama-unthink-proxy.git"
+    ollama_unthink_proxy_repo_version: "dev" # Default branch from GitLab page
+    ollama_unthink_proxy_build_repo_dest: "{{ ollama_arc_base_src_path }}/ollama-unthink-proxy"
+    ollama_unthink_proxy_image: "ollama-unthink-proxy:latest"
+    ollama_unthink_proxy_container_name: "ollama-unthink-proxy"
+    ollama_unthink_proxy_port: "11434"
+    ollama_unthink_proxy_upstream_url: "http://{{ ollama_arc_container_name }}:11434"
+
+- name: Ensure ollama-unthink-proxy build destination directory exists
+  ansible.builtin.file:
+    path: "{{ ollama_unthink_proxy_build_repo_dest | ansible.builtin.dirname }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Clone or update the ollama-unthink-proxy repository
+  ansible.builtin.git:
+    repo: "{{ ollama_unthink_proxy_repo_url }}"
+    dest: "{{ ollama_unthink_proxy_build_repo_dest }}"
+    version: "{{ ollama_unthink_proxy_repo_version }}"
+    force: true
+    depth: 1
+  register: git_clone_proxy_result
+  become: true
+
+- name: Build the ollama-unthink-proxy image
+  community.docker.docker_image:
+    name: "{{ ollama_unthink_proxy_image }}"
+    source: build
+    force_source: "{{ git_clone_proxy_result.changed or force_update | default(false) }}"
+    build:
+      path: "{{ ollama_unthink_proxy_build_repo_dest }}"
+      pull: true
+      rm: true
+    state: present
+  become: true
+
+- name: Define ollama-unthink-proxy container environment variables
+  ansible.builtin.set_fact:
+    ollama_unthink_proxy_env_vars:
+      OLLAMA_SERVER: "{{ ollama_unthink_proxy_upstream_url }}"
+      PROXY_PORT: "{{ ollama_unthink_proxy_port }}" # unthink-proxy.py uses PORT env var, defaults to 5000
+      OPEN_THINK_TAG: "<think>" # Default from unthink-proxy.py
+      CLOSE_THINK_TAG: "</think>" # Default from unthink-proxy.py
+
+- name: Start the ollama-unthink-proxy container
+  community.docker.docker_container:
+    name: "{{ ollama_unthink_proxy_container_name }}"
+    image: "{{ ollama_unthink_proxy_image }}"
+    state: started
+    detach: true
+    network_mode: "{{ ollama_arc_network_name }}"
+    published_ports:
+      - "{{ ollama_unthink_proxy_port }}:{{ ollama_unthink_proxy_port }}"
+    env: "{{ ollama_unthink_proxy_env_vars }}"
     restart_policy: "unless-stopped"
   become: true

@@ -13,9 +13,10 @@ ollama_arc_no_proxy: localhost,127.0.0.1
 ollama_arc_restart_policy: always
 
 # Build options
+ollama_arc_base_src_path: /opt/src
 ollama_arc_build_repo_url: https://github.com/intel/ipex-llm.git
 ollama_arc_build_repo_version: main # Or specific tag/commit
-ollama_arc_build_repo_dest: /opt/src/ipex-llm # Path on target host to clone the repo
+ollama_arc_build_repo_dest: "{{ ollama_arc_base_src_path }}/ipex-llm" # Path on target host to clone the repo
 ollama_arc_build_context_subdir: docker/llm/inference-cpp # Subdirectory within the repo containing the Dockerfile
 ollama_arc_build_nocache: true # Corresponds to --no-cache, usually false for automation
 ollama_arc_build_rm: false # Corresponds to --rm
