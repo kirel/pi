@@ -24,11 +24,14 @@
 
 - name: Ensure ComfyUI service is running using inline definition
   community.docker.docker_compose_v2:
+    build: always
+    pull: always
     project_name: "{{ comfyui_container_name }}"
     definition:
       services:
         comfyui:
           init: true
+          pull_policy: always
           container_name: "{{ comfyui_container_name }}"
           build:
             context: "{{ comfyui_build_context_path }}" # Build context copied to target host
@@ -38,6 +41,9 @@
             - "{{ comfyui_storage_path }}:/root"
           environment:
             - CLI_ARGS={{ comfyui_cli_args }}
+            - SYCL_CACHE_PERSISTENT=1
+            - SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=1
+            - ONEAPI_DEVICE_SELECTOR="level_zero:2" # B580
           devices:
             - /dev/dri:/dev/dri # Ensure device mapping is correct
           ipc: host
