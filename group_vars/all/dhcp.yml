@@ -4,6 +4,9 @@ static_dhcp:
   powerline:
     mac: E8:48:B8:C6:CC:36
     ip_suffix: 2
+  jetkvm:
+    mac: 30:52:53:0C:CB:59
+    ip_suffix: 3
   nameserver-pi:
     mac: B8:27:EB:AB:F0:CC
     ip: "{{ nameserver_pi_ip }}"
