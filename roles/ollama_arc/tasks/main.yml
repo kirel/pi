@@ -114,7 +114,7 @@
     detach: true
     network_mode: "{{ ollama_arc_network_name }}"
     published_ports:
-      - "11435:11434"
+      - "11434:11434"
       - "8080:8080"
     devices:
       - /dev/dri/
@@ -226,7 +226,7 @@
     ollama_unthink_proxy_build_repo_dest: "{{ ollama_arc_base_src_path }}/ollama-unthink-proxy"
     ollama_unthink_proxy_image: "ollama-unthink-proxy:latest"
     ollama_unthink_proxy_container_name: "ollama-unthink-proxy"
-    ollama_unthink_proxy_port: "11434"
+    ollama_unthink_proxy_port: "11435"
     ollama_unthink_proxy_upstream_url: "http://{{ ollama_arc_container_name }}:11434"
 
 - name: Ensure ollama-unthink-proxy build destination directory exists
