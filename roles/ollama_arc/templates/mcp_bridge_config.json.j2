@@ -1,0 +1,19 @@
+{
+    "inference_server": {
+        "base_url": "http://localhost:{{ mcp_bridge_vllm_target_port }}/v1",
+        "api_key": "None"
+    },
+    "mcp_servers": {
+        "fetch": {
+            "command": "uvx",
+            "args": ["mcp-server-fetch"]
+        }
+    },
+    "network": {
+        "host": "0.0.0.0",
+        "port": {{ mcp_bridge_service_port }}
+    },
+    "logging": {
+        "log_level": "INFO"
+    }
+}

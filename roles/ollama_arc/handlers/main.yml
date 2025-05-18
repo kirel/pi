@@ -5,3 +5,10 @@
     state: started # Use 'restarted' state here
     restart: true
   become: true
+
+- name: Restart MCP-Bridge container
+  community.docker.docker_container:
+    name: "{{ mcp_bridge_container_name }}"
+    state: started
+    restart: true
+  become: true

@@ -278,3 +278,67 @@
     env: "{{ ollama_unthink_proxy_env_vars }}"
     restart_policy: "unless-stopped"
   become: true
+
+# Block for MCP-Bridge setup
+- name: MCP-Bridge Setup
+  become: true # Most Docker and file operations need sudo
+  block:
+    - name: Define MCP-Bridge related facts
+      ansible.builtin.set_fact:
+        mcp_bridge_config_full_host_path: "{{ mcp_bridge_config_dir_host }}/{{ mcp_bridge_config_filename }}"
+
+    - name: Ensure MCP-Bridge source directory exists
+      ansible.builtin.file:
+        path: "{{ mcp_bridge_src_path | ansible.builtin.dirname }}"
+        state: directory
+        mode: "0755"
+
+    - name: Clone or update the MCP-Bridge repository
+      ansible.builtin.git:
+        repo: "{{ mcp_bridge_repo_url }}"
+        dest: "{{ mcp_bridge_src_path }}"
+        version: "{{ mcp_bridge_repo_version }}"
+        force: true
+        depth: 1
+      register: git_clone_mcp_bridge_result
+
+    - name: Build the MCP-Bridge image
+      community.docker.docker_image:
+        name: "{{ mcp_bridge_image }}"
+        source: build
+        force_source: "{{ git_clone_mcp_bridge_result.changed or force_update | default(false) }}"
+        build:
+          path: "{{ mcp_bridge_src_path }}"
+          pull: true # Attempt to pull base images for the build
+          rm: true # Remove intermediate containers after a successful build
+        state: present
+
+    - name: Ensure MCP-Bridge config directory exists on host
+      ansible.builtin.file:
+        path: "{{ mcp_bridge_config_dir_host }}"
+        state: directory
+        mode: "0755"
+
+    - name: Template MCP-Bridge config.json
+      ansible.builtin.template:
+        src: mcp_bridge_config.json.j2
+        dest: "{{ mcp_bridge_config_full_host_path }}"
+        mode: "0644"
+      notify: Restart MCP-Bridge container
+
+    - name: Define MCP-Bridge container environment variables
+      ansible.builtin.set_fact:
+        mcp_bridge_env_vars:
+          MCP_BRIDGE__CONFIG__FILE: "/app/config.json" # Points to the mounted config file
+
+    - name: Start the MCP-Bridge container
+      community.docker.docker_container:
+        name: "{{ mcp_bridge_container_name }}"
+        image: "{{ mcp_bridge_image }}"
+        state: started
+        detach: true
+        network_mode: host # Uses host network to connect to vLLM and expose its port
+        volumes:
+          - "{{ mcp_bridge_config_full_host_path }}:/app/config.json:ro" # Mount config read-only
+        env: "{{ mcp_bridge_env_vars }}"
+        restart_policy: "unless-stopped"

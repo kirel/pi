@@ -46,3 +46,14 @@ ollama_arc_portable_download_url: "https://github.com/ipex-llm/ipex-llm/releases
 ollama_arc_image_portable: "ollama-portable-xpu:latest"
 # Remote path for portable build context
 ollama_arc_portable_build_dest: "/opt/build/ollama-portable"
+
+# --- MCP-Bridge Settings ---
+mcp_bridge_repo_url: "https://github.com/SecretiveShell/MCP-Bridge.git"
+mcp_bridge_repo_version: "master" # Or a specific tag/commit
+mcp_bridge_src_path: "{{ ollama_arc_base_src_path }}/mcp-bridge-src" # Path on target host to clone the repo
+mcp_bridge_image: "mcp-bridge:ansible-built"
+mcp_bridge_container_name: "mcp-bridge-container"
+mcp_bridge_service_port: 8008 # Port MCP-Bridge will listen on (on the host network)
+mcp_bridge_vllm_target_port: 8001 # Port of the vLLM service (usually localhost as both use host network)
+mcp_bridge_config_dir_host: "/opt/config/mcp-bridge" # Directory on host to store config.json
+mcp_bridge_config_filename: "config.json"
