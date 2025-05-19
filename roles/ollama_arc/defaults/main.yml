@@ -75,7 +75,7 @@ llama_server_common_args: >-
 # Die model_env_var verweist auf Umgebungsvariablen, die im Container gesetzt sind (siehe ollama_arc_env_vars in tasks/main.yml)
 llama_server_model_configs:
   qwen3_30b_cpu_offload:
-    model_env_var: "$QWEN3_30B_GGUF" # ai! use var instead of env var
+    model_env_var: "{{ ollama_arc_qwen3_30b_gguf_path }}"
     alias: "Qwen3-30B"
     extra_args: >-
        -b 1024 -mg 0 -ts 1,1
