@@ -62,18 +62,19 @@ mcp_bridge_config_filename: "config.json"
 # Gemeinsame Kommandozeilenargumente für llama-server
 # Umgebungsvariablen wie $OLLAMA_NUM_CTX werden im Container-Kontext aufgelöst.
 llama_server_common_args: >-
-  --jinja -ngl 99 -t 11 -b 1024 -mg 0 -ts 1,1
-  -ot 'blk\.(\d|1\d|2[0-5])\.ffn_.*_exps.=CPU'
+  --jinja -ngl 999 -t 11
   --metrics --slots --no-mmap --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 1.5
   -c $OLLAMA_NUM_CTX -n 32768 --no-context-shift --host 0.0.0.0
 
 # Modellspezifische Konfigurationen für llama-server
 # Die model_env_var verweist auf Umgebungsvariablen, die im Container gesetzt sind (siehe ollama_arc_env_vars in tasks/main.yml)
 llama_server_model_configs:
-  qwen3_30b:
+  qwen3_30b_cpu_offload:
     model_env_var: "$QWEN3_30B_GGUF"
     alias: "Qwen3-30B"
-    extra_args: "" # Platz für zusätzliche modellspezifische Argumente
+    extra_args: >-
+       -b 1024 -mg 0 -ts 1,1
+        -ot 'blk\.(\d|1\d|2[0-5])\.ffn_.*_exps.=CPU'
   qwen3_14b:
     model_env_var: "$QWEN3_14B_GGUF"
     alias: "Qwen3-14B"

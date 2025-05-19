@@ -89,7 +89,7 @@
       ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # Dual A770
       SYCL_DEVICE_CHECK: "1"
       change: "1"
-      LLAMA_ARG_BATCH: "1024"
+      # ai! move model paths to defaults/main.yml
       QWEN3_32B_GGUF: "/models/blobs/sha256-8df67573b2c23484e02ec7af295e39bed7ee774f3771d5fda2978265b59370e7"
       QWEN3_30B_GGUF: "/models/blobs/sha256-b99d9c80fb8278c79c355dc77a5299d73420022f332bc4d747c197207c24fc7c"
       QWEN3_14B_GGUF: "/models/blobs/sha256-8cf51b9cafe0b107a61df6e3b230cb0cf7c47414e1e47340f626466dfad4e9e8"
