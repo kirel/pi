@@ -59,6 +59,11 @@ mcp_bridge_config_dir_host: "/opt/config/mcp-bridge" # Directory on host to stor
 mcp_bridge_config_filename: "config.json"
 
 # --- Llama Server Configuration ---
+
+ollama_arc_qwen3_32b_gguf_path: "/models/blobs/sha256-8df67573b2c23484e02ec7af295e39bed7ee774f3771d5fda2978265b59370e7"
+ollama_arc_qwen3_30b_gguf_path: "/models/blobs/sha256-b99d9c80fb8278c79c355dc77a5299d73420022f332bc4d747c197207c24fc7c"
+ollama_arc_qwen3_14b_gguf_path: "/models/blobs/sha256-8cf51b9cafe0b107a61df6e3b230cb0cf7c47414e1e47340f626466dfad4e9e8"
+
 # Gemeinsame Kommandozeilenargumente für llama-server
 # Umgebungsvariablen wie $OLLAMA_NUM_CTX werden im Container-Kontext aufgelöst.
 llama_server_common_args: >-
@@ -70,7 +75,7 @@ llama_server_common_args: >-
 # Die model_env_var verweist auf Umgebungsvariablen, die im Container gesetzt sind (siehe ollama_arc_env_vars in tasks/main.yml)
 llama_server_model_configs:
   qwen3_30b_cpu_offload:
-    model_env_var: "$QWEN3_30B_GGUF"
+    model_env_var: "$QWEN3_30B_GGUF" # ai! use var instead of env var
     alias: "Qwen3-30B"
     extra_args: >-
        -b 1024 -mg 0 -ts 1,1
@@ -89,8 +94,3 @@ llama_server_model_configs:
 # Standardmäßig ausgewähltes Modell für den llama-server
 # Dies kann in group_vars/host_vars oder über --extra-vars überschrieben werden.
 selected_llama_server_model_key: "qwen3_30b"
-
-# --- GGUF Model Paths for ollama_arc_env_vars ---
-ollama_arc_qwen3_32b_gguf_path: "/models/blobs/sha256-8df67573b2c23484e02ec7af295e39bed7ee774f3771d5fda2978265b59370e7"
-ollama_arc_qwen3_30b_gguf_path: "/models/blobs/sha256-b99d9c80fb8278c79c355dc77a5299d73420022f332bc4d747c197207c24fc7c"
-ollama_arc_qwen3_14b_gguf_path: "/models/blobs/sha256-8cf51b9cafe0b107a61df6e3b230cb0cf7c47414e1e47340f626466dfad4e9e8"
