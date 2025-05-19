@@ -106,10 +106,11 @@
                mkdir -p /llm/llama-cpp &&
                cd /llm/llama-cpp &&
                source ipex-llm-init --gpu --device {{ ollama_arc_device_type }} &&
-               init-ollama &&
-               ./ollama serve
-               # init-llama-cpp &&
-               # exec ./llama-server -m $QWEN3_14B_GGUF -a "Qwen3-32B" --jinja -ngl 99 -t 11 -b 1024 --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 1.5 -c $OLLAMA_NUM_CTX -n 32768 --no-context-shift --host 0.0.0.0"
+               # init-ollama &&
+               # ./ollama serve
+               init-llama-cpp &&
+               exec ./llama-server -m $QWEN3_30B_GGUF -a "Qwen3-30B" --jinja -ngl 99 -t 11 -b 1024 -mg 0 -ts 1,1 -ot 'blk\.(\d|1\d|2[0-5])\.ffn_.*_exps.=CPU' --metrics --slots --no-mmap --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 1.5 -c $OLLAMA_NUM_CTX -n 32768 --no-context-shift --host 0.0.0.0" # --override-tensor "token_embd.weight=SYCL0"
+    # ai? What's a good way to prep not only the model but a full set of command line options for llama server so i can quickly test other configurations - e.g. llama-server $COMMON_ARGS $QWEN3_30B_ARGS
     state: started
     detach: true
     network_mode: "{{ ollama_arc_network_name }}"
