@@ -89,3 +89,8 @@ llama_server_model_configs:
 # Standardmäßig ausgewähltes Modell für den llama-server
 # Dies kann in group_vars/host_vars oder über --extra-vars überschrieben werden.
 selected_llama_server_model_key: "qwen3_30b"
+
+# --- GGUF Model Paths for ollama_arc_env_vars ---
+ollama_arc_qwen3_32b_gguf_path: "/models/blobs/sha256-8df67573b2c23484e02ec7af295e39bed7ee774f3771d5fda2978265b59370e7"
+ollama_arc_qwen3_30b_gguf_path: "/models/blobs/sha256-b99d9c80fb8278c79c355dc77a5299d73420022f332bc4d747c197207c24fc7c"
+ollama_arc_qwen3_14b_gguf_path: "/models/blobs/sha256-8cf51b9cafe0b107a61df6e3b230cb0cf7c47414e1e47340f626466dfad4e9e8"
