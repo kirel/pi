@@ -57,3 +57,34 @@ mcp_bridge_service_port: 8008 # Port MCP-Bridge will listen on (on the host netw
 mcp_bridge_target_port: 8001 # Port of the vLLM service (usually localhost as both use host network)
 mcp_bridge_config_dir_host: "/opt/config/mcp-bridge" # Directory on host to store config.json
 mcp_bridge_config_filename: "config.json"
+
+# --- Llama Server Configuration ---
+# Gemeinsame Kommandozeilenargumente für llama-server
+# Umgebungsvariablen wie $OLLAMA_NUM_CTX werden im Container-Kontext aufgelöst.
+llama_server_common_args: >-
+  --jinja -ngl 99 -t 11 -b 1024 -mg 0 -ts 1,1
+  -ot 'blk\.(\d|1\d|2[0-5])\.ffn_.*_exps.=CPU'
+  --metrics --slots --no-mmap --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 1.5
+  -c $OLLAMA_NUM_CTX -n 32768 --no-context-shift --host 0.0.0.0
+
+# Modellspezifische Konfigurationen für llama-server
+# Die model_env_var verweist auf Umgebungsvariablen, die im Container gesetzt sind (siehe ollama_arc_env_vars in tasks/main.yml)
+llama_server_model_configs:
+  qwen3_30b:
+    model_env_var: "$QWEN3_30B_GGUF"
+    alias: "Qwen3-30B"
+    extra_args: "" # Platz für zusätzliche modellspezifische Argumente
+  qwen3_14b:
+    model_env_var: "$QWEN3_14B_GGUF"
+    alias: "Qwen3-14B"
+    extra_args: "" # Beispiel: "--some-specific-flag value"
+  # Füge hier weitere Modellkonfigurationen hinzu
+  # Beispiel für ein anderes Modell, falls du die entsprechende GGUF-Umgebungsvariable definierst:
+  # qwen3_32b:
+  #   model_env_var: "$QWEN3_32B_GGUF"
+  #   alias: "Qwen3-32B"
+  #   extra_args: ""
+
+# Standardmäßig ausgewähltes Modell für den llama-server
+# Dies kann in group_vars/host_vars oder über --extra-vars überschrieben werden.
+selected_llama_server_model_key: "qwen3_30b"
