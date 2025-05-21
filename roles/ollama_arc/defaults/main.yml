@@ -54,43 +54,67 @@ mcp_bridge_src_path: "{{ ollama_arc_base_src_path }}/mcp-bridge-src" # Path on t
 mcp_bridge_image: "mcp-bridge:ansible-built"
 mcp_bridge_container_name: "mcp-bridge-container"
 mcp_bridge_service_port: 8008 # Port MCP-Bridge will listen on (on the host network)
-mcp_bridge_target_port: 8001 # Port of the vLLM service (usually localhost as both use host network)
+mcp_bridge_target_host: ailab.lan # Port of the vLLM service (usually localhost as both use host network)
+mcp_bridge_target_port: 8080 # Port of the vLLM service (usually localhost as both use host network)
 mcp_bridge_config_dir_host: "/opt/config/mcp-bridge" # Directory on host to store config.json
 mcp_bridge_config_filename: "config.json"
 
 # --- Llama Server Configuration ---
 
-ollama_arc_qwen3_32b_gguf_path: "/models/blobs/sha256-8df67573b2c23484e02ec7af295e39bed7ee774f3771d5fda2978265b59370e7"
-ollama_arc_qwen3_30b_gguf_path: "/models/blobs/sha256-b99d9c80fb8278c79c355dc77a5299d73420022f332bc4d747c197207c24fc7c"
-ollama_arc_qwen3_14b_gguf_path: "/models/blobs/sha256-8cf51b9cafe0b107a61df6e3b230cb0cf7c47414e1e47340f626466dfad4e9e8"
-
 # Gemeinsame Kommandozeilenargumente für llama-server
 # Umgebungsvariablen wie $OLLAMA_NUM_CTX werden im Container-Kontext aufgelöst.
 llama_server_common_args: >-
-  --jinja -ngl 999 -t 11
-  --metrics --slots --no-mmap --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 1.5
-  -c $OLLAMA_NUM_CTX -n 32768 --no-context-shift --host 0.0.0.0
+  --jinja -ngl 999 -t 1 -b 1024 -b 1024 -ub 512
+  --metrics --slots --no-mmap --mlock
+  -c $OLLAMA_NUM_CTX --host 0.0.0.0
+
+ollama_arc_qwen3_8b_q4_gguf_path: "/models/blobs/sha256-34a514d08f7449cb4a694a707aaa2eedccb7bb68290121bf5e5a569b2abe71c3"
+ollama_arc_qwen3_8b_q6_gguf_path: "/models/blobs/sha256-61201e42b1c1021ce15936f23682e56e873bb4af3e8e5aae7558bc1c53a1dd91"
+ollama_arc_qwen3_14b_gguf_path: "/models/blobs/sha256-8cf51b9cafe0b107a61df6e3b230cb0cf7c47414e1e47340f626466dfad4e9e8"
+ollama_arc_qwen3_30b_gguf_path: "/models/blobs/sha256-b99d9c80fb8278c79c355dc77a5299d73420022f332bc4d747c197207c24fc7c"
+ollama_arc_qwen3_32b_gguf_path: "/models/blobs/sha256-8df67573b2c23484e02ec7af295e39bed7ee774f3771d5fda2978265b59370e7"
+
+llama_server_qwen3_generation_args: >-
+  --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 1.5 -n 32768 --no-context-shift --reasoning-format deepseek --jinja
 
 # Modellspezifische Konfigurationen für llama-server
 # Die model_env_var verweist auf Umgebungsvariablen, die im Container gesetzt sind (siehe ollama_arc_env_vars in tasks/main.yml)
 llama_server_model_configs:
+  qwen3_8b_q4:
+    model_env_var: "{{ ollama_arc_qwen3_8b_q4_gguf_path }}"
+    alias: "Qwen3-8B"
+    extra_args: >-
+      {{ llama_server_qwen3_generation_args }}
+      -mg 1 -ts 16,1
+  qwen3_8b_q6:
+    model_env_var: "{{ ollama_arc_qwen3_8b_q4_gguf_path }}"
+    alias: "Qwen3-8B"
+    extra_args: >-
+      {{ llama_server_qwen3_generation_args }}
+  qwen3_14b:
+    model_env_var: "{{ ollama_arc_qwen3_14b_gguf_path }}"
+    alias: "Qwen3-14B"
+    extra_args: >-
+      {{ llama_server_qwen3_generation_args }}
+  qwen3_32b:
+    model_env_var: "{{ ollama_arc_qwen3_32b_gguf_path }}"
+    alias: "Qwen3-32B"
+    extra_args: >-
+      {{ llama_server_qwen3_generation_args }}
+      -mg 0 -ts 16,16,12 --override-tensor "token\_embd.weight=SYCL0"
+  qwen3_30b:
+    model_env_var: "{{ ollama_arc_qwen3_30b_gguf_path }}"
+    alias: "Qwen3-30B"
+    extra_args: >-
+      {{ llama_server_qwen3_generation_args }}
   qwen3_30b_cpu_offload:
     model_env_var: "{{ ollama_arc_qwen3_30b_gguf_path }}"
     alias: "Qwen3-30B"
     extra_args: >-
-       -b 1024 -mg 0 -ts 1,1
-        -ot 'blk\.(\d|1\d|2[0-5])\.ffn_.*_exps.=CPU'
-  qwen3_14b:
-    model_env_var: "$QWEN3_14B_GGUF"
-    alias: "Qwen3-14B"
-    extra_args: "" # Beispiel: "--some-specific-flag value"
-  # Füge hier weitere Modellkonfigurationen hinzu
-  # Beispiel für ein anderes Modell, falls du die entsprechende GGUF-Umgebungsvariable definierst:
-  # qwen3_32b:
-  #   model_env_var: "$QWEN3_32B_GGUF"
-  #   alias: "Qwen3-32B"
-  #   extra_args: ""
+      -mg 0 -ts 1,1 -ot 'blk\.[0-3]\.(ffn_gate|ffn_up|ffn_down)\.weight=CPU'
+      --ubatch-size 4096
+      {{ llama_server_qwen3_generation_args }}
 
 # Standardmäßig ausgewähltes Modell für den llama-server
 # Dies kann in group_vars/host_vars oder über --extra-vars überschrieben werden.
-selected_llama_server_model_key: "qwen3_30b"
+selected_llama_server_model_key: "qwen3_14b"

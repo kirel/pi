@@ -87,11 +87,8 @@
       SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS: "1"
       ZES_ENABLE_SYSMAN: "1"
       ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # Dual A770
-      SYCL_DEVICE_CHECK: "1"
+      SYCL_DEVICE_CHECK: "0"
       change: "1"
-      QWEN3_32B_GGUF: "{{ ollama_arc_qwen3_32b_gguf_path }}"
-      QWEN3_30B_GGUF: "{{ ollama_arc_qwen3_30b_gguf_path }}"
-      QWEN3_14B_GGUF: "{{ ollama_arc_qwen3_14b_gguf_path }}"
 
 - name: Construct final llama-server arguments for the selected model
   ansible.builtin.set_fact:
@@ -117,7 +114,7 @@
                # ./ollama serve
                init-llama-cpp &&
                exec ./llama-server {{ current_llama_server_command_args }}"
-    state: started
+    state: started # started
     detach: true
     network_mode: "{{ ollama_arc_network_name }}"
     published_ports:
@@ -176,7 +173,7 @@
       MAX_NUM_SEQS: "1"
       LOAD_IN_LOW_BIT: "woq_int4" # "sym_int4"
       CACHE_DTYPE: "fp8" # "fp8"
-      TENSOR_PARALLEL_SIZE: "1"
+      TENSOR_PARALLEL_SIZE: "2"
 
 - name: Define AQW settings
   ansible.builtin.set_fact:
@@ -191,7 +188,7 @@
       CACHE_DTYPE: "fp8" # "fp8"
       TENSOR_PARALLEL_SIZE: "1"
 
-- name: Define 30B settings
+- name: Define 32B settings
   ansible.builtin.set_fact:
     vllm_qwen3_32b:
       MODEL_PATH: "Qwen/Qwen3-32B"
@@ -201,15 +198,26 @@
       MAX_NUM_SEQS: "1"
       LOAD_IN_LOW_BIT: "woq_int4"
       CACHE_DTYPE: "fp8" # "fp8"
-      TENSOR_PARALLEL_SIZE: "1"
+      TENSOR_PARALLEL_SIZE: "2"
 
+- name: Define 30B settings
+  ansible.builtin.set_fact:
+    vllm_qwen3_30b:
+      MODEL_PATH: "Qwen/Qwen3-30B-A3B"
+      SERVED_MODEL_NAME: "Qwen/Qwen3-30B-A3B"
+      MAX_NUM_BATCHED_TOKENS: "{{ 4096 * 2 }}" # 6
+      MAX_MODEL_LEN: "{{ 4096 * 2 }}" # 4
+      MAX_NUM_SEQS: "1"
+      LOAD_IN_LOW_BIT: "woq_int4"
+      CACHE_DTYPE: "fp8" # "fp8"
+      TENSOR_PARALLEL_SIZE: "2"
 
 - name: Start the ipex-llm-serving-xpu container
   community.docker.docker_container:
     name: "ipex-llm-serving-xpu-container"
-    image: "intelanalytics/ipex-llm-serving-xpu:0.8.3-b18" # 0.8.3-b18 b12-usm
+    image: "intelanalytics/ipex-llm-serving-xpu:2.3.0-SNAPSHOT" # 0.8.3-b18 b12-usm
     image_name_mismatch: recreate
-    state: absent
+    state: absent # started
     detach: true
     privileged: true
     network_mode: host
@@ -244,6 +252,7 @@
   become: true
 
 - name: Clone or update the ollama-unthink-proxy repository
+  when: false
   ansible.builtin.git:
     repo: "{{ ollama_unthink_proxy_repo_url }}"
     dest: "{{ ollama_unthink_proxy_build_repo_dest }}"
@@ -344,7 +353,8 @@
         image: "{{ mcp_bridge_image }}"
         state: started
         detach: true
-        network_mode: host # Uses host network to connect to vLLM and expose its port
+        ports:
+          - "{{ mcp_bridge_service_port }}:8000"
         volumes:
           - "{{ mcp_bridge_config_full_host_path }}:/app/config.json:ro" # Mount config read-only
         env: "{{ mcp_bridge_env_vars }}"
