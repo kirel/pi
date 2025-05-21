@@ -108,12 +108,12 @@
       bash -c "mkdir -p /llm/ollama &&
                cd /llm/ollama &&
                mkdir -p /llm/llama-cpp &&
-               cd /llm/llama-cpp &&
+               # cd /llm/llama-cpp &&
                source ipex-llm-init --gpu --device {{ ollama_arc_device_type }} &&
-               # init-ollama &&
-               # ./ollama serve
-               init-llama-cpp &&
-               exec ./llama-server {{ current_llama_server_command_args }}"
+               init-ollama &&
+               ./ollama serve
+               # init-llama-cpp &&
+               # exec ./llama-server {{ current_llama_server_command_args }}"
     state: started # started
     detach: true
     network_mode: "{{ ollama_arc_network_name }}"

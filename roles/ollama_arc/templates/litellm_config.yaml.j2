@@ -1,9 +1,16 @@
+{% set ollama_models_map = [
+  { "alias": "Qwen3-8B-GGUF:Q4_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_XL" },
+  { "alias": "Qwen3-8B-GGUF:Q6_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-8B-GGUF:Q6_K_XL" },
+  { "alias": "Qwen3-14B-GGUF:Q6_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL" }
+] -%}
 model_list:
-  - model_name: "{{ llama_server_model_configs[selected_llama_server_model_key].alias }}"
+  {% for model_info in ollama_models_map -%}
+  - model_name: "{{ model_info.alias }}"
     litellm_params:
-      model: "openai/{{ llama_server_model_configs[selected_llama_server_model_key].alias }}" # This is the model name LiteLLM will request from the backend
-      api_base: "http://{{ ollama_arc_container_name }}:8008/v1" # Points to the OpenAI-compatible /v1 endpoint of your llama-server
+      model: "openai/{{ model_info.ollama_id }}"
+      api_base: "http://ailab.lan:{{ mcp_bridge_service_port }}/v1" # Points to MCP bridge
       api_key: none
+  {% endfor %}
 
 litellm_settings:
   success_callback: ["langfuse"]

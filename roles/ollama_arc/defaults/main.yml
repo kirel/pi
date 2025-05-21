@@ -56,7 +56,7 @@ mcp_bridge_image: "mcp-bridge:ansible-built"
 mcp_bridge_container_name: "mcp-bridge-container"
 mcp_bridge_service_port: 8008 # Port MCP-Bridge will listen on (on the host network)
 mcp_bridge_target_host: ailab.lan # Port of the vLLM service (usually localhost as both use host network)
-mcp_bridge_target_port: 8080 # Port of the vLLM service (usually localhost as both use host network)
+mcp_bridge_target_port: 11434 # Port of the Ollama service
 mcp_bridge_config_dir_host: "/opt/config/mcp-bridge" # Directory on host to store config.json
 mcp_bridge_config_filename: "config.json"
 
