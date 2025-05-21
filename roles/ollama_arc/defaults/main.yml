@@ -119,3 +119,12 @@ llama_server_model_configs:
 # Standardmäßig ausgewähltes Modell für den llama-server
 # Dies kann in group_vars/host_vars oder über --extra-vars überschrieben werden.
 selected_llama_server_model_key: "qwen3_14b"
+
+# --- LiteLLM Proxy Settings ---
+litellm_proxy_image: "ghcr.io/berriai/litellm:main-latest"
+litellm_proxy_container_name: "litellm-proxy-container"
+litellm_proxy_config_dir_host: "{{ ollama_arc_base_config_path }}/litellm"
+litellm_proxy_config_filename: "config.yaml"
+litellm_proxy_port_host: "4000" # Host port for LiteLLM
+litellm_proxy_port_container: "4000" # Container port for LiteLLM (default)
+langfuse_host_for_litellm: "http://ailab.lan:3000"

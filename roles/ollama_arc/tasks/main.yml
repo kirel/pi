@@ -391,3 +391,53 @@
       ansible.builtin.debug:
         var: langfuse_compose_result
       when: langfuse_compose_result is defined and langfuse_compose_result.changed
+
+- name: LiteLLM Proxy Setup
+  become: true
+  block:
+    - name: Define LiteLLM Proxy related facts
+      ansible.builtin.set_fact:
+        litellm_proxy_config_full_host_path: "{{ litellm_proxy_config_dir_host }}/{{ litellm_proxy_config_filename }}"
+
+    - name: Ensure LiteLLM Proxy config directory exists on host
+      ansible.builtin.file:
+        path: "{{ litellm_proxy_config_dir_host }}"
+        state: directory
+        mode: "0755"
+
+    - name: Template LiteLLM Proxy config.yaml
+      ansible.builtin.template:
+        src: litellm_config.yaml.j2
+        dest: "{{ litellm_proxy_config_full_host_path }}"
+        mode: "0644"
+      notify: Restart LiteLLM Proxy container
+
+    - name: Define LiteLLM Proxy container environment variables
+      ansible.builtin.set_fact:
+        litellm_proxy_env_vars:
+          LANGFUSE_PUBLIC_KEY: "{{ langfuse_homelab_public_key }}"
+          LANGFUSE_SECRET_KEY: "{{ langfuse_homelab_secret_key }}"
+          LANGFUSE_HOST: "{{ langfuse_host_for_litellm }}"
+          LITELLM_MASTER_KEY: "{{ litellm_master_key }}"
+          # LITELLM_LOG_LEVEL: "DEBUG"
+
+    - name: Start LiteLLM Proxy container
+      community.docker.docker_container:
+        name: "{{ litellm_proxy_container_name }}"
+        image: "{{ litellm_proxy_image }}"
+        state: started
+        detach: true
+        ports:
+          - "{{ litellm_proxy_port_host }}:{{ litellm_proxy_port_container }}"
+        volumes:
+          - "{{ litellm_proxy_config_full_host_path }}:/app/config.yaml:ro"
+        env: "{{ litellm_proxy_env_vars }}"
+        command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"] # Add --detailed_debug here if needed for troubleshooting
+        network_mode: "{{ ollama_arc_network_name }}" # Ensure it can reach ollama_arc_container_name (ipex-llm-inference-cpp-xpu-container)
+        restart_policy: "unless-stopped"
+      register: litellm_proxy_container_result
+
+    - name: Debug LiteLLM Proxy container result
+      ansible.builtin.debug:
+        var: litellm_proxy_container_result
+      when: litellm_proxy_container_result is defined and litellm_proxy_container_result.changed
