@@ -14,6 +14,7 @@ ollama_arc_restart_policy: always
 
 # Build options
 ollama_arc_base_src_path: /opt/src
+ollama_arc_base_config_path: /opt/config # Base path for configuration files
 ollama_arc_build_repo_url: https://github.com/intel/ipex-llm.git
 ollama_arc_build_repo_version: main # Or specific tag/commit
 ollama_arc_build_repo_dest: "{{ ollama_arc_base_src_path }}/ipex-llm" # Path on target host to clone the repo

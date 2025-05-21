@@ -359,3 +359,35 @@
           - "{{ mcp_bridge_config_full_host_path }}:/app/config.json:ro" # Mount config read-only
         env: "{{ mcp_bridge_env_vars }}"
         restart_policy: "unless-stopped"
+
+- name: Langfuse Setup
+  become: true
+  block:
+    - name: Define Langfuse related facts
+      ansible.builtin.set_fact:
+        langfuse_config_dir_host: "{{ ollama_arc_base_config_path }}/langfuse"
+        langfuse_compose_file_dest: "{{ ollama_arc_base_config_path }}/langfuse/docker-compose.yml"
+
+    - name: Ensure Langfuse config directory exists on host
+      ansible.builtin.file:
+        path: "{{ langfuse_config_dir_host }}"
+        state: directory
+        mode: "0755"
+
+    - name: Template Langfuse docker-compose.yml
+      ansible.builtin.template:
+        src: langfuse-docker-compose.yml.j2 # Assumes template is in roles/ollama_arc/templates/
+        dest: "{{ langfuse_compose_file_dest }}"
+        mode: "0644"
+
+    - name: Start Langfuse services with Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ langfuse_config_dir_host }}" # Directory containing the docker-compose.yml
+        state: present # Ensures services are running, creates them if not present
+        pull: always # Optionally pull images
+      register: langfuse_compose_result
+
+    - name: Debug Langfuse compose result
+      ansible.builtin.debug:
+        var: langfuse_compose_result
+      when: langfuse_compose_result is defined and langfuse_compose_result.changed
