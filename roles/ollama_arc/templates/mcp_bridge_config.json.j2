@@ -1,19 +1,50 @@
 {
-    "inference_server": {
-        "base_url": "http://localhost:{{ mcp_bridge_vllm_target_port }}/v1",
-        "api_key": "None"
+  "inference_server": {
+    "base_url": "http://{{ mcp_bridge_target_host }}:{{ mcp_bridge_target_port }}/v1",
+    "api_key": "None"
+  },
+  "mcp_servers": {
+    "fetch": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-fetch"
+      ]
     },
-    "mcp_servers": {
-        "fetch": {
-            "command": "uvx",
-            "args": ["mcp-server-fetch"]
-        }
+    "Home Assistant": {
+      "command": "uvx",
+      "args": [
+        "mcp-proxy"
+      ],
+      "env": {
+        "SSE_URL": "http://192.168.50.5:8123/mcp_server/sse",
+        "API_ACCESS_TOKEN": "{{ ha_access_token }}"
+      }
     },
-    "network": {
-        "host": "0.0.0.0",
-        "port": {{ mcp_bridge_service_port }}
+    "tavily-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "tavily-mcp@0.1.2"
+      ],
+      "env": {
+        "TAVILY_API_KEY": "{{ tavily_api_key }}"
+      }
     },
-    "logging": {
-        "log_level": "INFO"
+    "todoist-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "kirel/todoist-mcp.git#npx"
+      ],
+      "env": {
+        "TODOIST_API_KEY": "{{ todoist_api_token }}"
+      }
     }
+  },
+  "network": {
+    "host": "0.0.0.0"
+  },
+  "logging": {
+    "log_level": "INFO"
+  }
 }
