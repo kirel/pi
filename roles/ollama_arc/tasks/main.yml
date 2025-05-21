@@ -358,6 +358,7 @@
         volumes:
           - "{{ mcp_bridge_config_full_host_path }}:/app/config.json:ro" # Mount config read-only
         env: "{{ mcp_bridge_env_vars }}"
+        network_mode: "{{ ollama_arc_network_name }}" # Add MCP Bridge to the same network as LiteLLM and Ollama
         restart_policy: "unless-stopped"
 
 - name: Langfuse Setup

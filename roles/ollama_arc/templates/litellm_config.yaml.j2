@@ -1,14 +1,18 @@
 {% set ollama_models_map = [
+  { "alias": "home", "ollama_id": "hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL" },
   { "alias": "Qwen3-8B-GGUF:Q4_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_XL" },
   { "alias": "Qwen3-8B-GGUF:Q6_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-8B-GGUF:Q6_K_XL" },
   { "alias": "Qwen3-14B-GGUF:Q6_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL" }
 ] -%}
 model_list:
+  - model_name: "*"
+    litellm_params:
+      model: "*"
   {% for model_info in ollama_models_map -%}
   - model_name: "{{ model_info.alias }}"
     litellm_params:
-      model: "openai/{{ model_info.ollama_id }}"
-      api_base: "http://ailab.lan:{{ mcp_bridge_service_port }}/v1" # Points to MCP bridge
+      model: "openai/{{ model_info.ollama_id }}" # Model ID for Ollama, prefixed with ollama/
+      api_base: "http://{{ ollama_arc_container_name }}:11434/v1" # Points directly to Ollama's OpenAI-compatible endpoint
       api_key: none
   {% endfor %}
 
