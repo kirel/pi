@@ -37,7 +37,8 @@ vllm_image: vllm-xpu:latest
 vllm_repo_version: main
 vllm_build_context_subdir: docker
 vllm_build_dockerfile: Dockerfile.xpu
-vllm_container_name: vllm-xpu
+vllm_container_name: ipex-llm-serving-xpu-container
+vllm_container_port: "8001" # Port, den der vLLM-Container intern verwendet
 
 # --- Portable Ollama Build Settings ---
 # URL for the Ollama portable package (Update this URL if a newer/stable version is available)

@@ -45,7 +45,8 @@ export SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=2
 export FI_PROVIDER=shm
 export TORCH_LLM_ALLREDUCE=0
 
-export CCL_WORKER_COUNT=2
+# export CCL_WORKER_COUNT=2
+export CCL_WORKER_COUNT=1 # for BMG
 export CCL_ATL_TRANSPORT=ofi
 export CCL_ZE_IPC_EXCHANGE=sockets
 export CCL_ATL_SHM=1
@@ -79,6 +80,7 @@ CMD_ARGS=(
   --disable-async-output-proc
   --enable-reasoning
   --reasoning-parser deepseek_r1
+  --enable-auto-tool-choice --tool-call-parser hermes
   --download-dir "$DOWNLOAD_DIR"
 )
 

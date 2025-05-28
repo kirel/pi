@@ -86,7 +86,7 @@
       SYCL_CACHE_PERSISTENT: "1"
       SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS: "1"
       ZES_ENABLE_SYSMAN: "1"
-      ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # Dual A770
+      ONEAPI_DEVICE_SELECTOR: "level_zero:0,1" # "level_zero:0,1" # Dual A770
       SYCL_DEVICE_CHECK: "0"
       change: "1"
 
@@ -149,9 +149,9 @@
 - name: Define vLLM container environment variables
   ansible.builtin.set_fact:
     vllm_env_vars:
-      ONEAPI_DEVICE_SELECTOR: "level_zero:0;level_zero:1" # 2xA770
+      ONEAPI_DEVICE_SELECTOR: "level_zero:2" # B580
       # PREFIX_CACHING: "1"
-      CCL_DG2_ALLREDUCE: "1"
+      # CCL_DG2_ALLREDUCE: "1"
       CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK: "1"
       # RAY_IGNORE_UNHANDLED_ERRORS: "1"
       # OMP_NUM_THREADS: "1"
@@ -159,8 +159,8 @@
       # VLLM_LOGGING_LEVEL: DEBUG
       # VLLM_TRACE_FUNCTION: "1"
       DOWNLOAD_DIR: "/llm/models"
-      PORT: "8001"
-      CHANGED: "1"
+      PORT: "{{ vllm_container_port }}"
+      CHANGED: "0"
 
 - name: vLLM Qwen3-14B settings for 2xA770
   ansible.builtin.set_fact:
@@ -174,6 +174,32 @@
       LOAD_IN_LOW_BIT: "woq_int4" # "sym_int4"
       CACHE_DTYPE: "fp8" # "fp8"
       TENSOR_PARALLEL_SIZE: "2"
+
+- name: vLLM Qwen3-8B settings for B580
+  ansible.builtin.set_fact:
+    vllm_qwen3_8b_b580:
+      MODEL_PATH: "Qwen/Qwen3-8B" # "Qwen/Qwen3-14B"
+      SERVED_MODEL_NAME: "Qwen/Qwen3-8B" # "Qwen/Qwen3-14B"
+      #VLLM_QUANTIZATION: "awq"
+      MAX_NUM_BATCHED_TOKENS: "{{ (4096 * 4) | int }}" # 6
+      MAX_MODEL_LEN: "{{ (4096 * 4) | int }}" # 4
+      MAX_NUM_SEQS: "1"
+      LOAD_IN_LOW_BIT: "woq_int4" # "sym_int4"
+      CACHE_DTYPE: "fp8" # "fp8"
+      TENSOR_PARALLEL_SIZE: "1"
+
+- name: vLLM Qwen3-4B settings for B580
+  ansible.builtin.set_fact:
+    vllm_qwen3_8b_b580:
+      MODEL_PATH: "Qwen/Qwen3-4B" # "Qwen/Qwen3-14B"
+      SERVED_MODEL_NAME: "Qwen/Qwen3-4B" # "Qwen/Qwen3-14B"
+      #VLLM_QUANTIZATION: "awq"
+      MAX_NUM_BATCHED_TOKENS: "{{ (4096 * 4) | int }}" # 6
+      MAX_MODEL_LEN: "{{ (4096 * 4) | int }}" # 4
+      MAX_NUM_SEQS: "1"
+      LOAD_IN_LOW_BIT: "woq_int4" # "sym_int4"
+      CACHE_DTYPE: "fp8" # "fp8"
+      TENSOR_PARALLEL_SIZE: "1"
 
 - name: Define AQW settings
   ansible.builtin.set_fact:
@@ -214,13 +240,15 @@
 
 - name: Start the ipex-llm-serving-xpu container
   community.docker.docker_container:
-    name: "ipex-llm-serving-xpu-container"
-    image: "intelanalytics/ipex-llm-serving-xpu:2.3.0-SNAPSHOT" # 0.8.3-b18 b12-usm
+    name: "{{ vllm_container_name }}"
+    image: "intelanalytics/ipex-llm-serving-xpu:0.2.0-b3" # 2.3.0-SNAPSHOT 0.8.3-b18 b12-usm
     image_name_mismatch: recreate
     state: absent # started
     detach: true
     privileged: true
-    network_mode: host
+    network_mode: "{{ ollama_arc_network_name }}"
+    published_ports:
+      - "{{ vllm_container_port }}:{{ vllm_container_port }}"
     devices:
       - /dev/dri:/dev/dri
     volumes:
@@ -228,70 +256,9 @@
       - "/home/daniel/.cache/huggingface:/root/.cache/huggingface:rw" # Mount Hugging Face cache
       - "{{ ipex_vllm_script_host_path }}/start-vllm-service.sh:/llm/start-vllm-service-custom.sh:ro" # Mount start script read-only
     entrypoint: ["/llm/start-vllm-service-custom.sh"]
-    env: "{{ vllm_env_vars|combine(vllm_qwen3_32b) }}"
+    env: "{{ vllm_env_vars|combine(vllm_qwen3_8b_b580) }}"
     memory: "48g"
     shm_size: "16g"
-    restart_policy: "unless-stopped"
-  become: true
-
-- name: Define ollama-unthink-proxy configuration
-  ansible.builtin.set_fact:
-    ollama_unthink_proxy_repo_url: "https://gitlab.com/wiregate-public/ollama-unthink-proxy.git"
-    ollama_unthink_proxy_repo_version: "dev" # Default branch from GitLab page
-    ollama_unthink_proxy_build_repo_dest: "{{ ollama_arc_base_src_path }}/ollama-unthink-proxy"
-    ollama_unthink_proxy_image: "ollama-unthink-proxy:latest"
-    ollama_unthink_proxy_container_name: "ollama-unthink-proxy"
-    ollama_unthink_proxy_port: "11435"
-    ollama_unthink_proxy_upstream_url: "http://{{ ollama_arc_container_name }}:11434"
-
-- name: Ensure ollama-unthink-proxy build destination directory exists
-  ansible.builtin.file:
-    path: "{{ ollama_unthink_proxy_build_repo_dest | ansible.builtin.dirname }}"
-    state: directory
-    mode: "0755"
-  become: true
-
-- name: Clone or update the ollama-unthink-proxy repository
-  when: false
-  ansible.builtin.git:
-    repo: "{{ ollama_unthink_proxy_repo_url }}"
-    dest: "{{ ollama_unthink_proxy_build_repo_dest }}"
-    version: "{{ ollama_unthink_proxy_repo_version }}"
-    force: true
-    depth: 1
-  register: git_clone_proxy_result
-  become: true
-
-- name: Build the ollama-unthink-proxy image
-  community.docker.docker_image:
-    name: "{{ ollama_unthink_proxy_image }}"
-    source: build
-    force_source: "{{ git_clone_proxy_result.changed or force_update | default(false) }}"
-    build:
-      path: "{{ ollama_unthink_proxy_build_repo_dest }}"
-      pull: true
-      rm: true
-    state: present
-  become: true
-
-- name: Define ollama-unthink-proxy container environment variables
-  ansible.builtin.set_fact:
-    ollama_unthink_proxy_env_vars:
-      OLLAMA_SERVER: "{{ ollama_unthink_proxy_upstream_url }}"
-      PROXY_PORT: "{{ ollama_unthink_proxy_port }}" # unthink-proxy.py uses PORT env var, defaults to 5000
-      OPEN_THINK_TAG: "<think>" # Default from unthink-proxy.py
-      CLOSE_THINK_TAG: "</think>" # Default from unthink-proxy.py
-
-- name: Start the ollama-unthink-proxy container
-  community.docker.docker_container:
-    name: "{{ ollama_unthink_proxy_container_name }}"
-    image: "{{ ollama_unthink_proxy_image }}"
-    state: started
-    detach: true
-    network_mode: "{{ ollama_arc_network_name }}"
-    published_ports:
-      - "{{ ollama_unthink_proxy_port }}:{{ ollama_unthink_proxy_port }}"
-    env: "{{ ollama_unthink_proxy_env_vars }}"
     restart_policy: "unless-stopped"
   become: true
 
@@ -318,11 +285,18 @@
         depth: 1
       register: git_clone_mcp_bridge_result
 
+    - name: Pin MCP version in pyproject.toml for MCP-Bridge
+      ansible.builtin.replace:
+        path: "{{ mcp_bridge_src_path }}/pyproject.toml"
+        regexp: 'mcp>=1\.2\.0'
+        replace: 'mcp==1.7.0'
+      register: pin_mcp_version_result
+
     - name: Build the MCP-Bridge image
       community.docker.docker_image:
         name: "{{ mcp_bridge_image }}"
         source: build
-        force_source: "{{ git_clone_mcp_bridge_result.changed or force_update | default(false) }}"
+        force_source: "{{ git_clone_mcp_bridge_result.changed or pin_mcp_version_result.changed or force_update | default(false) }}"
         build:
           path: "{{ mcp_bridge_src_path }}"
           pull: true # Attempt to pull base images for the build
@@ -420,6 +394,8 @@
           LANGFUSE_SECRET_KEY: "{{ langfuse_homelab_secret_key }}"
           LANGFUSE_HOST: "{{ langfuse_host_for_litellm }}"
           LITELLM_MASTER_KEY: "{{ litellm_master_key }}"
+          GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
+          OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
           # LITELLM_LOG_LEVEL: "DEBUG"
 
     - name: Start LiteLLM Proxy container

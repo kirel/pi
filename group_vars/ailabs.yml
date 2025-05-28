@@ -8,5 +8,3 @@ config_root: /home/{{ username_personal }}/config
 
 # comfyui specific vars
 comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage # Specific path for ailab host in user home
-
-# Note: Netplan configuration moved to host_vars/ailab.yml

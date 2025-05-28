@@ -1,10 +1,34 @@
 {% set ollama_models_map = [
-  { "alias": "home", "ollama_id": "hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL" },
   { "alias": "Qwen3-8B-GGUF:Q4_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_XL" },
   { "alias": "Qwen3-8B-GGUF:Q6_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-8B-GGUF:Q6_K_XL" },
   { "alias": "Qwen3-14B-GGUF:Q6_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL" }
 ] -%}
 model_list:
+  - model_name: home
+    litellm_params:
+      model: openrouter/openai/gpt-4.1-nano
+      api_key: "os.environ/OPENROUTER_API_KEY"
+
+      # model: hosted_vllm/Qwen/Qwen3-4B
+      # api_base: http://{{ vllm_container_name }}:{{ vllm_container_port }}/v1
+
+      # model: "openai/hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL"
+      # api_base: "http://{{ ollama_arc_container_name }}:11434/v1"
+      # api_key: ollama
+      # stream: true
+
+      # model: "ollama_chat/hf.co/unsloth/Qwen3-8B-GGUF:Q6_K_XL"
+      # api_base: "http://{{ ollama_arc_container_name }}:11434"
+    model_info:
+      supports_function_calling: true
+
+  - model_name: home-local
+    litellm_params:
+      model: "ollama_chat/hf.co/unsloth/Qwen3-8B-GGUF:Q6_K_XL"
+      api_base: "http://{{ ollama_arc_container_name }}:11434"
+    model_info:
+      supports_function_calling: true
+
   - model_name: "*"
     litellm_params:
       model: "*"
@@ -15,6 +39,9 @@ model_list:
       api_base: "http://{{ ollama_arc_container_name }}:11434/v1" # Points directly to Ollama's OpenAI-compatible endpoint
       api_key: none
   {% endfor %}
+
+router_settings:
+  fallbacks: [{"home": ["home-local"]}]
 
 litellm_settings:
   success_callback: ["langfuse"]
