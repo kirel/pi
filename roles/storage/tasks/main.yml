@@ -101,6 +101,7 @@
             - "{{ syncthing_config_folder }}:/config"
             - "{{ syncthing_data_folder }}:/data"
             - /{{ mount_root }}/Medien:/Medien
+            - /{{ mount_root }}/dreifuenf:/dreifuenf
           ports:
             - "{{ syncthing_http_port }}:8384"
             - 22000:22000/tcp

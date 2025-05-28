@@ -1,10 +1,24 @@
 ---
 # tasks file for comfyui
+
 - name: Ensure ComfyUI storage directory exists
   ansible.builtin.file:
     path: "{{ comfyui_storage_path }}"
     state: directory
     mode: "0755"
+    owner: "1000"
+    group: "1000"
+  become: true
+
+- name: Ensure ComfyUI data volume exists
+  community.docker.docker_volume:
+    name: comfyui-data
+    driver_options:
+      type: none
+      device: "{{ comfyui_storage_path }}"
+      o: "bind,uid=1000,gid=1000"
+    state: present
+  become: true
 
 - name: Define build context path on target
   ansible.builtin.set_fact:
@@ -15,12 +29,18 @@
     path: "{{ comfyui_build_context_path }}"
     state: directory
     mode: "0755"
+    owner: "1000"
+    group: "1000"
+  become: true
 
 - name: Template Dockerfile to target build context
   ansible.builtin.template:
     src: Dockerfile.j2 # Template the Dockerfile
     dest: "{{ comfyui_build_context_path }}/Dockerfile" # Place it in the build context dir
     mode: "0644"
+    owner: "1000"
+    group: "1000"
+  become: true
 
 - name: Ensure ComfyUI service is running using inline definition
   community.docker.docker_compose_v2:
@@ -38,18 +58,20 @@
           ports:
             - "{{ comfyui_port }}:8188"
           volumes:
-            - "{{ comfyui_storage_path }}:/root"
+            - comfyui-data:/root
           environment:
             - CLI_ARGS={{ comfyui_cli_args }}
             - SYCL_CACHE_PERSISTENT=1
             - SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=1
-            - ONEAPI_DEVICE_SELECTOR="level_zero:2" # B580
           devices:
             - /dev/dri:/dev/dri # Ensure device mapping is correct
           ipc: host
           security_opt:
             - label:disable
           restart: unless-stopped
+      volumes:
+        comfyui-data:
+          external: true
     state: present
   register: compose_output
 
@@ -57,3 +79,21 @@
   ansible.builtin.debug:
     var: compose_output
     verbosity: 1
+
+- name: Ensure custom_nodes directory exists for SageAttention
+  ansible.builtin.file:
+    path: "{{ comfyui_storage_path }}/ComfyUI/custom_nodes/sageattention"
+    state: directory
+    mode: "0755"
+    owner: "1000"
+    group: "1000"
+  become: true
+
+- name: Copy SageAttention __init__.py to custom_nodes
+  ansible.builtin.copy:
+    src: sageattention__init__.py
+    dest: "{{ comfyui_storage_path }}/ComfyUI/custom_nodes/sageattention/__init__.py"
+    mode: "0644"
+    owner: "1000"
+    group: "1000"
+  become: true
