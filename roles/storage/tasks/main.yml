@@ -108,6 +108,15 @@
             - 22000:22000/udp
             - 21027:21027/udp
           restart: unless-stopped
+          labels:
+            - wud.tag.include=^\d+\.\d+\.\d+$$
+            - homepage.group={{ services['syncthing-homelab'].group }}
+            - homepage.name={{ services['syncthing-homelab'].name }}
+            - homepage.href=https://syncthing-homelab.lan
+            - homepage.icon=syncthing.png
+            - homepage.server={{ inventory_hostname }}
+            - homepage.container=syncthing
+
 
 - name: Avahi present
   ansible.builtin.package:
