@@ -12,6 +12,7 @@
     src: "{{ item }}"
     dest: "{{ homepage_config_folder }}/{{ item | basename | regex_replace('.j2', '') }}"
   loop: "{{ lookup('fileglob', 'templates/*.j2', wantlist=True) }}"
+  notify: restart homepage container
 
 - name: Create network
   community.docker.docker_network:
@@ -53,10 +54,6 @@
           labels:
             wud.tag.include: ^v\d+\.\d+\.\d+$$
   register: output
-
-- name: Debug docker compose output
-  ansible.builtin.debug:
-    var: output
 
 - name: Assert homepage container is running
   ansible.builtin.assert:
