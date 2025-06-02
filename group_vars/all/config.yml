@@ -84,4 +84,4 @@ satellite_data_folder: "{{ config_root }}/satellite"
 piper_data_folder: "{{ config_root }}/piper"
 whisper_data_folder: "{{ config_root }}/whisper"
 babybuddy_config_folder: "{{ config_root }}/babybuddy"
-timemachine_max_size: 1500G
+timemachine_max_size: 1000G
