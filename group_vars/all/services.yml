@@ -72,7 +72,8 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ navidrome_http_port }}"
     group: Media
-  syncthing:
+  syncthing-homelab:
+    name: Syncthing Homelab
     target: homelab-nuc.lan
     http_port: "{{ syncthing_http_port }}"
     group: NAS
@@ -93,12 +94,6 @@ services:
     domain: leases-homelab.lan
     target: homelab-nuc.lan
     http_port: 5005
-  # mcp servers
-  mcp-proxy-server:
-    name: MCP Proxy Server
-    group: AI
-    target: homelab-nuc.lan
-    http_port: "{{ mcp_proxy_server_port }}"
   # nameserver
   pihole-nameserver-pi:
     name: Pihole Nameserver
@@ -134,20 +129,25 @@ services:
   comfyui:
     name: ComfyUI
     target: ailab.lan
-    http_port: "{{ comfyui_port }}" # From comfyui role defaults
+    http_port: "{{ comfyui_port }}"
     group: AI
-    icon: comfyui.png # Optional: Define an icon
+    icon: comfyui.png
     wol: "{{ ailab_mac_address }}"
     try: 360s
   portainer-ailab:
     name: Portainer AI Lab
     target: ailab.lan
     http_port: "{{ portainer_http_port }}"
-    group: Monitoring # Or 'AI Lab' if you prefer
+    group: Monitoring
     icon: portainer.png
   glances-ailab:
     name: Glances AI Lab
     target: ailab.lan
     http_port: "{{ glances_http_port }}"
-    group: Monitoring # Or 'AI Lab'
-    icon: glances.png # Assuming icon name
+    group: Monitoring
+    icon: glances.png
+  syncthing-ailab:
+    target: ailab.lan
+    http_port: "{{ syncthing_http_port }}"
+    nodocker: true
+    group: NAS
