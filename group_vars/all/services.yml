@@ -147,7 +147,9 @@ services:
     group: Monitoring
     icon: glances.png
   syncthing-ailab:
+    name: Syncthing AI Lab
     target: ailab.lan
     http_port: "{{ syncthing_http_port }}"
     nodocker: true
     group: NAS
+    icon: syncthing.png
