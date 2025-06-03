@@ -5,7 +5,7 @@
 
 - name: Reload udev
   ansible.builtin.command: udevadm control --reload-rules
-- name: Trigger udev # ai! add changed_when
+- name: Trigger udev
   ansible.builtin.command: udevadm trigger
 - name: Reload systemd
   ansible.builtin.systemd:

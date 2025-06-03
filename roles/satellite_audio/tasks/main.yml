@@ -80,7 +80,7 @@
     - root
     - daniel
 
-- name: Copy /etc/pulse/system.pa # ai! add permissions
+- name: Copy /etc/pulse/system.pa
   ansible.builtin.template:
     src: system.pa
     dest: /etc/pulse/system.pa
