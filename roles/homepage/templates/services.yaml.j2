@@ -4,20 +4,54 @@
 
 {% set services_list = [] %}
 {% for service, props in services.items() %}
-    {% if props.group is defined %} {# Only include services that have a group defined #}
+    {% if props.nodocker is defined and props.nodocker == true %} {# Only include services with nodocker: true #}
         {% set merged = {'service': service}|combine(props) %}
         {% set _ = services_list.append(merged) %}
     {% endif %}
 {% endfor %}
 
-{#
-{% for group, services_list in services_list|groupby('group') %}
-- {{ group }}:
-{% for service in services_list %}
-    - {{ service.name|default(service.service)|capitalize }}:
-        href: http://{{ service.service }}.lan
-        server: homelab-docker
-        container: {{ service.service }}
-{% endfor %}
-{% endfor %}
-#}
+{% for group_name, services_in_group_iterable in services_list|groupby('group') -%}
+{%- set services_in_group = services_in_group_iterable|list -%}
+{%- if services_in_group -%}
+- {{ group_name }}:
+    {% for service_item in services_in_group -%}
+    - {{ service_item.name|default(service_item.service)|title }}:
+        {% set final_url = '' -%}
+        {%- if service_item.href is defined -%}
+            {%- set final_url = service_item.href -%}
+        {%- else -%}
+            {%- set scheme = 'http' -%}
+            {%- if service_item.tls_skip is defined and service_item.tls_skip == false -%}
+            {%- set scheme = 'https' -%}
+            {%- endif -%}
+
+            {%- if service_item.domain is defined -%}
+            {%- set final_url = scheme ~ '://' ~ service_item.domain -%}
+            {%- if service_item.http_port is defined and service_item.http_port != "" -%}
+                {%- set final_url = final_url ~ ':' ~ service_item.http_port -%}
+            {%- endif -%}
+            {%- elif service_item.target is defined %}
+            {%- set final_url = scheme ~ '://' ~ service_item.target -%}
+            {%- if service_item.http_port is defined and service_item.http_port != "" -%}
+                {%- set final_url = final_url ~ ':' ~ service_item.http_port -%}
+            {%- endif -%}
+            {%- else -%}
+            {%- set final_url = '#' -%}
+            {%- endif -%}
+        {%- endif -%}
+        href: "{{ final_url }}"
+
+        {% if service_item.icon is defined -%}
+        icon: {{ service_item.icon }}
+        {%- endif -%}
+
+        {% if service_item.description is defined -%}
+        description: "{{ service_item.description }}"
+        {%- endif -%}
+
+        {% if service_item.ping is defined -%}
+        ping: "{{ service_item.ping }}"
+        {%- endif -%}
+        {% endfor -%}
+    {%- endif -%}
+{%- endfor -%}

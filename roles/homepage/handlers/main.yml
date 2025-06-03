@@ -2,4 +2,5 @@
 - name: restart homepage container
   community.docker.docker_container:
     name: homepage
-    state: restarted
+    state: started
+    restart: yes
