@@ -3,6 +3,6 @@
 comfyui_config_dir: /etc/comfyui # Static default config dir
 comfyui_storage_path: /opt/comfyui/storage # Static default storage path
 comfyui_image: yanwk/comfyui-boot:xpu
-comfyui_cli_args: --oneapi-device-selector=level_zero:2 --lowvram --disable-ipex-optimize --reserve-vram 2.5
+comfyui_cli_args: --oneapi-device-selector=level_zero:0 --lowvram --disable-ipex-optimize --reserve-vram 2.5
 comfyui_container_name: comfyui-xpu
-comfyui_torch_version: 2.8.0.dev20250522+xpu
+comfyui_torch_version: 2.8.0.dev20250602+xpu

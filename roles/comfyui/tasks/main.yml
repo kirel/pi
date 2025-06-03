@@ -69,6 +69,14 @@
           security_opt:
             - label:disable
           restart: unless-stopped
+          labels:
+            - wud.tag.include=^v\d+\.\d+\.\d+$$
+            - "homepage.group={{ services['comfyui'].group }}"
+            - "homepage.name={{ services['comfyui'].name }}"
+            - homepage.href=https://comfyui.lan
+            - homepage.icon=comfyui.png
+            - "homepage.server={{ inventory_hostname }}"
+            - "homepage.container={{ comfyui_container_name }}"
       volumes:
         comfyui-data:
           external: true
