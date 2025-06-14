@@ -1,6 +1,8 @@
 ---
 # handlers file for caddy
-- name: Reload Caddy
-  ansible.builtin.command: docker exec caddy caddy reload --config /etc/caddy/Caddyfile
-  changed_when: false
+- name: Restart Caddy container
+  community.docker.docker_container:
+    name: caddy
+    state: started
+    restart: true
   listen: Reload Caddy
