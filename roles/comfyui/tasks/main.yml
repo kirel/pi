@@ -8,6 +8,7 @@
     mode: "0755"
     owner: "1000"
     group: "1000"
+    recurse: yes
   become: true
 
 - name: Ensure ComfyUI data volume exists
@@ -20,88 +21,31 @@
     state: present
   become: true
 
-- name: Define build context path on target
-  ansible.builtin.set_fact:
-    comfyui_build_context_path: "{{ comfyui_storage_path }}/build_context"
+- name: Ensure ComfyUI container is running
+  community.docker.docker_container:
+    name: "{{ comfyui_container_name }}"
+    image: "{{ comfyui_image }}"
+    pull: true
+    state: started
+    restart_policy: unless-stopped
+    device_requests:
+      - driver: nvidia
+        count: -1
+        capabilities:
+          - ["gpu"]
+    ports:
+      - "{{ comfyui_port }}:8188"
+    volumes:
+      - comfyui-data:/root
+    env:
+      CLI_ARGS: "{{ comfyui_cli_args }}"
+    labels:
+      wud.tag.include: "^v\\d+\\.\\d+\\.\\d+$$"
+      homepage.group: "{{ services.comfyui.group }}"
+      homepage.name: "{{ services.comfyui.name }}"
+      homepage.href: "https://comfyui.lan"
+      homepage.icon: "{{ services.comfyui.icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: "{{ comfyui_container_name }}"
 
-- name: Ensure build context directory exists on target
-  ansible.builtin.file:
-    path: "{{ comfyui_build_context_path }}"
-    state: directory
-    mode: "0755"
-    owner: "1000"
-    group: "1000"
-  become: true
-
-- name: Template Dockerfile to target build context
-  ansible.builtin.template:
-    src: Dockerfile.j2 # Template the Dockerfile
-    dest: "{{ comfyui_build_context_path }}/Dockerfile" # Place it in the build context dir
-    mode: "0644"
-    owner: "1000"
-    group: "1000"
-  become: true
-
-- name: Ensure ComfyUI service is running using inline definition
-  community.docker.docker_compose_v2:
-    build: always
-    pull: always
-    project_name: "{{ comfyui_container_name }}"
-    definition:
-      services:
-        comfyui:
-          init: true
-          pull_policy: always
-          container_name: "{{ comfyui_container_name }}"
-          build:
-            context: "{{ comfyui_build_context_path }}" # Build context copied to target host
-          ports:
-            - "{{ comfyui_port }}:8188"
-          volumes:
-            - comfyui-data:/root
-          environment:
-            - CLI_ARGS={{ comfyui_cli_args }}
-            - SYCL_CACHE_PERSISTENT=1
-            - SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=1
-          devices:
-            - /dev/dri:/dev/dri # Ensure device mapping is correct
-          ipc: host
-          security_opt:
-            - label:disable
-          restart: unless-stopped
-          labels:
-            - wud.tag.include=^v\d+\.\d+\.\d+$$
-            - "homepage.group={{ services['comfyui'].group }}"
-            - "homepage.name={{ services['comfyui'].name }}"
-            - homepage.href=https://comfyui.lan
-            - homepage.icon=comfyui.png
-            - "homepage.server={{ inventory_hostname }}"
-            - "homepage.container={{ comfyui_container_name }}"
-      volumes:
-        comfyui-data:
-          external: true
-    state: present
-  register: compose_output
-
-- name: Debug compose output
-  ansible.builtin.debug:
-    var: compose_output
-    verbosity: 1
-
-- name: Ensure custom_nodes directory exists for SageAttention
-  ansible.builtin.file:
-    path: "{{ comfyui_storage_path }}/ComfyUI/custom_nodes/sageattention"
-    state: directory
-    mode: "0755"
-    owner: "1000"
-    group: "1000"
-  become: true
-
-- name: Copy SageAttention __init__.py to custom_nodes
-  ansible.builtin.copy:
-    src: sageattention__init__.py
-    dest: "{{ comfyui_storage_path }}/ComfyUI/custom_nodes/sageattention/__init__.py"
-    mode: "0644"
-    owner: "1000"
-    group: "1000"
   become: true
