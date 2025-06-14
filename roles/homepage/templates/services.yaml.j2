@@ -27,16 +27,8 @@
 
             {%- if service_item.domain is defined -%}
             {%- set final_url = scheme ~ '://' ~ service_item.domain -%}
-            {%- if service_item.http_port is defined and service_item.http_port != "" -%}
-                {%- set final_url = final_url ~ ':' ~ service_item.http_port -%}
-            {%- endif -%}
-            {%- elif service_item.target is defined %}
-            {%- set final_url = scheme ~ '://' ~ service_item.target -%}
-            {%- if service_item.http_port is defined and service_item.http_port != "" -%}
-                {%- set final_url = final_url ~ ':' ~ service_item.http_port -%}
-            {%- endif -%}
             {%- else -%}
-            {%- set final_url = '#' -%}
+            {%- set final_url = scheme ~ '://' ~ service_item.service ~ '.lan' -%}
             {%- endif -%}
         {%- endif -%}
         href: "{{ final_url }}"
