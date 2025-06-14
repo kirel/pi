@@ -126,12 +126,31 @@ services:
     wol: "{{ ailab_mac_address }}"
     tls_skip: true
     try: 360s
-  comfyui:
-    name: ComfyUI
+  comfyui_0:
+    name: ComfyUI GPU0 (comfyui.lan)
     target: ailab.lan
-    http_port: "{{ comfyui_port }}"
+    http_port: "{{ comfyui_port_0 }}"
+    domain: comfyui.lan
     group: AI
-    icon: comfyui.png
+    icon: comfy-ui
+    wol: "{{ ailab_mac_address }}"
+    try: 360s
+  comfyui_1:
+    name: ComfyUI GPU1 (comfyui-2.lan)
+    target: ailab.lan
+    http_port: "{{ comfyui_port_1 }}"
+    domain: comfyui-2.lan
+    group: AI
+    icon: comfy-ui
+    wol: "{{ ailab_mac_address }}"
+    try: 360s
+  comfyui_2:
+    name: ComfyUI GPU2 (comfyui-b580.lan)
+    target: ailab.lan
+    http_port: "{{ comfyui_port_2 }}"
+    domain: comfyui-b580.lan
+    group: AI
+    icon: comfy-ui
     wol: "{{ ailab_mac_address }}"
     try: 360s
   portainer-ailab:
