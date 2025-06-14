@@ -69,9 +69,9 @@
     - { role: glances, become: true, tags: [glances] }
 
     - { role: autosuspend, become: true, tags: [autosuspend] }
-    - { role: system_bridge, become: true, tags: [system-bridge] } # Consider changing tag to system_bridge too?
-    - { role: intel_gpu_driver, become: true, tags: [intel-gpu, gpu-driver] } # Consider renaming tags too?
-    - { role: ollama_arc, become: true, tags: [ollama-arc] } # Consider renaming tag too?
+    - { role: system_bridge, become: true, tags: [system-bridge] }
+    - { role: intel_gpu_driver, become: true, tags: [intel-gpu, gpu-driver] }
+    - { role: llms, become: true, tags: [llms] }
     - { role: wolf, become: true, tags: [wolf] }
     - { role: comfyui, become: true, tags: [comfyui] }
 
