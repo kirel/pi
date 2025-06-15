@@ -1,8 +1,8 @@
 ---
-- name: Restart vLLM container
+- name: Restart Ollama container
   community.docker.docker_container:
-    name: "ipex-llm-serving-xpu-container"
-    state: started # Use 'restarted' state here
+    name: "{{ ollama_container_name }}"
+    state: started
     restart: true
   become: true
 
@@ -15,7 +15,7 @@
 
 - name: Restart LiteLLM Proxy container
   community.docker.docker_container:
-    name: "{{ litellm_proxy_container_name }}" # This variable is defined in defaults/main.yml
-    state: started # Ensures the container is running
-    restart: true # Forces a restart if the container is already running
+    name: "{{ litellm_proxy_container_name }}"
+    state: started
+    restart: true
   become: true
