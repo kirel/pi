@@ -25,7 +25,7 @@ services:
       TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
       LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: ${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-true}
       CLICKHOUSE_MIGRATION_URL: ${CLICKHOUSE_MIGRATION_URL:-clickhouse://clickhouse:9000}
-      CLICKHOUSE_URL: ${CLICKHOUSE_URL:-http://clickhouse:8124}
+      CLICKHOUSE_URL: ${CLICKHOUSE_URL:-http://clickhouse:8123}
       CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
       CLICKHOUSE_PASSWORD: "{{ langfuse_clickhouse_password }}"
       CLICKHOUSE_CLUSTER_ENABLED: ${CLICKHOUSE_CLUSTER_ENABLED:-false}
@@ -81,6 +81,13 @@ services:
       LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_INIT_USER_EMAIL:-}
       LANGFUSE_INIT_USER_NAME: ${LANGFUSE_INIT_USER_NAME:-}
       LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:-}
+    labels:
+      homepage.group: "{{ services['langfuse'].group }}"
+      homepage.name: "{{ services['langfuse'].name }}"
+      homepage.href: https://langfuse.lan
+      homepage.icon: "{{ services['langfuse'].icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: langfuse-langfuse-web-1
 
   clickhouse:
     image: clickhouse/clickhouse-server
