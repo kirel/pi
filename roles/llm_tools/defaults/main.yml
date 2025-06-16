@@ -1,22 +1,15 @@
 ---
-# defaults file for llm
-llm_base_src_path: /opt/src
-llm_base_config_path: /opt/config # Base path for configuration files
+# defaults file for llm_tools
+llm_base_config_path: "{{ config_root }}" # Base path for configuration files
 llm_network_name: "llm-network"
-
-# --- Ollama Settings ---
-ollama_image: "ollama/ollama:latest"
-ollama_container_name: "ollama"
-ollama_path: /opt/ollama # Default path on host for ollama models
-ollama_restart_policy: "unless-stopped"
 
 # --- MCP-Bridge Settings ---
 mcp_bridge_repo_url: "https://github.com/SecretiveShell/MCP-Bridge.git"
 mcp_bridge_repo_version: "master" # Or a specific tag/commit
-mcp_bridge_src_path: "{{ llm_base_src_path }}/mcp-bridge-src" # Path on target host to clone the repo
+mcp_bridge_src_path: "{{ base_src_path }}/mcp-bridge-src" # Path on target host to clone the repo
 mcp_bridge_image: "mcp-bridge:ansible-built"
 mcp_bridge_container_name: "mcp-bridge-container"
-mcp_bridge_service_port: 8008 # Port MCP-Bridge will listen on (on the host network)
+mcp_bridge_service_port: 8009 # Port MCP-Bridge will listen on (on the host network)
 mcp_bridge_target_host: "{{ litellm_proxy_container_name }}" # MCP Bridge now targets LiteLLM container
 mcp_bridge_target_port: "{{ litellm_proxy_port_container }}" # MCP Bridge now targets LiteLLM container port
 mcp_bridge_config_dir_host: "{{ llm_base_config_path }}/mcp-bridge" # Directory on host to store config.json
@@ -27,6 +20,9 @@ litellm_proxy_image: "ghcr.io/berriai/litellm:main-latest"
 litellm_proxy_container_name: "litellm-proxy-container"
 litellm_proxy_config_dir_host: "{{ llm_base_config_path }}/litellm"
 litellm_proxy_config_filename: "config.yaml"
-litellm_proxy_port_host: "4000" # Host port for LiteLLM
+litellm_proxy_port_host: "{{ litellm_proxy_port }}" # Host port for LiteLLM
 litellm_proxy_port_container: "4000" # Container port for LiteLLM (default)
-langfuse_host_for_litellm: "http://ailab.lan:3000"
+langfuse_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ langfuse_port }}"
+
+# --- Open-WebUI Settings ---
+ollama_base_url_for_webui: "http://{{ ollama_host }}:{{ ollama_port }}"

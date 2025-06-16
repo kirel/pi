@@ -1,0 +1,8 @@
+---
+# defaults file for llm_inference
+
+# --- Ollama Settings ---
+ollama_image: "ollama/ollama:latest"
+ollama_container_name: "ollama"
+ollama_path: "{{ ollama_host_path }}" # Default path on host for ollama models
+ollama_restart_policy: "unless-stopped"

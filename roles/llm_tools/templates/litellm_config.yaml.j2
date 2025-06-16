@@ -11,20 +11,24 @@ model_list:
 
   - model_name: home-local
     litellm_params:
-      model: "ollama_chat/hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL"
-      api_base: "http://{{ ollama_container_name }}:11434"
+      model: "openai/hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL"
+      api_base: "http://{{ ollama_host }}:{{ ollama_port }}/v1" # Points directly to Ollama's OpenAI-compatible endpoint
+      api_key: ollama
     model_info:
       supports_function_calling: true
 
   - model_name: "*"
     litellm_params:
       model: "*"
+
   {% for model_info in ollama_models_map -%}
   - model_name: "{{ model_info.alias }}"
     litellm_params:
-      model: "openai/{{ model_info.ollama_id }}" # Model ID for Ollama, prefixed with ollama/
-      api_base: "http://{{ ollama_container_name }}:11434/v1" # Points directly to Ollama's OpenAI-compatible endpoint
+      model: "openai/{{ model_info.ollama_id }}" # Model ID for Ollama, but openai protocol
+      api_base: "http://{{ ollama_host }}:{{ ollama_port }}/v1" # Points directly to Ollama's OpenAI-compatible endpoint
       api_key: ollama
+    model_info:
+      supports_function_calling: true
   {% endfor %}
 
 router_settings:

@@ -1,0 +1,7 @@
+---
+- name: Restart Ollama container
+  community.docker.docker_container:
+    name: "{{ ollama_container_name }}"
+    state: started
+    restart: true
+  become: true

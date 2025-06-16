@@ -1,9 +1,5 @@
 ---
-# tasks file for llm
-
-- name: Define Docker network name
-  ansible.builtin.set_fact:
-    llm_network_name: "{{ llm_network_name }}"
+# tasks file for llm_tools
 
 - name: Ensure Docker network exists
   community.docker.docker_network:
@@ -11,40 +7,29 @@
     state: present
   become: true
 
-- name: Ensure models directory exists
-  ansible.builtin.file:
-    path: "{{ ollama_path }}"
-    state: directory
-    mode: "0755"
-  become: true
-
-- name: Start the Ollama container
+- name: Start Open-WebUI container
   community.docker.docker_container:
-    name: "{{ ollama_container_name }}"
-    image: "{{ ollama_image }}"
-    pull: true
-    state: started
-    restart_policy: "{{ ollama_restart_policy }}"
+    name: open-webui
+    image: ghcr.io/open-webui/open-webui:main
+    restart_policy: unless-stopped
     networks:
       - name: "{{ llm_network_name }}"
-    ports:
-      - "11434:11434"
-    volumes:
-      - "{{ ollama_path }}:/root/.ollama"
-    device_requests:
-      - driver: nvidia
-        count: -1
-        capabilities:
-          - [gpu]
     env:
-      OLLAMA_HOST: "0.0.0.0"
-      OLLAMA_FLASH_ATTENTION: "1"
-      OLLAMA_KV_CACHE_TYPE: "q8_0"
-      OLLAMA_CONTEXT_LENGTH: "16384"
-      OLLAMA_NUM_PARALLEL: "2"
-      OLLAMA_MAX_LOADED_MODELS: "2"
+      OLLAMA_BASE_URL: "{{ ollama_base_url_for_webui }}"
+    volumes:
+      - open-webui:/app/backend/data
+    ports:
+      - "{{ open_webui_http_port }}:8080"
+    labels:
+      wud.tag.include: main
+      wud.watch.digest: "true"
+      homepage.group: "{{ services['open-webui'].group }}"
+      homepage.name: "{{ services['open-webui'].name }}"
+      homepage.href: https://open-webui.lan
+      homepage.icon: openai.png
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: open-webui
   become: true
-  notify: Restart Ollama container
 
 # Block for MCP-Bridge setup
 - name: MCP-Bridge Setup
@@ -173,35 +158,3 @@
       ansible.builtin.debug:
         var: litellm_proxy_container_result
       when: litellm_proxy_container_result is defined and litellm_proxy_container_result.changed
-
-- name: Langfuse Setup
-  become: true
-  block:
-    - name: Define Langfuse related facts
-      ansible.builtin.set_fact:
-        langfuse_config_dir_host: "{{ llm_base_config_path }}/langfuse"
-        langfuse_compose_file_dest: "{{ llm_base_config_path }}/langfuse/docker-compose.yml"
-
-    - name: Ensure Langfuse config directory exists on host
-      ansible.builtin.file:
-        path: "{{ langfuse_config_dir_host }}"
-        state: directory
-        mode: "0755"
-
-    - name: Template Langfuse docker-compose.yml
-      ansible.builtin.template:
-        src: langfuse-docker-compose.yml.j2
-        dest: "{{ langfuse_compose_file_dest }}"
-        mode: "0644"
-
-    - name: Start Langfuse services with Docker Compose
-      community.docker.docker_compose_v2:
-        project_src: "{{ langfuse_config_dir_host }}" # Directory containing the docker-compose.yml
-        state: present # Ensures services are running, creates them if not present
-        pull: always # Optionally pull images
-      register: langfuse_compose_result
-
-    - name: Debug Langfuse compose result
-      ansible.builtin.debug:
-        var: langfuse_compose_result
-      when: langfuse_compose_result is defined and langfuse_compose_result.changed

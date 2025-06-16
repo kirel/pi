@@ -2,7 +2,7 @@
 services:
   homepage:
     target: homelab-nuc.lan
-    http_port: 3002
+    http_port: "{{ homepage_http_port }}"
     group: Smart Home
   homeassistant:
     name: Home Assistant
@@ -82,6 +82,12 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ open_webui_http_port }}"
     group: AI
+  langfuse:
+    name: Langfuse
+    target: homelab-nuc.lan
+    http_port: "{{ langfuse_port }}"
+    group: AI
+    icon: langfuse.png
   pihole-homelab-nuc:
     name: Pihole Homelab
     target: homelab-nuc.lan

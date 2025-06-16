@@ -1,3 +1,0 @@
-FROM ghcr.io/astral-sh/uv:python3.12-alpine
-
-RUN apk add nodejs-current npm git

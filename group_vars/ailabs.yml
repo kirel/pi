@@ -8,3 +8,6 @@ config_root: /home/{{ username_personal }}/config
 
 # comfyui specific vars
 comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage # Specific path for ailab host in user home
+
+# llm specific vars
+ollama_host_path: /opt/ollama # Path for ollama models on ailab

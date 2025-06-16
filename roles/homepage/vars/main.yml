@@ -1,3 +1,2 @@
 ---
 homepage_config_folder: "{{ config_root }}/homepage"
-homepage_http_port: "{{ services.homepage.http_port }}"
