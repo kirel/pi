@@ -78,6 +78,37 @@
         state: directory
         mode: "0755"
 
+    - name: Generate SSH key pair for MCP-Bridge
+      community.crypto.openssh_keypair:
+        path: "{{ mcp_bridge_config_dir_host }}/ssh_key"
+        type: rsa
+        size: 2048
+        mode: "0600"
+      register: mcp_bridge_ssh_key
+
+    - name: Verify ailab.lan is reachable
+      ansible.builtin.wait_for:
+        host: ailab.lan
+        port: 22
+        timeout: 10
+      delegate_to: localhost
+      become: false
+
+    - name: Read SSH public key from target host
+      ansible.builtin.slurp:
+        src: "{{ mcp_bridge_config_dir_host }}/ssh_key.pub"
+      register: mcp_bridge_ssh_public_key
+      failed_when: mcp_bridge_ssh_public_key.content is not defined
+
+    - name: Deploy SSH public key to ailab
+      ansible.posix.authorized_key:
+        user: daniel
+        key: "{{ mcp_bridge_ssh_public_key.content | b64decode | trim }}"
+        state: present
+      delegate_to: ailab.lan
+      register: key_deployment_result
+      failed_when: key_deployment_result is failed
+
     - name: Template MCP-Bridge config.json
       ansible.builtin.template:
         src: mcp_bridge_config.json.j2
@@ -100,6 +131,8 @@
           - "{{ mcp_bridge_service_port }}:8000"
         volumes:
           - "{{ mcp_bridge_config_full_host_path }}:/app/config.json:ro" # Mount config read-only
+          - "{{ mcp_bridge_config_dir_host }}/ssh_key:/root/.ssh/id_rsa:ro"
+          - "{{ mcp_bridge_config_dir_host }}/ssh_key.pub:/root/.ssh/id_rsa.pub:ro"
         env: "{{ mcp_bridge_env_vars }}"
         networks:
           - name: "{{ llm_network_name }}"
@@ -135,6 +168,7 @@
           LITELLM_MASTER_KEY: "{{ litellm_master_key }}"
           GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
           OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
+          ANTHROPIC_API_KEY: "{{ ANTHROPIC_API_KEY }}"
           # LITELLM_LOG_LEVEL: "DEBUG"
 
     - name: Start LiteLLM Proxy container

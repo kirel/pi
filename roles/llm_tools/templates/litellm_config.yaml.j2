@@ -4,9 +4,17 @@
   { "alias": "Qwen3-14B-GGUF:Q6_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL" }
 ] -%}
 model_list:
-  - model_name: home
+  - model_name: home-nano
     litellm_params:
       model: openrouter/openai/gpt-4.1-nano
+      api_key: "os.environ/OPENROUTER_API_KEY"
+  - model_name: home-mini
+    litellm_params:
+      model: openrouter/openai/gpt-4.1-mini
+      api_key: "os.environ/OPENROUTER_API_KEY"
+  - model_name: home-maxi
+    litellm_params:
+      model: openrouter/openai/gpt-4.1
       api_key: "os.environ/OPENROUTER_API_KEY"
 
   - model_name: home-local
@@ -14,6 +22,13 @@ model_list:
       model: "openai/hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL"
       api_base: "http://{{ ollama_host }}:{{ ollama_port }}/v1" # Points directly to Ollama's OpenAI-compatible endpoint
       api_key: ollama
+    model_info:
+      supports_function_calling: true
+
+  - model_name: home-ollama
+    litellm_params:
+      model: "ollama_chat/hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL"
+      api_base: "http://{{ ollama_host }}:{{ ollama_port }}"
     model_info:
       supports_function_calling: true
 
