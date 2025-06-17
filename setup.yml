@@ -67,7 +67,7 @@
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: portainer, become: true, tags: [docker, portainer] }
-    - { role: glances, become: true, tags: [glances] }
+    - { role: glances, become: true, tags: [glances], vars: { glances_nvidia_support: true } }
 
     - { role: autosuspend, become: true, tags: [autosuspend] }
     - { role: system_bridge, become: true, tags: [system-bridge] }
