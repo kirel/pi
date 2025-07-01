@@ -21,7 +21,6 @@
     - "{{ nodered_config_folder }}"
     - "{{ mosquitto_config_folder }}"
     - "{{ mosquitto_data_folder }}"
-    - "{{ mosquitto_log_folder }}"
     - "{{ zigbee2mqtt_data_folder }}"
     - "{{ matter_server_data_folder }}"
     - "{{ piper_data_folder }}"
@@ -82,7 +81,6 @@
     - "{{ nodered_config_folder }}"
     - "{{ mosquitto_config_folder }}"
     - "{{ mosquitto_data_folder }}"
-    - "{{ mosquitto_log_folder }}"
     - "{{ matter_server_data_folder }}"
     - "{{ openwakeword_data_folder }}"
     - "{{ piper_data_folder }}"
@@ -210,8 +208,12 @@
           volumes:
             - "{{ mosquitto_config_folder }}/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro"
             - "{{ mosquitto_data_folder }}:/mosquitto/data"
-            - "{{ mosquitto_log_folder }}:/mosquitto/log"
           restart: unless-stopped
+          logging:
+            driver: "json-file"
+            options:
+              max-size: "10m"
+              max-file: "3"
           labels:
             - wud.tag.include=latest
             - wud.watch.digest=true
