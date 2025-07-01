@@ -6,19 +6,9 @@
     path: "{{ draw_things_models_path }}"
     state: directory
     mode: "0755"
-    owner: "1000"
-    group: "1000"
+    owner: "{{ uid }}"
+    group: "{{ gid }}"
     recurse: yes
-  become: true
-
-- name: Ensure Draw Things models volume exists
-  community.docker.docker_volume:
-    name: "{{ draw_things_volume_name }}"
-    driver_options:
-      type: none
-      device: "{{ draw_things_models_path }}"
-      o: "bind,uid=1000,gid=1000"
-    state: present
   become: true
 
 - name: Ensure Draw Things container is running
@@ -27,15 +17,15 @@
     image: "{{ draw_things_image }}"
     pull: true
     state: started
+    user: "{{ draw_things_user }}"
+    network_mode: host
     restart_policy: unless-stopped
     device_requests:
       - driver: nvidia
         count: -1
         capabilities:
           - ["gpu"]
-    ports:
-      - "{{ draw_things_port }}:7859"
     volumes:
-      - "{{ draw_things_volume_name }}:/grpc-models"
+      - "{{ draw_things_models_path }}:/grpc-models"
     command: ["gRPCServerCLI", "--model-browser", "/grpc-models"]
   become: true

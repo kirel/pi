@@ -10,9 +10,16 @@ netplan_dns_servers:
 # netplan_config_filename: "40-static-ip.yaml" # Optional: only if you want to override the default filename
 netplan_wake_on_lan: true
 
+uid: 1000
+gid: 1000
+
 # You might consider moving other host-specific variables here too, e.g.:
 # comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage
 # ollama_arc_models_path: /data/ai/models/ollama-arc
 
 # Draw Things gRPC Server
 draw_things_models_path: /home/{{ username_personal }}/drawthings-models
+draw_things_user: "{{ uid }}:{{ gid }}"
+
+# ComfyUI
+comfyui_user: "{{ uid }}:{{ gid }}"
