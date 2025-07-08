@@ -27,5 +27,7 @@
           - ["gpu"]
     volumes:
       - "{{ draw_things_models_path }}:/grpc-models"
-    command: ["gRPCServerCLI", "--model-browser", "/grpc-models"]
+    env:
+      PORT: "{{ draw_things_port }}"
+    command: ["gRPCServerCLI", "--model-browser", "/grpc-models", "-p", "{{ draw_things_port }}"]
   become: true
