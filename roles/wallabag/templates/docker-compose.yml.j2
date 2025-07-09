@@ -1,0 +1,25 @@
+---
+version: '3.8'
+services:
+  wallabag:
+    image: wallabag/wallabag
+    container_name: wallabag
+    restart: unless-stopped
+    environment:
+      - SYMFONY__ENV__DOMAIN_NAME=https://{{ wallabag_domain_name }}
+      - SYMFONY__ENV__SERVER_NAME="Wallabag at {{ wallabag_domain_name }}"
+      #- SYMFONY__ENV__MAILER_DSN=smtp://127.0.0.1
+      #- SYMFONY__ENV__FROM_EMAIL={{ wallabag_from_email }}
+      - TRUSTED_PROXIES="10.0.0.0/8,192.168.0.0/16"
+    ports:
+      - "{{ wallabag_http_port }}:80"
+    volumes:
+      - "{{ wallabag_images_folder }}:/var/www/wallabag/web/assets/images"
+      - "{{ wallabag_db_data_folder }}:/var/www/wallabag/data"
+    labels:
+      - homepage.group={{ services['wallabag'].group }}
+      - homepage.name={{ services['wallabag'].name }}
+      - homepage.href=https://{{ services['wallabag'].domain }}
+      - homepage.icon={{ services['wallabag'].icon }}
+      - homepage.server={{ inventory_hostname }}
+      - homepage.container=wallabag

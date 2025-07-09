@@ -1,0 +1,18 @@
+---
+- name: Create wallabag directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ uid | default(1000) }}"
+    group: "{{ gid | default(1000) }}"
+    mode: '0755'
+  with_items:
+    - "{{ wallabag_config_folder }}"
+    - "{{ wallabag_images_folder }}"
+    - "{{ wallabag_db_data_folder }}"
+
+- name: Deploy Wallabag stack
+  community.docker.docker_compose_v2:
+    project_name: wallabag
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+  become: true
