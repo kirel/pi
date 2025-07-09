@@ -39,6 +39,8 @@ open_webui_http_port: 3123
 comfyui_port: 8188
 ollama_port: 11434 # Default Ollama API port
 babybuddy_http_port: 8008
+wallabag_http_port: 8010
+readeck_http_port: 8011
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990
 uid: 1000 # TODO move to host_vars
@@ -84,4 +86,10 @@ satellite_data_folder: "{{ config_root }}/satellite"
 piper_data_folder: "{{ config_root }}/piper"
 whisper_data_folder: "{{ config_root }}/whisper"
 babybuddy_config_folder: "{{ config_root }}/babybuddy"
+wallabag_config_folder: "{{ config_root }}/wallabag"
+wallabag_images_folder: "{{ wallabag_config_folder }}/images"
+wallabag_db_data_folder: "{{ wallabag_config_folder }}/data"
+wallabag_domain_name: wallabag.lan
+readeck_data_folder: "{{ config_root }}/readeck"
+readeck_domain_name: readeck.lan
 timemachine_max_size: 1000G

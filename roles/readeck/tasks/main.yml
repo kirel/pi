@@ -1,0 +1,14 @@
+---
+- name: Create readeck directory
+  ansible.builtin.file:
+    path: "{{ readeck_data_folder }}"
+    state: directory
+    owner: "{{ uid | default(1000) }}"
+    group: "{{ gid | default(1000) }}"
+    mode: '0755'
+
+- name: Deploy Readeck stack
+  community.docker.docker_compose_v2:
+    project_name: readeck
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+  become: true

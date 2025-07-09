@@ -25,6 +25,8 @@
     - { role: pihole, become: true, tags: [pihole] }
     - { role: llm_tools, become: true, tags: [llm, llm-tools] }
     - { role: llm_observability, become: true, tags: [llm, llm-observability] }
+    - { role: wallabag, become: true, tags: [wallabag] }
+    - { role: readeck, become: true, tags: [readeck] }
 
 - name: Setup nameserver
   hosts: nameserver

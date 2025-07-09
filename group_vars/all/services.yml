@@ -24,6 +24,20 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ wud_http_port }}"
     group: Monitoring
+  wallabag:
+    name: Wallabag
+    target: homelab-nuc.lan
+    http_port: "{{ wallabag_http_port }}"
+    domain: "{{ wallabag_domain_name }}"
+    group: Productivity
+    icon: wallabag
+  readeck:
+    name: Readeck
+    target: homelab-nuc.lan
+    http_port: "{{ readeck_http_port }}"
+    domain: "{{ readeck_domain_name }}"
+    group: Productivity
+    icon: readeck
   babybuddy:
     name: Baby Buddy
     target: homelab-nuc.lan
