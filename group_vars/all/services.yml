@@ -38,6 +38,13 @@ services:
     domain: "{{ readeck_domain_name }}"
     group: Productivity
     icon: readeck
+  linkding:
+    name: Linkding
+    target: homelab-nuc.lan
+    http_port: "{{ linkding_http_port }}"
+    domain: "{{ linkding_domain_name }}"
+    group: Productivity
+    icon: linkding
   babybuddy:
     name: Baby Buddy
     target: homelab-nuc.lan

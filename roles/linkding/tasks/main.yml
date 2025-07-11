@@ -1,0 +1,14 @@
+---
+- name: Create linkding directory
+  ansible.builtin.file:
+    path: "{{ linkding_data_folder }}"
+    state: directory
+    owner: "{{ uid | default(1000) }}"
+    group: "{{ gid | default(1000) }}"
+    mode: '0755'
+
+- name: Deploy Linkding stack
+  community.docker.docker_compose_v2:
+    project_name: linkding
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+  become: true

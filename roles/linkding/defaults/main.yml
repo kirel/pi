@@ -1,0 +1,5 @@
+---
+# Default superuser credentials. Override linkding_superuser_password in secrets.
+linkding_superuser_name: "admin"
+linkding_superuser_email: "admin@example.com"
+linkding_superuser_password: "password"

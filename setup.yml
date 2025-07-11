@@ -27,6 +27,7 @@
     - { role: llm_observability, become: true, tags: [llm, llm-observability] }
     - { role: wallabag, become: true, tags: [wallabag] }
     - { role: readeck, become: true, tags: [readeck] }
+    - { role: linkding, become: true, tags: [linkding] }
 
 - name: Setup nameserver
   hosts: nameserver

@@ -1,0 +1,23 @@
+---
+version: '3.8'
+services:
+  linkding:
+    image: sissbruecker/linkding:latest
+    container_name: linkding
+    restart: unless-stopped
+    ports:
+      - "{{ linkding_http_port }}:9090"
+    volumes:
+      - "{{ linkding_data_folder }}:/etc/linkding/data"
+    environment:
+      - LD_SUPERUSER_NAME={{ linkding_superuser_name }}
+      - LD_SUPERUSER_EMAIL={{ linkding_superuser_email }}
+      - LD_SUPERUSER_PASSWORD={{ linkding_superuser_password }}
+      - LD_CSRF_TRUSTED_ORIGINS=https://{{ linkding_domain_name }}
+    labels:
+      - homepage.group={{ services['linkding'].group }}
+      - homepage.name={{ services['linkding'].name }}
+      - homepage.href=https://{{ services['linkding'].domain }}
+      - homepage.icon={{ services['linkding'].icon }}
+      - homepage.server={{ inventory_hostname }}
+      - homepage.container=linkding

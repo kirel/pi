@@ -41,6 +41,7 @@ ollama_port: 11434 # Default Ollama API port
 babybuddy_http_port: 8008
 wallabag_http_port: 8010
 readeck_http_port: 8011
+linkding_http_port: 8012
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990
 uid: 1000 # TODO move to host_vars
@@ -92,4 +93,6 @@ wallabag_db_data_folder: "{{ wallabag_config_folder }}/data"
 wallabag_domain_name: wallabag.lan
 readeck_data_folder: "{{ config_root }}/readeck"
 readeck_domain_name: readeck.lan
+linkding_data_folder: "{{ config_root }}/linkding"
+linkding_domain_name: linkding.lan
 timemachine_max_size: 1000G
