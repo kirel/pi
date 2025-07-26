@@ -22,6 +22,8 @@ This list tracks suggested improvements and refactoring tasks for the Ansible co
     *   [ ] Automate Ring MQTT token refresh process (create an Ansible task or a dedicated playbook `refresh_ring_token.yml`).
     *   [ ] Investigate automating Pi-hole password setting (potentially via environment variables during container creation or `community.docker.docker_container_exec`).
 
+4. Static route to "Reiserouter" (add to nuc netplan)
+
 ## Medium Priority
 
 4.  **Address `README.md` TODOs**
