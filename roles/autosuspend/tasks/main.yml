@@ -18,8 +18,10 @@
 - name: Ensure autosuspend service is enabled and started
   ansible.builtin.systemd:
     name: autosuspend.service
-    enabled: true
-    state: started
+    # enabled: true
+    # state: started
+    enabled: false
+    state: stopped
   become: true
 
 # Handler to restart the service if config changes
