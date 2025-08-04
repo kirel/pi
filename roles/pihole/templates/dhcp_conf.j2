@@ -2,3 +2,4 @@ dhcp-option=option:dns-server,{{ nameserver_pi_ip }},{{ homelab_nuc_ip }}
 dhcp-option=tag:nopihole,option:dns-server,{{ google_dns_servers | join(',') }},{{ nameserver_pi_ip }},{{ homelab_nuc_ip }}
 dhcp-option=121,192.168.8.0/24,{{ router_ip }}
 dhcp-option=249,192.168.8.0/24,{{ router_ip }}
+dhcp-option=option:router,{{ router_ip }}
