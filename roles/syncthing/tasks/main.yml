@@ -1,0 +1,71 @@
+---
+# tasks file for syncthing
+- name: Install prerequisites for syncthing repository
+  ansible.builtin.apt:
+    name:
+      - curl
+      - gnupg
+      - apt-transport-https
+      - ca-certificates
+    state: present
+    update_cache: true
+  become: true
+
+- name: Create /etc/apt/keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Add syncthing repository GPG key
+  ansible.builtin.get_url:
+    url: https://syncthing.net/release-key.gpg
+    dest: /etc/apt/keyrings/syncthing-archive-keyring.gpg
+    mode: '0644'
+  become: true
+
+- name: Add syncthing repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/syncthing-archive-keyring.gpg] https://apt.syncthing.net/ syncthing stable"
+    state: present
+    filename: syncthing
+  become: true
+
+- name: Add syncthing repository pinning
+  ansible.builtin.copy:
+    content: |
+      Package: *
+      Pin: origin apt.syncthing.net
+      Pin-Priority: 990
+    dest: /etc/apt/preferences.d/syncthing.pref
+    mode: '0644'
+  become: true
+
+- name: Install syncthing
+  ansible.builtin.apt:
+    name: syncthing
+    state: present
+    update_cache: true
+  become: true
+
+- name: Enable and start syncthing service
+  ansible.builtin.systemd:
+    name: "syncthing@{{ syncthing_user }}.service"
+    state: started
+    enabled: true
+  become: true
+
+- name: Wait for syncthing config to be created
+  ansible.builtin.wait_for:
+    path: "/home/{{ syncthing_user }}/.local/state/syncthing/config.xml"
+    timeout: 30
+  become: true
+
+- name: Configure Syncthing GUI to listen on all interfaces
+  ansible.builtin.xml:
+    path: "/home/{{ syncthing_user }}/.local/state/syncthing/config.xml"
+    xpath: /configuration/gui/address
+    value: "0.0.0.0:8384"
+  become: true
+  notify: restart syncthing

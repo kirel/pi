@@ -79,6 +79,7 @@
     - { role: wolf, become: true, tags: [wolf] }
     - { role: comfyui, become: true, tags: [comfyui] }
     - { role: draw_things, become: true, tags: [draw-things] }
+    - { role: syncthing, become: true, tags: [syncthing] }
 
 - name: Setup mic sattelites
   hosts: mic-satellites
