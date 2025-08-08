@@ -1,0 +1,13 @@
+[Unit]
+Description=Set NVIDIA GPU Power Limit
+After=sysinit.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nvidia-smi -pl {{ gpu_power_limit_watts }}
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

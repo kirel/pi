@@ -12,9 +12,10 @@
   community.docker.docker_container:
     name: "{{ comfyui_container_name }}"
     image: "{{ comfyui_image }}"
+    image_name_mismatch: recreate
     pull: true
     state: started
-    user: "{{ comfyui_user }}"
+    # user: "{{ comfyui_user }}"
     restart_policy: unless-stopped
     device_requests:
       - driver: nvidia
@@ -36,5 +37,7 @@
       homepage.icon: "{{ services.comfyui.icon }}"
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: "{{ comfyui_container_name }}"
+    security_opts:
+      - "label=type:nvidia_container_t"
 
   become: true

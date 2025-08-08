@@ -1,0 +1,92 @@
+---
+# tasks file for gpu
+- name: Ensure ubuntu-drivers-common is installed
+  ansible.builtin.apt:
+    name: ubuntu-drivers-common
+    state: present
+    update_cache: true
+  become: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Install NVIDIA GPGPU drivers using ubuntu-drivers
+  ansible.builtin.command:
+    cmd: ubuntu-drivers install --gpgpu nvidia:570-server
+  register: driver_install
+  changed_when: "'All the available drivers are already installed.' not in driver_install.stdout"
+  become: true
+  notify: reboot system
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Install nvidia utils
+  ansible.builtin.apt:
+    name: nvidia-utils-570-server
+    state: present
+    update_cache: true
+
+- name: Setup NVIDIA container toolkit repository
+  block:
+    - name: Add NVIDIA container repository GPG key
+      ansible.builtin.get_url:
+        url: https://nvidia.github.io/libnvidia-container/gpgkey
+        dest: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+        mode: '0644'
+      become: true
+
+    #- name: Add NVIDIA container repository
+    #  ansible.builtin.apt_repository:
+    #    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /"
+    #    state: present
+    #  become: true
+
+#- name: Install NVIDIA Container Toolkit
+#  ansible.builtin.apt:
+#    name: nvidia-container-toolkit
+#    state: present
+#    update_cache: true
+#  become: true
+#  notify: restart docker
+
+- name: Install nvtop
+  ansible.builtin.apt:
+    name: nvtop
+    state: present
+    update_cache: true
+  become: true
+
+- name: Check if docker is configured for nvidia runtime
+  ansible.builtin.command:
+    cmd: >
+      grep -q '"default-runtime": "nvidia"' /etc/docker/daemon.json
+  register: docker_nvidia_configured
+  failed_when: false
+  changed_when: false
+  check_mode: false
+  become: true
+  # In case the file doesn't exist yet. The docker role should create it.
+  ignore_errors: true
+
+- name: Configure nvidia-ctk runtime for docker
+  ansible.builtin.command:
+    cmd: nvidia-ctk runtime configure --runtime=docker
+  become: true
+  changed_when: docker_nvidia_configured.rc != 0
+  notify: restart docker
+
+- name: Create nvidia-power-limit service
+  ansible.builtin.template:
+    src: nvidia-power-limit.service.j2
+    dest: /etc/systemd/system/nvidia-power-limit.service
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Enable and start nvidia-power-limit service
+  ansible.builtin.systemd:
+    name: nvidia-power-limit.service
+    state: started
+    enabled: true
+    daemon_reload: true
+  become: true

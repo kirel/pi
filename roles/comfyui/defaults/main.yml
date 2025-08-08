@@ -2,6 +2,6 @@
 # defaults file for comfyui
 comfyui_config_dir: /etc/comfyui # Static default config dir
 comfyui_storage_path: /opt/comfyui/storage # Static default storage path
-comfyui_image: yanwk/comfyui-boot:cu124-slim
+comfyui_image: yanwk/comfyui-boot:cu126-megapak
 comfyui_cli_args: ""
 comfyui_container_name: comfyui

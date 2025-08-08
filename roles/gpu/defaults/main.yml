@@ -1,0 +1,3 @@
+---
+# defaults file for gpu
+gpu_power_limit_watts: 300
