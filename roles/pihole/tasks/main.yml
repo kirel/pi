@@ -105,8 +105,10 @@
             - "{{ ansible_default_ipv4.address }}:53:53/udp"
             # - "{{ ansible_default_ipv4.address }}:67:67/udp" # used by the relay
             - "{{ pihole_http_port }}:80/tcp"
+            - 123:123/udp
           environment:
             TZ: Europe/Berlin
+            FTLCONF_dns_reply_host_force4: "true"
             FTLCONF_dns_reply_host_IPv4: "{{ ansible_default_ipv4.address }}"
             FTLCONF_webserver_api_password: "{{ pihole_webpassword }}"
             FTLCONF_dns_upstreams: "{{ google_dns_servers | join(';') }}"
