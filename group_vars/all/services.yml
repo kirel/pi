@@ -45,6 +45,12 @@ services:
     domain: "{{ linkding_domain_name }}"
     group: Productivity
     icon: linkding
+  teddycloud:
+    name: TeddyCloud
+    target: homelab-nuc.lan
+    http_port: "{{ teddycloud_http_port }}"
+    domain: teddycloud.lan
+    group: Family
   babybuddy:
     name: Baby Buddy
     target: homelab-nuc.lan

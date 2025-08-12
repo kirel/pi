@@ -25,6 +25,7 @@
     - "{{ matter_server_data_folder }}"
     - "{{ piper_data_folder }}"
     - "{{ whisper_data_folder }}"
+    - "{{ teddycloud_config_folder }}"
 
 - name: Add mosquitto config
   ansible.builtin.template:
@@ -33,6 +34,20 @@
     owner: "{{ username }}"
     group: users
 # notify: reload mosquitto
+
+- name: Create TeddyCloud subfolders
+  ansible.builtin.file:
+    path: "{{ teddycloud_config_folder }}/{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+  with_items:
+    - certs
+    - config
+    - data/content
+    - data/library
+    - data/www/custom_img
+    - data/firmware
+    - data/cache
 
 - name: Add z2m config
   ansible.builtin.template:
@@ -255,6 +270,22 @@
             - "{{ matter_server_data_folder }}:/data/"
             # Required for Bluetooth via D-Bus
             - /run/dbus:/run/dbus:ro
+        teddycloud:
+          container_name: teddycloud
+          hostname: teddycloud
+          image: ghcr.io/toniebox-reverse-engineering/teddycloud:latest
+          ports:
+            - "{{ teddycloud_http_port }}:80"
+            - "{{ teddycloud_box_port }}:443"
+          volumes:
+            - "{{ teddycloud_config_folder }}/certs:/teddycloud/certs"
+            - "{{ teddycloud_config_folder }}/config:/teddycloud/config"
+            - "{{ teddycloud_config_folder }}/data/content:/teddycloud/data/content"
+            - "{{ teddycloud_config_folder }}/data/library:/teddycloud/data/library"
+            - "{{ teddycloud_config_folder }}/data/www/custom_img:/teddycloud/data/www/custom_img"
+            - "{{ teddycloud_config_folder }}/data/firmware:/teddycloud/data/firmware"
+            - "{{ teddycloud_config_folder }}/data/cache:/teddycloud/data/cache"
+          restart: unless-stopped
 
         frigate:
           container_name: frigate

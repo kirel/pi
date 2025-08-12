@@ -17,7 +17,7 @@ ailab_mac_address: 50:eb:f6:82:3c:38 # MAC address for Wake-on-LAN
 micpi_ip: "{{ hostvars['micpi'].ansible_host }}"
 cidr: 192.168.50.0/24
 pihole_http_port: 81
-portainer_http_port: 9000
+portainer_http_port: 9002
 glances_http_port: 61208
 homeassistant_http_port: 8123
 homepage_http_port: 3002
@@ -42,6 +42,8 @@ babybuddy_http_port: 8008
 wallabag_http_port: 8010
 readeck_http_port: 8011
 linkding_http_port: 8012
+teddycloud_http_port: 8013
+teddycloud_box_port: 4443
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990
 uid: 1000 # TODO move to host_vars
@@ -95,4 +97,5 @@ readeck_data_folder: "{{ config_root }}/readeck"
 readeck_domain_name: readeck.lan
 linkding_data_folder: "{{ config_root }}/linkding"
 linkding_domain_name: linkding.lan
+teddycloud_config_folder: "{{ config_root }}/teddycloud"
 timemachine_max_size: 1000G
