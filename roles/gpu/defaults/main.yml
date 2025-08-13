@@ -1,3 +1,5 @@
 ---
 # defaults file for gpu
-gpu_power_limit_watts: 300
+gpu_power_limit_watts: 250
+nvidia_container_toolkit_version: 1.17.8-1
+nvidia_driver_version: "535-server"

@@ -9,9 +9,30 @@
   environment:
     DEBIAN_FRONTEND: noninteractive
 
+- name: Check currently installed NVIDIA driver version
+  ansible.builtin.shell: |
+    dpkg -l | grep nvidia-driver | head -1 | awk '{print $2}' | sed 's/nvidia-driver-//' || echo "none"
+  register: current_nvidia_driver
+  changed_when: false
+  failed_when: false
+
+- name: Purge old NVIDIA drivers if version changed
+  ansible.builtin.apt:
+    name: "nvidia-*"
+    state: absent
+    purge: true
+  become: true
+  when: 
+    - current_nvidia_driver.stdout != "none"
+    - current_nvidia_driver.stdout != nvidia_driver_version
+    - current_nvidia_driver.stdout != ""
+  notify: reboot system
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
 - name: Install NVIDIA GPGPU drivers using ubuntu-drivers
   ansible.builtin.command:
-    cmd: ubuntu-drivers install --gpgpu nvidia:570-server
+    cmd: "ubuntu-drivers install --gpgpu nvidia:{{ nvidia_driver_version }}"
   register: driver_install
   changed_when: "'All the available drivers are already installed.' not in driver_install.stdout"
   become: true
@@ -21,57 +42,74 @@
 
 - name: Install nvidia utils
   ansible.builtin.apt:
-    name: nvidia-utils-570-server
+    name: "nvidia-utils-{{ nvidia_driver_version }}"
     state: present
     update_cache: true
+  become: true
 
 - name: Setup NVIDIA container toolkit repository
   block:
     - name: Add NVIDIA container repository GPG key
-      ansible.builtin.get_url:
+      ansible.builtin.apt_key:
         url: https://nvidia.github.io/libnvidia-container/gpgkey
-        dest: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
-        mode: '0644'
+        keyring: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+        state: present
       become: true
 
-    #- name: Add NVIDIA container repository
-    #  ansible.builtin.apt_repository:
-    #    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /"
-    #    state: present
-    #  become: true
+    - name: Add NVIDIA container repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /"
+        state: present
+        filename: nvidia-container-toolkit
+      become: true
 
-#- name: Install NVIDIA Container Toolkit
-#  ansible.builtin.apt:
-#    name: nvidia-container-toolkit
-#    state: present
-#    update_cache: true
-#  become: true
-#  notify: restart docker
-
-- name: Install nvtop
+- name: Install NVIDIA Container Toolkit
   ansible.builtin.apt:
-    name: nvtop
+    name:
+      - "nvidia-container-toolkit={{ nvidia_container_toolkit_version }}"
+      - "nvidia-container-toolkit-base={{ nvidia_container_toolkit_version }}"
+      - "libnvidia-container-tools={{ nvidia_container_toolkit_version }}"
+      - "libnvidia-container1={{ nvidia_container_toolkit_version }}"
+    state: present
+    update_cache: true
+  become: true
+  notify: restart docker
+
+- name: Install nvtop and jq
+  ansible.builtin.apt:
+    name:
+      - nvtop
+      - jq
     state: present
     update_cache: true
   become: true
 
 - name: Check if docker is configured for nvidia runtime
-  ansible.builtin.command:
-    cmd: >
-      grep -q '"default-runtime": "nvidia"' /etc/docker/daemon.json
+  ansible.builtin.shell: |
+    if [ -f /etc/docker/daemon.json ]; then
+      nvidia_runtime=$(jq -r '.runtimes.nvidia // "none"' /etc/docker/daemon.json)
+      if [ "$nvidia_runtime" != "none" ]; then
+        echo "configured"
+      else
+        echo "not_configured"
+      fi
+    else
+      echo "no_file"
+    fi
   register: docker_nvidia_configured
-  failed_when: false
   changed_when: false
-  check_mode: false
   become: true
-  # In case the file doesn't exist yet. The docker role should create it.
-  ignore_errors: true
 
 - name: Configure nvidia-ctk runtime for docker
   ansible.builtin.command:
     cmd: nvidia-ctk runtime configure --runtime=docker
   become: true
-  changed_when: docker_nvidia_configured.rc != 0
+  when: docker_nvidia_configured.stdout != "configured"
+  register: nvidia_ctk_result
+  changed_when: 
+    - docker_nvidia_configured.stdout != "configured"
+    - nvidia_ctk_result is defined
+    - "'No changes required' not in nvidia_ctk_result.stdout"
   notify: restart docker
 
 - name: Create nvidia-power-limit service
