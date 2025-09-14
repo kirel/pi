@@ -52,6 +52,100 @@ static_dhcp:
   # Espresence .20-.29
   # BT proxy .30-.39
   # Shelly .40-.69
+
+  # --- Shelly Devices (.40-.69) ---
+
+  ## Shelly 1 (Schalter)
+  shelly1-40F520169020:
+    mac: "40:F5:20:16:90:20"
+    ip_suffix: 40
+  shelly1-E098069641CB:
+    mac: "E0:98:06:96:41:CB"
+    ip_suffix: 41
+
+  ## Shelly Plus 2PM (Rollos & Schalter)
+  shellyplus2pm-80646fdbcdfc:
+    mac: "80:64:6F:DB:CD:FC"
+    ip_suffix: 42
+  shellyplus2pm-80646fdbcf00:
+    mac: "80:64:6F:DB:CF:00"
+    ip_suffix: 43
+  shellyplus2pm-80646fdc3354:
+    mac: "80:64:6F:DC:33:54"
+    ip_suffix: 44
+  shellyplus2pm-ccdba7cfdc54:
+    mac: "CC:DB:A7:CF:DC:54"
+    ip_suffix: 45
+  shellyplus2pm-ccdba7d09338:
+    mac: "CC:DB:A7:D0:93:38"
+    ip_suffix: 46
+  shellyplus2pm-ccdba7d09788:
+    mac: "CC:DB:A7:D0:97:88"
+    ip_suffix: 47
+  shellyplus2pm-d48afc465648:
+    mac: "D4:8A:FC:46:56:48"
+    ip_suffix: 48
+  shellyplus2pm-fcb467a5e544:
+    mac: "FC:B4:67:A5:E5:44"
+    ip_suffix: 49
+
+  ## Shelly Plus Plug S
+  shellyplusplugs-c82e18092464:
+    mac: "C8:2E:18:09:24:64"
+    ip_suffix: 50
+
+  ## Shelly Plug S (Steckdosen)
+  shellyplug-s-1C8F7B:
+    mac: "34:AB:95:1C:8F:7B"
+    ip_suffix: 51
+  shellyplug-s-1D9B6F:
+    mac: "48:3F:DA:1D:9B:6F"
+    ip_suffix: 52
+  shellyplug-s-3A3130:
+    mac: "4C:75:25:3A:31:30"
+    ip_suffix: 53
+  shellyplug-s-3A9FD6:
+    mac: "4C:75:25:3A:9F:D6"
+    ip_suffix: 54
+  shellyplug-s-893BC3:
+    mac: "C8:C9:A3:89:3B:C3"
+    ip_suffix: 55
+  shellyplug-s-C57098:
+    mac: "E8:68:E7:C5:70:98"
+    ip_suffix: 56
+  shellyplug-s-DD4B65:
+    mac: "3C:61:05:DD:4B:65"
+    ip_suffix: 57
+  shellyplug-s-DDAAF2:
+    mac: "3C:61:05:DD:AA:F2"
+    ip_suffix: 58
+  shellyplug-s-E43AC7:
+    mac: "C4:5B:BE:E4:3A:C7"
+    ip_suffix: 59
+  shellyplug-s-EF6A3C:
+    mac: "3C:61:05:EF:6A:3C"
+    ip_suffix: 60
+  shellyplug-s-F05900:
+    mac: "3C:61:05:F0:59:00"
+    ip_suffix: 61
+
+  ## Shelly Plug S Gen3 (Steckdosen)
+  shellyplugsg3-b08184a527d0:
+    mac: "B0:81:84:A5:27:D0"
+    ip_suffix: 62
+  shellyplugsg3-b08184a5ec50:
+    mac: "B0:81:84:A5:EC:50"
+    ip_suffix: 63
+
+  ## Shelly Switch 2.5 (Rollos/Schalter)
+  shellyswitch25-98CDAC248E87:
+    mac: "98:CD:AC:24:8E:87"
+    ip_suffix: 64
+  shellyswitch25-C45BBE5FFC31:
+    mac: "C4:5B:BE:5F:FC:31"
+    ip_suffix: 65
+
+
   # IP Cam .70-.79
   # Devices .80-.99
   vacuum:
