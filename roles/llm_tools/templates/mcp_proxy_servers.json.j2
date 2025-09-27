@@ -1,9 +1,5 @@
 {
-  "inference_server": {
-    "base_url": "http://{{ mcp_bridge_target_host }}:{{ mcp_bridge_target_port }}/v1",
-    "api_key": "litellm"
-  },
-  "mcp_servers": {
+  "mcpServers": {
     "fetch": {
       "command": "uvx",
       "args": [
@@ -46,11 +42,5 @@
         "@wonderwhy-er/desktop-commander@latest"
       ]
     }
-  },
-  "network": {
-    "host": "0.0.0.0"
-  },
-  "logging": {
-    "log_level": "INFO"
   }
 }

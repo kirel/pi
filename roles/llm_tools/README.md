@@ -4,8 +4,8 @@ This Ansible role deploys the user-facing and middleware components of the LLM s
 
 Specifically, this role deploys:
 -   **LiteLLM:** A unified proxy to manage and route requests to various LLM providers.
--   **MCP-Bridge:** A server that exposes external tools to LLMs using the Model-Context-Protocol (MCP).
--   **Open-WebUI:** A user-friendly web interface for chatting with local models.
+-   **mcp-proxy:** A proxy server that exposes multiple stdio-based [Model-Context-Protocol (MCP)](https://github.com/model-context-protocol/specification) tool servers over a unified HTTP SSE endpoint.
+-   **Open-WebUI:** A user-friendly web interface for chatting with local models, with native MCP support.
 
 This role works in conjunction with:
 -   `llm_inference` role: Deploys the Ollama inference server on a GPU host (`ailab`).
@@ -26,8 +26,8 @@ graph TD
     subgraph "Host: homelab (General Purpose)"
         subgraph "Role: llm_tools"
             LiteLLM["<b>LiteLLM Proxy</b><br>Unified API on port 4000<br>Routes requests to models"]
-            MCPBridge["<b>MCP Bridge</b><br>Exposes tools via MCP on port 8009"]
-            OpenWebUI["<b>Open-WebUI</b><br>Web interface on port 3123"]
+            MCPProxy["<b>mcp-proxy</b><br>Exposes tools via MCP on port 8009"]
+            OpenWebUI["<b>Open-WebUI</b><br>Web interface on port 3123<br>Native MCP Client"]
         end
 
         subgraph "Role: llm_observability"
@@ -35,16 +35,21 @@ graph TD
         end
     end
 
-    Client["<b>External Client</b><br>(e.g., Home Assistant, CLI)"]
+    Client["<b>External Client</b><br>(e.g., Home Assistant)"]
     User["<b>User</b>"]
 
     User -- "HTTPS" --> OpenWebUI
-    Client -- "1\. MCP Request (homelab:8009)" --> MCPBridge
-    MCPBridge -- "2\. LLM Inference Request (localhost:4000)" --> LiteLLM
-    LiteLLM -- "3a\. Route to Local Model (ailab:11434)" --> Ollama
-    LiteLLM -- "3b\. (Optional) Route to Cloud Model" --> Internet(("Cloud APIs<br>e.g., OpenAI, OpenRouter"))
-    LiteLLM -- "4\. Send Trace Data (localhost:3003)" --> Langfuse
-    OpenWebUI -- "Direct LLM Request (ailab:11434)" --> Ollama
+
+    subgraph "Interaction Flow"
+        Client -- "1. LLM Request w/ Tools" --> LiteLLM
+        OpenWebUI -- "1. LLM Request w/ Tools" --> LiteLLM
+        LiteLLM -- "2. Route to Model" --> Ollama
+        LiteLLM -- "2b. (Optional) Route to Cloud" --> Internet(("Cloud APIs"))
+        Ollama -- "3. Request Tool Call" --> Client
+        Client -- "4. Connect to Tool" --> MCPProxy
+        MCPProxy -- "5. Spawn & proxy stdio tool" --> StdioTool(("Stdio Tool<br>e.g., tavily, todoist"))
+        LiteLLM -- "Trace Data" --> Langfuse
+    end
 ```
 
 ## Deployed by this Role (`llm_tools` on `homelab`)
@@ -57,21 +62,22 @@ graph TD
     -   Configured via `litellm_config.yaml.j2` to connect to Ollama on `ailab.lan:11434` and Langfuse on `homelab-nuc.lan:3003`.
     -   Exposes its API on port `4000`.
 
-### 2. MCP-Bridge (`mcp-bridge:ansible-built`)
+### 2. mcp-proxy (`mcp-proxy:custom`)
 
--   **Purpose**: Implements the [Model-Context-Protocol (MCP)](https://github.com/model-context-protocol/specification) to expose external tools (like Home Assistant, Todoist, web search) to the LLM in a standardized way. This enables the LLM to perform function calling.
+-   **Purpose**: Implements the server-side of the [Model-Context-Protocol (MCP)](https://github.com/model-context-protocol/specification). It listens for HTTP connections and proxies them to various backend tool servers that communicate over `stdio`. This allows clients like Open-WebUI and Home Assistant to access a suite of tools through a single endpoint.
 -   **Configuration**:
-    -   Runs in a Docker container named `mcp-bridge-container`.
-    -   The image is built locally from the [MCP-Bridge repository](https://github.com/SecretiveShell/MCP-Bridge).
-    -   Configured via `mcp_bridge_config.json.j2` to use LiteLLM as its `inference_server`.
+    -   Runs in a Docker container named `mcp-proxy`.
+    -   The image is custom-built to include necessary runtimes like `uv` and `npx` for the tool servers.
+    -   Configured via `servers.json` which lists all available tool servers (e.g., fetch, Home Assistant, Tavily, Todoist).
     -   Exposes the MCP endpoint on port `8009`.
 
 ### 3. Open-WebUI (`ghcr.io/open-webui/open-webui`)
 
--   **Purpose**: A user-friendly web interface for chatting with LLMs.
+-   **Purpose**: A user-friendly web interface for chatting with LLMs, with integrated MCP support.
 -   **Configuration**:
     -   Runs in a Docker container named `open-webui`.
-    -   Configured to communicate directly with the Ollama API on `ailab.lan:11434`.
+    -   Configured to communicate with an LLM backend (Ollama via `OLLAMA_BASE_URL`).
+    -   Configured to use `mcp-proxy` for tool access (via `MCP_SERVER` environment variable).
     -   Exposed on port `3123`.
 
 ## External Dependencies (Deployed by other roles)
@@ -95,12 +101,11 @@ graph TD
 
 ## Workflow
 
-1.  An **External Client** (like Home Assistant) sends a request to the **MCP Bridge** on `homelab:8009`. This request typically includes a prompt and a list of available tools.
-2.  The **MCP Bridge** forwards the prompt and tool definitions to its configured inference server, **LiteLLM**, on `localhost:4000`.
-3.  **LiteLLM** routes the request:
-    a.  If the target model is local (e.g., `home-local`), it sends the request across the LAN to the **Ollama** container on `ailab:11434`.
-    b.  If the target model is a cloud service, it sends the request to the appropriate external API.
-4.  Simultaneously, **LiteLLM** sends detailed trace information about the request/response cycle to **Langfuse** on `localhost:3003` for logging and analysis.
-5.  A **User** can interact with models directly through **Open-WebUI** (`homelab:3123`), which connects to **Ollama** on `ailab:11434`.
+1.  A **User** or **Client** (like Home Assistant) initiates a chat or task. They act as an MCP client.
+2.  The client sends the prompt to an LLM, typically through the **LiteLLM** proxy.
+3.  The LLM processes the prompt. If it decides to use a tool, its response will instruct the client to connect to a specific tool server.
+4.  The client (e.g., OpenWebUI) then makes a connection to the **mcp-proxy** service on `homelab:8009` to interact with the requested tool.
+5.  **mcp-proxy** receives the connection, spawns the correct backend stdio tool server (e.g., `tavily-mcp`), and proxies the communication.
+6.  All LLM interactions that go through **LiteLLM** are traced and sent to **Langfuse** for observability.
 
 This distributed setup separates the GPU-intensive workload from the lighter management services, providing a powerful, flexible, and observable environment for developing and running LLM-powered applications.

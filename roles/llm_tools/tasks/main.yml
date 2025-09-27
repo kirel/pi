@@ -32,109 +32,75 @@
       homepage.container: open-webui
   become: true
 
-# Block for MCP-Bridge setup
-- name: MCP-Bridge Setup
-  become: true # Most Docker and file operations need sudo
+# Block for mcp-proxy setup
+- name: MCP-Proxy Setup
+  become: true
   block:
-    - name: Define MCP-Bridge related facts
-      ansible.builtin.set_fact:
-        mcp_bridge_config_full_host_path: "{{ mcp_bridge_config_dir_host }}/{{ mcp_bridge_config_filename }}"
-
-    - name: Ensure MCP-Bridge source directory exists
-      ansible.builtin.file:
-        path: "{{ mcp_bridge_src_path | ansible.builtin.dirname }}"
-        state: directory
-        mode: "0755"
-
-    - name: Clone or update the MCP-Bridge repository
-      ansible.builtin.git:
-        repo: "{{ mcp_bridge_repo_url }}"
-        dest: "{{ mcp_bridge_src_path }}"
-        version: "{{ mcp_bridge_repo_version }}"
-        force: true
-        depth: 1
-      register: git_clone_mcp_bridge_result
-
-    - name: Pin MCP version in pyproject.toml for MCP-Bridge
-      ansible.builtin.replace:
-        path: "{{ mcp_bridge_src_path }}/pyproject.toml"
-        regexp: 'mcp>=1\.2\.0'
-        replace: 'mcp==1.7.0'
-      register: pin_mcp_version_result
-
-    - name: Build the MCP-Bridge image
-      community.docker.docker_image:
-        name: "{{ mcp_bridge_image }}"
-        source: build
-        force_source: "{{ git_clone_mcp_bridge_result.changed or pin_mcp_version_result.changed or force_update | default(false) }}"
-        build:
-          path: "{{ mcp_bridge_src_path }}"
-          pull: true # Attempt to pull base images for the build
-          rm: true # Remove intermediate containers after a successful build
-        state: present
-
-    - name: Ensure MCP-Bridge config directory exists on host
-      ansible.builtin.file:
-        path: "{{ mcp_bridge_config_dir_host }}"
-        state: directory
-        mode: "0755"
-
-    - name: Generate SSH key pair for MCP-Bridge
-      community.crypto.openssh_keypair:
-        path: "{{ mcp_bridge_config_dir_host }}/ssh_key"
-        type: rsa
-        size: 2048
-        mode: "0600"
-      register: mcp_bridge_ssh_key
-
-    - name: Verify ollama host is reachable
-      ansible.builtin.wait_for:
-        host: "{{ ollama_host }}"
-        port: 22
-        timeout: 10
-      delegate_to: localhost
-      become: false
-
-    - name: Read SSH public key from target host
-      ansible.builtin.slurp:
-        src: "{{ mcp_bridge_config_dir_host }}/ssh_key.pub"
-      register: mcp_bridge_ssh_public_key
-      failed_when: mcp_bridge_ssh_public_key.content is not defined
-
-    - name: Deploy SSH public key to ollama host
-      ansible.posix.authorized_key:
-        user: daniel
-        key: "{{ mcp_bridge_ssh_public_key.content | b64decode | trim }}"
-        state: present
-      delegate_to: "{{ollama_host}}"
-      register: key_deployment_result
-      failed_when: key_deployment_result is failed
-
-    - name: Template MCP-Bridge config.json
-      ansible.builtin.template:
-        src: mcp_bridge_config.json.j2
-        dest: "{{ mcp_bridge_config_full_host_path }}"
-        mode: "0644"
-      notify: Restart MCP-Bridge container
-
-    - name: Define MCP-Bridge container environment variables
-      ansible.builtin.set_fact:
-        mcp_bridge_env_vars:
-          MCP_BRIDGE__CONFIG__FILE: "/app/config.json" # Points to the mounted config file
-
-    - name: Start the MCP-Bridge container
+    - name: Ensure old mcp-bridge container is removed to free up port
       community.docker.docker_container:
-        name: "{{ mcp_bridge_container_name }}"
-        image: "{{ mcp_bridge_image }}"
+        name: "mcp-bridge-container"
+        state: absent
+
+    - name: Define MCP-Proxy related facts
+      ansible.builtin.set_fact:
+        mcp_proxy_config_full_host_path: "{{ mcp_proxy_config_dir_host }}/{{ mcp_proxy_config_filename }}"
+        mcp_proxy_build_context_path: "{{ mcp_proxy_config_dir_host }}/build"
+
+    - name: Ensure mcp-proxy build directory exists
+      ansible.builtin.file:
+        path: "{{ mcp_proxy_build_context_path }}"
+        state: directory
+        mode: "0755"
+
+    - name: Template custom Dockerfile for mcp-proxy
+      ansible.builtin.template:
+        src: Dockerfile.mcp-proxy.j2
+        dest: "{{ mcp_proxy_build_context_path }}/Dockerfile"
+        mode: "0644"
+      register: dockerfile_result
+
+    - name: Build the custom mcp-proxy image
+      community.docker.docker_image:
+        name: "{{ mcp_proxy_image_custom }}"
+        source: build
+        force_source: "{{ dockerfile_result.changed or force_update | default(false) }}"
+        build:
+          path: "{{ mcp_proxy_build_context_path }}"
+          pull: true
+          rm: true
+        state: present
+
+    - name: Ensure mcp-proxy config directory exists on host
+      ansible.builtin.file:
+        path: "{{ mcp_proxy_config_dir_host }}"
+        state: directory
+        mode: "0755"
+
+    - name: Template mcp-proxy servers.json
+      ansible.builtin.template:
+        src: mcp_proxy_servers.json.j2
+        dest: "{{ mcp_proxy_config_full_host_path }}"
+        mode: "0644"
+      notify: Restart MCP-Proxy container
+
+    - name: Start the mcp-proxy container
+      community.docker.docker_container:
+        name: "{{ mcp_proxy_container_name }}"
+        image: "{{ mcp_proxy_image_custom }}"
         state: started
         detach: true
         ports:
-          - "{{ mcp_bridge_service_port }}:8000"
+          - "{{ mcp_proxy_service_port }}:{{ mcp_proxy_service_port }}"
         volumes:
-          - "{{ mcp_bridge_config_full_host_path }}:/app/config.json:ro" # Mount config read-only
-          - "{{ mcp_bridge_config_dir_host }}/ssh_key:/root/.ssh/id_rsa:ro"
-          - "{{ mcp_bridge_config_dir_host }}/ssh_key.pub:/root/.ssh/id_rsa.pub:ro"
-        env: "{{ mcp_bridge_env_vars }}"
+          - "{{ mcp_proxy_config_full_host_path }}:/app/servers.json:ro"
+        command:
+          - "--port"
+          - "{{ mcp_proxy_service_port }}"
+          - "--host"
+          - "0.0.0.0"
+          - "--named-server-config"
+          - "/app/servers.json"
+          - "--pass-environment"
         networks:
           - name: "{{ llm_network_name }}"
         restart_policy: "unless-stopped"

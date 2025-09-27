@@ -3,17 +3,13 @@
 llm_base_config_path: "{{ config_root }}" # Base path for configuration files
 llm_network_name: "llm-network"
 
-# --- MCP-Bridge Settings ---
-mcp_bridge_repo_url: "https://github.com/SecretiveShell/MCP-Bridge.git"
-mcp_bridge_repo_version: "master" # Or a specific tag/commit
-mcp_bridge_src_path: "{{ base_src_path }}/mcp-bridge-src" # Path on target host to clone the repo
-mcp_bridge_image: "mcp-bridge:ansible-built"
-mcp_bridge_container_name: "mcp-bridge-container"
-mcp_bridge_service_port: 8009 # Port MCP-Bridge will listen on (on the host network)
-mcp_bridge_target_host: "{{ litellm_proxy_container_name }}" # MCP Bridge now targets LiteLLM container
-mcp_bridge_target_port: "{{ litellm_proxy_port_container }}" # MCP Bridge now targets LiteLLM container port
-mcp_bridge_config_dir_host: "{{ llm_base_config_path }}/mcp-bridge" # Directory on host to store config.json
-mcp_bridge_config_filename: "config.json"
+# --- MCP-Proxy Settings ---
+mcp_proxy_image_base: "ghcr.io/sparfenyuk/mcp-proxy:latest"
+mcp_proxy_image_custom: "mcp-proxy:custom"
+mcp_proxy_container_name: "mcp-proxy"
+mcp_proxy_service_port: 8009 # Port mcp-proxy will listen on
+mcp_proxy_config_dir_host: "{{ llm_base_config_path }}/mcp-proxy"
+mcp_proxy_config_filename: "servers.json"
 
 # --- LiteLLM Proxy Settings ---
 litellm_proxy_image: "ghcr.io/berriai/litellm:main-latest"

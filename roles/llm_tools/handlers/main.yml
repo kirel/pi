@@ -1,7 +1,7 @@
 ---
-- name: Restart MCP-Bridge container
+- name: Restart MCP-Proxy container
   community.docker.docker_container:
-    name: "{{ mcp_bridge_container_name }}"
+    name: "{{ mcp_proxy_container_name }}"
     state: started
     restart: true
   become: true
