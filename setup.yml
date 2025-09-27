@@ -28,6 +28,7 @@
     - { role: wallabag, become: true, tags: [wallabag] }
     - { role: readeck, become: true, tags: [readeck] }
     - { role: linkding, become: true, tags: [linkding] }
+    - { role: n8n, become: true, tags: [n8n] }
 
 - name: Setup nameserver
   hosts: nameserver

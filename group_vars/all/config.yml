@@ -3,6 +3,7 @@ locales:
   - en_US.UTF-8
   - de_DE.UTF-8
 locale: en_US.UTF-8
+system_timezone: "Europe/Berlin"
 pip_package: python3-pip
 pip_install_packages:
   - name: pyyaml==6.0.1
@@ -43,6 +44,7 @@ babybuddy_http_port: 8008
 wallabag_http_port: 8010
 readeck_http_port: 8011
 linkding_http_port: 8012
+n8n_http_port: 5678
 teddycloud_http_port: 8013
 teddycloud_box_port: 4443
 sunshine_address: 192.168.50.33
@@ -98,5 +100,6 @@ readeck_data_folder: "{{ config_root }}/readeck"
 readeck_domain_name: readeck.lan
 linkding_data_folder: "{{ config_root }}/linkding"
 linkding_domain_name: linkding.lan
+n8n_config_folder: "{{ config_root }}/n8n"
 teddycloud_config_folder: "{{ config_root }}/teddycloud"
 timemachine_max_size: 1000G

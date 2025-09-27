@@ -1,0 +1,36 @@
+---
+# tasks file for n8n
+
+- name: Ensure n8n config directory exists
+  ansible.builtin.file:
+    path: "{{ n8n_config_folder }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: "0755"
+  become: true
+
+- name: Start n8n container
+  community.docker.docker_container:
+    name: n8n
+    image: docker.n8n.io/n8nio/n8n
+    pull: always
+    restart_policy: unless-stopped
+    user: "{{ uid }}:{{ uid }}"
+    ports:
+      - "{{ n8n_http_port }}:5678"
+    volumes:
+      - "{{ n8n_config_folder }}:/home/node/.n8n"
+    env:
+      GENERIC_TIMEZONE: "{{ system_timezone }}"
+      TZ: "{{ system_timezone }}"
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+      N8N_RUNNERS_ENABLED: "true"
+    labels:
+      homepage.group: "{{ services['n8n'].group }}"
+      homepage.name: "{{ services['n8n'].name }}"
+      homepage.href: "https://{{ services['n8n'].domain }}"
+      homepage.icon: "{{ services['n8n'].icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: "n8n"
+  become: true
