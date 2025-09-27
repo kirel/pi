@@ -2,6 +2,7 @@ FROM {{ mcp_proxy_image_base }}
 
 # Install the 'uv' package
 RUN python3 -m ensurepip && pip install --no-cache-dir uv
+RUN apk update && apk add nodejs npm
 
 ENV PATH="/usr/local/bin:$PATH" \
     UV_PYTHON_PREFERENCE=only-system
