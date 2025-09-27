@@ -59,7 +59,7 @@
     - { role: virtualhere, become: true, tags: [virtualhere] }
 
 - name: Setup ailabs
-  hosts: ailabs
+  hosts: ailab-ubuntus
   ignore_unreachable: true
   roles:
     - { role: basic, become: true, tags: [basic] }
@@ -73,11 +73,11 @@
     - { role: gpu, become: true, tags: [gpu, gpu-driver] }
     - { role: glances, become: true, tags: [glances], vars: { glances_nvidia_support: true } }
 
-    - { role: autosuspend, become: true, tags: [autosuspend] }
+    #- { role: autosuspend, become: true, tags: [autosuspend] }
     - { role: system_bridge, become: true, tags: [system-bridge] }
     #- { role: intel_gpu_driver, become: true, tags: [intel-gpu, gpu-driver] }
     - { role: llm_inference, become: true, tags: [llm, llm-inference] }
-    #- { role: wolf, become: true, tags: [wolf] }
+    - { role: wolf, become: true, tags: [wolf] }
     - { role: draw_things, become: true, tags: [draw-things] }
     - { role: comfyui, become: true, tags: [comfyui] }
     - { role: syncthing, become: true, tags: [syncthing] }

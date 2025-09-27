@@ -10,7 +10,8 @@
 - name: Start Open-WebUI container
   community.docker.docker_container:
     name: open-webui
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui:dev
+    pull: always
     restart_policy: unless-stopped
     networks:
       - name: "{{ llm_network_name }}"
@@ -86,9 +87,9 @@
         mode: "0600"
       register: mcp_bridge_ssh_key
 
-    - name: Verify ailab.lan is reachable
+    - name: Verify ollama host is reachable
       ansible.builtin.wait_for:
-        host: ailab.lan
+        host: "{{ ollama_host }}"
         port: 22
         timeout: 10
       delegate_to: localhost
@@ -100,12 +101,12 @@
       register: mcp_bridge_ssh_public_key
       failed_when: mcp_bridge_ssh_public_key.content is not defined
 
-    - name: Deploy SSH public key to ailab
+    - name: Deploy SSH public key to ollama host
       ansible.posix.authorized_key:
         user: daniel
         key: "{{ mcp_bridge_ssh_public_key.content | b64decode | trim }}"
         state: present
-      delegate_to: ailab.lan
+      delegate_to: "{{ollama_host}}"
       register: key_deployment_result
       failed_when: key_deployment_result is failed
 

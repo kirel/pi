@@ -29,6 +29,7 @@
     env:
       CLI_ARGS: "{{ comfyui_cli_args }}"
       HOME: "/root"
+      CUDA_LAUNCH_BLOCKING: "1"
     labels:
       wud.tag.include: "^v\\d+\\.\\d+\\.\\d+$$"
       homepage.group: "{{ services.comfyui.group }}"

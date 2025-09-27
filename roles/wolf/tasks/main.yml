@@ -12,6 +12,9 @@
     pull: always # Set to "always", "missing", "never", or "policy" based on your needs
     state: present # Ensure the services are started
     definition:
+      volumes:
+        nvidia-driver-vol:
+          external: true
       services:
         wolf:
           image: ghcr.io/games-on-whales/wolf:stable
@@ -20,6 +23,7 @@
           environment:
             WOLF_LOG_LEVEL: debug
             XDG_RUNTIME_DIR: /tmp/sockets
+            NVIDIA_DRIVER_VOLUME_NAME: nvidia-driver-vol
             HOST_APPS_STATE_FOLDER: /etc/wolf
           volumes:
             - /etc/wolf/:/etc/wolf
@@ -27,10 +31,18 @@
             - /var/run/docker.sock:/var/run/docker.sock:rw
             - /dev/:/dev/:rw
             - /run/udev:/run/udev:rw
+            - nvidia-driver-vol:/usr/nvidia:rw
           devices:
             - /dev/dri
             - /dev/uinput
             - /dev/uhid
+            - /dev/nvidia-uvm
+            - /dev/nvidia-uvm-tools
+            - /dev/nvidia-caps/nvidia-cap1
+            - /dev/nvidia-caps/nvidia-cap2
+            - /dev/nvidiactl
+            - /dev/nvidia0
+            - /dev/nvidia-modeset
           device_cgroup_rules:
             - c 13:* rmw
           network_mode: host

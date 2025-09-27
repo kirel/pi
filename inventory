@@ -4,8 +4,14 @@ nameserver-pi ansible_host=192.168.50.4 ansible_user=pi ansible_python_interpret
 [homelab]
 homelab-nuc ansible_host=192.168.50.5 ansible_user=root ansible_python_interpreter=/usr/bin/python3
 
-[ailabs]
-ailab ansible_host=192.168.50.9 ansible_user=daniel ansible_python_interpreter=/usr/bin/python3
+[proxmox]
+ailab-proxmox ansible_host=192.168.50.9 ansible_user=root ansible_python_interpreter=/usr/bin/python3
+
+[ailab-ubuntus]
+ailab-ubuntu ansible_host=192.168.50.10 ansible_user=daniel ansible_python_interpreter=/usr/bin/python3
+
+[ailab-windows]
+winhost1 ansible_host=192.168.50.11 ansible_user=AdminUser ansible_password=SecretPassword ansible_connection=winrm ansible_winrm_server_cert_validation=ignore
 
 [mic-satellites]
 micpi ansible_host=192.168.50.7 ansible_user=daniel ansible_python_interpreter=/usr/bin/python3

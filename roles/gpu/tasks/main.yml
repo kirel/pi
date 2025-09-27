@@ -11,10 +11,26 @@
 
 - name: Check currently installed NVIDIA driver version
   ansible.builtin.shell: |
-    dpkg -l | grep nvidia-driver | head -1 | awk '{print $2}' | sed 's/nvidia-driver-//' || echo "none"
+    # Check for various nvidia driver package patterns
+    if dpkg -l | grep -q "nvidia-driver-[0-9]"; then
+      dpkg -l | grep "nvidia-driver-[0-9]" | head -1 | awk '{print $2}' | sed 's/nvidia-driver-//'
+    elif dpkg -l | grep -q "nvidia-utils-[0-9]"; then
+      dpkg -l | grep "nvidia-utils-[0-9]" | head -1 | awk '{print $2}' | sed 's/nvidia-utils-//'
+    elif nvidia-smi --version 2>/dev/null | grep -q "Driver Version"; then
+      nvidia-smi --version | grep "Driver Version" | awk '{print $6}' | cut -d'.' -f1-2
+    else
+      echo "none"
+    fi
   register: current_nvidia_driver
   changed_when: false
   failed_when: false
+
+- name: Debug NVIDIA driver version check
+  ansible.builtin.debug:
+    msg:
+      - "Current installed driver: {{ current_nvidia_driver.stdout }}"
+      - "Desired driver version: {{ nvidia_driver_version }}"
+      - "Will purge old drivers: {{ (current_nvidia_driver.stdout != 'none' and current_nvidia_driver.stdout != nvidia_driver_version and current_nvidia_driver.stdout != '') | bool }}"
 
 - name: Purge old NVIDIA drivers if version changed
   ansible.builtin.apt:
@@ -30,6 +46,28 @@
   environment:
     DEBIAN_FRONTEND: noninteractive
 
+- name: Remove orphaned packages after purge
+  ansible.builtin.apt:
+    autoremove: true
+  become: true
+  when: 
+    - current_nvidia_driver.stdout != "none"
+    - current_nvidia_driver.stdout != nvidia_driver_version
+    - current_nvidia_driver.stdout != ""
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Clean package cache after purge
+  ansible.builtin.apt:
+    autoclean: true
+  become: true
+  when: 
+    - current_nvidia_driver.stdout != "none"
+    - current_nvidia_driver.stdout != nvidia_driver_version
+    - current_nvidia_driver.stdout != ""
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
 - name: Install NVIDIA GPGPU drivers using ubuntu-drivers
   ansible.builtin.command:
     cmd: "ubuntu-drivers install --gpgpu nvidia:{{ nvidia_driver_version }}"
@@ -42,7 +80,7 @@
 
 - name: Install nvidia utils
   ansible.builtin.apt:
-    name: "nvidia-utils-{{ nvidia_driver_version }}"
+    name: "nvidia-utils-{{ nvidia_driver_version | regex_replace('-open$', '') }}"
     state: present
     update_cache: true
   become: true
@@ -120,6 +158,24 @@
     group: root
     mode: '0644'
   become: true
+
+- name: Check current GPU power limit
+  ansible.builtin.shell: |
+    nvidia-smi --query-gpu=power.limit --format=csv,noheader,nounits | head -1 | tr -d ' '
+  register: current_power_limit
+  changed_when: false
+  failed_when: false
+  become: true
+
+- name: Apply power limit immediately if different
+  ansible.builtin.command:
+    cmd: "nvidia-smi -pl {{ gpu_power_limit_watts }}"
+  become: true
+  when: 
+    - current_power_limit.stdout != ""
+    - current_power_limit.stdout | int != gpu_power_limit_watts | int
+  register: power_limit_applied
+  changed_when: power_limit_applied.rc == 0
 
 - name: Enable and start nvidia-power-limit service
   ansible.builtin.systemd:

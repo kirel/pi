@@ -1,0 +1,4 @@
+---
+# Additional DNS entries not derived from inventory
+additional_dns_entries:
+  router.lan: "{{ router_ip }}"

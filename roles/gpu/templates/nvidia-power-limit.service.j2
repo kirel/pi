@@ -11,6 +11,8 @@ RemainAfterExit=yes
 Restart=on-failure
 RestartSec=10s
 TimeoutStartSec=120
+StartLimitBurst=3
+StartLimitIntervalSec=300
 
 [Install]
 WantedBy=multi-user.target

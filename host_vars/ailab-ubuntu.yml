@@ -1,8 +1,8 @@
 ---
 # Netplan Static IP Configuration for host 'ailab'
 netplan_interface: "eth0" # Desired target interface name
-netplan_match_macaddress: "{{ ailab_mac_address }}" # Use MAC from group_vars/all/config.yml
-netplan_address_cidr: "192.168.50.9/24"
+netplan_match_macaddress: "BC:24:11:F2:87:3D" # Use MAC from group_vars/all/config.yml
+netplan_address_cidr: "192.168.50.10/24"
 netplan_gateway: "192.168.50.1"
 netplan_dns_servers:
   - "192.168.50.4"

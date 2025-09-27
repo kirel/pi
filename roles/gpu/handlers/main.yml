@@ -10,6 +10,22 @@
     test_command: uptime
   become: true
 
+- name: debug installed driver after reboot
+  ansible.builtin.shell: |
+    echo "=== NVIDIA Driver Information After Reboot ==="
+    nvidia-smi --version || echo "nvidia-smi not available"
+    echo "=== Installed NVIDIA Packages ==="
+    dpkg -l | grep nvidia | grep -E "(driver|utils)" || echo "No nvidia packages found"
+    echo "=== GPU Status ==="
+    nvidia-smi -L || echo "No GPUs detected"
+  register: post_reboot_nvidia_info
+  changed_when: false
+  failed_when: false
+
+- name: show post-reboot nvidia info
+  ansible.builtin.debug:
+    msg: "{{ post_reboot_nvidia_info.stdout_lines }}"
+
 - name: restart docker
   ansible.builtin.service:
     name: docker

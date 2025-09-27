@@ -14,6 +14,7 @@ nameserver_pi_ip: "{{ hostvars['nameserver-pi'].ansible_host }}"
 homelab_nuc_ip: "{{ hostvars['homelab-nuc'].ansible_host }}"
 ailab_ip: "{{ hostvars['ailab'].ansible_host }}"
 ailab_mac_address: 50:eb:f6:82:3c:38 # MAC address for Wake-on-LAN
+ailab_ubuntu_ip: 192.168.50.10
 micpi_ip: "{{ hostvars['micpi'].ansible_host }}"
 cidr: 192.168.50.0/24
 pihole_http_port: 81
@@ -55,7 +56,7 @@ shares:
   - dreifuenf
 config_root: /home/{{ username }}/config
 base_src_path: /opt/src # Base path for cloning source repos
-ollama_host: ailab.lan
+ollama_host: ailab-ubuntu.lan
 litellm_proxy_port: 4000
 langfuse_port: 3003
 homeassistant_config_folder: "{{ config_root }}/home-assistant"

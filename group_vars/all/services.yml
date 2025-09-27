@@ -151,17 +151,24 @@ services:
     http_port: "{{ glances_http_port }}"
     group: Monitoring
   # ailab
+  proxmox:
+    name: Proxmox VE
+    http_port: 8006
+    target: ailab-proxmox.lan
+    group: Network
+    icon: proxmox
+    nodocker: true
   ollama-ailab:
     name: Ollama AI Lab
     proxy_port: "{{ ollama_port }}"
-    target: ailab.lan
+    target: ailab-ubuntu.lan
     http_port: "{{ ollama_port }}"
     wol: "{{ ailab_mac_address }}"
     tls_skip: true
     try: 360s
   comfyui:
     name: ComfyUI
-    target: ailab.lan
+    target: ailab-ubuntu.lan
     http_port: "{{ comfyui_port }}"
     group: AI
     icon: comfy-ui
@@ -169,19 +176,19 @@ services:
     try: 360s
   portainer-ailab:
     name: Portainer AI Lab
-    target: ailab.lan
+    target: ailab-ubuntu.lan
     http_port: "{{ portainer_http_port }}"
     group: Monitoring
     icon: portainer.png
   glances-ailab:
     name: Glances AI Lab
-    target: ailab.lan
+    target: ailab-ubuntu.lan
     http_port: "{{ glances_http_port }}"
     group: Monitoring
     icon: glances.png
   syncthing-ailab:
     name: Syncthing AI Lab
-    target: ailab.lan
+    target: ailab-ubuntu.lan
     http_port: "{{ syncthing_http_port }}"
     nodocker: true
     group: NAS

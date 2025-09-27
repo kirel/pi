@@ -50,15 +50,18 @@
     var: static_dhcp_list
     verbosity: 1 # Only show in verbose mode
 
-- name: Construct custom DNS entries list
+- name: Construct custom DNS entries list from inventory and config
   ansible.builtin.set_fact:
     custom_dns_list: >-
       {%- set entries = [] -%}
-      {%- set _ = entries.append(router_ip ~ ' router.lan') -%}
-      {%- set _ = entries.append(homelab_nuc_ip ~ ' homelab-nuc.lan') -%}
-      {%- set _ = entries.append(nameserver_pi_ip ~ ' pihole-pi.lan') -%}
-      {%- set _ = entries.append(ailab_ip ~ ' ailab.lan') -%}
-      {%- set _ = entries.append(homelab_nuc_ip ~ ' ollama-ailab.lan') -%}
+      {%- for domain, ip in additional_dns_entries.items() -%}
+        {%- set _ = entries.append(ip ~ ' ' ~ domain) -%}
+      {%- endfor -%}
+      {%- for host in groups['all'] -%}
+        {%- if hostvars[host].ansible_host is defined -%}
+          {%- set _ = entries.append(hostvars[host].ansible_host ~ ' ' ~ host ~ '.lan') -%}
+        {%- endif -%}
+      {%- endfor -%}
       {{- entries | join(';') -}}
 
 - name: Debug custom_dns_list
