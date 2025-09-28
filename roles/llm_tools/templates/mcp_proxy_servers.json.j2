@@ -6,7 +6,7 @@
         "mcp-server-fetch"
       ]
     },
-    "Home Assistant": {
+    "home-assistant": {
       "command": "uvx",
       "args": [
         "mcp-proxy"
@@ -30,7 +30,10 @@
       "command": "npx",
       "args": [
         "-y",
-        "@doist/todoist-ai"
+        "mcp-remote",
+        "https://ai.todoist.net/mcp/",
+        "--header",
+        "Authorization: Bearer ${TODOIST_API_KEY}"
       ],
       "env": {
         "TODOIST_API_KEY": "{{ todoist_api_token }}"
