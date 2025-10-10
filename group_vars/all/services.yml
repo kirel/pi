@@ -200,3 +200,9 @@ services:
     nodocker: true
     group: NAS
     icon: syncthing.png
+  google-workspace-mcp:
+    name: Google Workspace MCP
+    target: homelab-nuc.lan
+    http_port: 8014
+    group: AI
+    icon: google.png

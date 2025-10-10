@@ -159,3 +159,46 @@
       ansible.builtin.debug:
         var: litellm_proxy_container_result
       when: litellm_proxy_container_result is defined and litellm_proxy_container_result.changed
+
+- name: Google Workspace MCP Setup
+  become: true
+  block:
+    - name: Start Google Workspace MCP container
+      community.docker.docker_container:
+        name: "{{ google_workspace_mcp_container_name }}"
+        image: "{{ google_workspace_mcp_image }}"
+        state: started
+        detach: true
+        ports:
+          - "{{ google_workspace_mcp_port_host }}:{{ google_workspace_mcp_port_container }}"
+        env:
+          GOOGLE_OAUTH_CLIENT_ID: "{{ google_workspace_oauth_client_id }}"
+          GOOGLE_OAUTH_CLIENT_SECRET: "{{ google_workspace_oauth_client_secret }}"
+          MCP_ENABLE_OAUTH21: "true"
+          WORKSPACE_EXTERNAL_URL: "http://homelab-nuc.lan:{{ google_workspace_mcp_port_host }}"
+          WORKSPACE_MCP_STATELESS_MODE: "true"
+        command: 
+          - "uvx"
+          - "--from"
+          - "git+https://github.com/taylorwilsdon/google_workspace_mcp"
+          - "workspace-mcp"
+          - "--transport"
+          - "streamable-http"
+        networks:
+          - name: "{{ llm_network_name }}"
+        restart_policy: "unless-stopped"
+        labels:
+          wud.tag.include: latest
+          wud.watch.digest: "true"
+          homepage.group: "{{ services['google-workspace-mcp'].group }}"
+          homepage.name: "{{ services['google-workspace-mcp'].name }}"
+          homepage.href: http://homelab-nuc.lan:{{ google_workspace_mcp_port_host }}
+          homepage.icon: google.png
+          homepage.server: "{{ inventory_hostname }}"
+          homepage.container: "{{ google_workspace_mcp_container_name }}"
+      register: google_workspace_mcp_result
+
+    - name: Debug Google Workspace MCP container result
+      ansible.builtin.debug:
+        var: google_workspace_mcp_result
+      when: google_workspace_mcp_result is defined and google_workspace_mcp_result.changed
