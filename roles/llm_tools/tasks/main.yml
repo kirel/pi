@@ -17,8 +17,10 @@
       - name: "{{ llm_network_name }}"
     env:
       OLLAMA_BASE_URL: "{{ ollama_base_url_for_webui }}"
+      SSL_CERT_FILE: "/etc/ssl/certs/caddy_root.crt"
     volumes:
       - open-webui:/app/backend/data
+      - "{{ caddy_folder }}/root.crt:/etc/ssl/certs/caddy_root.crt:ro"
     ports:
       - "{{ open_webui_http_port }}:8080"
     labels:
