@@ -175,12 +175,10 @@
           GOOGLE_OAUTH_CLIENT_ID: "{{ google_workspace_oauth_client_id }}"
           GOOGLE_OAUTH_CLIENT_SECRET: "{{ google_workspace_oauth_client_secret }}"
           MCP_ENABLE_OAUTH21: "true"
-          WORKSPACE_EXTERNAL_URL: "https://google-workspace-mcp.lan"
           WORKSPACE_MCP_STATELESS_MODE: "true"
-        command: 
+          WORKSPACE_EXTERNAL_URL: "https://google-workspace-mcp.lan"
+        command:
           - "uvx"
-          - "--from"
-          - "git+https://github.com/taylorwilsdon/google_workspace_mcp"
           - "workspace-mcp"
           - "--transport"
           - "streamable-http"
