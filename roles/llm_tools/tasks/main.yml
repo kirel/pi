@@ -190,8 +190,8 @@
         labels:
           wud.tag.include: latest
           wud.watch.digest: "true"
-          homepage.group: "{{ services['google-workspace-mcp'].group }}"
-          homepage.name: "{{ services['google-workspace-mcp'].name }}"
+          homepage.group: "AI"
+          homepage.name: "Google Workspace MCP"
           homepage.href: http://homelab-nuc.lan:{{ google_workspace_mcp_port_host }}
           homepage.icon: google.png
           homepage.server: "{{ inventory_hostname }}"
