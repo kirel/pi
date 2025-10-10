@@ -200,3 +200,10 @@ services:
     nodocker: true
     group: NAS
     icon: syncthing.png
+  google-workspace-mcp:
+    name: Google Workspace MCP
+    target: homelab-nuc.lan
+    http_port: "{{ google_workspace_mcp_port_host }}"
+    domain: google-workspace-mcp.lan
+    group: AI
+    icon: google.png
