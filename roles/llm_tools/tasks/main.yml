@@ -187,15 +187,6 @@
         networks:
           - name: "{{ llm_network_name }}"
         restart_policy: "unless-stopped"
-        labels:
-          wud.tag.include: latest
-          wud.watch.digest: "true"
-          homepage.group: "AI"
-          homepage.name: "Google Workspace MCP"
-          homepage.href: http://homelab-nuc.lan:{{ google_workspace_mcp_port_host }}
-          homepage.icon: google.png
-          homepage.server: "{{ inventory_hostname }}"
-          homepage.container: "{{ google_workspace_mcp_container_name }}"
       register: google_workspace_mcp_result
 
     - name: Debug Google Workspace MCP container result
