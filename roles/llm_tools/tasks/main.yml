@@ -10,7 +10,7 @@
 - name: Start Open-WebUI container
   community.docker.docker_container:
     name: open-webui
-    image: ghcr.io/open-webui/open-webui:dev
+    image: ghcr.io/open-webui/open-webui:latest
     pull: always
     restart_policy: unless-stopped
     networks:
