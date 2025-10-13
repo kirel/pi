@@ -24,7 +24,7 @@ langfuse_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ langfuse_port }}"
 ollama_base_url_for_webui: "http://{{ ollama_host }}:{{ ollama_port }}"
 
 # --- Google Workspace MCP Settings ---
-google_workspace_mcp_image: "ghcr.io/astral-sh/uv:latest"
+google_workspace_mcp_image: "ghcr.io/astral-sh/uv:debian"
 google_workspace_mcp_container_name: "google-workspace-mcp"
 google_workspace_mcp_port_host: 8014
 google_workspace_mcp_port_container: 8000

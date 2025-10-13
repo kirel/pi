@@ -10,17 +10,19 @@
 - name: Start Open-WebUI container
   community.docker.docker_container:
     name: open-webui
-    image: ghcr.io/open-webui/open-webui:latest
+    image: ghcr.io/open-webui/open-webui:main
+    image_name_mismatch: recreate
     pull: always
     restart_policy: unless-stopped
     networks:
       - name: "{{ llm_network_name }}"
     env:
       OLLAMA_BASE_URL: "{{ ollama_base_url_for_webui }}"
-      SSL_CERT_FILE: "/etc/ssl/certs/caddy_root.crt"
+      WEBUI_SECRET_KEY: t0p-s3cr3t
+      SSL_CERT_FILE: "/etc/ssl/certs/ca-certificates.crt"
     volumes:
       - open-webui:/app/backend/data
-      - "{{ caddy_folder }}/root.crt:/etc/ssl/certs/caddy_root.crt:ro"
+      - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro"
     ports:
       - "{{ open_webui_http_port }}:8080"
     labels:
@@ -178,7 +180,7 @@
           GOOGLE_OAUTH_CLIENT_SECRET: "{{ google_workspace_oauth_client_secret }}"
           MCP_ENABLE_OAUTH21: "true"
           WORKSPACE_MCP_STATELESS_MODE: "true"
-          WORKSPACE_EXTERNAL_URL: "https://google-workspace-mcp.lan"
+          WORKSPACE_EXTERNAL_URL: "https://google-workspace-mcp.net"
         command:
           - "uvx"
           - "workspace-mcp"

@@ -204,6 +204,6 @@ services:
     name: Google Workspace MCP
     target: homelab-nuc.lan
     http_port: "{{ google_workspace_mcp_port_host }}"
-    domain: google-workspace-mcp.lan
+    domain: google-workspace-mcp.net
     group: AI
     icon: google.png
