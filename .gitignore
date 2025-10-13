@@ -8,3 +8,4 @@ tmp/root.crt
 .ansible
 .pre-commit-config.yaml.lock
 .uv_cache/
+.gemini
