@@ -26,6 +26,8 @@
       TZ: "{{ system_timezone }}"
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
       N8N_RUNNERS_ENABLED: "true"
+      WEBHOOK_URL: "https://{{ services['n8n'].domain }}"
+      N8N_PROXY_HOPS: "1"
     labels:
       homepage.group: "{{ services['n8n'].group }}"
       homepage.name: "{{ services['n8n'].name }}"

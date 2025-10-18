@@ -49,7 +49,7 @@ services:
     name: n8n
     target: homelab-nuc.lan
     http_port: "{{ n8n_http_port }}"
-    domain: n8n.lan
+    domain: n8n.kirelabs.org
     group: Productivity
     icon: n8n.svg
   teddycloud:
