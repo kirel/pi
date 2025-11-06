@@ -26,6 +26,8 @@
         project_src: "{{ langfuse_config_dir_host }}" # Directory containing the docker-compose.yml
         state: present # Ensures services are running, creates them if not present
         pull: always # Optionally pull images
+      environment:
+        POSTGRES_VERSION: "{{ langfuse_postgres_version }}"
       register: langfuse_compose_result
 
     - name: Debug Langfuse compose result

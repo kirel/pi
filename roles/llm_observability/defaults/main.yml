@@ -1,3 +1,4 @@
 ---
 # defaults file for llm_observability
 llm_base_config_path: "{{ config_root }}" # Base path for configuration files
+langfuse_postgres_version: "17" # PostgreSQL version for Langfuse (pinned to 15 for compatibility)
