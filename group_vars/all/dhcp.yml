@@ -158,7 +158,7 @@ static_dhcp:
     mac: CC:B5:D1:6A:45:8F
     ip_suffix: 81
   daniels-mac:
-    mac: BC:D0:74:27:D9:8F
+    mac: e6:d8:be:f9:04:b6
     ip_suffix: 90
   p1s-1:
     mac: C0:4E:30:06:C3:54
