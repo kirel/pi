@@ -165,6 +165,7 @@ services:
     group: Network
     icon: proxmox
     nodocker: true
+    tls_skip: false
   ollama-ailab:
     name: Ollama AI Lab
     proxy_port: "{{ ollama_port }}"
