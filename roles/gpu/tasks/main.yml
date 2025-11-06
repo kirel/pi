@@ -38,7 +38,7 @@
     state: absent
     purge: true
   become: true
-  when: 
+  when:
     - current_nvidia_driver.stdout != "none"
     - current_nvidia_driver.stdout != nvidia_driver_version
     - current_nvidia_driver.stdout != ""
@@ -50,7 +50,7 @@
   ansible.builtin.apt:
     autoremove: true
   become: true
-  when: 
+  when:
     - current_nvidia_driver.stdout != "none"
     - current_nvidia_driver.stdout != nvidia_driver_version
     - current_nvidia_driver.stdout != ""
@@ -61,7 +61,7 @@
   ansible.builtin.apt:
     autoclean: true
   become: true
-  when: 
+  when:
     - current_nvidia_driver.stdout != "none"
     - current_nvidia_driver.stdout != nvidia_driver_version
     - current_nvidia_driver.stdout != ""
@@ -110,6 +110,7 @@
       - "libnvidia-container1={{ nvidia_container_toolkit_version }}"
     state: present
     update_cache: true
+    allow_downgrades: true
   become: true
   notify: restart docker
 
@@ -144,7 +145,7 @@
   become: true
   when: docker_nvidia_configured.stdout != "configured"
   register: nvidia_ctk_result
-  changed_when: 
+  changed_when:
     - docker_nvidia_configured.stdout != "configured"
     - nvidia_ctk_result is defined
     - "'No changes required' not in nvidia_ctk_result.stdout"
@@ -171,7 +172,7 @@
   ansible.builtin.command:
     cmd: "nvidia-smi -pl {{ gpu_power_limit_watts }}"
   become: true
-  when: 
+  when:
     - current_power_limit.stdout != ""
     - current_power_limit.stdout | int != gpu_power_limit_watts | int
   register: power_limit_applied
