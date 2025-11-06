@@ -6,6 +6,29 @@
     mode: "0644"
   notify: Restart udev
 
+- name: Check if nvidia-driver-vol exists
+  ansible.builtin.shell: docker volume ls -q -f name=nvidia-driver-vol
+  register: nvidia_driver_vol_exists
+  changed_when: false
+
+- name: Build nvidia-driver image and create volume
+  when: not nvidia_driver_vol_exists.stdout
+  block:
+    - name: Get NVIDIA driver version
+      ansible.builtin.shell: cat /sys/module/nvidia/version
+      register: nvidia_version
+      changed_when: false
+
+    - name: Build nvidia-driver image
+      ansible.builtin.shell: >
+        curl https://raw.githubusercontent.com/games-on-whales/gow/master/images/nvidia-driver/Dockerfile |
+        docker build -t gow/nvidia-driver:latest -f - --build-arg NV_VERSION={{ nvidia_version.stdout }} .
+      args:
+        warn: false
+
+    - name: Create nvidia-driver-vol
+      ansible.builtin.shell: docker create --rm --mount source=nvidia-driver-vol,destination=/usr/nvidia gow/nvidia-driver:latest sh
+
 - name: Start wolf
   community.docker.docker_compose_v2:
     project_name: wolf

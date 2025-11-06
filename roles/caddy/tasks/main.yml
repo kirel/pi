@@ -63,6 +63,9 @@
             - "{{ caddy_config_folder }}:/config"
           environment:
             CADDY_ADMIN: "0.0.0.0:2019"
+          dns:
+            - "{{ nameserver_pi_ip }}"
+            - "{{ homelab_nuc_ip }}"
           cap_add:
             - NET_ADMIN
           labels:

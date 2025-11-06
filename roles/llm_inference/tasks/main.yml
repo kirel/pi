@@ -12,6 +12,7 @@
   community.docker.docker_container:
     name: "{{ ollama_container_name }}"
     image: "{{ ollama_image }}"
+    image_name_mismatch: recreate
     pull: true
     state: started
     restart_policy: "{{ ollama_restart_policy }}"
