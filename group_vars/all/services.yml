@@ -122,6 +122,12 @@ services:
     http_port: "{{ langfuse_port }}"
     group: AI
     icon: langfuse.png
+  litellm-ui:
+    name: LiteLLM Admin
+    target: homelab-nuc.lan
+    http_port: "{{ litellm_proxy_port }}"
+    group: AI
+    icon: litellm.png
   metamcp:
     name: MetaMCP
     target: homelab-nuc.lan

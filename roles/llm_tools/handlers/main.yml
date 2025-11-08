@@ -1,14 +1,17 @@
 ---
-- name: Restart MCP-Proxy container
-  community.docker.docker_container:
-    name: "{{ mcp_proxy_container_name }}"
-    state: started
-    restart: true
+- name: Restart MCP-Proxy service
+  community.docker.docker_compose_v2:
+    project_name: litellm
+    services:
+      - mcp-proxy
+    state: present
   become: true
 
-- name: Restart LiteLLM Proxy container
-  community.docker.docker_container:
-    name: "{{ litellm_proxy_container_name }}"
-    state: started
-    restart: true
+- name: Restart LiteLLM Proxy service
+  community.docker.docker_compose_v2:
+    project_name: litellm
+    services:
+      - litellm-proxy
+    state: present
   become: true
+

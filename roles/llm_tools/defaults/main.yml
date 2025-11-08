@@ -3,6 +3,23 @@
 llm_base_config_path: "{{ config_root }}" # Base path for configuration files
 llm_network_name: "llm-network"
 
+# --- Database Settings ---
+litellm_db_image: "postgres:16-alpine"
+litellm_db_container_name: "litellm-postgres"
+litellm_db_port_host: 5432
+litellm_db_port_container: 5432
+litellm_db_data_dir: "{{ llm_base_config_path }}/litellm/postgres"
+litellm_db_user: "litellm"
+litellm_db_password: "{{ litellm_db_password | default('litellm_password_123') }}"
+litellm_db_name: "litellm"
+
+# --- Redis Settings ---
+litellm_redis_image: "redis:7-alpine"
+litellm_redis_container_name: "litellm-redis"
+litellm_redis_port_host: 6379
+litellm_redis_port_container: 6379
+litellm_redis_data_dir: "{{ llm_base_config_path }}/litellm/redis"
+
 # --- MCP-Proxy Settings ---
 mcp_proxy_image_base: "ghcr.io/sparfenyuk/mcp-proxy:latest"
 mcp_proxy_image_custom: "mcp-proxy:custom"
@@ -12,13 +29,17 @@ mcp_proxy_config_dir_host: "{{ llm_base_config_path }}/mcp-proxy"
 mcp_proxy_config_filename: "servers.json"
 
 # --- LiteLLM Proxy Settings ---
-litellm_proxy_image: "ghcr.io/berriai/litellm:main-latest"
+litellm_proxy_image: "ghcr.io/berriai/litellm-database:main-stable"  # Database-enabled image
 litellm_proxy_container_name: "litellm-proxy-container"
 litellm_proxy_config_dir_host: "{{ llm_base_config_path }}/litellm"
 litellm_proxy_config_filename: "config.yaml"
 litellm_proxy_port_host: "{{ litellm_proxy_port }}" # Host port for LiteLLM
 litellm_proxy_port_container: "4000" # Container port for LiteLLM (default)
+litellm_proxy_ui_port_host: "{{ litellm_proxy_ui_port }}" # UI port for admin dashboard
 langfuse_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ langfuse_port }}"
+
+# Database connection string
+litellm_database_url: "postgresql://{{ litellm_db_user }}:{{ litellm_db_password }}@{{ litellm_db_container_name }}:{{ litellm_db_port_container }}/{{ litellm_db_name }}"
 
 # --- Open-WebUI Settings ---
 ollama_base_url_for_webui: "http://{{ ollama_host }}:{{ ollama_port }}"

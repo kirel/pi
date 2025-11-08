@@ -62,6 +62,7 @@ config_root: /home/{{ username }}/config
 base_src_path: /opt/src # Base path for cloning source repos
 ollama_host: ailab-ubuntu.lan
 litellm_proxy_port: 4000
+litellm_proxy_ui_port: 4001
 langfuse_port: 3003
 homeassistant_config_folder: "{{ config_root }}/home-assistant"
 homeassistant_media_folder: /{{ mount_root }}/Medien/Musik

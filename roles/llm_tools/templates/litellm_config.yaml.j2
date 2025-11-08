@@ -48,9 +48,12 @@ model_list:
 
 router_settings:
   fallbacks: [{"home": ["home-local"]}]
+  redis_host: "{{ litellm_redis_container_name }}"
+  redis_port: "{{ litellm_redis_port_container }}"
 
 litellm_settings:
   success_callback: ["langfuse"]
 
 general_settings:
   master_key: "{{ litellm_master_key }}"
+

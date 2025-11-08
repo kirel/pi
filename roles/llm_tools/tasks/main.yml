@@ -1,42 +1,23 @@
 ---
 # tasks file for llm_tools
 
-- name: Ensure Docker network exists
-  community.docker.docker_network:
-    name: "{{ llm_network_name }}"
-    state: present
+- name: Create LiteLLM config directory
+  ansible.builtin.file:
+    path: "{{ litellm_proxy_config_dir_host }}"
+    state: directory
+    mode: "0755"
   become: true
 
-- name: Start Open-WebUI container
-  community.docker.docker_container:
-    name: open-webui
-    image: ghcr.io/open-webui/open-webui:main
-    image_name_mismatch: recreate
-    pull: always
-    restart_policy: unless-stopped
-    networks:
-      - name: "{{ llm_network_name }}"
-    env:
-      OLLAMA_BASE_URL: "{{ ollama_base_url_for_webui }}"
-      WEBUI_SECRET_KEY: t0p-s3cr3t
-      SSL_CERT_FILE: "/etc/ssl/certs/ca-certificates.crt"
-    volumes:
-      - open-webui:/app/backend/data
-      - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro"
-    ports:
-      - "{{ open_webui_http_port }}:8080"
-    labels:
-      wud.tag.include: main
-      wud.watch.digest: "true"
-      homepage.group: "{{ services['open-webui'].group }}"
-      homepage.name: "{{ services['open-webui'].name }}"
-      homepage.href: https://open-webui.lan
-      homepage.icon: openai.png
-      homepage.server: "{{ inventory_hostname }}"
-      homepage.container: open-webui
-  become: true
+- name: Template LiteLLM Proxy config.yaml
+  ansible.builtin.template:
+    src: litellm_config.yaml.j2
+    dest: "{{ litellm_proxy_config_full_host_path }}"
+    mode: "0644"
+  notify: Restart LiteLLM Proxy service
+  vars:
+    litellm_proxy_config_full_host_path: "{{ litellm_proxy_config_dir_host }}/{{ litellm_proxy_config_filename }}"
 
-# Block for mcp-proxy setup
+# Block for MCP-Proxy setup
 - name: MCP-Proxy Setup
   become: true
   block:
@@ -85,113 +66,157 @@
         src: mcp_proxy_servers.json.j2
         dest: "{{ mcp_proxy_config_full_host_path }}"
         mode: "0644"
-      notify: Restart MCP-Proxy container
+      notify: Restart MCP-Proxy service
 
-    - name: Start the mcp-proxy container
-      community.docker.docker_container:
-        name: "{{ mcp_proxy_container_name }}"
-        image: "{{ mcp_proxy_image_custom }}"
-        state: started
-        detach: true
-        ports:
-          - "{{ mcp_proxy_service_port }}:{{ mcp_proxy_service_port }}"
-        volumes:
-          - "{{ mcp_proxy_config_full_host_path }}:/app/servers.json:ro"
-        command:
-          - "--port"
-          - "{{ mcp_proxy_service_port }}"
-          - "--host"
-          - "0.0.0.0"
-          - "--named-server-config"
-          - "/app/servers.json"
-          - "--pass-environment"
-        networks:
-          - name: "{{ llm_network_name }}"
-        restart_policy: "unless-stopped"
+- name: Deploy all LiteLLM services using Docker Compose
+  community.docker.docker_compose_v2:
+    project_name: litellm
+    state: present
+    definition:
+      version: '3.8'
+      services:
+        postgres:
+          image: "{{ litellm_db_image }}"
+          container_name: "{{ litellm_db_container_name }}"
+          ports:
+            - "{{ litellm_db_port_host }}:{{ litellm_db_port_container }}"
+          volumes:
+            - "{{ litellm_db_data_dir }}:/var/lib/postgresql/data"
+          environment:
+            POSTGRES_USER: "{{ litellm_db_user }}"
+            POSTGRES_PASSWORD: "{{ litellm_db_password }}"
+            POSTGRES_DB: "{{ litellm_db_name }}"
+          healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U {{ litellm_db_user }}"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+          restart: unless-stopped
+          networks:
+            - llm-network
 
+        redis:
+          image: "{{ litellm_redis_image }}"
+          container_name: "{{ litellm_redis_container_name }}"
+          ports:
+            - "{{ litellm_redis_port_host }}:{{ litellm_redis_port_container }}"
+          volumes:
+            - "{{ litellm_redis_data_dir }}:/data"
+          command: redis-server --appendonly yes
+          restart: unless-stopped
+          networks:
+            - llm-network
 
-- name: LiteLLM Proxy Setup
+        litellm-proxy:
+          image: "{{ litellm_proxy_image }}"
+          container_name: "{{ litellm_proxy_container_name }}"
+          ports:
+            - "{{ litellm_proxy_port_host }}:{{ litellm_proxy_port_container }}"
+          volumes:
+            - "{{ litellm_proxy_config_full_host_path }}:/app/config.yaml:ro"
+          env:
+            LANGFUSE_PUBLIC_KEY: "{{ langfuse_homelab_public_key }}"
+            LANGFUSE_SECRET_KEY: "{{ litellm_homelab_secret_key | default(langfuse_homelab_secret_key) }}"
+            LANGFUSE_HOST: "{{ langfuse_host_for_litellm }}"
+            LITELLM_MASTER_KEY: "{{ litellm_master_key }}"
+            DATABASE_URL: "{{ litellm_database_url }}"
+            REDIS_HOST: "{{ litellm_redis_container_name }}"
+            REDIS_PORT: "{{ litellm_redis_port_container }}"
+            GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
+            OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
+            ANTHROPIC_API_KEY: "{{ ANTHROPIC_API_KEY }}"
+          command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"]
+          depends_on:
+            postgres:
+              condition: service_healthy
+            redis:
+              condition: service_started
+          restart: unless-stopped
+          networks:
+            - llm-network
+          labels:
+            wud.tag.include: main
+            wud.watch.digest: "true"
+            homepage.group: "{{ services['litellm-ui'].group }}"
+            homepage.name: "{{ services['litellm-ui'].name }}"
+            homepage.href: https://litellm-ui.lan
+            homepage.icon: "{{ services['litellm-ui'].icon | default('litellm.png') }}"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: "{{ litellm_proxy_container_name }}"
+
+        mcp-proxy:
+          image: "{{ mcp_proxy_image_custom }}"
+          container_name: "{{ mcp_proxy_container_name }}"
+          ports:
+            - "{{ mcp_proxy_service_port }}:{{ mcp_proxy_service_port }}"
+          volumes:
+            - "{{ mcp_proxy_config_full_host_path }}:/app/servers.json:ro"
+          command:
+            - "--port"
+            - "{{ mcp_proxy_service_port }}"
+            - "--host"
+            - "0.0.0.0"
+            - "--named-server-config"
+            - "/app/servers.json"
+            - "--pass-environment"
+          restart: unless-stopped
+          networks:
+            - llm-network
+
+        open-webui:
+          image: ghcr.io/open-webui/open-webui:main
+          container_name: open-webui
+          ports:
+            - "{{ open_webui_http_port }}:8080"
+          environment:
+            OLLAMA_BASE_URL: "{{ ollama_base_url_for_webui }}"
+            WEBUI_SECRET_KEY: t0p-s3cr3t
+            SSL_CERT_FILE: "/etc/ssl/certs/ca-certificates.crt"
+          volumes:
+            - open-webui:/app/backend/data
+            - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro"
+          labels:
+            wud.tag.include: main
+            wud.watch.digest: "true"
+            homepage.group: "{{ services['open-webui'].group }}"
+            homepage.name: "{{ services['open-webui'].name }}"
+            homepage.href: https://open-webui.lan
+            homepage.icon: openai.png
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: open-webui
+          restart: unless-stopped
+          networks:
+            - llm-network
+          depends_on:
+            litellm-proxy:
+              condition: service_started
+            mcp-proxy:
+              condition: service_started
+
+        google-workspace-mcp:
+          image: "{{ google_workspace_mcp_image }}"
+          container_name: "{{ google_workspace_mcp_container_name }}"
+          ports:
+            - "{{ google_workspace_mcp_port_host }}:{{ google_workspace_mcp_port_container }}"
+          environment:
+            GOOGLE_OAUTH_CLIENT_ID: "{{ google_workspace_oauth_client_id }}"
+            GOOGLE_OAUTH_CLIENT_SECRET: "{{ google_workspace_oauth_client_secret }}"
+            MCP_ENABLE_OAUTH21: "true"
+            WORKSPACE_MCP_STATELESS_MODE: "true"
+            WORKSPACE_EXTERNAL_URL: "https://google-workspace-mcp.net"
+          command:
+            - "uvx"
+            - "workspace-mcp"
+            - "--transport"
+            - "streamable-http"
+          restart: unless-stopped
+          networks:
+            - llm-network
+
+      networks:
+        llm-network:
+          driver: bridge
+
+      volumes:
+        open-webui:
   become: true
-  block:
-    - name: Define LiteLLM Proxy related facts
-      ansible.builtin.set_fact:
-        litellm_proxy_config_full_host_path: "{{ litellm_proxy_config_dir_host }}/{{ litellm_proxy_config_filename }}"
-
-    - name: Ensure LiteLLM Proxy config directory exists on host
-      ansible.builtin.file:
-        path: "{{ litellm_proxy_config_dir_host }}"
-        state: directory
-        mode: "0755"
-
-    - name: Template LiteLLM Proxy config.yaml
-      ansible.builtin.template:
-        src: litellm_config.yaml.j2
-        dest: "{{ litellm_proxy_config_full_host_path }}"
-        mode: "0644"
-      notify: Restart LiteLLM Proxy container
-
-    - name: Define LiteLLM Proxy container environment variables
-      ansible.builtin.set_fact:
-        litellm_proxy_env_vars:
-          LANGFUSE_PUBLIC_KEY: "{{ langfuse_homelab_public_key }}"
-          LANGFUSE_SECRET_KEY: "{{ langfuse_homelab_secret_key }}"
-          LANGFUSE_HOST: "{{ langfuse_host_for_litellm }}"
-          LITELLM_MASTER_KEY: "{{ litellm_master_key }}"
-          GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
-          OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
-          ANTHROPIC_API_KEY: "{{ ANTHROPIC_API_KEY }}"
-          # LITELLM_LOG_LEVEL: "DEBUG"
-
-    - name: Start LiteLLM Proxy container
-      community.docker.docker_container:
-        name: "{{ litellm_proxy_container_name }}"
-        image: "{{ litellm_proxy_image }}"
-        state: started
-        detach: true
-        ports:
-          - "{{ litellm_proxy_port_host }}:{{ litellm_proxy_port_container }}"
-        volumes:
-          - "{{ litellm_proxy_config_full_host_path }}:/app/config.yaml:ro"
-        env: "{{ litellm_proxy_env_vars }}"
-        command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"] # Add --detailed_debug here if needed for troubleshooting
-        networks:
-          - name: "{{ llm_network_name }}"
-        restart_policy: "unless-stopped"
-      register: litellm_proxy_container_result
-
-    - name: Debug LiteLLM Proxy container result
-      ansible.builtin.debug:
-        var: litellm_proxy_container_result
-      when: litellm_proxy_container_result is defined and litellm_proxy_container_result.changed
-
-- name: Google Workspace MCP Setup
-  become: true
-  block:
-    - name: Start Google Workspace MCP container
-      community.docker.docker_container:
-        name: "{{ google_workspace_mcp_container_name }}"
-        image: "{{ google_workspace_mcp_image }}"
-        state: started
-        detach: true
-        ports:
-          - "{{ google_workspace_mcp_port_host }}:{{ google_workspace_mcp_port_container }}"
-        env:
-          GOOGLE_OAUTH_CLIENT_ID: "{{ google_workspace_oauth_client_id }}"
-          GOOGLE_OAUTH_CLIENT_SECRET: "{{ google_workspace_oauth_client_secret }}"
-          MCP_ENABLE_OAUTH21: "true"
-          WORKSPACE_MCP_STATELESS_MODE: "true"
-          WORKSPACE_EXTERNAL_URL: "https://google-workspace-mcp.net"
-        command:
-          - "uvx"
-          - "workspace-mcp"
-          - "--transport"
-          - "streamable-http"
-        networks:
-          - name: "{{ llm_network_name }}"
-        restart_policy: "unless-stopped"
-      register: google_workspace_mcp_result
-
-    - name: Debug Google Workspace MCP container result
-      ansible.builtin.debug:
-        var: google_workspace_mcp_result
-      when: google_workspace_mcp_result is defined and google_workspace_mcp_result.changed
