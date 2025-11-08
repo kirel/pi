@@ -1,0 +1,96 @@
+---
+# tasks file for metamcp
+
+- name: Set up MetaMCP environment variables
+  ansible.builtin.set_fact:
+    metamcp_final_env: "{{ metamcp_env | default({}) }}"
+
+- name: Add OAuth environment variables (if enabled)
+  ansible.builtin.set_fact:
+    metamcp_final_env: "{{ metamcp_final_env | combine({
+      'OAUTH_GITHUB_CLIENT_ID': metamcp_oauth_github_client_id,
+      'OAUTH_GITHUB_CLIENT_SECRET': metamcp_oauth_github_client_secret,
+      'OAUTH_GOOGLE_CLIENT_ID': metamcp_oauth_google_client_id,
+      'OAUTH_GOOGLE_CLIENT_SECRET': metamcp_oauth_google_client_secret,
+      'OAUTH_MICROSOFT_CLIENT_ID': metamcp_oauth_microsoft_client_id,
+      'OAUTH_MICROSOFT_CLIENT_SECRET': metamcp_oauth_microsoft_client_secret,
+      'OAUTH_ALLOWED_DOMAINS': metamcp_oauth_allowed_domains
+      }) }}"
+  when: metamcp_oauth_enabled | bool
+
+- name: Add Redis environment variable (if enabled)
+  ansible.builtin.set_fact:
+    metamcp_final_env: "{{ metamcp_final_env | combine({'REDIS_URL': metamcp_redis_url}) }}"
+  when: metamcp_redis_enabled | bool
+
+- name: Create PostgreSQL volume
+  community.docker.docker_volume:
+    name: "{{ metamcp_postgres_volume_name }}"
+    state: present
+  become: true
+  when: metamcp_postgres_enabled | bool
+
+- name: Deploy MetaMCP with Docker Compose
+  community.docker.docker_compose_v2:
+    project_name: metamcp
+    state: present
+    definition:
+      version: '3.8'
+      networks:
+        default:
+          name: "{{ metamcp_network_name }}"
+          external: true
+      volumes:
+        postgres_data:
+          name: "{{ metamcp_postgres_volume_name }}"
+      services:
+        postgres:
+          image: "{{ metamcp_postgres_image }}"
+          container_name: "{{ metamcp_postgres_container_name }}"
+          restart: unless-stopped
+          environment:
+            POSTGRES_DB: "{{ metamcp_postgres_db }}"
+            POSTGRES_USER: "{{ metamcp_postgres_user }}"
+            POSTGRES_PASSWORD: "{{ metamcp_postgres_password }}"
+          ports:
+            - "{{ metamcp_postgres_port_host }}:{{ metamcp_postgres_port_container }}"
+          volumes:
+            - postgres_data:/var/lib/postgresql/data
+          healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U {{ metamcp_postgres_user }} -d {{ metamcp_postgres_db }}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+          networks:
+            - default
+        metamcp:
+          image: "{{ metamcp_image }}"
+          container_name: "{{ metamcp_container_name }}"
+          restart: unless-stopped
+          environment: "{{ metamcp_final_env | combine({'NODE_EXTRA_CA_CERTS': '/certs/caddy_local_root.crt'}) }}"
+          ports:
+            - "{{ metamcp_port_host }}:{{ metamcp_port_container }}"
+          volumes:
+            - "/usr/local/share/ca-certificates/caddy_local_root.crt:/certs/caddy_local_root.crt:ro"
+          labels:
+            wud.tag.include: latest
+            wud.watch.digest: "true"
+            homepage.group: "{{ services['metamcp'].group }}"
+            homepage.name: "{{ services['metamcp'].name }}"
+            homepage.href: https://metamcp.lan
+            homepage.icon: gateway.png
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: "{{ metamcp_container_name }}"
+          depends_on:
+            postgres:
+              condition: service_healthy
+          networks:
+            - default
+  become: true
+  register: metamcp_compose_result
+
+- name: Debug MetaMCP compose result
+  ansible.builtin.debug:
+    var: metamcp_compose_result
+  when: metamcp_compose_result is defined and metamcp_compose_result.changed

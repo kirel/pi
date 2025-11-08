@@ -48,6 +48,7 @@ linkding_http_port: 8012
 n8n_http_port: 5678
 teddycloud_http_port: 8013
 teddycloud_box_port: 4443
+metamcp_port_host: 8015
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990
 uid: 1000 # TODO move to host_vars

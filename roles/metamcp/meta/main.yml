@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  author: Your Name
+  description: Deploy MetaMCP - MCP Aggregator, Orchestrator, Middleware and Gateway
+  company: Your Organization
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "22.04"
+        - "20.04"
+  galaxy_tags:
+    - mcp
+    - model-context-protocol
+    - llm
+    - tools
+    - gateway
+    - orchestration
+    - middleware
+
+dependencies:
+  - role: dockerhub
+    tags: [docker, dockerhub]

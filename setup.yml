@@ -12,19 +12,20 @@
     - { role: portainer, become: true, tags: [docker, portainer] }
     - { role: glances, become: true, tags: [glances] }
     - { role: storage, become: true, tags: [storage] }
-    - { role: homeassistant, become: true, tags: [ha] }
-    - { role: babybuddy, become: true, tags: [babybuddy] }
-    - { role: fix_hass_bluetooth, become: true, tags: [ha] }
-    - { role: wyoming, become: true, tags: [wyoming] }
-    - { role: media, become: true, tags: [media] }
-    - { role: monitoring, become: true, tags: [monitoring] }
-    - { role: homepage, become: true, tags: [homepage] }
     - { role: caddy, become: true, tags: [caddy] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
     - { role: resolved, become: true, tags: [pihole] }
     - { role: pihole, become: true, tags: [pihole] }
+    - { role: homeassistant, become: true, tags: [ha] }
+    - { role: fix_hass_bluetooth, become: true, tags: [ha] }
+    - { role: babybuddy, become: true, tags: [babybuddy] }
+    - { role: wyoming, become: true, tags: [wyoming] }
+    - { role: media, become: true, tags: [media] }
+    - { role: monitoring, become: true, tags: [monitoring] }
+    - { role: homepage, become: true, tags: [homepage] }
     - { role: llm_tools, become: true, tags: [llm, llm-tools] }
     - { role: llm_observability, become: true, tags: [llm, llm-observability] }
+    - { role: metamcp, become: true, tags: [metamcp] }
     - { role: wallabag, become: true, tags: [wallabag] }
     - { role: readeck, become: true, tags: [readeck] }
     - { role: linkding, become: true, tags: [linkding] }

@@ -1,0 +1,51 @@
+---
+# defaults file for metamcp
+
+# Base configuration
+metamcp_network_name: "llm-network"  # Reuse the same network as llm_tools
+metamcp_image: "ghcr.io/metatool-ai/metamcp:latest"
+metamcp_container_name: "metamcp"
+
+# Port configuration
+metamcp_port_host: 8015  # Host port for MetaMCP
+metamcp_port_container: 12008  # Container port (default from MetaMCP)
+
+# PostgreSQL Configuration
+metamcp_postgres_enabled: true
+metamcp_postgres_image: "postgres:16-alpine"
+metamcp_postgres_container_name: "metamcp-pg"
+metamcp_postgres_port_host: 9433  # Host port for PostgreSQL
+metamcp_postgres_port_container: 5432  # Container port
+metamcp_postgres_db: "metamcp_db"
+metamcp_postgres_user: "metamcp_user"
+metamcp_postgres_password: "m3t4mcp"  # TODO: Move to secrets in production
+metamcp_postgres_volume_name: "metamcp_postgres_data"
+
+# MetaMCP Environment Variables - Core Settings
+metamcp_env:
+  PORT: "{{ metamcp_port_container | string }}"
+  NODE_ENV: "production"
+  APP_URL: "https://metamcp.lan"
+  NEXT_PUBLIC_APP_URL: "https://metamcp.lan"
+  SESSION_SECRET: "change-this-secret-in-production"
+  # Better Auth secret (required for authentication)
+  BETTER_AUTH_SECRET: "change-this-better-auth-secret-in-production"
+  # Docker networking fix
+  TRANSFORM_LOCALHOST_TO_DOCKER_INTERNAL: "true"
+  # Database connection
+  DATABASE_URL: "postgresql://{{ metamcp_postgres_user }}:{{ metamcp_postgres_password }}@postgres:{{ metamcp_postgres_port_container }}/{{ metamcp_postgres_db }}"
+
+# OAuth Configuration (optional)
+# Set these if you want to enable OAuth authentication
+metamcp_oauth_enabled: false
+metamcp_oauth_github_client_id: ""
+metamcp_oauth_github_client_secret: ""
+metamcp_oauth_google_client_id: ""
+metamcp_oauth_google_client_secret: ""
+metamcp_oauth_microsoft_client_id: ""
+metamcp_oauth_microsoft_client_secret: ""
+metamcp_oauth_allowed_domains: "example.com"
+
+# Optional: Redis Configuration for session persistence
+metamcp_redis_enabled: false
+metamcp_redis_url: "redis://redis:6379"
