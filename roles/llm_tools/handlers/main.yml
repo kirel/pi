@@ -1,2 +1,7 @@
 ---
-# Handlers removed - docker_compose_v2 automatically handles restarts when configuration changes
+- name: Restart LiteLLM Proxy service
+  community.docker.docker_container:
+    name: "{{ litellm_proxy_container_name }}"
+    state: started
+    restart: true
+  become: true
