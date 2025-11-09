@@ -87,18 +87,18 @@ uv run ansible-playbook setup.yml --tags caddy --limit homelab
 **Container management:**
 ```bash
 # Check all containers
-ssh nuc "docker ps"
+ssh root@homelab-nuc.lan "docker ps"
 
 # View logs
-ssh nuc "docker logs -f caddy"
-ssh nuc "docker logs -f home-assistant"
+ssh root@homelab-nuc.lan "docker logs -f caddy"
+ssh root@homelab-nuc.lan "docker logs -f home-assistant"
 
 # Restart specific container
-ssh nuc "docker restart caddy"
+ssh root@homelab-nuc.lan "docker restart caddy"
 ssh root@homelab-nuc.lan "docker compose -f /path/to/compose.yml up -d"
 
 # Check resource usage
-ssh nuc "docker stats --no-stream"
+ssh root@homelab-nuc.lan "docker stats --no-stream"
 ```
 
 **System diagnostics:**
@@ -107,10 +107,10 @@ ssh nuc "docker stats --no-stream"
 cat inventory
 
 # Check DNS resolution
-ssh homelab-nuc.lan dig ailab-proxmox.lan
+ssh root@homelab-nuc.lan dig ailab-proxmox.lan
 
 # Check Pi-hole status
-ssh pi@192.168.50.4 "sudo docker ps | grep pihole"
+ssh pi@nameserver-pi.lan "sudo docker ps | grep pihole"
 ```
 
 ### Secrets Management
@@ -239,7 +239,7 @@ uv run ansible-playbook setup.yml --check --diff --limit homelab
 uv run ansible-playbook setup.yml --limit homelab
 
 # Step 4: Verify
-ssh nuc "docker ps | grep <service>"
+ssh root@homelab-nuc.lan "docker ps | grep <service>"
 
 # Step 5: Roll out to all hosts
 uv run ansible-playbook setup.yml
@@ -251,6 +251,13 @@ uv run ansible-playbook setup.yml
 **Router:** 192.168.50.1
 **DNS Servers:** 192.168.50.4 (Pi-hole primary), 192.168.50.5 (Pi-hole backup)
 
+**Local DNS (.lan domains):**
+All hosts in the Ansible inventory automatically get a `.lan` DNS entry:
+- `homelab-nuc.lan` → 192.168.50.5
+- `nameserver-pi.lan` → 192.168.50.4
+- `ailab-ubuntu.lan` → 192.168.50.10
+- etc.
+
 **Port assignments:**
 - 80, 443: Caddy reverse proxy (TLS termination)
 - 8123: Home Assistant
@@ -258,7 +265,47 @@ uv run ansible-playbook setup.yml
 - 8000-8999: Various apps (Wallabag, Readeck, Linkding, etc.)
 - 9002: Portainer
 
-All external access goes through Caddy which proxies to backend services. Internal services use `*.lan` hostnames resolved by Pi-hole.
+All external access goes through Caddy which proxies to backend services. Internal services use `*.lan` hostnames resolved by Pi-hole (see "How Local DNS Works" below).
+
+## How Local DNS Works
+
+The homelab uses Pi-hole as both DNS and DHCP server to provide automatic local DNS resolution:
+
+### Automatic DNS Entry Creation
+
+1. **Inventory Hosts**: All hosts in the Ansible `inventory` automatically get a `.lan` DNS entry (e.g., `homelab-nuc.lan` → 192.168.50.5)
+
+2. **Service Discovery**: All Docker services defined in `group_vars/all/services.yml` are automatically configured in Pi-hole with CNAME records pointing to the reverse proxy (e.g., `home-assistant.lan` → `homelab-nuc.lan`)
+
+3. **Static DHCP**: Over 65 devices have static DHCP reservations managed in `group_vars/all/dhcp.yml` (Shelly devices, laptops, phones, etc.)
+
+### DNS Flow Example
+
+When you visit `home-assistant.lan`:
+1. Client DNS query → Pi-hole (192.168.50.4)
+2. Pi-hole checks: Is `home-assistant.lan` in the inventory? → No
+3. Pi-hole checks: Is it a service in services.yml? → Yes
+4. Pi-hole returns: `home-assistant.lan` → `homelab-nuc.lan` (CNAME)
+5. Client connects to `homelab-nuc.lan:443`
+6. Caddy terminates TLS and proxies to `home-assistant:8123`
+7. Response flows back through Caddy → TLS → Client
+
+### Configuration Files
+
+- **`inventory`**: Defines all hosts and their IPs/SSH users
+- **`group_vars/all/services.yml`**: All Docker services and their reverse proxy configuration
+- **`group_vars/all/dhcp.yml`**: Static DHCP reservations for 65+ devices
+- **`group_vars/all/dns.yml`**: Additional manual DNS entries
+- **`group_vars/all/config.yml`**: Network settings and IP ranges
+- **`roles/pihole/tasks/main.yml`**: Pi-hole deployment and DNS/DHCP configuration logic
+
+### Benefits
+
+✅ **Zero manual DNS management** - Just add a host to inventory or service to services.yml
+✅ **Service discovery** - All services accessible via `*.lan` domains
+✅ **Predictable IPs** - Static DHCP ensures consistent addressing
+✅ **Centralized management** - One Ansible playbook controls DNS, DHCP, and services
+✅ **Automatic certificates** - Caddy gets certificates for all `*.lan` domains
 
 ## Dependencies
 
@@ -279,6 +326,39 @@ Install with: `uv pip sync && uv run ansible-galaxy install --force-with-deps -r
 - **SSH keys** - Public keys configured in Pi imager for initial bootstrap
 - **Network isolation** - Services communicate via Docker networks and reverse proxy
 - **TLS everywhere** - Caddy provides internal TLS with self-signed certs
+- **SSH Users** - Always use the SSH users specified in the `inventory` file for each host. See the "Inventory" section below for the complete list.
+
+## Inventory
+
+The `inventory` file defines all hosts and their SSH users. **When connecting via SSH, always use the username specified in the inventory file for that host.**
+
+**Note:** All hosts in the inventory automatically get a `.lan` DNS entry via Pi-hole. For example, `homelab-nuc` becomes `homelab-nuc.lan`.
+
+**Host Inventory:**
+- `nameserver-pi` (192.168.50.4): SSH user = `pi`
+- `homelab-nuc` (192.168.50.5): SSH user = `root`
+- `ailab-proxmox` (192.168.50.9): SSH user = `root`
+- `ailab-ubuntu` (192.168.50.10): SSH user = `daniel`
+- `micpi` (192.168.50.7): SSH user = `daniel`
+
+**Example SSH Commands:**
+```bash
+# Nameserver (Pi-hole)
+ssh pi@nameserver-pi.lan
+# or: ssh pi@192.168.50.4
+
+# Homelab NUC
+ssh root@homelab-nuc.lan
+# or: ssh root@192.168.50.5
+
+# AI Lab Ubuntu
+ssh daniel@ailab-ubuntu.lan
+# or: ssh daniel@192.168.50.10
+
+# Audio satellites
+ssh daniel@micpi.lan
+# or: ssh daniel@192.168.50.7
+```
 
 ## Service Categories
 
@@ -303,16 +383,16 @@ Common tags for `--tags` flag:
 
 ## Environment-Specific Access
 
-**Homelab server:**
-- SSH: `ssh nuc@homelab-nuc.lan` or `ssh root@192.168.50.5`
-- Ubuntu-based Docker host running ~30 services
+**Important:** Always use the SSH usernames specified in the `inventory` file. See the "Inventory" section above for the complete list.
 
-**Pi-hole servers:**
-- Primary: `ssh pi@192.168.50.4`
-- Backup on homelab: `ssh nuc`
+**Common SSH Connections:**
+- **Homelab server** (homelab-nuc): `ssh root@homelab-nuc.lan` - Ubuntu-based Docker host running ~30 services
+- **Nameserver** (nameserver-pi): `ssh pi@nameserver-pi.lan` - Pi-hole DNS/DHCP server
+- **AI Lab Ubuntu** (ailab-ubuntu): `ssh daniel@ailab-ubuntu.lan` - AI/ML server with GPU support
+- **Proxmox** (ailab-proxmox): `ssh root@ailab-proxmox.lan` - Virtualization host
+- **Audio satellites** (micpi): `ssh daniel@micpi.lan` - Alexa integration
 
-**Satellite devices:**
-- Audio satellites for Alexa integration: `ssh micpi`
+**Note:** The `.lan` domains are automatically created by Pi-hole's local DNS. You can also use IP addresses (e.g., `ssh root@192.168.50.5`) if DNS is not available.
 
 ## Common Operations
 
@@ -328,21 +408,21 @@ uv run ansible-playbook setup.yml --tags <service-tag> --limit homelab --extra-v
 **View logs:**
 ```bash
 # Container logs
-ssh nuc "docker logs -f <container-name>"
+ssh root@homelab-nuc.lan "docker logs -f <container-name>"
 
 # System logs
 ssh <host> "journalctl -u <service> -f"
 
 # All Docker logs
-ssh nuc "docker compose -f /path/to/compose.yml logs -f"
+ssh root@homelab-nuc.lan "docker compose -f /path/to/compose.yml logs -f"
 ```
 
 **Health checks:**
 ```bash
-ssh nuc "docker ps"
-ssh nuc "docker logs -f home-assistant"
-ssh nuc "docker logs -f caddy"
-ssh nuc "docker stats --no-stream"
+ssh root@homelab-nuc.lan "docker ps"
+ssh root@homelab-nuc.lan "docker logs -f home-assistant"
+ssh root@homelab-nuc.lan "docker logs -f caddy"
+ssh root@homelab-nuc.lan "docker stats --no-stream"
 ```
 
 ## Setup Commands (Quick Reference)
@@ -458,10 +538,14 @@ uv run ansible-playbook setup.yml --tags llm-inference --limit ailab-ubuntu
 **Verify Running:**
 ```bash
 # Check LiteLLM proxy
-ssh ailab "docker ps | grep litellm"
+ssh root@homelab-nuc.lan "docker ps | grep litellm"
 
-# Test model directly
-curl -X POST http://ailab-ubuntu:4000/v1/models \
+# Test model directly (if running on homelab-nuc)
+curl -X POST http://homelab-nuc.lan:4000/v1/models \
+  -H "Authorization: Bearer $LITELLM_MASTER_KEY"
+
+# Test model on ailab-ubuntu
+curl -X POST http://ailab-ubuntu.lan:4000/v1/models \
   -H "Authorization: Bearer $LITELLM_MASTER_KEY"
 ```
 
