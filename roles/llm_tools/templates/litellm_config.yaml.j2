@@ -1,8 +1,8 @@
 model_list:
-  # Primary home model - Local qwen3-vl:8b with optimal context
+  # Primary home model - Local qwen3-vl:8b-instruct with optimal context
   - model_name: home
     litellm_params:
-      model: "ollama_chat/qwen3-vl:8b-thinking-q8_0"
+      model: "ollama_chat/qwen3-vl:8b-instruct-q8_0"
       api_base: "http://{{ ollama_host }}:{{ ollama_port }}"
       # Set keepalive to -1 (infinite) to keep model loaded
       extra_body:

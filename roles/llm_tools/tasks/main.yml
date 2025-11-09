@@ -17,7 +17,6 @@
     src: litellm_config.yaml.j2
     dest: "{{ litellm_proxy_config_full_host_path }}"
     mode: "0644"
-  notify: Restart LiteLLM Proxy service
 
 - name: Ensure Open WebUI config directory exists
   ansible.builtin.file:
@@ -77,7 +76,6 @@
         src: mcp_proxy_servers.json.j2
         dest: "{{ mcp_proxy_config_full_host_path }}"
         mode: "0644"
-      notify: Restart MCP-Proxy service
 
 - name: Deploy all LiteLLM services using Docker Compose
   community.docker.docker_compose_v2:
