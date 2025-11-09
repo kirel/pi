@@ -19,6 +19,15 @@
     mode: "0644"
   notify: Restart LiteLLM Proxy service
 
+- name: Ensure Open WebUI config directory exists
+  ansible.builtin.file:
+    path: "{{ open_webui_config_folder }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ uid }}"
+    group: "{{ uid }}"
+  become: true
+
 # Block for MCP-Proxy setup
 - name: MCP-Proxy Setup
   become: true
@@ -167,8 +176,10 @@
             OLLAMA_BASE_URL: "{{ ollama_base_url_for_webui }}"
             WEBUI_SECRET_KEY: t0p-s3cr3t
             SSL_CERT_FILE: "/etc/ssl/certs/ca-certificates.crt"
+            PUID: "{{ uid }}"
+            PGID: "{{ uid }}"
           volumes:
-            - open-webui:/app/backend/data
+            - "{{ open_webui_config_folder }}:/app/backend/data"
             - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro"
           labels:
             wud.tag.include: main
@@ -211,7 +222,4 @@
       networks:
         llm-network:
           driver: bridge
-
-      volumes:
-        open-webui:
   become: true

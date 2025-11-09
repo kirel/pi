@@ -4,6 +4,108 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is an **Ansible-based homelab infrastructure** that manages multiple servers and Docker containers across a home network (192.168.50.0/24). It orchestrates services like Home Assistant, Pi-hole DNS, Caddy reverse proxy, AI/ML tools, and media services.
 
+## LLM Service Architecture
+
+The homelab runs LLM (Large Language Model) services across multiple hosts with distinct roles:
+
+### LLM-Tools (homelab-nuc, port 192.168.50.5)
+
+**Role:** Orchestration, proxy, and UI
+**Tags:** `llm`, `llm-tools`
+**Ansible role:** `llm_tools` (see `/home/daniel/code/pi/roles/llm_tools/`)
+
+**Services deployed:**
+- **LiteLLM Proxy** - HTTP 4000 (via port 3123 on homelab-nuc)
+  - Central API gateway for all LLM models
+  - Supports OpenAI SDK, Anthropic, Google, local models
+  - Database persistence (PostgreSQL on port 5433)
+  - Redis cache (port 6380)
+  - Admin UI: https://litellm-ui.lan
+
+- **Open WebUI** - HTTP 3123
+  - Chat interface for interacting with LLMs
+  - Connects to Ollama via LiteLLM proxy
+  - Web UI: https://open-webui.lan
+
+- **MCP-Proxy** - HTTP 8009
+  - Model Context Protocol proxy
+  - Enables LLMs to interact with external tools/data sources
+
+- **Google Workspace MCP** - HTTP 8014
+  - Provides LLM access to Google services
+  - Gmail, Calendar, Drive, etc.
+
+### LLM-Observability (homelab-nuc, port 192.168.50.5)
+
+**Role:** Monitoring and observability for LLM systems
+**Tags:** `llm`, `llm-observability`
+**Ansible role:** `llm_observability` (see `/home/daniel/code/pi/roles/llm_observability/`)
+
+**Services deployed:**
+- **Langfuse** - HTTP 3003
+  - LLM tracing, analytics, and monitoring
+  - Web UI: https://langfuse.lan
+
+### LLM-Inference (ailab-ubuntu, port 192.168.50.10)
+
+**Role:** Local model execution with GPU acceleration
+**Tags:** `llm`, `llm-inference`
+**Ansible role:** `llm_inference` (see `/home/daniel/code/pi/roles/llm_inference/`)
+
+**Services deployed:**
+- **Ollama** - HTTP 11434 (http://ailab-ubuntu.lan:11434)
+  - Local LLM inference engine
+  - Runs qwen3-vl:8b-thinking-q8_0 model
+  - 128K context window, fully GPU-accelerated
+  - Accessible via homelab-nuc's LiteLLM proxy
+
+- **ComfyUI** - HTTP 8188 (http://ailab-ubuntu.lan:8188)
+  - Node-based UI for stable diffusion
+  - GPU-accelerated image generation
+  - Web UI: https://comfyui.lan
+
+### Service Dependencies
+
+```
+Open WebUI (homelab-nuc) → LiteLLM Proxy (homelab-nuc) → Ollama (ailab-ubuntu)
+                                  ↓
+                            MCP-Proxy + Google Workspace MCP
+                                  ↓
+                           Langfuse (homelab-nuc) [observability]
+```
+
+### Deployment Commands
+
+```bash
+# Deploy all LLM tools to homelab-nuc
+uv run ansible-playbook setup.yml --tags llm-tools --limit homelab
+
+# Deploy all LLM inference services to ailab-ubuntu
+uv run ansible-playbook setup.yml --tags llm-inference --limit ailab-ubuntus
+
+# Deploy observability (Langfuse)
+uv run ansible-playbook setup.yml --tags llm-observability --limit homelab
+
+# Deploy everything LLM-related
+uv run ansible-playbook setup.yml --tags llm --limit homelab,ailab-ubuntus
+```
+
+### Service Verification
+
+```bash
+# Check homelab-nuc LLM services
+ssh root@homelab-nuc.lan "docker ps | grep -E 'litellm|open-webui|mcp-proxy'"
+
+# Check ailab-ubuntu inference services
+ssh daniel@ailab-ubuntu.lan "docker ps | grep -E 'ollama|comfyui'"
+
+# Test LiteLLM proxy
+curl -H "Authorization: Bearer \$LITELLM_MASTER_KEY" http://homelab-nuc.lan:4000/v1/models
+
+# Test Ollama directly
+curl http://ailab-ubuntu.lan:11434/api/tags
+```
+
 ## Architecture Overview
 
 ### Infrastructure Topology
