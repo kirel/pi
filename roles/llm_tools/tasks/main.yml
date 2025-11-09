@@ -8,14 +8,16 @@
     mode: "0755"
   become: true
 
+- name: Define LiteLLM Proxy config path fact
+  ansible.builtin.set_fact:
+    litellm_proxy_config_full_host_path: "{{ litellm_proxy_config_dir_host }}/{{ litellm_proxy_config_filename }}"
+
 - name: Template LiteLLM Proxy config.yaml
   ansible.builtin.template:
     src: litellm_config.yaml.j2
     dest: "{{ litellm_proxy_config_full_host_path }}"
     mode: "0644"
   notify: Restart LiteLLM Proxy service
-  vars:
-    litellm_proxy_config_full_host_path: "{{ litellm_proxy_config_dir_host }}/{{ litellm_proxy_config_filename }}"
 
 # Block for MCP-Proxy setup
 - name: MCP-Proxy Setup
@@ -114,7 +116,7 @@
             - "{{ litellm_proxy_port_host }}:{{ litellm_proxy_port_container }}"
           volumes:
             - "{{ litellm_proxy_config_full_host_path }}:/app/config.yaml:ro"
-          env:
+          environment:
             LANGFUSE_PUBLIC_KEY: "{{ langfuse_homelab_public_key }}"
             LANGFUSE_SECRET_KEY: "{{ litellm_homelab_secret_key | default(langfuse_homelab_secret_key) }}"
             LANGFUSE_HOST: "{{ langfuse_host_for_litellm }}"
@@ -151,14 +153,7 @@
             - "{{ mcp_proxy_service_port }}:{{ mcp_proxy_service_port }}"
           volumes:
             - "{{ mcp_proxy_config_full_host_path }}:/app/servers.json:ro"
-          command:
-            - "--port"
-            - "{{ mcp_proxy_service_port }}"
-            - "--host"
-            - "0.0.0.0"
-            - "--named-server-config"
-            - "/app/servers.json"
-            - "--pass-environment"
+          command: "mcp-proxy --port {{ mcp_proxy_service_port }} --host 0.0.0.0 --named-server-config /app/servers.json --pass-environment"
           restart: unless-stopped
           networks:
             - llm-network
