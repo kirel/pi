@@ -1,53 +1,33 @@
-{% set ollama_models_map = [
-  { "alias": "Qwen3-8B-GGUF:Q4_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-8B-GGUF:Q4_K_XL" },
-  { "alias": "Qwen3-8B-GGUF:Q6_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-8B-GGUF:Q6_K_XL" },
-  { "alias": "Qwen3-14B-GGUF:Q6_K_XL", "ollama_id": "hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL" }
-] -%}
 model_list:
-  - model_name: home-nano
+  # Primary home model - Local qwen3-vl:8b with optimal context
+  - model_name: home
     litellm_params:
-      model: openrouter/openai/gpt-4.1-nano
-      api_key: "os.environ/OPENROUTER_API_KEY"
-  - model_name: home-mini
-    litellm_params:
-      model: openrouter/openai/gpt-4.1-mini
-      api_key: "os.environ/OPENROUTER_API_KEY"
-  - model_name: home-maxi
-    litellm_params:
-      model: openrouter/openai/gpt-4.1
-      api_key: "os.environ/OPENROUTER_API_KEY"
-
-  - model_name: home-local
-    litellm_params:
-      model: "openai/hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL"
-      api_base: "http://{{ ollama_host }}:{{ ollama_port }}/v1" # Points directly to Ollama's OpenAI-compatible endpoint
-      api_key: ollama
-    model_info:
-      supports_function_calling: true
-
-  - model_name: home-ollama
-    litellm_params:
-      model: "ollama_chat/hf.co/unsloth/Qwen3-14B-GGUF:Q6_K_XL"
+      model: "ollama_chat/qwen3-vl:8b-thinking-q8_0"
       api_base: "http://{{ ollama_host }}:{{ ollama_port }}"
+      # Set keepalive to -1 (infinite) to keep model loaded
+      extra_body:
+        keep_alive: -1
+        # Set optimal context for RTX 3090 (128,256 tokens = 100% GPU)
+        options:
+          num_ctx: 128256
     model_info:
       supports_function_calling: true
+      supports_vision: true
 
+  # Fallback to remote model when local is unavailable
+  - model_name: home-remote
+    litellm_params:
+      model: anthropic/claude-3-5-haiku-20241022
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+
+  # Wildcard for other providers
   - model_name: "*"
     litellm_params:
       model: "*"
 
-  {% for model_info in ollama_models_map -%}
-  - model_name: "{{ model_info.alias }}"
-    litellm_params:
-      model: "openai/{{ model_info.ollama_id }}" # Model ID for Ollama, but openai protocol
-      api_base: "http://{{ ollama_host }}:{{ ollama_port }}/v1" # Points directly to Ollama's OpenAI-compatible endpoint
-      api_key: ollama
-    model_info:
-      supports_function_calling: true
-  {% endfor %}
-
 router_settings:
-  fallbacks: [{"home": ["home-local"]}]
+  # Fallback from home to home-remote when local model fails
+  fallbacks: [{"home": ["home-remote"]}]
   redis_host: "{{ litellm_redis_container_name }}"
   redis_port: "{{ litellm_redis_port_container }}"
 

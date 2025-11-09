@@ -376,6 +376,95 @@ uv run ansible-playbook fix_hass_bluetooth.yml
 uv run ansible-playbook cleanup.yml
 ```
 
+## Ollama Context Limits
+
+### Tested on ailab-ubuntu (RTX 3090 24GB VRAM)
+
+**qwen3-vl:8b-thinking-q8_0 model:**
+- **Maximum context for 100% GPU: 128,256 tokens**
+- Context ≥128,320: degrades to ~10%/90% CPU/GPU split (use system RAM)
+- Model size: ~9.8 GB
+- At 128,256 context: ~25 GB VRAM usage
+
+**How to set context via API:**
+```bash
+curl -X POST http://localhost:11434/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen3-vl:8b-thinking-q8_0","options":{"num_ctx":128256},"prompt":"test","stream":false}'
+```
+
+**How to verify (check for 100% GPU):**
+```bash
+docker exec ollama ollama ps
+# Look for "100% GPU" in PROCESSOR column
+```
+
+**Context vs. VRAM usage:**
+- 8K context: 15 GB model size
+- 16K context: 16 GB model size
+- 32K context: 17 GB model size
+- 64K context: 20 GB model size
+- 96K context: 22 GB model size
+- 128K context: 25 GB model size
+
+**Note:** Modelfile `PARAMETER num_ctx` is ignored for Qwen3-VL models due to [GitHub bug #12855](https://github.com/ollama/ollama/issues/12855). Must use API options.
+
+## LiteLLM Configuration
+
+### Current Setup (Updated)
+
+**Primary Model:** `home`
+- **Model:** qwen3-vl:8b-thinking-q8_0 (via ollama_chat)
+- **Context:** 128,256 tokens (100% GPU optimized)
+- **Keepalive:** -1 (infinite)
+- **Features:** Function calling, Vision support
+
+**Fallback Model:** `home-remote`
+- **Model:** anthropic/claude-3-5-haiku-20241022
+- **Used when:** Local model is unavailable
+- **API Key:** Requires ANTHROPIC_API_KEY
+
+**Configuration File:** `/home/daniel/code/pi/roles/llm_tools/templates/litellm_config.yaml.j2`
+
+**Usage:**
+```bash
+# Via OpenAI SDK
+export OPENAI_API_KEY="sk-litellm-key"
+export OPENAI_BASE_URL="http://litellm-proxy:4000"
+
+# Use the home model
+curl -X POST http://litellm-proxy:4000/v1/chat/completions \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "home",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
+```
+
+**Router Fallback:** When `home` fails, automatically falls back to `home-remote`
+
+**Environment Variables Needed:**
+- `ANTHROPIC_API_KEY` - For remote fallback model
+- `LITELLM_MASTER_KEY` - For proxy authentication
+- `OPENROUTER_API_KEY` - For wildcard model access (optional)
+
+**Deploy Changes:**
+```bash
+# Update LiteLLM on ailab server
+uv run ansible-playbook setup.yml --tags llm-inference --limit ailab-ubuntu
+```
+
+**Verify Running:**
+```bash
+# Check LiteLLM proxy
+ssh ailab "docker ps | grep litellm"
+
+# Test model directly
+curl -X POST http://ailab-ubuntu:4000/v1/models \
+  -H "Authorization: Bearer $LITELLM_MASTER_KEY"
+```
+
 ### Code Style (Quick Reference)
 
 **YAML:**
