@@ -29,7 +29,8 @@
       OLLAMA_HOST: "0.0.0.0"
       OLLAMA_FLASH_ATTENTION: "1"
       OLLAMA_KV_CACHE_TYPE: "q8_0"
-      OLLAMA_CONTEXT_LENGTH: "40960"
+      # OLLAMA_CONTEXT_LENGTH: "40960"  # Let LiteLLM control context size per-model
       OLLAMA_NUM_PARALLEL: "2"
       OLLAMA_MAX_LOADED_MODELS: "2"
+      OLLAMA_RESTART_TOKEN: "{{ ansible_facts.date_time.epoch }}"
   become: true
