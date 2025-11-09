@@ -17,7 +17,7 @@ model_list:
   # Fallback to remote model when local is unavailable
   - model_name: home-remote
     litellm_params:
-      model: anthropic/claude-3-5-haiku-20241022
+      model: anthropic/claude-haiku-4-5
       api_key: "os.environ/ANTHROPIC_API_KEY"
 
   # Wildcard for other providers
