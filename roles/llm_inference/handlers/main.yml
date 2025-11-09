@@ -4,18 +4,6 @@
 - name: Restart llama-swap
   community.docker.docker_container:
     name: "{{ llamaswap_container_name }}"
-    image: ghcr.io/mostlygeek/llama-swap:cuda
     state: started
     restart: true
-    ports:
-      - "{{ llamaswap_port }}:8080"
-    volumes:
-      - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
-    device_requests:
-      - driver: nvidia
-        count: -1
-        capabilities:
-          - [gpu]
-    env:
-      LLAMASWAP_RESTART_TOKEN: "{{ ansible_facts.date_time.epoch }}"
   become: true

@@ -19,7 +19,7 @@ models:
       --jinja
     # GPU settings for RTX 3090
     env:
-      GGML_CUDA_MOUNT: "/usr/lib/x86_64-linux-gnu/libcudart.so.12"
+      - "GGML_CUDA_MOUNT=/usr/lib/x86_64-linux-gnu/libcudart.so.12"
 
 # Global settings
 server:
