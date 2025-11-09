@@ -473,11 +473,23 @@ curl -X POST http://localhost:11434/api/generate \
   -d '{"model":"qwen3-vl:8b-thinking-q8_0","options":{"num_ctx":128256},"prompt":"test","stream":false}'
 ```
 
-**How to verify (check for 100% GPU):**
+**How to verify (check for 100% GPU and correct context):**
 ```bash
 docker exec ollama ollama ps
-# Look for "100% GPU" in PROCESSOR column
 ```
+
+Expected output for optimal configuration:
+```
+NAME                         ID              SIZE     PROCESSOR    CONTEXT    UNTIL
+qwen3-vl:8b-thinking-q8_0    9e9bbfc77186    25 GB    100% GPU     128256     Forever
+```
+
+Verify:
+- **PROCESSOR** column shows `100% GPU` (not CPU or mixed)
+- **CONTEXT** column shows `128256` (matches your configuration)
+- **SIZE** column shows `25 GB` (expected for q8_0 at 128K context)
+
+If context is lower than 128256, the model is using the default or has been reset.
 
 **Context vs. VRAM usage:**
 - 8K context: 15 GB model size
