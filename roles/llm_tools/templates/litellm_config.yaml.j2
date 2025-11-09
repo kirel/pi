@@ -1,14 +1,13 @@
 model_list:
-  # Primary home model - Local qwen3-vl:8b-instruct with optimal context
+  # Primary home model - Local Qwen3-VL via llama-swap
   - model_name: home
     litellm_params:
-      model: "openai/qwen3-vl:8b-instruct-q8_0"
-      api_base: "http://{{ ollama_host }}:{{ ollama_port }}/v1"
-      api_key: "ollama"
+      model: "openai/{{ llamaswap_model_hf }}"
+      api_base: "http://{{ ollama_host }}:{{ llamaswap_port }}/v1"
+      api_key: "llama-swap"
       # Set keepalive to -1 (infinite) to keep model loaded
       extra_body:
         keep_alive: -1
-        num_ctx: 128256
     model_info:
       supports_function_calling: true
       supports_vision: true

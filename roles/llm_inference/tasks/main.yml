@@ -1,36 +1,45 @@
 ---
 # tasks file for llm_inference
 
-- name: Ensure models directory exists
+- name: Stop and remove old Ollama container if exists
+  community.docker.docker_container:
+    name: ollama
+    state: absent
+  become: true
+  ignore_errors: true
+
+- name: Ensure llama-swap config directory exists
   ansible.builtin.file:
-    path: "{{ ollama_path }}"
+    path: "{{ llamaswap_config_path }}"
     state: directory
     mode: "0755"
   become: true
 
-- name: Start the Ollama container
+- name: Create llama-swap config file
+  ansible.builtin.template:
+    src: llamaswap_config.yaml.j2
+    dest: "{{ llamaswap_config_path }}/config.yaml"
+    mode: "0644"
+  become: true
+  notify: Restart llama-swap
+
+- name: Start the llama-swap container
   community.docker.docker_container:
-    name: "{{ ollama_container_name }}"
-    image: "{{ ollama_image }}"
+    name: "{{ llamaswap_container_name }}"
+    image: ghcr.io/mostlygeek/llama-swap:cuda
     image_name_mismatch: recreate
     pull: true
     state: started
-    restart_policy: "{{ ollama_restart_policy }}"
+    restart_policy: unless-stopped
     ports:
-      - "{{ ollama_port }}:11434"
+      - "{{ llamaswap_port }}:8080"
     volumes:
-      - "{{ ollama_path }}:/root/.ollama"
+      - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
     device_requests:
       - driver: nvidia
         count: -1
         capabilities:
           - [gpu]
     env:
-      OLLAMA_HOST: "0.0.0.0"
-      OLLAMA_FLASH_ATTENTION: "1"
-      OLLAMA_KV_CACHE_TYPE: "q8_0"
-      # OLLAMA_CONTEXT_LENGTH: "40960"  # Let LiteLLM control context size per-model
-      OLLAMA_NUM_PARALLEL: "2"
-      OLLAMA_MAX_LOADED_MODELS: "2"
-      OLLAMA_RESTART_TOKEN: "{{ ansible_facts.date_time.epoch }}"
+      LLAMASWAP_RESTART_TOKEN: "{{ ansible_facts.date_time.epoch }}"
   become: true
