@@ -52,4 +52,11 @@
           - [gpu]
     env:
       LLAMASWAP_RESTART_TOKEN: "{{ ansible_facts.date_time.epoch }}"
+    labels:
+      homepage.group: "{{ services['llama-swap'].group }}"
+      homepage.name: "{{ services['llama-swap'].name }}"
+      homepage.href: "https://llama-swap.lan"
+      homepage.icon: llama.png
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: "{{ llamaswap_container_name }}"
   become: true
