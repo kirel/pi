@@ -1,0 +1,75 @@
+---
+# ZFS Pool Configuration
+zfs_pool_name: tank
+zfs_pool_state: present  # present, absent
+
+# Initial pool creation (single disk, will be mirrored later)
+zfs_pool_devices:
+  - /dev/disk/by-id/ata-WDC_WD60EZAX-00C8VB0_WD-WX52DC3JW19P
+
+# Pool properties
+zfs_pool_properties:
+  ashift: 12  # 4K sectors
+  autoexpand: "on"  # Auto-expand when larger disks added
+
+# Root filesystem properties
+zfs_root_properties:
+  compression: lz4
+  atime: "off"
+  xattr: sa
+  acltype: posixacl
+  relatime: "on"
+
+# Datasets to create
+zfs_datasets:
+  - name: "{{ zfs_pool_name }}/medien"
+    properties:
+      mountpoint: /tank/medien
+      recordsize: 128K  # Optimal for large media files
+      compression: lz4
+    owner: "{{ username }}"
+    group: users
+    mode: "0775"
+
+  - name: "{{ zfs_pool_name }}/config"
+    properties:
+      mountpoint: /tank/config
+      recordsize: 128K
+      compression: lz4
+    owner: "{{ username }}"
+    group: users
+    mode: "0775"
+
+  - name: "{{ zfs_pool_name }}/timemachine"
+    properties:
+      mountpoint: /tank/timemachine
+      recordsize: 128K
+      compression: lz4
+    owner: "{{ username }}"
+    group: users
+    mode: "0755"
+
+  - name: "{{ zfs_pool_name }}/backups"
+    properties:
+      mountpoint: /tank/backups
+      recordsize: 128K
+      compression: lz4
+    owner: "{{ username }}"
+    group: users
+    mode: "0755"
+
+# Scrub schedule (monthly on first Sunday at 2 AM)
+zfs_scrub_enabled: true
+zfs_scrub_schedule:
+  minute: "0"
+  hour: "2"
+  day: "1-7"
+  weekday: "0"  # Sunday
+
+# Snapshot configuration
+zfs_snapshots_enabled: false  # Enable when ready
+zfs_snapshot_schedule:
+  hourly: 24    # Keep 24 hourly snapshots
+  daily: 7      # Keep 7 daily snapshots
+  weekly: 4     # Keep 4 weekly snapshots
+  monthly: 12   # Keep 12 monthly snapshots

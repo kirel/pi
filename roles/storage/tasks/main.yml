@@ -86,8 +86,8 @@
               browseable = yes; create mask = 0775; directory mask = 0755; force user = {{ username }}; force group = users;"
           volumes:
             - /etc/avahi/services/:/external/avahi
-            - /mnt/Medien:/shares/Medien
-            - /mnt/dreifuenf:/shares/dreifuenf
+            - /tank/medien:/shares/Medien
+            - /tank/timemachine:/shares/dreifuenf
             - "{{ config_root }}:/shares/config"
 
         syncthing:
@@ -100,8 +100,8 @@
           volumes:
             - "{{ syncthing_config_folder }}:/config"
             - "{{ syncthing_data_folder }}:/data"
-            - /{{ mount_root }}/Medien:/Medien
-            - /{{ mount_root }}/dreifuenf:/dreifuenf
+            - /tank/medien:/Medien
+            - /tank/timemachine:/dreifuenf
           ports:
             - "{{ syncthing_http_port }}:8384"
             - 22000:22000/tcp

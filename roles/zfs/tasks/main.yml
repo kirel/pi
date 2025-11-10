@@ -1,0 +1,117 @@
+---
+- name: Install ZFS utilities
+  ansible.builtin.package:
+    name:
+      - zfsutils-linux
+      - zfs-dkms
+    state: present
+    update_cache: yes
+
+- name: Load ZFS kernel module
+  community.general.modprobe:
+    name: zfs
+    state: present
+
+- name: Check if ZFS pool exists
+  ansible.builtin.command: zpool list {{ zfs_pool_name }}
+  register: zfs_pool_check
+  failed_when: false
+  changed_when: false
+
+- name: Create ZFS pool (single disk initially)
+  ansible.builtin.command: >
+    zpool create
+    {% for key, value in zfs_pool_properties.items() %}
+    -o {{ key }}={{ value }}
+    {% endfor %}
+    {% for key, value in zfs_root_properties.items() %}
+    -O {{ key }}={{ value }}
+    {% endfor %}
+    {{ zfs_pool_name }}
+    {{ zfs_pool_devices | join(' ') }}
+  when:
+    - zfs_pool_check.rc != 0
+    - zfs_pool_state == 'present'
+  register: zfs_pool_created
+
+- name: Get current pool status
+  ansible.builtin.command: zpool status {{ zfs_pool_name }}
+  register: zfs_pool_status
+  changed_when: false
+  failed_when: false
+  when: zfs_pool_state == 'present'
+
+- name: Display pool status
+  ansible.builtin.debug:
+    msg: "{{ zfs_pool_status.stdout_lines }}"
+  when:
+    - zfs_pool_status is defined
+    - zfs_pool_status.stdout_lines is defined
+
+- name: Create ZFS datasets
+  ansible.builtin.command: >
+    zfs create
+    {% for key, value in item.properties.items() %}
+    -o {{ key }}={{ value }}
+    {% endfor %}
+    {{ item.name }}
+  loop: "{{ zfs_datasets }}"
+  args:
+    creates: "/{{ item.properties.mountpoint }}"
+  when: zfs_pool_state == 'present'
+
+- name: Set dataset permissions
+  ansible.builtin.file:
+    path: "{{ item.properties.mountpoint }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+    state: directory
+  loop: "{{ zfs_datasets }}"
+  when: zfs_pool_state == 'present'
+
+- name: Create ZFS scrub script
+  ansible.builtin.template:
+    src: zfs-scrub.sh.j2
+    dest: /usr/local/bin/zfs-scrub.sh
+    mode: "0755"
+  when:
+    - zfs_scrub_enabled
+    - zfs_pool_state == 'present'
+
+- name: Schedule ZFS scrub cron job
+  ansible.builtin.cron:
+    name: "ZFS scrub {{ zfs_pool_name }}"
+    minute: "{{ zfs_scrub_schedule.minute }}"
+    hour: "{{ zfs_scrub_schedule.hour }}"
+    day: "{{ zfs_scrub_schedule.day }}"
+    weekday: "{{ zfs_scrub_schedule.weekday }}"
+    job: "/usr/local/bin/zfs-scrub.sh {{ zfs_pool_name }}"
+    user: root
+    state: "{{ 'present' if zfs_scrub_enabled else 'absent' }}"
+  when: zfs_pool_state == 'present'
+
+- name: Install sanoid for snapshots (optional)
+  ansible.builtin.package:
+    name: sanoid
+    state: "{{ 'present' if zfs_snapshots_enabled else 'absent' }}"
+  when: zfs_pool_state == 'present'
+
+- name: Configure sanoid for automated snapshots
+  ansible.builtin.template:
+    src: sanoid.conf.j2
+    dest: /etc/sanoid/sanoid.conf
+    mode: "0644"
+  when:
+    - zfs_snapshots_enabled
+    - zfs_pool_state == 'present'
+  notify: restart sanoid timer
+
+- name: Enable sanoid timer
+  ansible.builtin.systemd:
+    name: sanoid.timer
+    enabled: "{{ zfs_snapshots_enabled }}"
+    state: "{{ 'started' if zfs_snapshots_enabled else 'stopped' }}"
+  when:
+    - zfs_pool_state == 'present'
+    - zfs_snapshots_enabled

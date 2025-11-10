@@ -1,0 +1,19 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: Your Name
+  description: ZFS pool and dataset management for homelab NAS
+  company: Homelab
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+  galaxy_tags:
+    - zfs
+    - storage
+    - nas
+    - filesystem
