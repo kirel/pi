@@ -56,6 +56,26 @@ TODO https://github.com/coreprocess/linux-unattended-installation
 
     ansible-playbook setup.yml --limit ailab
 
+### AI Lab - LlamaSwap (llama.cpp)
+
+**LlamaSwap** - A lightweight llama.cpp server running Qwen3-VL-8B-Instruct-GGUF with GPU acceleration
+- **Context Size:** 92,375 tokens (maximum that fits in RTX 3090 24GB VRAM)
+- **Model:** Qwen3-VL-8B-Instruct-GGUF Q8_K_XL from Unsloth
+- **URL:** http://ailab-ubuntu.lan:9292 or https://llama-swap.lan
+- **WebUI:** http://ailab-ubuntu.lan:9292/ui
+- **Context Testing:** 92,000-92,375 tokens work, 92,500+ causes OOM
+
+Deploy/update:
+```bash
+uv run ansible-playbook setup.yml --tags llm-inference --limit ailab-ubuntu
+```
+
+Note: After adding services, remember to redeploy Caddy and Pi-hole:
+```bash
+uv run ansible-playbook setup.yml --tags caddy --limit homelab
+uv run ansible-playbook setup.yml --tags pihole --limit nameserver
+```
+
 ## Secrets
 
 Edit secrets

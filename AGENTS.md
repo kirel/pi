@@ -4,7 +4,43 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is an **Ansible-based homelab infrastructure** that manages multiple servers and Docker containers across a home network (192.168.50.0/24). It orchestrates services like Home Assistant, Pi-hole DNS, Caddy reverse proxy, AI/ML tools, and media services.
 
+## ⚠️ IMPORTANT: Service Discovery Requirements
+
+When adding or modifying services in `group_vars/all/services.yml`, you **MUST** redeploy both Caddy and Pi-hole:
+
+```bash
+# 1. Deploy Caddy (reverse proxy + TLS)
+uv run ansible-playbook setup.yml --tags caddy --limit homelab
+
+# 2. Deploy Pi-hole (DNS + DHCP)
+uv run ansible-playbook setup.yml --tags pihole --limit nameserver
+```
+
+**Why both?**
+- **Caddy** regenerates reverse proxy configurations and TLS certificates
+- **Pi-hole** updates DNS records and creates CNAME entries for services
+
+**Order matters:** Deploy Caddy first, then Pi-hole.
+
+**Example workflow when adding a service:**
+1. Add service definition to `group_vars/all/services.yml`
+2. Deploy the service itself (e.g., `llm-inference`)
+3. Deploy Caddy
+4. Deploy Pi-hole
+5. Test the new `.lan` domain
+
 ## LLM Service Architecture
+
+### LlamaSwap Context Limits (RTX 3090 24GB VRAM)
+
+**Tested Maximum Context Sizes:**
+- ✅ 80,000-92,375: SUCCESS (22-22.4GB VRAM)
+- ✗ 92,500+: FAILED (OOM)
+
+**Final Configuration:**
+- **Context:** 92,375 tokens (93% VRAM utilization)
+- **Config:** `roles/llm_inference/templates/llamaswap_config.yaml.j2`
+- **Command:** `--ctx-size 92375 --flash-attn auto --n-gpu-layers 99`
 
 The homelab runs LLM (Large Language Model) services across multiple hosts with distinct roles:
 
