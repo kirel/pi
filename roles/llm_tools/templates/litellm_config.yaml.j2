@@ -2,7 +2,7 @@ model_list:
   # Primary home model - Local Qwen3-VL via llama-swap
   - model_name: home
     litellm_params:
-      model: "openai/{{ llamaswap_model_hf }}"
+      model: "openai/{{ llamaswap_model_alias }}"
       api_base: "http://{{ ollama_host }}:{{ llamaswap_port }}/v1"
       api_key: "llama-swap"
       # Set keepalive to -1 (infinite) to keep model loaded
@@ -34,4 +34,3 @@ litellm_settings:
 
 general_settings:
   master_key: "{{ litellm_master_key }}"
-

@@ -15,6 +15,15 @@
     mode: "0755"
   become: true
 
+- name: Ensure llama-swap cache directory exists
+  ansible.builtin.file:
+    path: "{{ llamaswap_config_path }}/cache"
+    state: directory
+    mode: "0777"
+    owner: "1000"
+    group: "1000"
+  become: true
+
 - name: Create llama-swap config file
   ansible.builtin.template:
     src: llamaswap_config.yaml.j2
@@ -35,6 +44,7 @@
       - "{{ llamaswap_port }}:8080"
     volumes:
       - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
+      - "{{ llamaswap_config_path }}/cache:/app/.cache"
     device_requests:
       - driver: nvidia
         count: -1
