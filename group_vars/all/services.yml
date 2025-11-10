@@ -186,6 +186,13 @@ services:
     wol: "{{ ailab_mac_address }}"
     tls_skip: true
     try: 360s
+  llama-swap:
+    name: LlamaSwap
+    target: ailab-ubuntu.lan
+    http_port: 9292
+    group: AI
+    wol: "{{ ailab_mac_address }}"
+    try: 360s
   comfyui:
     name: ComfyUI
     target: ailab-ubuntu.lan
