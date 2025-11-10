@@ -15,3 +15,9 @@ server:
   cors: true
   # Set timeout
   timeout: 3600
+
+# Preload models on startup
+hooks:
+  on_startup:
+    preload:
+      - "{{ llamaswap_model_alias }}"
