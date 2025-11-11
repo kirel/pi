@@ -45,8 +45,8 @@ TODO https://github.com/coreprocess/linux-unattended-installation
     uv run ansible-playbook setup.yml --tags ha # Update smart home
     uv run ansible-playbook setup.yml --tags ollama # Update ollama
 
-    uv run ansible-playbook setup.yml --limit mic-satellites -t satellite-audio
-    uv run ansible-playbook setup.yml --limit mic-satellites -t wyoming --start-at-task="Start wyoming stack"
+    uv run ansible-playbook setup.yml --limit mic_satellites -t satellite-audio
+    uv run ansible-playbook setup.yml --limit mic_satellites -t wyoming --start-at-task="Start wyoming stack"
 
 ### Virtualhere
 
@@ -138,9 +138,9 @@ TODO: create ansible script
 
 ## Satellites
 
-    uv run ansible-playbook setup.yml -l mic-satellites -t alsa,pulse
-    uv run ansible-playbook setup.yml -l mic-satellites -t stack
-    uv run ansible-playbook setup.yml -l mic-satellites -t vis
+    uv run ansible-playbook setup.yml -l mic_satellites -t alsa,pulse
+    uv run ansible-playbook setup.yml -l mic_satellites -t stack
+    uv run ansible-playbook setup.yml -l mic_satellites -t vis
 
 ### Test audio
 

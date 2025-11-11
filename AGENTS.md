@@ -117,13 +117,13 @@ Open WebUI (homelab-nuc) → LiteLLM Proxy (homelab-nuc) → Ollama (ailab-ubunt
 uv run ansible-playbook setup.yml --tags llm-tools --limit homelab
 
 # Deploy all LLM inference services to ailab-ubuntu
-uv run ansible-playbook setup.yml --tags llm-inference --limit ailab-ubuntus
+uv run ansible-playbook setup.yml --tags llm-inference --limit ailab_ubuntus
 
 # Deploy observability (Langfuse)
 uv run ansible-playbook setup.yml --tags llm-observability --limit homelab
 
 # Deploy everything LLM-related
-uv run ansible-playbook setup.yml --tags llm --limit homelab,ailab-ubuntus
+uv run ansible-playbook setup.yml --tags llm --limit homelab,ailab_ubuntus
 ```
 
 ### Service Verification
@@ -198,7 +198,7 @@ uv run ansible-playbook setup.yml
 ```bash
 # Specific host group
 uv run ansible-playbook setup.yml --limit homelab
-uv run ansible-playbook setup.yml --limit ailab-ubuntus
+uv run ansible-playbook setup.yml --limit ailab_ubuntus
 
 # Specific service(s) via tags
 uv run ansible-playbook setup.yml --tags caddy,pihole,homepage --limit homelab,nameserver
@@ -580,7 +580,7 @@ uv run ansible-playbook setup.yml
 uv run ansible-playbook setup.yml --tags caddy,pihole,homepage --limit homelab,nameserver
 uv run ansible-playbook setup.yml --tags ha  # Home Assistant
 uv run ansible-playbook setup.yml --tags llm,llm-inference  # AI tools
-uv run ansible-playbook setup.yml --limit mic-satellites -t satellite-audio
+uv run ansible-playbook setup.yml --limit mic_satellites -t satellite-audio
 
 # Update specific hosts
 uv run ansible-playbook setup.yml --limit ailab

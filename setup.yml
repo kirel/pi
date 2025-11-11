@@ -62,7 +62,7 @@
     - { role: virtualhere, become: true, tags: [virtualhere] }
 
 - name: Setup ailabs
-  hosts: ailab-ubuntus
+  hosts: ailab_ubuntus
   ignore_unreachable: true
   roles:
     - { role: basic, become: true, tags: [basic] }
@@ -86,7 +86,7 @@
     - { role: syncthing, become: true, tags: [syncthing] }
 
 - name: Setup mic sattelites
-  hosts: mic-satellites
+  hosts: mic_satellites
   ignore_unreachable: true
   roles:
     - { role: pi, become: true, tags: [pi] }
