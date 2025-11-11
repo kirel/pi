@@ -13,8 +13,9 @@
 - name: Start n8n container
   community.docker.docker_container:
     name: n8n
-    image: docker.n8n.io/n8nio/n8n
+    image: n8nio/n8n
     pull: always
+    image_name_mismatch: recreate
     restart_policy: unless-stopped
     user: "{{ uid }}:{{ uid }}"
     ports:
