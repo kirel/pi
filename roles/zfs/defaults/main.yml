@@ -6,6 +6,7 @@ zfs_pool_state: present  # present, absent
 # Initial pool creation (single disk, will be mirrored later)
 zfs_pool_devices:
   - /dev/disk/by-id/ata-WDC_WD60EZAX-00C8VB0_WD-WX52DC3JW19P
+  - /dev/disk/by-id/ata-WDC_WD60EZAX-00C8VB0_WD-WX22A922U1NU
 
 # Pool properties
 zfs_pool_properties:
