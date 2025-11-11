@@ -62,8 +62,15 @@ username_personal: daniel
 uid_personal: 1001
 mount_root: mnt
 shares:
-  - Medien
-  - dreifuenf
+  - medien
+  - config
+  - ai-models
+timemachine_shares:
+  - timemachine
+dataset_shares: "{{ shares }}"
+syncthing_datasets:
+  - medien
+  - ai-models
 config_root: /home/{{ username }}/config
 base_src_path: /opt/src # Base path for cloning source repos
 ollama_host: ailab-ubuntu.lan

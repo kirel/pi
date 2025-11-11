@@ -10,57 +10,77 @@
   ansible.builtin.package:
     name: cifs-utils
     state: present
-- name: Create mount folders
-  ansible.builtin.file:
-    path: /{{ mount_root }}/{{ item }}
-    state: directory
-    mode: "0755"
-  with_items: "{{ shares }}"
-- name: Mount drives by label
-  ansible.posix.mount:
-    path: /{{ mount_root }}/{{ item }}
-    src: LABEL={{ item }}
-    fstype: ext4
-    state: mounted
-  with_items: "{{ shares }}"
-- name: Create tm folder
-  ansible.builtin.file:
-    path: /{{ mount_root }}/dreifuenf/timemachine
-    state: directory
-    mode: "0755"
-
-- name: Reposess everything
-  ansible.builtin.file:
-    path: /{{ mount_root }}/{{ item }}
-    owner: "{{ username }}"
-    group: users
-    mode: u=rwx,g=rwxs
-    recurse: true
-  with_items: "{{ shares.0 }}"
-
-- name: Create user tm folder
-  ansible.builtin.file:
-    path: /{{ mount_root }}/dreifuenf/timemachine/{{ username_personal }}
-    state: directory
-    owner: "{{ username_personal }}"
-    mode: u=rwx,g=,o=
-
 - name: Create config folders
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "{{ username }}"
-    group: users # Add group ownership
-    mode: "0775" # Add permissions (owner rwx, group rwx, others rx)
+    group: users
+    mode: "0775"
   with_items:
     - "{{ syncthing_config_folder }}"
     - "{{ syncthing_data_folder }}"
 
+- name: Build Samba volume list
+  ansible.builtin.set_fact:
+    samba_volumes: "{{ samba_volumes | default([]) + ['/etc/avahi/services/:/external/avahi'] }}"
+  loop: "{{ [0] }}"  # Run once to initialize
+
+- name: Add dataset shares to Samba volumes
+  ansible.builtin.set_fact:
+    samba_volumes: "{{ samba_volumes + ['/tank/' + item + ':/shares/' + item | capitalize] }}"
+  loop: "{{ dataset_shares }}"
+
+- name: Add Time Machine shares to Samba volumes
+  ansible.builtin.set_fact:
+    samba_volumes: "{{ samba_volumes + ['/tank/' + item + ':/shares/' + item | capitalize] }}"
+  loop: "{{ timemachine_shares }}"
+
+- name: Add config to Samba volumes
+  ansible.builtin.set_fact:
+    samba_volumes: "{{ samba_volumes + [config_root + ':/shares/config'] }}"
+
+- name: Build Syncthing volume list
+  ansible.builtin.set_fact:
+    syncthing_volumes: "{{ syncthing_volumes | default([]) + [syncthing_config_folder + ':/config', syncthing_data_folder + ':/data'] }}"
+  loop: "{{ [0] }}"  # Run once to initialize
+
+- name: Add Syncthing datasets to volumes
+  ansible.builtin.set_fact:
+    syncthing_volumes: "{{ syncthing_volumes + ['/tank/' + item + ':/' + item | capitalize] }}"
+  loop: "{{ syncthing_datasets }}"
+
+- name: Build Samba environment variables
+  ansible.builtin.set_fact:
+    samba_env:
+      MODEL: TimeCapsule
+      AVAHI_NAME: nuc
+      SAMBA_CONF_LOG_LEVEL: 3
+      WSDD2_DISABLE: 1
+      ACCOUNT_nuc: nucpass
+      ACCOUNT_daniel: "daniel:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:361FA5DCDEC7F04CC65A84100D147EA0:[U          ]:LCT-643D057C:"
+      UID_daniel: "{{ uid_personal }}"
+      SAMBA_GLOBAL_STANZA: "guest account = {{ username }}"
+
+- name: Add dataset shares to Samba environment
+  ansible.builtin.set_fact:
+    samba_env: "{{ samba_env | combine({('SAMBA_VOLUME_CONFIG_' + item | capitalize): '[{{ item | capitalize }}]; path=/shares/' + item | capitalize + '; valid users = daniel, nuc; browseable = yes; guest ok = yes; read only = no; force group = users; create mask = 0775; directory mask = 0755'}) }}"
+  loop: "{{ dataset_shares }}"
+
+- name: Add Time Machine shares to Samba environment
+  ansible.builtin.set_fact:
+    samba_env: "{{ samba_env | combine({('SAMBA_VOLUME_CONFIG_' + item | capitalize): '[TimeMachine]; path=/shares/' + item | capitalize + '/%U; valid users = daniel; guest ok = no; read only = no; browseable = yes; fruit:time machine = yes; fruit:time machine max size = 1000G'}) }}"
+  loop: "{{ timemachine_shares }}"
+
+- name: Add config to Samba environment
+  ansible.builtin.set_fact:
+    samba_env: "{{ samba_env | combine({'SAMBA_VOLUME_CONFIG_Config': '[Config]; path=/shares/Config; valid users = daniel; guest ok = no; read only = no; browseable = yes; create mask = 0775; directory mask = 0755; force user = ' + username + '; force group = users;'}) }}"
+
 - name: Start Storage
   community.docker.docker_compose_v2:
     project_name: storage
-    pull: always # Set to "always", "missing", "never", or "policy" based on your needs
-    state: present # Ensure the services are started
+    pull: always
+    state: present
     definition:
       services:
         samba:
@@ -69,26 +89,8 @@
           image: ghcr.io/servercontainers/samba
           restart: unless-stopped
           network_mode: host
-          environment:
-            MODEL: TimeCapsule
-            AVAHI_NAME: nuc
-            SAMBA_CONF_LOG_LEVEL: 3
-            WSDD2_DISABLE: 1 # uncomment to disable optional services
-            ACCOUNT_nuc: nucpass
-            ACCOUNT_daniel: "daniel:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:361FA5DCDEC7F04CC65A84100D147EA0:[U          ]:LCT-643D057C:"
-            UID_daniel: "{{ uid_personal }}"
-            SAMBA_GLOBAL_STANZA: guest account = {{ username }}
-            SAMBA_VOLUME_CONFIG_Medien: "[Medien]; path=/shares/Medien; valid users = daniel, nuc; browseable = yes; guest
-              ok = yes; read only = no; force group = users; create mask = 0775; directory mask = 0755"
-            SAMBA_VOLUME_CONFIG_dreifuenf: "[TimeMachine]; path=/shares/dreifuenf/timemachine/%U; valid users = daniel; guest
-              ok = no; read only = no; browseable = yes; fruit:time machine = yes; fruit:time machine max size = {{ timemachine_max_size }}"
-            SAMBA_VOLUME_CONFIG_config: "[Config]; path=/shares/config; valid users = daniel; guest ok = no; read only = no;
-              browseable = yes; create mask = 0775; directory mask = 0755; force user = {{ username }}; force group = users;"
-          volumes:
-            - /etc/avahi/services/:/external/avahi
-            - /tank/medien:/shares/Medien
-            - /tank/timemachine:/shares/dreifuenf
-            - "{{ config_root }}:/shares/config"
+          environment: "{{ samba_env }}"
+          volumes: "{{ samba_volumes }}"
 
         syncthing:
           image: lscr.io/linuxserver/syncthing:latest
@@ -97,11 +99,7 @@
             PUID: "{{ uid }}"
             PGID: "{{ uid }}"
             TZ: Europe/Berlin
-          volumes:
-            - "{{ syncthing_config_folder }}:/config"
-            - "{{ syncthing_data_folder }}:/data"
-            - /tank/medien:/Medien
-            - /tank/timemachine:/dreifuenf
+          volumes: "{{ syncthing_volumes }}"
           ports:
             - "{{ syncthing_http_port }}:8384"
             - 22000:22000/tcp
@@ -116,7 +114,6 @@
             - homepage.icon=syncthing.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=syncthing
-
 
 - name: Avahi present
   ansible.builtin.package:
