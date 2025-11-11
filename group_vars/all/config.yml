@@ -78,11 +78,11 @@ litellm_proxy_port: 4000
 litellm_proxy_ui_port: 4001
 langfuse_port: 3003
 homeassistant_config_folder: "{{ config_root }}/home-assistant"
-homeassistant_media_folder: /{{ mount_root }}/Medien/Musik
+homeassistant_media_folder: /tank/medien/Musik
 music_assistant_data_folder: "{{ config_root }}/music-assistant"
-music_assistant_media_folder: /{{ mount_root }}/Medien/Musik
+music_assistant_media_folder: /tank/medien/Musik
 frigate_config_folder: "{{ config_root }}/frigate"
-frigate_media_folder: /{{ mount_root }}/Medien/Frigate
+frigate_media_folder: /tank/medien/Frigate
 vscode_config_folder: "{{ config_root }}/vscode"
 nodered_config_folder: "{{ config_root }}/node-red"
 mosquitto_config_folder: "{{ config_root }}/mosquitto/config"
@@ -96,9 +96,9 @@ caddy_data_folder: "{{ config_root }}/caddy/data"
 caddy_config_folder: "{{ config_root }}/caddy/config"
 uptime_kuma_data_folder: "{{ config_root }}/uptime-kuma/data"
 jellyfin_config_folder: "{{ config_root }}/jellyfin"
-jellyfin_movie_folder: /{{ mount_root }}/Medien/Filme
-jellyfin_shows_folder: /{{ mount_root }}/Medien/Shows
-jellyfin_music_folder: /{{ mount_root }}/Medien/Musik
+jellyfin_movie_folder: /tank/medien/Filme
+jellyfin_shows_folder: /tank/medien/Shows
+jellyfin_music_folder: /tank/medien/Musik
 navidrome_data_folder: "{{ config_root }}/navidrome"
 nextcloud_data_folder: "{{ config_root }}/nextcloud"
 syncthing_config_folder: "{{ config_root }}/syncthing/config"
