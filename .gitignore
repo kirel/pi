@@ -9,3 +9,4 @@ tmp/root.crt
 .pre-commit-config.yaml.lock
 .uv_cache/
 .gemini
+.env

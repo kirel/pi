@@ -128,6 +128,7 @@
             LANGFUSE_PUBLIC_KEY: "{{ langfuse_homelab_public_key }}"
             LANGFUSE_SECRET_KEY: "{{ litellm_homelab_secret_key | default(langfuse_homelab_secret_key) }}"
             LANGFUSE_HOST: "{{ langfuse_host_for_litellm }}"
+            LANGFUSE_OTEL_HOST: "{{ langfuse_host_for_litellm }}"
             LITELLM_MASTER_KEY: "{{ litellm_master_key }}"
             DATABASE_URL: "{{ litellm_database_url }}"
             REDIS_HOST: "{{ litellm_redis_container_name }}"

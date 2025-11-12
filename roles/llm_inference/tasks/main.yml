@@ -35,7 +35,7 @@
 - name: Start the llama-swap container
   community.docker.docker_container:
     name: "{{ llamaswap_container_name }}"
-    image: ghcr.io/mostlygeek/llama-swap:cuda
+    image: ghcr.io/mostlygeek/llama-swap:v172-cuda-b7018
     image_name_mismatch: recreate
     pull: true
     state: started

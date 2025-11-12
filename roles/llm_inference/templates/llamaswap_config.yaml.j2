@@ -1,13 +1,13 @@
-# llama-swap configuration for Qwen3-VL-8B-Instruct-GGUF
+# llama-swap configuration
 # Models to load and serve
 
 models:
-  {{ llamaswap_model_alias }}:
-    # Load model from HuggingFace with optimal parameters for Instruct variant
-    cmd: "/app/llama-server -hf {{ llamaswap_model_hf }} --port ${PORT} --ctx-size 80000 --flash-attn auto --n-gpu-layers 99 --top-p 0.8 --top-k 20 --temp 0.7 --min-p 0.0 --presence-penalty 1.5 --jinja"
-    # GPU settings for RTX 3090
+  {% for model in llamaswap_models -%}
+  {{ model.alias }}:
+    cmd: "{{ model.cmd }}"
     env:
       - "GGML_CUDA_MOUNT=/usr/lib/x86_64-linux-gnu/libcudart.so.12"
+  {% endfor %}
 
 # Global settings
 server:
@@ -20,4 +20,4 @@ server:
 hooks:
   on_startup:
     preload:
-      - "{{ llamaswap_model_alias }}"
+      - home
