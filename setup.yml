@@ -99,3 +99,12 @@
     - { role: glances, become: true, tags: [glances] }
     - { role: satellite_audio, become: true, tags: [wyoming, satellite-audio] } # Consider renaming tag too?
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
+
+- name: Setup SSH key distribution
+  hosts: ailab_ubuntus,homelab,nameserver,proxmox,mic_satellites
+  ignore_unreachable: true
+  vars:
+    source_host: ailab-ubuntu
+    source_user: daniel
+  roles:
+    - { role: ssh_keys, become: true, tags: [ssh-keys] }

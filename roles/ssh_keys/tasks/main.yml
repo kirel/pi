@@ -1,0 +1,100 @@
+---
+# This role generates an SSH key pair on the source host and distributes
+# the public key to all hosts in the inventory, adding it to the user
+# specified as ansible_user for each host.
+
+- name: Check if SSH key already exists
+  stat:
+    path: /home/{{ source_user }}/.ssh/id_rsa.pub
+  register: ssh_key_check
+  delegate_to: "{{ source_host }}"
+
+- name: Generate SSH key pair on {{ source_host }} for {{ source_user }}
+  openssh_keypair:
+    path: /home/{{ source_user }}/.ssh/id_rsa
+    type: rsa
+    size: 4096
+    state: present
+    comment: "{{ source_user }}@{{ source_host }}"
+  become_user: "{{ source_user }}"
+  delegate_to: "{{ source_host }}"
+  when: not ssh_key_check.stat.exists
+
+- name: Read the public key from {{ source_host }}
+  slurp:
+    src: /home/{{ source_user }}/.ssh/id_rsa.pub
+  register: public_key_content
+  delegate_to: "{{ source_host }}"
+
+- name: Set fact with public key
+  set_fact:
+    ssh_public_key: "{{ public_key_content.content | b64decode }}"
+
+- name: Determine home directory for {{ ansible_user }}
+  shell: >
+    getent passwd {{ ansible_user }} | cut -d: -f6
+  register: user_home_dir
+  become: true
+  changed_when: false
+
+- name: Set up SSH directory and authorized_keys for {{ ansible_user }}
+  block:
+    - name: Create .ssh directory for {{ ansible_user }}
+      file:
+        path: "{{ user_home_dir.stdout }}/.ssh"
+        state: directory
+        mode: '0700'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      become: true
+
+    - name: Add SSH public key to authorized_keys for {{ ansible_user }}
+      authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ ssh_public_key }}"
+        state: present
+        exclusive: false
+        manage_dir: false
+      become: true
+
+    - name: Set correct permissions on authorized_keys for {{ ansible_user }}
+      file:
+        path: "{{ user_home_dir.stdout }}/.ssh/authorized_keys"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+      become: true
+
+    - name: Record successful SSH key setup
+      set_fact:
+        ssh_key_setup: true
+  rescue:
+    - name: Record failed SSH key setup
+      set_fact:
+        ssh_key_setup: false
+    - debug:
+        msg: "Failed to set up SSH key for user {{ ansible_user }} on {{ inventory_hostname }}"
+
+- name: Display the public key for verification
+  debug:
+    msg: |
+      SSH Public Key for {{ source_user }}@{{ source_host }}:
+
+      ssh-rsa ***** KEY GENERATED *****
+
+      This key has been added to the following hosts:
+      {% for host in groups['all'] if hostvars[host].get('ssh_key_setup', false) %}
+      - {{ host }} (user: {{ hostvars[host].ansible_user }})
+      {% endfor %}
+
+      Skipped hosts:
+      {% for host in groups['all'] if not hostvars[host].get('ssh_key_setup', false) and not hostvars[host].get('unreachable', false) %}
+      - {{ host }} (user: {{ hostvars[host].ansible_user }})
+      {% endfor %}
+
+      Failed/Offline hosts:
+      {% for host in groups['all'] if hostvars[host].get('unreachable', false) %}
+      - {{ host }} (user: {{ hostvars[host].ansible_user }})
+      {% endfor %}
+  delegate_to: localhost
+  run_once: true

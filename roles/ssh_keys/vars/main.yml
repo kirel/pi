@@ -1,0 +1,7 @@
+---
+# Role-specific variables
+# These override defaults and can be customized per environment
+
+# The SSH key type and size are defined here but can be overridden
+ssh_key_type: rsa
+ssh_key_size: 4096

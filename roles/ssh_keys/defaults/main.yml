@@ -1,0 +1,8 @@
+---
+# Default variables for ssh_keys role
+
+# The source host where the SSH key should be generated
+source_host: ailab-ubuntu
+
+# The user on the source host for whom the SSH key will be generated
+source_user: daniel
