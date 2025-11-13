@@ -1,0 +1,8 @@
+---
+- name: Restart Immich ML
+  community.docker.docker_compose_v2:
+    project_name: immich-ml
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+    state: present
+  become: true
+  when: ansible_facts['distribution'] == 'Ubuntu'

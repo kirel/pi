@@ -31,6 +31,7 @@
     - { role: readeck, become: true, tags: [readeck] }
     - { role: linkding, become: true, tags: [linkding] }
     - { role: changedetection, become: true, tags: [changedetection] }
+    - { role: immich, become: true, tags: [immich] }
     - { role: n8n, become: true, tags: [n8n] }
 
 - name: Setup nameserver
@@ -84,6 +85,7 @@
     - { role: wolf, become: true, tags: [wolf] }
     - { role: draw_things, become: true, tags: [draw-things] }
     - { role: comfyui, become: true, tags: [comfyui] }
+    - { role: immich_ml, become: true, tags: [immich, immich-ml] }
     - { role: syncthing, become: true, tags: [syncthing] }
 
 - name: Setup mic sattelites

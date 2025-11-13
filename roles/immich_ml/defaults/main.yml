@@ -1,0 +1,17 @@
+---
+# Default variables for Immich ML role
+# Port Configuration
+immich_ml_http_port: 3003
+
+# Database Configuration (remote)
+immich_db_hostname: "{{ homelab_nuc_ip }}"
+immich_db_port: 5432
+immich_db_name: "immich"
+immich_db_username: "postgres"
+
+# Redis Configuration (remote)
+immich_redis_hostname: "{{ homelab_nuc_ip }}"
+immich_redis_port: 6379
+
+# GPU Configuration
+immich_ml_gpu_enabled: true

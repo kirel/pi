@@ -1,0 +1,4 @@
+---
+# Service name and image
+immich_ml_service_name: "immich_machine_learning"
+immich_ml_image: "ghcr.io/immich-app/immich-machine-learning:release-cuda"

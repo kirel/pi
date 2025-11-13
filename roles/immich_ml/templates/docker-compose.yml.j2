@@ -1,0 +1,36 @@
+---
+name: immich-ml
+
+services:
+  immich-machine-learning:
+    image: {{ immich_ml_image }}
+    container_name: {{ immich_ml_service_name }}
+    restart: unless-stopped
+    environment:
+      - DB_USERNAME={{ immich_db_username }}
+      - DB_PASSWORD={{ immich_db_password }}
+      - DB_DATABASE_NAME={{ immich_db_name }}
+      - DB_HOSTNAME={{ immich_db_hostname }}
+      - DB_PORT={{ immich_db_port }}
+      - REDIS_HOSTNAME={{ immich_redis_hostname }}
+      - REDIS_PORT={{ immich_redis_port }}
+    volumes:
+      - model-cache:/cache
+    ports:
+      - "{{ immich_ml_http_port }}:3003"
+{% if immich_ml_gpu_enabled %}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+{% endif %}
+    labels:
+      - homepage.name=Immich Machine Learning
+      - homepage.server={{ inventory_hostname }}
+      - homepage.container={{ immich_ml_service_name }}
+
+volumes:
+  model-cache:

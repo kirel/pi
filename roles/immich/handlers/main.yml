@@ -1,0 +1,13 @@
+---
+- name: Restart Immich
+  community.docker.docker_compose_v2:
+    project_name: immich
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+    state: present
+  become: true
+  when: ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Verify ZFS datasets
+  ansible.builtin.command: zfs list {{ zfs_pool_name }}/immich
+  changed_when: false
+  become: true

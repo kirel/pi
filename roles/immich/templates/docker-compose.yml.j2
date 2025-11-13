@@ -1,0 +1,74 @@
+---
+name: immich
+
+services:
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:release
+    container_name: immich_server
+    restart: unless-stopped
+    environment:
+      - TZ={{ system_timezone }}
+      - NODE_ENV=production
+      - DB_USERNAME={{ immich_db_username }}
+      - DB_PASSWORD={{ immich_db_password }}
+      - DB_DATABASE_NAME={{ immich_db_name }}
+      - DB_HOSTNAME=database
+      - DB_PORT=5432
+      - DB_TYPE=postgres
+      - REDIS_HOSTNAME=redis
+      - REDIS_PORT=6379
+      - IMMICH_MACHINE_LEARNING_URL=http://{{ immich_ml_hostname }}:{{ immich_ml_port }}
+    volumes:
+      - "{{ immich_library_path }}:/data"
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "{{ immich_http_port }}:2283"
+    depends_on:
+      redis:
+        condition: service_started
+      database:
+        condition: service_healthy
+    labels:
+      - homepage.group={{ services['immich'].group }}
+      - homepage.name={{ services['immich'].name }}
+      - homepage.href=http://{{ services['immich'].domain }}
+      - homepage.server={{ inventory_hostname }}
+      - homepage.container=immich_server
+
+  redis:
+    image: docker.io/valkey/valkey:8
+    container_name: immich_redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    labels:
+      - homepage.name={{ services['immich'].name }} Redis
+      - homepage.server={{ inventory_hostname }}
+      - homepage.container=immich_redis
+
+  database:
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+    container_name: immich_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER={{ immich_db_username }}
+      - POSTGRES_PASSWORD={{ immich_db_password }}
+      - POSTGRES_DB={{ immich_db_name }}
+      - POSTGRES_INITDB_ARGS=--data-checksums
+    volumes:
+      - "{{ immich_postgres_path }}:/var/lib/postgresql/data"
+    shm_size: 128mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ immich_db_username }} -d {{ immich_db_name }}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    labels:
+      - homepage.name={{ services['immich'].name }} Database
+      - homepage.server={{ inventory_hostname }}
+      - homepage.container=immich_postgres
+
+volumes:

@@ -14,6 +14,13 @@ services:
     http_port: "{{ music_assistant_http_port }}"
     target: homelab-nuc.lan
     group: Media
+  immich:
+    name: Immich
+    target: homelab-nuc.lan
+    http_port: "{{ immich_http_port }}"
+    domain: immich.lan
+    group: Media
+    icon: immich
   uptime:
     name: Uptime Kuma
     group: Monitoring

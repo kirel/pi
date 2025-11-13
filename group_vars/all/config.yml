@@ -92,6 +92,16 @@ teddycloud_http_port: 8013
 teddycloud_box_port: 4443
 metamcp_port_host: 8015
 changedetection_http_port: 8016
+immich_http_port: 2283
+immich_ml_http_port: 3003
+immich_db_name: "immich"
+immich_db_username: "postgres"
+immich_db_password: "test123"  # Shared password for split deployment
+immich_db_hostname: "192.168.50.5"  # homelab-nuc IP
+immich_db_port: 5432
+immich_redis_hostname: "192.168.50.5"  # homelab-nuc IP
+immich_redis_port: 6379
+immich_ml_gpu_enabled: true
 open_webui_config_folder: "{{ config_root }}/open-webui"
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990

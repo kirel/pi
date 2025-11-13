@@ -1,0 +1,17 @@
+---
+# Create config directory
+- name: Create Immich ML config directory
+  ansible.builtin.file:
+    path: "{{ config_root }}/immich-ml"
+    state: directory
+    owner: "{{ uid | default(1000) }}"
+    group: "{{ gid | default(1000) }}"
+    mode: '0755'
+
+# Deploy Immich ML stack using shared config from group_vars/all/config.yml
+- name: Deploy Immich ML stack
+  community.docker.docker_compose_v2:
+    project_name: immich-ml
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+  become: true
+  register: immich_ml_deployment

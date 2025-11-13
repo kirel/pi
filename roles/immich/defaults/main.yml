@@ -1,0 +1,22 @@
+---
+# Default variables for Immich role
+# ZFS Configuration
+zfs_pool_name: "tank"
+
+# Path Configuration (using ZFS datasets)
+immich_library_path: "/tank/immich/library"
+immich_postgres_path: "/tank/immich/postgres"
+immich_config_folder: "{{ config_root }}/immich"
+
+# Port Configuration
+immich_http_port: 2283
+
+# Database Configuration
+immich_db_name: "immich"
+immich_db_username: "postgres"
+immich_uid: 1000
+immich_gid: 1000
+
+# Machine Learning Service Configuration (remote)
+immich_ml_hostname: "{{ hostvars['ailab-ubuntu'].ansible_host }}"
+immich_ml_port: 3003

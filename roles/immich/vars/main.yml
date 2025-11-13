@@ -1,0 +1,4 @@
+---
+# Service name and version
+immich_service_name: "immich"
+immich_version: "release"

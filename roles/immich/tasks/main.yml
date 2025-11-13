@@ -1,0 +1,125 @@
+---
+# ZFS Dataset Management for Immich
+- name: Check if ZFS pool exists
+  ansible.builtin.command: zpool list -H {{ zfs_pool_name }}
+  register: zpool_check
+  changed_when: false
+  failed_when: false
+
+- name: Assert ZFS pool exists
+  ansible.builtin.assert:
+    that: zpool_check.rc == 0
+    fail_msg: "ZFS pool {{ zfs_pool_name }} does not exist. Please create it first."
+    success_msg: "ZFS pool {{ zfs_pool_name }} exists"
+
+- name: Check if Immich parent dataset exists
+  ansible.builtin.command: zfs list -H {{ zfs_pool_name }}/immich
+  register: immich_parent_check
+  changed_when: false
+  failed_when: false
+
+- name: Create Immich parent ZFS dataset
+  ansible.builtin.command: zfs create {{ zfs_pool_name }}/immich
+  when: immich_parent_check.rc != 0
+  notify: Verify ZFS datasets
+  become: true
+
+- name: Check if Immich library dataset exists
+  ansible.builtin.command: zfs list -H {{ zfs_pool_name }}/immich/library
+  register: library_dataset_check
+  changed_when: false
+  failed_when: false
+
+- name: Create Immich library ZFS dataset
+  ansible.builtin.command: zfs create -o mountpoint={{ immich_library_path }} -o compression=lz4 {{ zfs_pool_name }}/immich/library
+  when: library_dataset_check.rc != 0
+  notify: Verify ZFS datasets
+  become: true
+
+- name: Check if Immich postgres dataset exists
+  ansible.builtin.command: zfs list -H {{ zfs_pool_name }}/immich/postgres
+  register: postgres_dataset_check
+  changed_when: false
+  failed_when: false
+
+- name: Create Immich postgres ZFS dataset
+  ansible.builtin.command: zfs create -o mountpoint={{ immich_postgres_path }} -o compression=lz4 -o recordsize=16K {{ zfs_pool_name }}/immich/postgres
+  when: postgres_dataset_check.rc != 0
+  notify: Verify ZFS datasets
+  become: true
+
+- name: Set library dataset properties
+  ansible.builtin.command: zfs set compression=lz4 recordsize=128K atime=on {{ zfs_pool_name }}/immich/library
+  notify: Verify ZFS datasets
+  become: true
+
+- name: Set postgres dataset properties
+  ansible.builtin.command: zfs set compression=lz4 recordsize=16K {{ zfs_pool_name }}/immich/postgres
+  notify: Verify ZFS datasets
+  become: true
+
+- name: Set ownership for library directory
+  ansible.builtin.file:
+    path: "{{ immich_library_path }}"
+    state: directory
+    owner: "{{ immich_uid }}"
+    group: "{{ immich_gid }}"
+    mode: '0755'
+    recurse: true
+
+- name: Set ownership for postgres directory
+  ansible.builtin.file:
+    path: "{{ immich_postgres_path }}"
+    state: directory
+    owner: "999"
+    group: "999"
+    mode: '0755'
+    recurse: true
+
+# Create config directory
+- name: Create Immich config directory
+  ansible.builtin.file:
+    path: "{{ immich_config_folder }}"
+    state: directory
+    owner: "{{ uid | default(1000) }}"
+    group: "{{ gid | default(1000) }}"
+    mode: '0755'
+
+# Generate or reuse database password
+- name: Check if database password file exists
+  ansible.builtin.stat:
+    path: "{{ immich_config_folder }}/db_password"
+  register: password_file
+
+- name: Generate new database password
+  ansible.builtin.set_fact:
+    immich_db_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+  when: not password_file.stat.exists
+
+- name: Read existing database password
+  ansible.builtin.slurp:
+    src: "{{ immich_config_folder }}/db_password"
+  register: existing_password
+  when: password_file.stat.exists
+
+- name: Use existing password
+  ansible.builtin.set_fact:
+    immich_db_password: "{{ existing_password.content | b64decode }}"
+  when: password_file.stat.exists
+
+- name: Save database password to file
+  ansible.builtin.copy:
+    content: "{{ immich_db_password }}"
+    dest: "{{ immich_config_folder }}/db_password"
+    owner: "{{ uid | default(1000) }}"
+    group: "{{ gid | default(1000) }}"
+    mode: '0600'
+    backup: true
+
+# Deploy Docker Compose stack
+- name: Deploy Immich stack
+  community.docker.docker_compose_v2:
+    project_name: immich
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+  become: true
+  register: immich_deployment
