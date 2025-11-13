@@ -1,0 +1,7 @@
+---
+# Default variables for changedetection role
+# Default port for the service
+changedetection_http_port: 8016
+
+# Config folders
+changedetection_config_folder: "{{ config_root }}/changedetection"

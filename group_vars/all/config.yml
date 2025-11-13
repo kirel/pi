@@ -91,6 +91,7 @@ n8n_http_port: 5678
 teddycloud_http_port: 8013
 teddycloud_box_port: 4443
 metamcp_port_host: 8015
+changedetection_http_port: 8016
 open_webui_config_folder: "{{ config_root }}/open-webui"
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990

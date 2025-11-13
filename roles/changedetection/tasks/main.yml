@@ -1,0 +1,14 @@
+---
+- name: Create changedetection config directory
+  ansible.builtin.file:
+    path: "{{ changedetection_config_folder }}"
+    state: directory
+    owner: "{{ uid | default(1000) }}"
+    group: "{{ gid | default(1000) }}"
+    mode: '0755'
+
+- name: Deploy changedetection stack
+  community.docker.docker_compose_v2:
+    project_name: changedetection
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+  become: true

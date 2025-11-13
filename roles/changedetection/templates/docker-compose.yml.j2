@@ -1,0 +1,23 @@
+---
+version: '3.8'
+services:
+  changedetection:
+    image: {{ changedetection_image }}
+    container_name: {{ changedetection_service_name }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ system_timezone }}
+      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+      - CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+    ports:
+      - "{{ changedetection_http_port }}:5000"
+    volumes:
+      - "{{ changedetection_config_folder }}:/datastore"
+      - /etc/ssl/certs:/etc/ssl/certs:ro
+      - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
+    labels:
+      - homepage.group={{ services['changedetection'].group }}
+      - homepage.name={{ services['changedetection'].name }}
+      - homepage.href=http://{{ services['changedetection'].domain }}
+      - homepage.server={{ inventory_hostname }}
+      - homepage.container={{ changedetection_service_name }}

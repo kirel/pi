@@ -45,6 +45,13 @@ services:
     domain: "{{ linkding_domain_name }}"
     group: Productivity
     icon: linkding
+  changedetection:
+    name: ChangeDetection.io
+    target: homelab-nuc.lan
+    http_port: "{{ changedetection_http_port }}"
+    domain: changedetection.lan
+    group: Monitoring
+    icon: change-detection
   n8n:
     name: n8n
     target: homelab-nuc.lan

@@ -1,0 +1,4 @@
+---
+# Service name and image
+changedetection_service_name: changedetection
+changedetection_image: dgtlmoon/changedetection.io:latest
