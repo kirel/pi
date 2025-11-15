@@ -94,6 +94,8 @@ metamcp_port_host: 8015
 changedetection_http_port: 8016
 immich_http_port: 2283
 immich_ml_http_port: 3003
+immich_ml_hostname: "ailab-ubuntu.lan"
+immich_ml_port: "{{ immich_ml_http_port }}"
 immich_db_name: "immich"
 immich_db_username: "postgres"
 immich_db_password: "test123"  # Shared password for split deployment
