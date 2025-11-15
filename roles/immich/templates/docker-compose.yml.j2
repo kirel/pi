@@ -36,6 +36,7 @@ services:
       - homepage.href=http://{{ services['immich'].domain }}
       - homepage.server={{ inventory_hostname }}
       - homepage.container=immich_server
+      - homepage.icon=immich.png
 
   redis:
     image: docker.io/valkey/valkey:8

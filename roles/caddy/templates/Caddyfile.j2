@@ -28,7 +28,8 @@ danishkirel.asuscomm.com {
         tls internal
 {% else %}
         reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.target }}:{{ props.http_port }}
-        {% if not props.tls_skip | default(false) %}
+        {% set domain = props.domain | default(service ~ ".lan") %}
+        {% if not props.tls_skip | default(false) and (domain.endswith(".lan") or props.force_tls_internal | default(false)) %}
         tls internal
         {% endif %}
         {% if props.wol is defined %}

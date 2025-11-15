@@ -53,7 +53,7 @@
           labels:
             homepage.group: "{{ services.jellyfin.group }}"
             homepage.name: jellyfin
-            homepage.href: https://jellyfin.lan
+            homepage.href: http://{{ services['jellyfin'].domain }}
             homepage.icon: jellyfin.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: jellyfin
