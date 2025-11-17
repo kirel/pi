@@ -86,6 +86,7 @@
     - { role: draw_things, become: true, tags: [draw-things] }
     - { role: comfyui, become: true, tags: [comfyui] }
     - { role: immich_ml, become: true, tags: [immich, immich-ml] }
+    - { role: wyoming_openai, become: true, tags: [wyoming-openai] }
     - { role: syncthing, become: true, tags: [syncthing] }
 
 - name: Setup mic sattelites

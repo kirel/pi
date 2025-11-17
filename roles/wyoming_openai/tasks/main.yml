@@ -1,0 +1,115 @@
+---
+- name: Create data folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ uid }}"
+    group: "{{ gid }}"
+    recurse: yes
+  with_items:
+    - "{{ huggingface_cache_folder }}"
+    - "{{ chatterbox_models_folder }}"
+  become: true
+
+- name: Start wyoming_openai stack
+  community.docker.docker_compose_v2:
+    project_name: wyoming-openai
+    state: present
+    definition:
+      services:
+        speaches:
+          container_name: "{{ speaches_container_name }}"
+          image: "{{ speaches_image }}"
+          restart: unless-stopped
+          ports:
+            - "{{ speaches_port }}:8000"
+          environment:
+            - enable_ui=False
+            - log_level=info
+            - WHISPER__MODEL={{ stt_model }}
+            - WHISPER__compute_type=int8_float32
+          volumes:
+            - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
+          healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
+          labels:
+            - "wud.tag.include=^v\\d+\\.\\d+\\.\\d+$"
+          deploy:
+            resources:
+              reservations:
+                devices:
+                  - driver: nvidia
+                    capabilities: ["gpu"]
+
+        chatterbox-tts:
+          container_name: "{{ chatterbox_container_name }}"
+          image: "{{ chatterbox_tts_image }}"
+          restart: unless-stopped
+          ports:
+            - "{{ chatterbox_tts_port }}:4123"
+          environment:
+            - PORT=4123
+            - HOST=0.0.0.0
+            - EXAGGERATION=0.5
+            - CFG_WEIGHT=0.5
+            - TEMPERATURE=0.8
+            - MAX_CHUNK_LENGTH=280
+            - MAX_TOTAL_LENGTH=3000
+            - DEVICE=auto
+            - MODEL_CACHE_DIR=/cache
+            - MEMORY_CLEANUP_INTERVAL=5
+            - CUDA_CACHE_CLEAR_INTERVAL=3
+            - ENABLE_MEMORY_MONITORING=true
+          volumes:
+            - "{{ chatterbox_models_folder }}:/cache"
+          healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:4123/health"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 120s
+          labels:
+            - "wud.tag.include=^v\\d+\\.\\d+\\.\\d+$"
+          deploy:
+            resources:
+              reservations:
+                devices:
+                  - driver: nvidia
+                    capabilities: ["gpu"]
+
+        wyoming_openai:
+          container_name: "{{ wyoming_openai_container_name }}"
+          image: "{{ wyoming_openai_image }}"
+          restart: unless-stopped
+          ports:
+            - "{{ wyoming_openai_port }}:10300"
+          environment:
+            WYOMING_URI: "{{ wyoming_uri }}"
+            WYOMING_LOG_LEVEL: "{{ wyoming_log_level }}"
+            WYOMING_LANGUAGES: "{{ wyoming_languages }}"
+            STT_OPENAI_URL: "http://speaches:{{ speaches_port }}/v1"
+            STT_MODELS: "{{ stt_model }}"
+            STT_BACKEND: "SPEACHES"
+            TTS_OPENAI_URL: "http://chatterbox-tts:{{ chatterbox_tts_port }}/v1"
+            TTS_MODELS: "{{ tts_model }}"
+            TTS_BACKEND: "{{ tts_backend }}"
+            TTS_VOICES: "default"
+            TTS_SPEED: "1.0"
+          depends_on:
+            speaches:
+              condition: service_healthy
+            chatterbox-tts:
+              condition: service_healthy
+          labels:
+            - "wud.tag.include=^v\\d+\\.\\d+\\.\\d+$"
+          deploy:
+            resources:
+              reservations:
+                devices:
+                - driver: nvidia
+                  capabilities: ["gpu"]

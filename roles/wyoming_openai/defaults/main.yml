@@ -1,0 +1,29 @@
+---
+wyoming_openai_image: ghcr.io/roryeckel/wyoming_openai:latest
+speaches_image: ghcr.io/speaches-ai/speaches:latest-cuda
+chatterbox_tts_image: travisvn/chatterbox-tts-api:latest
+
+wyoming_openai_container_name: wyoming-openai
+speaches_container_name: speaches
+chatterbox_container_name: chatterbox-tts
+
+wyoming_openai_port: "{{ wyoming_openai_port }}"
+speaches_port: "{{ speaches_port }}"
+chatterbox_tts_port: 4123
+
+huggingface_cache_folder: "{{ config_root }}/wyoming-openai/huggingface-cache"
+chatterbox_models_folder: "{{ config_root }}/wyoming-openai/chatterbox-models"
+
+wyoming_uri: "tcp://0.0.0.0:{{ wyoming_openai_port }}"
+wyoming_log_level: INFO
+wyoming_languages: en
+
+stt_model: "Systran/faster-distil-whisper-large-v3"
+tts_model: "tts-1-hd"
+tts_backend: "OPENAI"
+
+device_requests:
+  - driver: nvidia
+    count: -1
+    capabilities:
+      - ["gpu"]
