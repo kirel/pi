@@ -45,7 +45,7 @@ llamaswap_port: 9292 # llama-swap API port
 llamaswap_container_name: llama-swap
 llamaswap_config_path: "{{ config_root }}/llama-swap"
 model_group_alias:
-  home: "Qwen3-30B-A3B-Instruct-2507"
+  home: "Qwen3-VL-8B-Instruct"
 llamaswap_models:
   - alias: Qwen3-VL-8B-Instruct
     cmd: >-
@@ -83,6 +83,22 @@ llamaswap_models:
       --jinja
     supports_function_calling: true
     supports_vision: false
+  - alias: Mistral-Small-3.2-24B-Instruct-2506
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/Mistral-Small-3.2-24B-Instruct-2506-GGUF:UD-Q4_K_XL
+      --port ${PORT}
+      --ctx-size 32000
+      --flash-attn auto
+      --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --temp 0.15
+      --top-p 1.0
+      --top-k -1
+      --jinja
+    supports_function_calling: true
+    supports_vision: true
 babybuddy_http_port: 8008
 wallabag_http_port: 8010
 readeck_http_port: 8011
@@ -168,3 +184,5 @@ n8n_config_folder: "{{ config_root }}/n8n"
 teddycloud_config_folder: "{{ config_root }}/teddycloud"
 timemachine_max_size: 1000G
 google_workspace_mcp_port_host: 8014
+wyoming_openai_port: 10300
+speaches_port: 8001
