@@ -85,29 +85,18 @@
     group: "{{ gid | default(1000) }}"
     mode: '0755'
 
-# Generate or reuse database password
-- name: Check if database password file exists
-  ansible.builtin.stat:
-    path: "{{ immich_config_folder }}/db_password"
-  register: password_file
+# Ensure shared credentials and endpoints are defined
+- name: Validate Immich shared variables
+  ansible.builtin.assert:
+    that:
+      - immich_db_password is defined
+      - immich_db_password | length > 0
+      - immich_ml_hostname is defined
+      - immich_ml_hostname | length > 0
+      - immich_ml_port is defined
+    fail_msg: "immich_db_password, immich_ml_hostname, and immich_ml_port must be set in group or host vars"
 
-- name: Generate new database password
-  ansible.builtin.set_fact:
-    immich_db_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
-  when: not password_file.stat.exists
-
-- name: Read existing database password
-  ansible.builtin.slurp:
-    src: "{{ immich_config_folder }}/db_password"
-  register: existing_password
-  when: password_file.stat.exists
-
-- name: Use existing password
-  ansible.builtin.set_fact:
-    immich_db_password: "{{ existing_password.content | b64decode }}"
-  when: password_file.stat.exists
-
-- name: Save database password to file
+- name: Persist database password for reference
   ansible.builtin.copy:
     content: "{{ immich_db_password }}"
     dest: "{{ immich_config_folder }}/db_password"

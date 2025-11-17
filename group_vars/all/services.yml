@@ -18,7 +18,7 @@ services:
     name: Immich
     target: homelab-nuc.lan
     http_port: "{{ immich_http_port }}"
-    domain: immich.lan
+    domain: immich.kirelabs.org
     group: Media
     icon: immich
   uptime:
@@ -64,6 +64,7 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ n8n_http_port }}"
     domain: n8n.kirelabs.org
+    force_tls_internal: True
     group: Productivity
     icon: n8n.svg
   teddycloud:
@@ -115,6 +116,7 @@ services:
   jellyfin:
     target: homelab-nuc.lan
     http_port: "{{ jellyfin_http_port }}"
+    domain: jellyfin.kirelabs.org
     group: Media
   music:
     target: homelab-nuc.lan

@@ -23,6 +23,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
     ports:
       - "{{ immich_http_port }}:2283"
+    devices:
+      - /dev/dri:/dev/dri
     depends_on:
       redis:
         condition: service_started
@@ -34,6 +36,7 @@ services:
       - homepage.href=http://{{ services['immich'].domain }}
       - homepage.server={{ inventory_hostname }}
       - homepage.container=immich_server
+      - homepage.icon=immich.png
 
   redis:
     image: docker.io/valkey/valkey:8
@@ -70,5 +73,3 @@ services:
       - homepage.name={{ services['immich'].name }} Database
       - homepage.server={{ inventory_hostname }}
       - homepage.container=immich_postgres
-
-volumes:
