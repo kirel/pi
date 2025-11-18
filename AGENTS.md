@@ -504,9 +504,10 @@ ssh daniel@micpi.lan
 **Media:** Jellyfin, Music Assistant, Navidrome
 **Monitoring:** Glances, Uptime Kuma, Portainer, What's Up Docker
 **Productivity:** n8n, Wallabag, Readeck, Linkding
-**AI:** Open WebUI, Ollama, ComfyUI, Langfuse, Google Workspace MCP
+**AI:** Open WebUI, Ollama, ComfyUI, Langfuse, Google Workspace MCP, Wyoming OpenAI
 **Network:** Pi-hole, DNSMasq Leases UI, Proxmox
 **Family:** TeddyCloud, Baby Buddy
+**Photos:** Immich (photo/video management with ML processing)
 
 ## Tag Reference
 
@@ -518,6 +519,8 @@ Common tags for `--tags` flag:
 - `wallabag`, `readeck`, `linkding`, `n8n`
 - `gpu`, `comfyui`
 - `netplan`, `network`
+- `immich`, `immich-ml`, `changedetection`
+- `wyoming_openai`, `ssh_keys`
 
 ## Environment-Specific Access
 
@@ -699,7 +702,178 @@ curl -X POST http://ailab-ubuntu.lan:4000/v1/models \
   -H "Authorization: Bearer $LITELLM_MASTER_KEY"
 ```
 
-### Code Style (Quick Reference)
+## New Services Added (Recent Updates)
+
+### Wyoming OpenAI (homelab-nuc, port 192.168.50.5)
+
+**Role:** TTS/STT bridge for Home Assistant voice integration
+**Tags:** `wyoming`, `wyoming_openai`
+**Ansible role:** `wyoming_openai` (see `/home/daniel/code/pi/roles/wyoming_openai/`)
+
+**Services deployed:**
+- **SPEACHES (Whisper STT)** - Port 8000
+  - OpenAI Whisper speech-to-text service
+  - Uses int8_float32 compute type for GPU acceleration
+  - Caches models in HuggingFace format
+
+- **Chatterbox-TTS** - Port 4123
+  - High-quality text-to-speech synthesis
+  - **Streaming enabled**: Raw & SSE audio streaming
+  - Intelligent text chunking for responsive playback
+  - Configurable voice parameters (exaggeration, CFG weight, temperature)
+  - GPU-accelerated with memory monitoring
+
+- **Wyoming OpenAI Gateway** - Port 10300
+  - Unified TTS/STT service for Home Assistant
+  - Integrates SPEACHES and Chatterbox via Wyoming protocol
+  - **Streaming enabled**: Full-duplex streaming for STT and TTS
+  - Configurable languages and voices
+
+**GPU Requirements:** All three services run on NVIDIA GPU with full GPU passthrough
+
+**Streaming Configuration (Updated):**
+```yaml
+wyoming_openai:
+  environment:
+    # Enable streaming for STT
+    STT_STREAMING_MODELS: "Systran/faster-distil-whisper-large-v3"
+
+    # Enable streaming for TTS
+    TTS_STREAMING_MODELS: "tts-1-hd"
+    TTS_STREAMING_MIN_WORDS: 3
+    TTS_STREAMING_MAX_CHARS: 280
+```
+
+**What this enables:**
+- **STT Streaming**: Partial transcriptions as you speak (via SPEACHES + Whisper)
+- **TTS Streaming**: Progressive audio playback with ~0.5s latency (via Chatterbox-TTS)
+- **Real-time voice interaction** with Home Assistant Assist
+- **Wyoming protocol**: Event-based streaming (audio-chunk, transcript-chunk)
+
+**Deployment & Testing:**
+```bash
+# Deploy Wyoming OpenAI stack
+uv run ansible-playbook setup.yml --tags wyoming_openai --limit homelab
+
+# Check service health
+ssh root@homelab-nuc.lan "docker ps | grep wyoming"
+
+# Test streaming STT
+curl -N http://homelab-nuc.lan:10300/v1/audio/transcriptions \
+  -F "file=@audio.wav" \
+  -F "model=Systran/faster-distil-whisper-large-v3"
+
+# Test streaming TTS
+curl -N http://homelab-nuc.lan:10300/v1/audio/speech \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "tts-1-hd",
+    "input": "This is a streaming test with multiple sentences.",
+    "stream": true
+  }' --output test_audio.wav
+```
+
+**Home Assistant Integration:**
+1. Go to Settings → Voice Assistants
+2. Create new voice assistant pipeline
+3. Select Wyoming OpenAI for both STT and TTS
+4. Configure: Host `homelab-nuc.lan`, Port `10300`
+5. Test with "Turn on the kitchen light" command
+
+**Performance Benefits:**
+- STT: Hear transcription while speaking
+- TTS: Audio starts playing in ~0.5 seconds instead of >5 seconds
+- Full-duplex: Bidirectional streaming throughout the pipeline
+
+### Immich - Photo/Video Management (homelab-nuc + ailab-ubuntu)
+
+**Role:** Self-hosted Google Photos alternative with ML
+**Tags:** `immich`, `immich-ml`
+**Ansible roles:**
+- `immich` (homelab-nuc) - Main application
+- `immich_ml` (ailab-ubuntu) - Machine learning processing
+
+**Architecture:**
+- **homelab-nuc (192.168.50.5):** Main Immich server with PostgreSQL database
+- **ailab-ubuntu (192.168.50.10):** Dedicated ML server for image/video processing
+
+**Storage:**
+- **ZFS datasets** with optimized compression and record sizes
+- Library: `{{ zfs_pool_name }}/immich/library` (compression=lz4, recordsize=128K)
+- Database: `{{ zfs_pool_name }}/immich/postgres` (compression=lz4, recordsize=16K)
+
+**Services:**
+- **Immich Server** - Main API and web UI
+- **Immich ML Worker** - GPU-accelerated processing on ailab-ubuntu
+- **PostgreSQL** - Metadata storage with optimized settings
+
+**Deployment:**
+```bash
+# Deploy both parts (main server + ML worker)
+uv run ansible-playbook setup.yml --tags immich,immich-ml --limit homelab,ailab_ubuntus
+
+# Check ZFS datasets
+ssh root@homelab-nuc.lan "zfs list {{ zfs_pool_name }}/immich"
+```
+
+**Prerequisites:**
+- ZFS pool must exist and be accessible
+- GPU server (ailab-ubuntu) available for ML processing
+
+### ChangeDetection (homelab-nuc)
+
+**Role:** Website change monitoring and alerting
+**Tags:** `changedetection`
+**Ansible role:** `changedetection` (see `/home/daniel/code/pi/roles/changedetection/`)
+
+**Service deployed:**
+- **ChangeDetection.io** - Monitor websites for changes
+  - Detect text, visual, and source code changes
+  - Send notifications when changes detected
+  - Supports multiple trigger methods
+
+**Deployment:**
+```bash
+# Deploy changedetection
+uv run ansible-playbook setup.yml --tags changedetection --limit homelab
+
+# Access via reverse proxy
+# Web UI: https://changedetection.lan
+```
+
+### SSH Keys Automation
+
+**Role:** Automated SSH key generation and distribution
+**Tags:** `ssh_keys`
+**Ansible role:** `ssh_keys` (see `/home/daniel/code/pi/roles/ssh_keys/`)
+
+**Features:**
+- Generates 4096-bit RSA key pairs
+- Distributes public keys to all inventory hosts
+- Automatically configures authorized_keys
+- Sets proper permissions (600 on authorized_keys)
+- Provides summary of successful/failed deployments
+
+**Configuration:**
+- **Source host:** Defined by `source_host` variable
+- **Source user:** Defined by `source_user` variable
+- **Target users:** Uses `ansible_user` from inventory for each host
+
+**Deployment:**
+```bash
+# Run standalone SSH key distribution
+uv run ansible-playbook distribute_ssh_key.yml
+
+# Or run as part of setup
+uv run ansible-playbook setup.yml --tags ssh_keys
+```
+
+**Output includes:**
+- Public key for manual verification
+- List of successfully configured hosts
+- List of failed/unreachable hosts
+
+## Code Style (Quick Reference)
 
 **YAML:**
 - Use 2 spaces for indentation (no tabs)

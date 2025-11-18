@@ -92,14 +92,19 @@
             WYOMING_URI: "{{ wyoming_uri }}"
             WYOMING_LOG_LEVEL: "{{ wyoming_log_level }}"
             WYOMING_LANGUAGES: "{{ wyoming_languages }}"
-            STT_OPENAI_URL: "http://speaches:{{ speaches_port }}/v1"
+            STT_OPENAI_URL: "http://speaches:8000/v1"
             STT_MODELS: "{{ stt_model }}"
             STT_BACKEND: "SPEACHES"
-            TTS_OPENAI_URL: "http://chatterbox-tts:{{ chatterbox_tts_port }}/v1"
+            TTS_OPENAI_URL: "http://chatterbox-tts:4123/v1"
             TTS_MODELS: "{{ tts_model }}"
             TTS_BACKEND: "{{ tts_backend }}"
             TTS_VOICES: "default"
             TTS_SPEED: "1.0"
+            # Enable streaming for your models
+            STT_STREAMING_MODELS: "{{ stt_streaming_models }}"
+            TTS_STREAMING_MODELS: "{{ tts_streaming_models }}"
+            TTS_STREAMING_MIN_WORDS: "{{ tts_streaming_min_words }}"
+            TTS_STREAMING_MAX_CHARS: "{{ tts_streaming_max_chars }}"
           depends_on:
             speaches:
               condition: service_healthy

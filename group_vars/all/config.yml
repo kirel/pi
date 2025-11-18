@@ -52,7 +52,7 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Qwen3-VL-8B-Instruct-GGUF:Q8_K_XL
       --port ${PORT}
-      --ctx-size 80000
+      --ctx-size 50000
       --flash-attn auto
       --n-gpu-layers 99
       --top-p 0.8
