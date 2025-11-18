@@ -64,7 +64,7 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ n8n_http_port }}"
     domain: n8n.kirelabs.org
-    force_tls_internal: True
+    force_tls_internal: true
     group: Productivity
     icon: n8n.svg
   teddycloud:
@@ -217,6 +217,12 @@ services:
     icon: comfy-ui
     wol: "{{ ailab_mac_address }}"
     try: 360s
+  chatterbox-ui:
+    name: Chatterbox UI
+    target: ailab-ubuntu.lan
+    http_port: 4321
+    group: AI
+    icon: audio
   portainer-ailab-ubuntu:
     name: Portainer AI Lab
     target: ailab-ubuntu.lan
