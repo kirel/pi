@@ -21,7 +21,7 @@ chatterbox_frontend_build_folder: "{{ config_root }}/wyoming-openai/frontend"
 
 wyoming_uri: "tcp://0.0.0.0:{{ wyoming_openai_port }}"
 wyoming_log_level: INFO
-wyoming_languages: de
+wyoming_languages: en,es,fr,de,it,pt,ru,ja,ko,ar,da,el,fi,he,hi,ms,nl,no,pl,sv,sw,tr
 
 stt_model: "Systran/faster-whisper-base"
 tts_model: "chatterbox-tts-1"
@@ -48,6 +48,12 @@ chatterbox_longtext_max_concurrent_jobs: 3
 chatterbox_memory_cleanup_interval: 5
 chatterbox_cuda_cache_clear_interval: 3
 chatterbox_enable_memory_monitoring: true
+
+# Streaming Configuration for your models
+stt_streaming_models: "{{ stt_model }}"
+tts_streaming_models: "{{ tts_model }}"
+tts_streaming_min_words: 3
+tts_streaming_max_chars: 280
 
 device_requests:
   - driver: nvidia
