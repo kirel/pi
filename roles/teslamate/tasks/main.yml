@@ -64,11 +64,10 @@
           container_name: teslamate
           restart: unless-stopped
           environment:
-            - DB_USER={{ teslamate_db_user }}
-            - DB_PASSWORD={{ teslamate_database_password }}
-            - DB_NAME={{ teslamate_db_name }}
-            - DB_HOST=teslamate-db
-            - DB_PORT=5432
+            - DATABASE_USER={{ teslamate_db_user }}
+            - DATABASE_PASS={{ teslamate_database_password }}
+            - DATABASE_NAME={{ teslamate_db_name }}
+            - DATABASE_HOST=teslamate-db
             - MQTT_HOST={{ mosquitto_address }}
             - MQTT_PORT={{ mosquitto_port }}
             - ENCRYPTION_KEY={{ teslamate_encryption_key }}
