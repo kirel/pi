@@ -49,6 +49,10 @@
           environment:
             - GF_SECURITY_ADMIN_USER=admin
             - GF_SECURITY_ADMIN_PASSWORD={{ teslamate_database_password }}
+            - DATABASE_USER={{ teslamate_db_user }}
+            - DATABASE_PASS={{ teslamate_database_password }}
+            - DATABASE_NAME={{ teslamate_db_name }}
+            - DATABASE_HOST=teslamate-db
           volumes:
             - "{{ teslamate_grafana_data_folder }}:/var/lib/grafana"
           ports:
@@ -97,3 +101,13 @@
       networks:
         teslamate:
           driver: bridge
+
+- name: Fix Grafana data directory permissions
+  ansible.builtin.command: "chown -R 472:472 {{ teslamate_grafana_data_folder }}"
+  args:
+    creates: "{{ teslamate_grafana_data_folder }}/grafana.db"
+
+- name: Fix Grafana database file permissions
+  ansible.builtin.command: "chmod 600 {{ teslamate_grafana_data_folder }}/grafana.db"
+  args:
+    creates: "{{ teslamate_grafana_data_folder }}/grafana.db"
