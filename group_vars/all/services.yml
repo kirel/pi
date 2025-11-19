@@ -108,6 +108,17 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ z2m_http_port }}"
     group: Smart Home
+  teslamate:
+    name: TeslaMate
+    target: homelab-nuc.lan
+    http_port: "{{ teslamate_http_port }}"
+    group: Smart Home
+    icon: teslamate
+  teslamate-grafana:
+    name: TeslaMate Grafana
+    target: homelab-nuc.lan
+    http_port: "{{ grafana_http_port }}"
+    group: Smart Home
   frigate:
     name: Frigate
     target: homelab-nuc.lan

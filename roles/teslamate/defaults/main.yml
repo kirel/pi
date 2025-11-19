@@ -1,0 +1,25 @@
+---
+# TeslaMate Configuration
+teslamate_version: "latest"
+postgres_version: "18-trixie"
+grafana_version: "latest"
+
+# TeslaMate Environment Variables - REPLACE WITH VAULT VALUES
+teslamate_encryption_key: "CHANGE_ME_TO_GENERATED_KEY"
+teslamate_database_password: "CHANGE_ME_SECURE_PASSWORD"
+
+# Database Configuration
+teslamate_db_user: "teslamate"
+teslamate_db_name: "teslamate"
+teslamate_db_host: "teslamate-db"
+
+# Port Configuration
+teslamate_http_port: 4000
+grafana_http_port: 3000
+
+# Data Directory
+teslamate_data_folder: "{{ config_root }}/teslamate"
+teslamate_grafana_data_folder: "{{ config_root }}/teslamate-grafana"
+
+# Use existing Mosquitto (configured in homeassistant role)
+mqtt_host: "{{ mosquitto_address }}"
