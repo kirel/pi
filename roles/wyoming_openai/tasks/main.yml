@@ -34,12 +34,13 @@
           container_name: init-speaches
           image: ghcr.io/speaches-ai/speaches:latest-cuda
           environment:
-            - SPEACHES_BASE_URL=http://speaches:{{ speaches_internal_port }}
+            - SPEACHES_BASE_URL={{ stt_openai_url }}
           command: >
             /bin/bash -c '
               curl -LsSf https://astral.sh/uv/install.sh | sh
-              export PATH="$HOME/.local/bin:$PATH"
+              export PATH="/home/ubuntu/.local/bin:$PATH"
               uvx speaches-cli model download {{ stt_model }}
+              uvx speaches-cli model download {{ tts_model }}
             '
           volumes:
             - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
@@ -164,10 +165,10 @@
             WYOMING_URI: "{{ wyoming_uri }}"
             WYOMING_LOG_LEVEL: "{{ wyoming_log_level }}"
             WYOMING_LANGUAGES: "{{ wyoming_languages }}"
-            STT_OPENAI_URL: "http://speaches:{{ speaches_internal_port }}/v1"
+            STT_OPENAI_URL: "{{ stt_openai_url }}"
             STT_MODELS: "{{ stt_model }}"
             STT_BACKEND: "{{ stt_backend }}"
-            TTS_OPENAI_URL: "http://chatterbox-tts:{{ chatterbox_tts_internal_port }}/v1"
+            TTS_OPENAI_URL: "{{ tts_openai_url }}"
             TTS_MODELS: "{{ tts_model }}"
             TTS_BACKEND: "{{ tts_backend }}"
             TTS_VOICES: "{{ tts_voices }}"
@@ -177,10 +178,37 @@
             TTS_STREAMING_MODELS: "{{ tts_streaming_models }}"
             TTS_STREAMING_MIN_WORDS: "{{ tts_streaming_min_words }}"
             TTS_STREAMING_MAX_CHARS: "{{ tts_streaming_max_chars }}"
-            INVALIDATE: "2"  # increment to force redeploy
+            INVALIDATE: "3"  # increment to force redeploy
           depends_on:
             speaches:
               condition: service_healthy
+            chatterbox-tts:
+              condition: service_healthy
+          labels:
+            - "wud.tag.include=^v\\d+\\.\\d+\\.\\d+$"
+
+        wyoming_openai_chatterbox:
+          container_name: "{{ wyoming_openai_chatterbox_container_name }}"
+          image: "{{ wyoming_openai_image }}"
+          restart: unless-stopped
+          ports:
+            - "{{ wyoming_openai_chatterbox_external_port }}:{{ wyoming_openai_chatterbox_internal_port }}"
+          environment:
+            WYOMING_URI: "{{ wyoming_chatterbox_uri }}"
+            WYOMING_LOG_LEVEL: "{{ wyoming_log_level }}"
+            WYOMING_LANGUAGES: "{{ wyoming_languages }}"
+            # Chatterbox Gateway is TTS only - no STT configuration
+            TTS_OPENAI_URL: "http://chatterbox-tts:{{ chatterbox_tts_internal_port }}/v1"
+            TTS_MODELS: "{{ chatterbox_use_multilingual_model | string | lower }}"
+            TTS_BACKEND: "{{ wyoming_chatterbox_tts_backend }}"
+            TTS_VOICES: "{{ chatterbox_voices }}"
+            # No TTS_SPEED (Chatterbox handles this internally)
+            # Enable streaming for TTS
+            TTS_STREAMING_MODELS: "chatterbox-tts-1"
+            TTS_STREAMING_MIN_WORDS: "{{ tts_streaming_min_words }}"
+            TTS_STREAMING_MAX_CHARS: "{{ tts_streaming_max_chars }}"
+            INVALIDATE: "1"  # increment to force redeploy
+          depends_on:
             chatterbox-tts:
               condition: service_healthy
           labels:
