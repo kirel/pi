@@ -6,10 +6,21 @@ wyoming_openai_container_name: wyoming-openai
 speaches_container_name: speaches
 chatterbox_container_name: chatterbox-tts
 
-wyoming_openai_port: "{{ wyoming_openai_port }}"
-speaches_port: "{{ speaches_port }}"
-chatterbox_tts_port: 4123
-chatterbox_frontend_port: 4321
+# Wyoming OpenAI Gateway (Wyoming protocol)
+wyoming_openai_external_port: 10300
+wyoming_openai_internal_port: 10300
+
+# SPEACHES (Whisper STT)
+speaches_external_port: 8001
+speaches_internal_port: 8000
+
+# Chatterbox TTS
+chatterbox_tts_external_port: 4123
+chatterbox_tts_internal_port: 4123
+
+# Chatterbox Frontend UI
+chatterbox_frontend_external_port: 4321
+chatterbox_frontend_internal_port: 80
 
 huggingface_cache_folder: "{{ config_root }}/wyoming-openai/huggingface-cache"
 chatterbox_models_folder: "{{ config_root }}/wyoming-openai/chatterbox-models"
@@ -19,13 +30,18 @@ chatterbox_voice_sample_file: "{{ config_root }}/wyoming-openai/voice-sample.mp3
 chatterbox_source_folder: "{{ config_root }}/wyoming-openai/source"
 chatterbox_frontend_build_folder: "{{ config_root }}/wyoming-openai/frontend"
 
-wyoming_uri: "tcp://0.0.0.0:{{ wyoming_openai_port }}"
+wyoming_uri: "tcp://0.0.0.0:{{ wyoming_openai_internal_port }}"
 wyoming_log_level: INFO
-wyoming_languages: en,es,fr,de,it,pt,ru,ja,ko,ar,da,el,fi,he,hi,ms,nl,no,pl,sv,sw,tr
+wyoming_languages: en es fr de it pt ru ja ko ar da el fi he hi ms nl no pl sv sw tr
 
+stt_backend: "SPEACHES"
 stt_model: "Systran/faster-whisper-base"
 tts_model: "chatterbox-tts-1"
 tts_backend: "OPENAI"
+
+# TTS Configuration
+tts_voices: "default Sabine Merkel"
+tts_speed: "1.0"
 
 # Chatterbox TTS Settings
 chatterbox_exaggeration: 0.5
