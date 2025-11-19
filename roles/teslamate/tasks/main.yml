@@ -33,7 +33,7 @@
             POSTGRES_PASSWORD: "{{ teslamate_database_password }}"
             POSTGRES_DB: "{{ teslamate_db_name }}"
           volumes:
-            - teslamate-db-data:/var/lib/postgresql/data
+            - teslamate-db-data:/var/lib/postgresql
           networks:
             - teslamate
           healthcheck:
@@ -69,8 +69,8 @@
             - DB_NAME={{ teslamate_db_name }}
             - DB_HOST=teslamate-db
             - DB_PORT=5432
-            - MQTT_HOST={{ mqtt_host }}
-            - MQTT_PORT={{ mqtt_port }}
+            - MQTT_HOST={{ mosquitto_address }}
+            - MQTT_PORT={{ mosquitto_port }}
             - ENCRYPTION_KEY={{ teslamate_encryption_key }}
           volumes:
             - "{{ teslamate_data_folder }}:/opt/teslamate/data"
