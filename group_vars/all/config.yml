@@ -101,6 +101,20 @@ llamaswap_models:
       --jinja
     supports_function_calling: true
     supports_vision: true
+  - alias: GPT-OSS-20B-F16
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/gpt-oss-20b-GGUF:F16
+      --port ${PORT}
+      --ctx-size 16384
+      --n-gpu-layers 99
+      --threads -1
+      --temp 1.0
+      --top-p 1.0
+      --top-k 0
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
 babybuddy_http_port: 8008
 wallabag_http_port: 8010
 readeck_http_port: 8011
