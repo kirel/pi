@@ -1,0 +1,113 @@
+---
+- name: Create TeslaMate data folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: users
+    mode: u=rwx,g=rwxs
+    recurse: true
+  with_items:
+    - "{{ teslamate_data_folder }}"
+    - "{{ teslamate_grafana_data_folder }}"
+
+- name: Create TeslaMate network
+  community.docker.docker_network:
+    name: teslamate
+    state: present
+
+- name: Start TeslaMate stack
+  community.docker.docker_compose_v2:
+    project_name: teslamate
+    pull: always
+    state: present
+    definition:
+      version: "3.8"
+      services:
+        teslamate-db:
+          image: postgres:{{ postgres_version }}
+          container_name: teslamate-db
+          restart: unless-stopped
+          environment:
+            POSTGRES_USER: "{{ teslamate_db_user }}"
+            POSTGRES_PASSWORD: "{{ teslamate_database_password }}"
+            POSTGRES_DB: "{{ teslamate_db_name }}"
+          volumes:
+            - teslamate-db-data:/var/lib/postgresql
+          networks:
+            - teslamate
+          healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U {{ teslamate_db_user }}"]
+            interval: 5m
+            timeout: 5s
+            retries: 5
+
+        grafana:
+          image: teslamate/grafana:latest
+          container_name: teslamate-grafana
+          restart: unless-stopped
+          environment:
+            - GF_SECURITY_ADMIN_USER=admin
+            - GF_SECURITY_ADMIN_PASSWORD={{ teslamate_database_password }}
+            - DATABASE_USER={{ teslamate_db_user }}
+            - DATABASE_PASS={{ teslamate_database_password }}
+            - DATABASE_NAME={{ teslamate_db_name }}
+            - DATABASE_HOST=teslamate-db
+          volumes:
+            - "{{ teslamate_grafana_data_folder }}:/var/lib/grafana"
+          ports:
+            - "{{ grafana_http_port }}:3000"
+          networks:
+            - teslamate
+          depends_on:
+            teslamate-db:
+              condition: service_healthy
+
+        teslamate:
+          image: teslamate/teslamate:{{ teslamate_version }}
+          container_name: teslamate
+          restart: unless-stopped
+          environment:
+            - DATABASE_USER={{ teslamate_db_user }}
+            - DATABASE_PASS={{ teslamate_database_password }}
+            - DATABASE_NAME={{ teslamate_db_name }}
+            - DATABASE_HOST=teslamate-db
+            - MQTT_HOST={{ mosquitto_address }}
+            - MQTT_PORT={{ mosquitto_port }}
+            - ENCRYPTION_KEY={{ teslamate_encryption_key }}
+          volumes:
+            - "{{ teslamate_data_folder }}:/opt/teslamate/data"
+          ports:
+            - "{{ teslamate_http_port }}:4000"
+          networks:
+            - teslamate
+          depends_on:
+            teslamate-db:
+              condition: service_healthy
+          labels:
+            - wud.tag.include=^\d+\.\d+\.\d+$$
+            - wud.link.template=https://github.com/adriankumpf/teslamate/releases/tag/$${major}.$${minor}.$${patch}
+            - homepage.group={{ services.teslamate.group }}
+            - homepage.name={{ services.teslamate.name }}
+            - homepage.href=http://{{ inventory_hostname }}:{{ teslamate_http_port }}
+            - homepage.icon=teslamate.png
+            - homepage.server={{ inventory_hostname }}
+            - homepage.container=teslamate
+
+      volumes:
+        teslamate-db-data:
+          driver: local
+
+      networks:
+        teslamate:
+          driver: bridge
+
+- name: Fix Grafana data directory permissions
+  ansible.builtin.command: "chown -R 472:472 {{ teslamate_grafana_data_folder }}"
+  args:
+    creates: "{{ teslamate_grafana_data_folder }}/grafana.db"
+
+- name: Fix Grafana database file permissions
+  ansible.builtin.command: "chmod 600 {{ teslamate_grafana_data_folder }}/grafana.db"
+  args:
+    creates: "{{ teslamate_grafana_data_folder }}/grafana.db"

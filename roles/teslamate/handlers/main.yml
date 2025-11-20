@@ -1,0 +1,7 @@
+---
+- name: Restart TeslaMate
+  community.docker.docker_compose_v2:
+    project_name: teslamate
+    action: restart
+    services:
+      - teslamate

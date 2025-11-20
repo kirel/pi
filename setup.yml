@@ -32,6 +32,7 @@
     - { role: linkding, become: true, tags: [linkding] }
     - { role: changedetection, become: true, tags: [changedetection] }
     - { role: immich, become: true, tags: [immich] }
+    - { role: teslamate, become: true, tags: [teslamate] }
     - { role: n8n, become: true, tags: [n8n] }
 
 - name: Setup nameserver
@@ -77,6 +78,7 @@
     - { role: portainer, become: true, tags: [docker, portainer] }
     - { role: gpu, become: true, tags: [gpu, gpu-driver] }
     - { role: glances, become: true, tags: [glances], vars: { glances_nvidia_support: true } }
+    - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
 
     #- { role: autosuspend, become: true, tags: [autosuspend] }
     - { role: system_bridge, become: true, tags: [system-bridge] }
