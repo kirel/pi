@@ -48,6 +48,9 @@ llamaswap_container_name: llama-swap
 llamaswap_config_path: "{{ config_root }}/llama-swap"
 model_group_alias:
   home: "GPT-OSS-20B-F16"
+  home-fast: "GPT-OSS-20B-F16-low"
+  home-smart: "GPT-OSS-20B-F16-high"
+  home-vision: "Qwen3-VL-8B-Instruct"
 llamaswap_models:
   - alias: Qwen3-VL-8B-Instruct
     cmd: >-
@@ -115,12 +118,13 @@ llamaswap_models:
       --jinja
     supports_function_calling: true
     supports_vision: false
-    allowed_openai_params: ["chat_template_kwargs"]
     variants:
       high:
-        chat_template_kwargs: '{"reasoning_effort": "high"}'
+        chat_template_kwargs:
+          reasoning_effort: "high"
       low:
-        chat_template_kwargs: '{"reasoning_effort": "low"}'
+        chat_template_kwargs:
+          reasoning_effort: "low"
 babybuddy_http_port: 8008
 wallabag_http_port: 8010
 readeck_http_port: 8011
