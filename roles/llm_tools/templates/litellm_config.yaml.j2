@@ -1,6 +1,7 @@
 model_list:
-  # Primary home model - Local Qwen3-VL via llama-swap
+  # Local models via llama-swap - base models and their variants
   {% for model in llamaswap_models -%}
+  # Base model
   - model_name: {{ model.alias }}
     litellm_params:
       model: "openai/{{ model.alias }}"
@@ -12,6 +13,24 @@ model_list:
     model_info:
       supports_function_calling: {{ model.supports_function_calling | lower }}
       supports_vision: {{ model.supports_vision | lower }}
+
+  # Model variants (if any)
+  {% if model.variants is defined -%}
+  {% for variant_name, variant_params in model.variants.items() -%}
+  - model_name: {{ model.alias }}-{{ variant_name }}
+    litellm_params:
+      model: "openai/{{ model.alias }}"
+      api_base: "http://{{ ollama_host }}:{{ llamaswap_port }}/v1"
+      api_key: "llama-swap"
+      {% if model.allowed_openai_params is defined -%}
+      allowed_openai_params: {{ model.allowed_openai_params }}
+      {% endif -%}
+      {{ variant_params | to_nice_yaml(indent=2) | indent(6, false) }}
+    model_info:
+      supports_function_calling: {{ model.supports_function_calling | lower }}
+      supports_vision: {{ model.supports_vision | lower }}
+  {% endfor %}
+  {% endif %}
   {% endfor %}
 
   # Fallback to remote model when local is unavailable

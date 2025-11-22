@@ -116,6 +116,11 @@ llamaswap_models:
     supports_function_calling: true
     supports_vision: false
     allowed_openai_params: ["chat_template_kwargs"]
+    variants:
+      high:
+        chat_template_kwargs: '{"reasoning_effort": "high"}'
+      low:
+        chat_template_kwargs: '{"reasoning_effort": "low"}'
 babybuddy_http_port: 8008
 wallabag_http_port: 8010
 readeck_http_port: 8011
