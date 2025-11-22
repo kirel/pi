@@ -47,7 +47,7 @@ llamaswap_port: 9292 # llama-swap API port
 llamaswap_container_name: llama-swap
 llamaswap_config_path: "{{ config_root }}/llama-swap"
 model_group_alias:
-  home: "Qwen3-VL-8B-Instruct"
+  home: "GPT-OSS-20B-F16"
 llamaswap_models:
   - alias: Qwen3-VL-8B-Instruct
     cmd: >-
@@ -106,7 +106,7 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/gpt-oss-20b-GGUF:F16
       --port ${PORT}
-      --ctx-size 16384
+      --ctx-size 65536
       --n-gpu-layers 99
       --threads -1
       --temp 1.0
@@ -115,6 +115,7 @@ llamaswap_models:
       --jinja
     supports_function_calling: true
     supports_vision: false
+    allowed_openai_params: ["chat_template_kwargs"]
 babybuddy_http_port: 8008
 wallabag_http_port: 8010
 readeck_http_port: 8011
@@ -160,7 +161,7 @@ litellm_proxy_port: 4000
 litellm_proxy_ui_port: 4001
 langfuse_port: 3003
 homeassistant_config_folder: "{{ config_root }}/home-assistant"
-homeassistant_media_folder: /tank/medien/Musik
+homeassistant_media_folder: /tank/medien
 music_assistant_data_folder: "{{ config_root }}/music-assistant"
 music_assistant_media_folder: /tank/medien/Musik
 frigate_config_folder: "{{ config_root }}/frigate"

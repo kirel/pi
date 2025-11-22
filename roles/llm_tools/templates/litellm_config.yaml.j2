@@ -6,6 +6,9 @@ model_list:
       model: "openai/{{ model.alias }}"
       api_base: "http://{{ ollama_host }}:{{ llamaswap_port }}/v1"
       api_key: "llama-swap"
+      {% if model.allowed_openai_params is defined -%}
+      allowed_openai_params: {{ model.allowed_openai_params }}
+      {% endif -%}
     model_info:
       supports_function_calling: {{ model.supports_function_calling | lower }}
       supports_vision: {{ model.supports_vision | lower }}
