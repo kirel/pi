@@ -109,7 +109,7 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/gpt-oss-20b-GGUF:F16
       --port ${PORT}
-      --ctx-size 65536
+      --ctx-size 131072
       --n-gpu-layers 99
       --threads -1
       --temp 1.0
