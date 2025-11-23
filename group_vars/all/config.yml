@@ -27,6 +27,7 @@ homepage_http_port: 3002
 music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
 wud_http_port: 3000
+semaphore_http_port: 3005
 vscode_http_port: 8443
 nodered_http_port: 1880
 mosquitto_address: "{{ ansible_default_ipv4.address }}"

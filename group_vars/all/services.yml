@@ -31,6 +31,13 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ wud_http_port }}"
     group: Monitoring
+  semaphore:
+    name: "Semaphore CI/CD"
+    target: "homelab-nuc.lan"
+    http_port: "{{ semaphore_http_port }}"
+    domain: semaphore.lan
+    group: "Monitoring"
+    icon: "mdi-play-circle"
   wallabag:
     name: Wallabag
     target: homelab-nuc.lan
