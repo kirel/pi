@@ -1,12 +1,36 @@
 ---
 # tasks file for llm_inference
 
-- name: Stop and remove old Ollama container if exists
-  community.docker.docker_container:
-    name: ollama
-    state: absent
+- name: Ensure Ollama models directory exists
+  ansible.builtin.file:
+    path: "{{ ollama_path }}"
+    state: directory
+    mode: "0755"
   become: true
-  ignore_errors: true
+
+- name: Start the Ollama container
+  community.docker.docker_container:
+    name: "{{ ollama_container_name }}"
+    image: "{{ ollama_image }}"
+    pull: true
+    state: started
+    restart_policy: "{{ ollama_restart_policy }}"
+    ports:
+      - "{{ ollama_port }}:{{ ollama_port }}"
+    volumes:
+      - "{{ ollama_path }}:/root/.ollama"
+    device_requests:
+      - driver: nvidia
+        count: -1
+        capabilities:
+          - [gpu]
+    env:
+      OLLAMA_HOST: "0.0.0.0"
+      OLLAMA_FLASH_ATTENTION: "1"
+      OLLAMA_KV_CACHE_TYPE: "q8_0"
+      OLLAMA_NUM_PARALLEL: "{{ ollama_num_parallel }}"
+      OLLAMA_MAX_LOADED_MODELS: "{{ ollama_max_loaded_models }}"
+  become: true
 
 - name: Ensure llama-swap config directory exists
   ansible.builtin.file:

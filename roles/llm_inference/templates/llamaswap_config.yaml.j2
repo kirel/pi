@@ -9,6 +9,22 @@ models:
       - "GGML_CUDA_MOUNT=/usr/lib/x86_64-linux-gnu/libcudart.so.12"
   {% endfor %}
 
+{% if llamaswap_model_groups is defined %}
+groups:
+  {% for group_name, group_config in llamaswap_model_groups.items() %}
+
+  "{{ group_name }}":
+    {% if group_config.persistent is defined %}persistent: {{ group_config.persistent | lower }}{% endif +%}
+    {% if group_config.swap is defined %}swap: {{ group_config.swap | lower }}{% endif +%}
+    {% if group_config.exclusive is defined %}exclusive: {{ group_config.exclusive | lower }}{% endif +%}
+
+    members:
+      {% for model in llamaswap_models if group_name == model.group -%}
+      - "{{ model.alias }}"
+      {% endfor %}
+  {% endfor %}
+{% endif %}
+
 # Global settings
 server:
   # Allow CORS for web interfaces
@@ -20,4 +36,4 @@ server:
 hooks:
   on_startup:
     preload:
-      - home
+      - home-fast

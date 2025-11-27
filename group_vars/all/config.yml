@@ -68,6 +68,7 @@ llamaswap_models:
       --jinja
     supports_function_calling: true
     supports_vision: true
+    group: swap
   - alias: Qwen3-30B-A3B-Instruct-2507
     cmd: >-
       /app/llama-server
@@ -88,6 +89,7 @@ llamaswap_models:
       --jinja
     supports_function_calling: true
     supports_vision: false
+    group: swap
   - alias: Mistral-Small-3.2-24B-Instruct-2506
     cmd: >-
       /app/llama-server
@@ -104,6 +106,7 @@ llamaswap_models:
       --jinja
     supports_function_calling: true
     supports_vision: true
+    group: swap
   - alias: GPT-OSS-20B-F16
     cmd: >-
       /app/llama-server
@@ -111,13 +114,16 @@ llamaswap_models:
       --port ${PORT}
       --ctx-size 131072
       --n-gpu-layers 99
-      --threads -1
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --threads 4
       --temp 1.0
       --top-p 1.0
       --top-k 0
       --jinja
     supports_function_calling: true
     supports_vision: false
+    group: swap
     variants:
       high:
         chat_template_kwargs:
@@ -125,6 +131,34 @@ llamaswap_models:
       low:
         chat_template_kwargs:
           reasoning_effort: "low"
+  - alias: Qwen3-0.6B-Q4
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/Qwen3-0.6B-GGUF:Q4_K_XL
+      --port ${PORT}
+      --ctx-size 4096
+      --flash-attn auto
+      --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --temp 0.7
+      --top-p 0.8
+      --top-k 20
+      --min-p 0.0
+      --chat_template_kwargs '{\"enable_thinking\": false}'
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
+    group: forever
+
+llamaswap_model_groups:
+  forever:
+    persistent: false
+    swap: false
+    exclusive: false
+  swap:
+    swap: true
+
 babybuddy_http_port: 8008
 wallabag_http_port: 8010
 readeck_http_port: 8011
