@@ -64,7 +64,7 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ n8n_http_port }}"
     domain: n8n.kirelabs.org
-    force_tls_internal: true
+    # force_tls_internal: true
     group: Productivity
     icon: n8n.svg
   teddycloud:

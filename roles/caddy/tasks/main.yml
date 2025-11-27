@@ -91,21 +91,43 @@
       - output.containers | selectattr('Name', 'equalto', 'caddy') | list | length > 0
       - output.containers | selectattr('Name', 'equalto', 'caddy') | map(attribute='State') | list | first == 'running'
 
-- name: Copy root certificate from container
-  ansible.builtin.command: docker cp caddy:/data/caddy/pki/authorities/local/root.crt {{ caddy_folder }}/root.crt
-  changed_when: false
-- name: Fetch root certificate to controller
+- name: Create symlink to root certificate from mounted data volume
+  ansible.builtin.file:
+    src: "{{ caddy_data_folder }}/caddy/pki/authorities/local/root.crt"
+    dest: "{{ caddy_folder }}/root.crt"
+    state: link
+    owner: "{{ username }}"
+    group: users
+
+- name: Ensure Caddy PKI directories are world-executable for service mounts
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ username }}"
+    group: users
+  loop:
+    - "{{ caddy_data_folder }}/caddy/pki"
+    - "{{ caddy_data_folder }}/caddy/pki/authorities"
+    - "{{ caddy_data_folder }}/caddy/pki/authorities/local"
+
+- name: Ensure Caddy root certificate is world-readable for service mounts
+  ansible.builtin.file:
+    path: "{{ caddy_data_folder }}/caddy/pki/authorities/local/root.crt"
+    mode: "0644"
+    owner: "{{ username }}"
+    group: users
+
+- name: Fetch root certificate to controller for distribution
   ansible.builtin.fetch:
     src: "{{ caddy_folder }}/root.crt"
     dest: tmp/
     flat: true
 
-# Note: Installing the cert into the host's trust store is now handled by the 'trust-internal-ca' role.
-# The fetch task above is still needed so that role can access the cert.
 
-- name: Repossess root cert on host after docker cp
-  ansible.builtin.file:
-    path: "{{ caddy_folder }}/root.crt" # Path where docker cp placed it
-    owner: "{{ username }}"
-    group: users
-    mode: u=rw,g=rw
+# Note: The certificate is accessible via the mounted data volume at:
+# {{ caddy_data_folder }}/caddy/pki/authorities/local/root.crt
+# The symlink provides a convenient stable path at {{ caddy_folder }}/root.crt
+
+# Note: Installing the cert into the host's trust store is now handled by the 'trust-internal-ca' role.
+# The fetch task above provides the cert to the controller so it can be distributed to all hosts.

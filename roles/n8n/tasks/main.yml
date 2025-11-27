@@ -10,11 +10,36 @@
     mode: "0755"
   become: true
 
+- name: Create temporary directory for Dockerfile
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: n8n_dockerfile
+  register: dockerfile_temp_dir
+  become: true
+
+- name: Copy Dockerfile to remote host
+  ansible.builtin.copy:
+    src: Dockerfile
+    dest: "{{ dockerfile_temp_dir.path }}/Dockerfile"
+    mode: "0644"
+  become: true
+
+- name: Build custom n8n image with poppler-utils
+  community.docker.docker_image:
+    name: custom/n8n
+    tag: latest
+    source: build
+    build:
+      path: "{{ dockerfile_temp_dir.path }}"
+      pull: true
+    state: present
+  become: true
+
 - name: Start n8n container
   community.docker.docker_container:
     name: n8n
-    image: n8nio/n8n
-    pull: always
+    image: custom/n8n:latest
+    pull: false
     image_name_mismatch: recreate
     restart_policy: unless-stopped
     user: "{{ uid }}:{{ uid }}"
@@ -22,6 +47,7 @@
       - "{{ n8n_http_port }}:5678"
     volumes:
       - "{{ n8n_config_folder }}:/home/node/.n8n"
+      - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
     env:
       GENERIC_TIMEZONE: "{{ system_timezone }}"
       TZ: "{{ system_timezone }}"
@@ -29,6 +55,7 @@
       N8N_RUNNERS_ENABLED: "true"
       WEBHOOK_URL: "https://{{ services['n8n'].domain }}"
       N8N_PROXY_HOPS: "1"
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"  # Allow self-signed certs for webhooks for now - fix later
     labels:
       homepage.group: "{{ services['n8n'].group }}"
       homepage.name: "{{ services['n8n'].name }}"
