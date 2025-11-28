@@ -1,11 +1,14 @@
 ---
 - name: Create folders
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
-    owner: "{{ username }}"
+    owner: "{{ item.owner | default(username) }}"
+    mode: "{{ item.mode | default('0755') }}"
   with_items:
-    - "{{ uptime_kuma_data_folder }}"
+    - path: "{{ uptime_kuma_data_folder }}"
+    - path: "{{ semaphore_data_folder }}"
+      owner: "1001"  # Semaphore container runs as user 1001
 
 - name: Start monitoring
   community.docker.docker_compose_v2:
@@ -68,6 +71,57 @@
             homepage.container: wud
             homepage.widget.type: whatsupdocker
             homepage.widget.url: https://wud.lan
+
+        semaphore:
+          image: semaphoreui/semaphore:latest
+          container_name: semaphore
+          ports:
+            - "{{ semaphore_http_port }}:{{ semaphore_port_internal }}"
+          environment:
+            # Database - keep it simple with SQLite
+            SEMAPHORE_DB_DIALECT: sqlite
+
+            # Admin user
+            SEMAPHORE_ADMIN: "semaphore"
+            SEMAPHORE_ADMIN_PASSWORD: "{{ vault_semaphore_admin_password | default('changeme') }}"
+            SEMAPHORE_ADMIN_NAME: "Semaphore Admin"
+            SEMAPHORE_ADMIN_EMAIL: "semaphore@{{ ansible_domain | default('lan') }}"
+
+            # Web interface
+            SEMAPHORE_WEB_ROOT: "https://semaphore.lan"
+            SEMAPHORE_PORT: "{{ semaphore_port_internal }}"
+            SEMAPHORE_INTERFACE: "0.0.0.0"
+
+            # Security
+            SEMAPHORE_PASSWORD_LOGIN_DISABLED: "false"
+            SEMAPHORE_NON_ADMIN_CAN_CREATE_PROJECT: "false"
+            SEMAPHORE_MAX_PARALLEL_TASKS: "2"
+
+            # Ansible configuration
+            ANSIBLE_HOST_KEY_CHECKING: "false"
+
+            # Notifications (disabled for homelab simplicity)
+            SEMAPHORE_EMAIL_ALERT: "false"
+            SEMAPHORE_TELEGRAM_ALERT: "false"
+            SEMAPHORE_SLACK_ALERT: "false"
+
+            # Logging
+            SEMAPHORE_TASK_LOG_ENABLED: "true"
+
+          volumes:
+            - "{{ semaphore_data_folder }}:/var/lib/semaphore"
+          restart: unless-stopped
+          dns:
+            - "{{ nameserver_pi_ip }}"
+            - "{{ homelab_nuc_ip }}"
+          labels:
+            wud.tag.include: latest
+            homepage.group: "{{ services.semaphore.group }}"
+            homepage.name: "{{ services.semaphore.name }}"
+            homepage.href: https://semaphore.lan
+            homepage.icon: "mdi-play-circle"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: semaphore
   register: output
 
 - ansible.builtin.debug:
@@ -77,3 +131,4 @@
     that:
       - output.containers | selectattr('Name', 'equalto', 'uptime_kuma') | map(attribute='State') | list | first == 'running'
       - output.containers | selectattr('Name', 'equalto', 'wud') | map(attribute='State') | list | first == 'running'
+      - output.containers | selectattr('Name', 'equalto', 'semaphore') | map(attribute='State') | list | first == 'running'

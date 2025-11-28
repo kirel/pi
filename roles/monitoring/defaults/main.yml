@@ -1,0 +1,6 @@
+---
+# Semaphore Configuration
+semaphore_port_internal: 3000
+
+# Data folders
+semaphore_data_folder: "{{ config_root }}/semaphore"
