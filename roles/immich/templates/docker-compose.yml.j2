@@ -18,9 +18,11 @@ services:
       - REDIS_HOSTNAME=redis
       - REDIS_PORT=6379
       - IMMICH_MACHINE_LEARNING_URL=http://{{ immich_ml_hostname }}:{{ immich_ml_port }}
+      - NODE_EXTRA_CA_CERTS=/opt/custom-certificates/root.crt
     volumes:
       - "{{ immich_library_path }}:/data"
       - /etc/localtime:/etc/localtime:ro
+      - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
     ports:
       - "{{ immich_http_port }}:2283"
     devices:
