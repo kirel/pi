@@ -9,11 +9,15 @@ services:
       - "{{ linkding_http_port }}:9090"
     volumes:
       - "{{ linkding_data_folder }}:/etc/linkding/data"
+      - /etc/ssl/certs:/etc/ssl/certs:ro
+      - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
     environment:
       - LD_SUPERUSER_NAME={{ linkding_superuser_name }}
       - LD_SUPERUSER_EMAIL={{ linkding_superuser_email }}
       - LD_SUPERUSER_PASSWORD={{ linkding_superuser_password }}
       - LD_CSRF_TRUSTED_ORIGINS=https://{{ linkding_domain_name }}
+      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+      - CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
     labels:
       - homepage.group={{ services['linkding'].group }}
       - homepage.name={{ services['linkding'].name }}

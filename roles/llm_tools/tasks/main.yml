@@ -124,6 +124,8 @@
             - "{{ litellm_proxy_port_host }}:{{ litellm_proxy_port_container }}"
           volumes:
             - "{{ litellm_proxy_config_full_host_path }}:/app/config.yaml:ro"
+            - /etc/ssl/certs:/etc/ssl/certs:ro
+            - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
           environment:
             LANGFUSE_PUBLIC_KEY: "{{ langfuse_homelab_public_key }}"
             LANGFUSE_SECRET_KEY: "{{ litellm_homelab_secret_key | default(langfuse_homelab_secret_key) }}"
@@ -136,6 +138,7 @@
             GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
             ANTHROPIC_API_KEY: "{{ ANTHROPIC_API_KEY }}"
+            NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
           command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"]
           depends_on:
             postgres:
@@ -204,12 +207,17 @@
           container_name: "{{ google_workspace_mcp_container_name }}"
           ports:
             - "{{ google_workspace_mcp_port_host }}:{{ google_workspace_mcp_port_container }}"
+          volumes:
+            - /etc/ssl/certs:/etc/ssl/certs:ro
+            - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
           environment:
             GOOGLE_OAUTH_CLIENT_ID: "{{ google_workspace_oauth_client_id }}"
             GOOGLE_OAUTH_CLIENT_SECRET: "{{ google_workspace_oauth_client_secret }}"
             MCP_ENABLE_OAUTH21: "true"
             WORKSPACE_MCP_STATELESS_MODE: "true"
             WORKSPACE_EXTERNAL_URL: "https://google-workspace-mcp.net"
+            REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+            CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
           command:
             - "uvx"
             - "workspace-mcp"

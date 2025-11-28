@@ -16,6 +16,8 @@ services:
     volumes:
       - "{{ wallabag_images_folder }}:/var/www/wallabag/web/assets/images"
       - "{{ wallabag_db_data_folder }}:/var/www/wallabag/data"
+      - /etc/ssl/certs:/etc/ssl/certs:ro
+      - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
     labels:
       - homepage.group={{ services['wallabag'].group }}
       - homepage.name={{ services['wallabag'].name }}
