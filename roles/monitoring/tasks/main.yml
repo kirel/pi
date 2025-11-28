@@ -1,11 +1,14 @@
 ---
 - name: Create folders
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
-    owner: "{{ username }}"
+    owner: "{{ item.owner | default(username) }}"
+    mode: "{{ item.mode | default('0755') }}"
   with_items:
-    - "{{ uptime_kuma_data_folder }}"
+    - path: "{{ uptime_kuma_data_folder }}"
+    - path: "{{ semaphore_data_folder }}"
+      owner: "1001"  # Semaphore container runs as user 1001
 
 - name: Start monitoring
   community.docker.docker_compose_v2:
@@ -112,13 +115,13 @@
             - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"
           labels:
-            - wud.tag.include=latest
-            - homepage.group="{{ services.semaphore.group }}"
-            - homepage.name="{{ services.semaphore.name }}"
-            - homepage.href="https://semaphore.lan"
-            - homepage.icon="mdi-play-circle"
-            - homepage.server="{{ inventory_hostname }}"
-            - homepage.container="semaphore"
+            wud.tag.include: latest
+            homepage.group: "{{ services.semaphore.group }}"
+            homepage.name: "{{ services.semaphore.name }}"
+            homepage.href: https://semaphore.lan
+            homepage.icon: "mdi-play-circle"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: semaphore
   register: output
 
 - ansible.builtin.debug:
