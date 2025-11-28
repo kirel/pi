@@ -24,11 +24,12 @@
             - "{{ uptime_kuma_data_folder }}:/app/data"
             - /var/run/docker.sock:/var/run/docker.sock
             - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro # Mount host CA bundle
+            - /usr/local/share/ca-certificates/caddy_local_root.crt:/etc/ssl/certs/caddy_local_root.crt:ro
           dns:
             - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"
           environment:
-            NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+            NODE_EXTRA_CA_CERTS: /etc/ssl/certs/caddy_local_root.crt
           network_mode: bridge
           labels:
             wud.tag.include: ^1$$
