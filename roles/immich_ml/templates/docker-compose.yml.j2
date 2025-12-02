@@ -6,6 +6,7 @@ services:
     image: {{ immich_ml_image }}
     container_name: {{ immich_ml_service_name }}
     restart: unless-stopped
+    pull_policy: always
     environment:
       - DB_USERNAME={{ immich_db_username }}
       - DB_PASSWORD={{ immich_db_password }}
@@ -14,8 +15,12 @@ services:
       - DB_PORT={{ immich_db_port }}
       - REDIS_HOSTNAME={{ immich_redis_hostname }}
       - REDIS_PORT={{ immich_redis_port }}
+      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+      - CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
     volumes:
       - model-cache:/cache
+      - /etc/ssl/certs:/etc/ssl/certs:ro
+      - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
     ports:
       - "{{ immich_ml_http_port }}:3003"
 {% if immich_ml_gpu_enabled %}

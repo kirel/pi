@@ -5,6 +5,7 @@ services:
     image: wallabag/wallabag
     container_name: wallabag
     restart: unless-stopped
+    pull_policy: always
     environment:
       - SYMFONY__ENV__DOMAIN_NAME=https://{{ wallabag_domain_name }}
       - SYMFONY__ENV__SERVER_NAME="Wallabag at {{ wallabag_domain_name }}"

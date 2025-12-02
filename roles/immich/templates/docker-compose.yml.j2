@@ -6,6 +6,7 @@ services:
     image: ghcr.io/immich-app/immich-server:release
     container_name: immich_server
     restart: unless-stopped
+    pull_policy: always
     environment:
       - TZ={{ system_timezone }}
       - NODE_ENV=production
@@ -18,10 +19,11 @@ services:
       - REDIS_HOSTNAME=redis
       - REDIS_PORT=6379
       - IMMICH_MACHINE_LEARNING_URL=http://{{ immich_ml_hostname }}:{{ immich_ml_port }}
-      - NODE_EXTRA_CA_CERTS=/opt/custom-certificates/root.crt
+      - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
     volumes:
       - "{{ immich_library_path }}:/data"
       - /etc/localtime:/etc/localtime:ro
+      - /etc/ssl/certs:/etc/ssl/certs:ro
       - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
     ports:
       - "{{ immich_http_port }}:2283"
@@ -44,6 +46,7 @@ services:
     image: docker.io/valkey/valkey:8
     container_name: immich_redis
     restart: unless-stopped
+    pull_policy: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -58,6 +61,7 @@ services:
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     container_name: immich_postgres
     restart: unless-stopped
+    pull_policy: always
     environment:
       - POSTGRES_USER={{ immich_db_username }}
       - POSTGRES_PASSWORD={{ immich_db_password }}
