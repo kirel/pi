@@ -61,11 +61,55 @@ llamaswap_models:
       --ctx-size 20000
       --flash-attn auto
       --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
       --top-p 0.8
       --top-k 20
       --temp 0.7
       --min-p 0.0
       --presence-penalty 1.5
+      --jinja
+    supports_function_calling: true
+    supports_vision: true
+    group: swap
+  - alias: Qwen3-VL-30B-A3B-Instruct
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/Qwen3-VL-30B-A3B-Instruct-GGUF:Q4_K_XL
+      --port ${PORT}
+      --ctx-size 32768
+      --n-predict 32768
+      --flash-attn auto
+      --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      -ot ".ffn_.*_exps.=CPU"
+      --top-p 0.8
+      --top-k 20
+      --temp 0.7
+      --min-p 0.0
+      --presence-penalty 1.5
+      --jinja
+    supports_function_calling: true
+    supports_vision: true
+    group: swap
+  - alias: Qwen3-VL-30B-A3B-Thinking
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/Qwen3-VL-30B-A3B-Thinking-GGUF:Q4_K_XL
+      --port ${PORT}
+      --ctx-size 40960
+      --n-predict 40960
+      --flash-attn auto
+      --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      -ot ".ffn_.*_exps.=CPU"
+      --top-p 0.95
+      --top-k 20
+      --temp 1.0
+      --min-p 0.0
+      --presence-penalty 0.0
       --jinja
     supports_function_calling: true
     supports_vision: true
@@ -77,6 +121,9 @@ llamaswap_models:
       --port ${PORT}
       --ctx-size 32684
       --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      -ot ".ffn_.*_exps.=CPU"
       --threads -1
       --temp 0.7
       --min-p 0.0
@@ -96,6 +143,8 @@ llamaswap_models:
       --ctx-size 24000
       --flash-attn auto
       --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
       --threads -1
       --batch-size 512
       --ubatch-size 512
