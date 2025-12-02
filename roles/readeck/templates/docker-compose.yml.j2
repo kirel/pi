@@ -5,6 +5,7 @@ services:
     image: codeberg.org/readeck/readeck:latest
     container_name: readeck
     restart: unless-stopped
+    pull_policy: always
     environment:
       # Defines the application log level. Can be error, warn, info, debug.
       - READECK_LOG_LEVEL=info

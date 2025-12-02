@@ -37,16 +37,20 @@
           container_name: jellyfin
           user: "{{ uid }}:{{ uid }}"
           network_mode: host
+          pull_policy: always
           volumes:
             - "{{ jellyfin_config_folder }}:/config"
             - jellyfin-cache:/cache
             - "{{ jellyfin_movie_folder }}:/movies"
             - "{{ jellyfin_shows_folder }}:/shows"
             - "{{ jellyfin_music_folder }}:/music"
+            - /etc/ssl/certs:/etc/ssl/certs:ro
+            - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
           restart: unless-stopped
           # Optional - alternative address used for autodiscovery
           environment:
             JELLYFIN_PublishedServerUrl: http://192.168.50.5:8096
+            SSL_CA_FILE: /etc/ssl/certs/ca-certificates.crt
           # Optional - may be necessary for docker healthcheck to pass if running in host network mode
           extra_hosts:
             host.docker.internal: host-gateway

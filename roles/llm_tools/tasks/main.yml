@@ -87,6 +87,7 @@
       services:
         postgres:
           image: "{{ litellm_db_image }}"
+          pull_policy: always
           container_name: "{{ litellm_db_container_name }}"
           ports:
             - "{{ litellm_db_port_host }}:{{ litellm_db_port_container }}"
@@ -107,6 +108,7 @@
 
         redis:
           image: "{{ litellm_redis_image }}"
+          pull_policy: always
           container_name: "{{ litellm_redis_container_name }}"
           ports:
             - "{{ litellm_redis_port_host }}:{{ litellm_redis_port_container }}"
@@ -119,6 +121,7 @@
 
         litellm-proxy:
           image: "{{ litellm_proxy_image }}"
+          pull_policy: always
           container_name: "{{ litellm_proxy_container_name }}"
           ports:
             - "{{ litellm_proxy_port_host }}:{{ litellm_proxy_port_container }}"
@@ -172,6 +175,7 @@
 
         open-webui:
           image: ghcr.io/open-webui/open-webui:main
+          pull_policy: always
           container_name: open-webui
           ports:
             - "{{ open_webui_http_port }}:8080"
@@ -204,6 +208,7 @@
 
         google-workspace-mcp:
           image: "{{ google_workspace_mcp_image }}"
+          pull_policy: always
           container_name: "{{ google_workspace_mcp_container_name }}"
           ports:
             - "{{ google_workspace_mcp_port_host }}:{{ google_workspace_mcp_port_container }}"
