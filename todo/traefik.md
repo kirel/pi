@@ -37,34 +37,12 @@ From `group_vars/all/services.yml`:
 
 ## Migration Strategy
 
-### Phase 1: Hybrid Approach (Minimal Changes)
-Keep `services.yml` as-is and generate Traefik's dynamic configuration file.
-
-**Pros:**
-- Minimal changes to existing structure
-- Can migrate incrementally
-- Backward compatible
-
-**Cons:**
-- Still using file-based config (less "Traefik-native")
-
-**Implementation:**
-1. Create Traefik role (replace Caddy)
-2. Static config: Traefik daemon settings
-3. Dynamic config: Generated from `services.yml`
-4. File watcher enabled for auto-reload
-
-### Phase 2: Native Docker Labels (Full Migration)
-Convert each service to use Traefik labels in docker-compose.
-
-**Pros:**
-- Truly Docker-native
-- Automatic service discovery
-- No separate config file needed
-
-**Cons:**
-- Requires modifying all service roles
-- Larger change set
+### Single-Phase: Native Docker Label Routing
+We skip the file-provider bridge and migrate directly to Traefik's Docker (Swarm) provider using service labels. Every stack/service declares its own routing, TLS, and middleware via labels so Traefik auto-discovers changes without templating or restarts. Key implications:
+* `services.yml` remains the source of truth for DNS lists, homepage cards, etc., but Traefik routing data now lives beside each service definition.
+* Service roles must be updated to add the appropriate `traefik.*` labels when launching stacks.
+* Bare-metal or non-container backends are handled through dedicated "external service" stacks that Traefik references via labels (e.g., `traefik.http.services.proxmox.loadbalancer.server.url=https://...`).
+* Rollout happens service-by-service; once a stack owns its routing labels, the old Caddy entry can be deleted.
 
 ## Implementation Plan
 
@@ -73,10 +51,9 @@ Convert each service to use Traefik labels in docker-compose.
 ```
 roles/traefik/
 ├── tasks/
-│   └── main.yml              # Main installation/configuration
+│   └── main.yml              # Installs Traefik binary or container stack
 ├── templates/
-│   ├── traefik.yml.j2        # Static configuration
-│   ├── dynamic.yml.j2        # Dynamic routing (generated from services.yml)
+│   ├── traefik.yml.j2        # Static configuration (Docker provider only)
 │   └── traefik.service.j2    # Systemd service override (optional)
 ├── handlers/
 │   └── main.yml              # Reload handlers
@@ -110,13 +87,9 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-    network: traefik  # Use dedicated network
-    {% if traefik_docker_swarm | default(false) %}
     swarmMode: true
-    {% endif %}
-  file:
-    filename: /etc/traefik/dynamic.yml
-    watch: true  # KEY: Enable file watching
+    network: proxy  # Overlay network Traefik listens on
+    watch: true
 
 certificatesResolvers:
   letsencrypt:
@@ -260,15 +233,6 @@ tcp:
     mode: '0600'
   notify: reload traefik
 
-- name: Template dynamic configuration
-  template:
-    src: dynamic.yml.j2
-    dest: /etc/traefik/dynamic.yml
-    owner: traefik
-    group: traefik
-    mode: '0600'
-  notify: reload traefik
-
 - name: Create acme.json for Let's Encrypt
   copy:
     content: "{}"
@@ -368,19 +332,36 @@ traefik_service:
     - traefik
 ```
 
-### Step 8: Service-Specific Considerations
+### Additional Service Considerations
 
 #### For `nodocker: true` services (like Proxmox)
-No changes needed - Traefik can route to any backend.
+Create a tiny stack on the Traefik node whose sole purpose is to register the remote backend via labels. Example:
+```yaml
+services:
+  proxmox-router:
+    image: alpine
+    command: tail -f /dev/null
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.proxmox.rule=Host(`proxmox.lan`)
+        - traefik.http.routers.proxmox.entrypoints=websecure
+        - traefik.http.routers.proxmox.tls=true
+        - traefik.http.services.proxmox.loadbalancer.server.url=https://ailab-proxmox.lan:8006
+        - traefik.http.services.proxmox.loadbalancer.passHostHeader=true
+```
 
-#### For cross-host services
-Just ensure firewall allows Traefik host to reach target hosts on specified ports.
+#### For cross-host Docker services
+Deploy each stack on the same node as its containers, attach to the `proxy` overlay network, and add labels pointing to the service’s internal port (`loadbalancer.server.port`).
 
-#### For TLS passthrough
-Already handled via `tls_skip` option in services.yml.
+#### For TLS passthrough / custom certs
+Use labels like `traefik.http.routers.<name>.tls=true` and optionally middlewares for redirect. For .lan domains, rely on internal CA via mkcert.
 
 #### For proxy ports (like Ollama)
-Current config has both `proxy_port` and `http_port` - use `http_port` for Traefik routing.
+Use `traefik.http.services.<name>.loadbalancer.server.url` for remote HTTP endpoints, or `server.port` for local containers.
 
 ## Testing & Validation
 
@@ -482,11 +463,12 @@ curl -L https://github.com/traefik/traefik/releases/download/v3.0.0/traefik_v3.0
 
 ## Service Network Requirements
 
-**Create dedicated Traefik network:**
-- Name: `traefik`
-- Subnet: `172.20.0.0/16` (custom, not overlapping existing)
+**Create overlay network for Traefik + services:**
+- Name: `proxy`
+- Driver: `overlay`
+- Mode: `attachable`
 
-All services that need Traefik routing should connect to this network.
+Attach all stacks that need HTTP routing to this network. Remove references to the old dedicated `traefik` bridge network.
 
 ## Security Considerations
 
