@@ -1,15 +1,19 @@
 ---
-- name: Create TeslaMate data folders
+- name: Create TeslaMate app data folder
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ teslamate_data_folder }}"
     state: directory
     owner: "{{ username }}"
     group: users
     mode: u=rwx,g=rwxs
-    recurse: true
-  with_items:
-    - "{{ teslamate_data_folder }}"
-    - "{{ teslamate_grafana_data_folder }}"
+
+- name: Create Grafana data folder with Grafana ownership
+  ansible.builtin.file:
+    path: "{{ teslamate_grafana_data_folder }}"
+    state: directory
+    owner: 472
+    group: 472
+    mode: "0770"
 
 - name: Create TeslaMate network
   community.docker.docker_network:
@@ -101,13 +105,3 @@
       networks:
         teslamate:
           driver: bridge
-
-- name: Fix Grafana data directory permissions
-  ansible.builtin.command: "chown -R 472:472 {{ teslamate_grafana_data_folder }}"
-  args:
-    creates: "{{ teslamate_grafana_data_folder }}/grafana.db"
-
-- name: Fix Grafana database file permissions
-  ansible.builtin.command: "chmod 600 {{ teslamate_grafana_data_folder }}/grafana.db"
-  args:
-    creates: "{{ teslamate_grafana_data_folder }}/grafana.db"
