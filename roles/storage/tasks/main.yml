@@ -64,7 +64,7 @@
 
 - name: Add dataset shares to Samba environment
   ansible.builtin.set_fact:
-    samba_env: "{{ samba_env | combine({('SAMBA_VOLUME_CONFIG_' + item | capitalize): '[{{ item | capitalize }}]; path=/shares/' + item | capitalize + '; valid users = daniel, nuc; browseable = yes; guest ok = yes; read only = no; force group = users; create mask = 0775; directory mask = 0755'}) }}"
+    samba_env: "{{ samba_env | combine({('SAMBA_VOLUME_CONFIG_' + item | capitalize): '[{{ item | capitalize }}]; path=/shares/' + item | capitalize + '; valid users = daniel, nuc; browseable = yes; guest ok = yes; read only = no; force group = users; create mask = 0775; directory mask = 0775'}) }}"
   loop: "{{ dataset_shares }}"
 
 - name: Add Time Machine shares to Samba environment
@@ -74,7 +74,7 @@
 
 - name: Add config to Samba environment
   ansible.builtin.set_fact:
-    samba_env: "{{ samba_env | combine({'SAMBA_VOLUME_CONFIG_Config': '[Config]; path=/shares/Config; valid users = daniel; guest ok = no; read only = no; browseable = yes; create mask = 0775; directory mask = 0755; force user = ' + username + '; force group = users;'}) }}"
+    samba_env: "{{ samba_env | combine({'SAMBA_VOLUME_CONFIG_Config': '[Config]; path=/shares/config; valid users = daniel; guest ok = no; read only = no; browseable = yes; create mask = 0775; directory mask = 0775; force user = ' + username + '; force group = users;'}) }}"
 
 - name: Start Storage
   community.docker.docker_compose_v2:
