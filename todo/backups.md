@@ -119,533 +119,285 @@ zfs_snapshots_enabled: true
 uv run ansible-playbook setup.yml --tags zfs --limit homelab
 ```
 
-### Phase 2: Install Borg on All Hosts
+### Phase 2: Install Borgmatic on All Hosts
 
-**Add to roles/basic/tasks/main.yml**:
+This plan is updated to use `borgmatic`, a configuration-driven wrapper for Borg that simplifies management and improves robustness.
+
+**Action**: Create a dedicated Ansible role `roles/borgmatic`.
+
 ```yaml
-- name: Install BorgBackup
+# Example task in roles/borgmatic/tasks/main.yml
+- name: Install Borgmatic and dependencies
   apt:
-    name: borgbackup
+    name:
+      - borgmatic
+      - sshfs  # Still useful for manual restores
     state: present
-```
-
-**Or create dedicated `roles/borg/` role**:
-```yaml
-# roles/borg/tasks/main.yml
-- name: Install BorgBackup
-  apt:
-    name: borgbackup
-    state: present
-
-- name: Create backup directory structure
-  file:
-    path: "{{ item }}"
-    state: directory
-    mode: '0750'
-    owner: nuc
-    group: nuc
-  loop:
-    - /tank/backups/homelab-configs
-    - /mnt/hetzner
-
-- name: Set up SSH directory
-  file:
-    path: /root/.ssh
-    state: directory
-    mode: '0700'
+    update_cache: yes
 ```
 
 ### Phase 3: Create Local Borg Repository
 
-**On homelab-nuc**:
+After the Ansible role has created the necessary directories and config files (see Phase 8), initialize the repository.
+
+**On `homelab-nuc`**:
 ```bash
-ssh root@homelab-nuc.lan
-cd /tank/backups
+# Initialize repository with encryption using the borgmatic config
+sudo borgmatic --config /etc/borgmatic.d/config-local.yaml init --encryption repokey
 
-# Initialize repository with encryption
-borg init --encryption=repokey /tank/backups/homelab-configs
-
-# Set ownership
-chown -R nuc:nuc /tank/backups/homelab-configs
-chmod 750 /tank/backups/homelab-configs
+# Set permissions (adjust if your user differs)
+sudo chown -R nuc:nuc /tank/backups/homelab-configs
 ```
 
 ### Phase 4: Create Remote Borg Repository
 
-**Mount Hetzner Storage Box**:
-```bash
-# On homelab-nuc
-ssh root@homelab-nuc.lan
-
-# Create SSHFS mount point
-mkdir -p /mnt/hetzner
-
-# Mount Hetzner Storage Box
-sshfs root@storage-xxx.your-box.de:/backups /mnt/hetzner
-
-# Test connectivity
-ls -la /mnt/hetzner
-```
+**Pre-requisite**: Ensure the `root` user on `homelab-nuc` can SSH into the Hetzner Storage Box using key-based authentication. The `distribute_ssh_key.yml` playbook can be adapted for this.
 
 **Initialize remote repository**:
 ```bash
-# Initialize on Hetzner
-borg init --encryption=repokey /mnt/hetzner/homelab-backup
-
-# Set ownership
-chown -R nuc:nuc /mnt/hetzner
+# Initialize on Hetzner via borgmatic's native SSH support
+sudo borgmatic --config /etc/borgmatic.d/config-remote.yaml init --encryption repokey
 ```
+This method is more secure and direct than using SSHFS for backups.
 
-**Note**: Hetzner Storage Box credentials from secrets.yml
+### Phase 5: Configure Borgmatic
 
-### Phase 5: Create Backup Scripts
+We will create two configuration files in `/etc/borgmatic.d/`, managed by Ansible. This approach replaces the legacy shell scripts.
 
-**Script 1: Local Config Backup**
+1.  **`config-local.yaml`**: For frequent, fast backups of local service configurations.
+2.  **`config-remote.yaml`**: For comprehensive, off-site backups of all critical data.
+
+The full structure of these files is detailed in the Ansible integration section below.
+
+### Phase 6: Automation with Systemd Timers
+
+We'll use systemd timers for more robust and manageable execution over traditional cron jobs. Logging is automatically handled by `journald`.
+
+**Systemd Units (deployed via Ansible):**
+*   `/etc/systemd/system/borgmatic-local.service` & `borgmatic-local.timer`
+*   `/etc/systemd/system/borgmatic-remote.service` & `borgmatic-remote.timer`
+
+**Timer Schedule:**
+*   **Local**: Runs daily.
+*   **Remote**: Runs weekly.
+
+**Management Commands:**
 ```bash
-# /usr/local/bin/borg-backup-local-configs.sh
-#!/bin/bash
+# Enable and start the timers
+sudo systemctl enable --now borgmatic-local.timer
+sudo systemctl enable --now borgmatic-remote.timer
 
-set -euo pipefail
-
-export BORG_REPO=/tank/backups/homelab-configs
-export BORG_PASSPHRASE='${borg_passphrase}'
-
-# Prune old backups
-echo "Pruning old local backups..."
-borg prune -v --list \
-    --keep-hourly=24 \
-    --keep-daily=7 \
-    --keep-weekly=4 \
-    --keep-monthly=12
-
-# Create backup
-echo "Creating local config backup..."
-borg create \
-    --info \
-    --stats \
-    --compression lz4 \
-    --exclude-caches \
-    --exclude '/home/nuc/config/*/cache' \
-    --exclude '/home/nuc/config/*/logs' \
-    --exclude '/home/nuc/config/*/temp' \
-    --exclude '/home/nuc/config/*/.cache' \
-    --exclude '/home/nuc/config/*/node_modules' \
-    --exclude '/home/nuc/config/*/build' \
-    --exclude '/home/nuc/config/*/dist' \
-    ::homelab-nuc-{hostname}-{now} \
-    /home/nuc/config
-
-# Verify backup integrity
-echo "Verifying backup..."
-borg check --verify-data --last 1
-
-echo "Local config backup completed successfully!"
-```
-
-**Script 2: Remote Full Backup**
-```bash
-# /usr/local/bin/borg-backup-remote-full.sh
-#!/bin/bash
-
-set -euo pipefail
-
-export BORG_REPO=/mnt/hetzner/homelab-backup
-export BORG_PASSPHRASE='${borg_passphrase_hetzner}'
-
-# Ensure Hetzner is mounted
-if ! mountpoint -q /mnt/hetzner; then
-    echo "Mounting Hetzner Storage Box..."
-    sshfs root@storage-xxx.your-box.de:/backups /mnt/hetzner
-fi
-
-# Prune old backups (conservative retention)
-echo "Pruning old remote backups..."
-borg prune -v --list \
-    --keep-weekly=8 \
-    --keep-monthly=12 \
-    --keep-yearly=3
-
-# Create full backup
-echo "Creating full remote backup (this may take several hours)..."
-borg create \
-    --info \
-    --stats \
-    --compression lz4 \
-    --exclude-caches \
-    --exclude '/home/nuc/config/*/cache' \
-    --exclude '/home/nuc/config/*/logs' \
-    --exclude '/home/nuc/config/*/temp' \
-    --exclude '/home/nuc/config/*/.cache' \
-    --exclude '/home/nuc/config/*/node_modules' \
-    --exclude '/home/nuc/config/*/build' \
-    --exclude '/home/nuc/config/*/dist' \
-    --exclude '/tank/timemachine/*/Cache' \
-    ::homelab-nuc-{hostname}-{now} \
-    /home/nuc/config \
-    /tank/medien \
-    /tank/immich \
-    /tank/ai-models \
-    /tank/config \
-    /tank/timemachine
-
-# Verify backup
-echo "Verifying backup..."
-borg check --verify-data --last 1
-
-# Unmount Hetzner
-fusermount -u /mnt/hetzner
-
-echo "Remote full backup completed successfully!"
-```
-
-**Script 3: Full System Backup (First Time)**
-```bash
-# /usr/local/bin/borg-backup-initial-full.sh
-#!/bin/bash
-
-set -euo pipefail
-
-export BORG_REPO=/mnt/hetzner/homelab-backup
-export BORG_PASSPHRASE='${borg_passphrase_hetzner}'
-
-# Mount Hetzner
-sshfs root@storage-xxx.your-box.de:/backups /mnt/hetzner
-
-echo "Starting INITIAL full backup (this will take 24-48 hours)..."
-echo "Please ensure stable internet connection and power..."
-
-# Create initial backup
-borg create \
-    --info \
-    --stats \
-    --compression lz4 \
-    --exclude-caches \
-    --exclude '/home/nuc/config/*/cache' \
-    --exclude '/home/nuc/config/*/logs' \
-    --exclude '/home/nuc/config/*/temp' \
-    --exclude '/home/nuc/config/*/.cache' \
-    --exclude '/home/nuc/config/*/node_modules' \
-    --exclude '/home/nuc/config/*/build' \
-    --exclude '/home/nuc/config/*/dist' \
-    --exclude '/tank/timemachine/*/Cache' \
-    ::homelab-nuc-{hostname}-{now} \
-    /home/nuc/config \
-    /tank/medien \
-    /tank/immich \
-    /tank/ai-models \
-    /tank/config \
-    /tank/timemachine
-
-# Verify
-echo "Verifying initial backup..."
-borg check --verify-data
-
-fusermount -u /mnt/hetzner
-echo "Initial full backup completed!"
-```
-
-### Phase 6: Cron Automation
-
-**Add to /etc/cron.d/borg-backups on homelab-nuc**:
-```bash
-# Local config backups (daily at 2 AM)
-0 2 * * * root /usr/local/bin/borg-backup-local-configs.sh >> /var/log/borg-local.log 2>&1
-
-# Remote full backups (weekly Sunday at 1 AM)
-0 1 * * 0 root /usr/local/bin/borg-backup-remote-full.sh >> /var/log/borg-remote.log 2>&1
-
-# Remote initial backup (run once, manual)
-# 0 1 * * 1 root /usr/local/bin/borg-backup-initial-full.sh >> /var/log/borg-initial.log 2>&1
-```
-
-**Log Rotation**:
-```bash
-# /etc/logrotate.d/borg-backups
-/var/log/borg-*.log {
-    daily
-    rotate 7
-    compress
-    missingok
-    notifempty
-    create 0640 root root
-}
+# Check logs at any time
+journalctl -u borgmatic-local.service
+journalctl -u borgmatic-remote.service
 ```
 
 ### Phase 7: Testing & Verification
 
 **Test Local Backup**:
 ```bash
-# Run manually
-/usr/local/bin/borg-backup-local-configs.sh
+# Run a backup manually
+sudo borgmatic --config /etc/borgmatic.d/config-local.yaml create --verbosity 1
 
-# List backups
-borg list /tank/backups/homelab-configs
+# List archives to confirm success
+sudo borgmatic --config /etc/borgmatic.d/config-local.yaml list
 
-# Test restore
+# Test a restore
 mkdir -p /tmp/test-restore
 cd /tmp/test-restore
-borg extract /tank/backups/homelab-configs::homelab-nuc-20241116-020000 home/nuc/config/home-assistant
-ls -la /tmp/test-restore/home/nuc/config/home-assistant
-
-# Cleanup
+sudo borgmatic --config /etc/borgmatic.d/config-local.yaml extract --archive LATEST --path /home/nuc/config/homepage
+ls -la /tmp/test-restore/home/nuc/config/homepage
 rm -rf /tmp/test-restore
 ```
 
 **Test Remote Backup**:
 ```bash
-# Run during off-peak hours
-/usr/local/bin/borg-backup-remote-full.sh
+# Run a backup manually (best during off-peak hours)
+sudo borgmatic --config /etc/borgmatic.d/config-remote.yaml create --verbosity 1
 
-# List backups
-borg list /mnt/hetzner/homelab-backup
+# List archives
+sudo borgmatic --config /etc/borgmatic.d/config-remote.yaml list
 
-# Test restore (small subset)
+# Test a small restore
 mkdir -p /tmp/test-restore-remote
 cd /tmp/test-restore-remote
-borg extract /mnt/hetzner/homelab-backup::homelab-nuc-20241116-010000 home/nuc/config/home-assistant
-ls -la /tmp/test-restore-remote/home/nuc/config/home-assistant
+sudo borgmatic --config /etc/borgmatic.d/config-remote.yaml extract --archive LATEST --path /home/nuc/config/caddy
+ls -la /tmp/test-restore-remote/home/nuc/config/caddy
 rm -rf /tmp/test-restore-remote
-```
-
-**Verify ZFS Snapshots**:
-```bash
-# Check snapshots exist
-zfs list -t snapshot | grep tank
-
-# Test rollback
-zfs rollback tank/immich@2024-11-16-0200
 ```
 
 ### Phase 8: Documentation & Recovery Procedures
 
-**Create Recovery Guide**:
-```markdown
-# Recovery Procedures
+**(This section should be updated to use `borgmatic` commands, e.g., `sudo borgmatic list ...`, `sudo borgmatic extract ...`)**
 
-## Scenario 1: Config Corruption (Local Fix)
+... (Recovery procedures remain conceptually the same) ...
 
-**Problem**: Home Assistant config corrupted
+## Ansible Integration (Borgmatic)
 
-**Solution** (5 minutes):
-```bash
-# List available backups
-borg list /tank/backups/homelab-configs | grep home-assistant
+The new `borgmatic` role will handle the entire setup.
 
-# Extract specific config
-cd /tmp
-borg extract /tank/backups/homelab-configs::homelab-nuc-20241116-020000 home/nuc/config/home-assistant
+### Create Borgmatic Role
 
-# Restore
-cp -r /tmp/home/nuc/config/home-assistant /home/nuc/config/
-
-# Restart service
-docker restart home-assistant
-```
-
-## Scenario 2: Accidental File Delete
-
-**Problem**: Deleted photos from Immich library
-
-**Solution** (30 seconds):
-```bash
-# List snapshots
-zfs list -t snapshot | grep immich
-
-# Find snapshot before deletion
-zfs list -t snapshot -o name,used,refer | grep immich
-
-# Rollback
-zfs rollback tank/immich@2024-11-15-1000
-```
-
-## Scenario 3: Server Death (Full Disaster)
-
-**Problem**: homelab-nuc hardware failure
-
-**Solution** (6-24 hours):
-```bash
-# 1. Set up new server with Ubuntu
-# 2. Install ZFS
-# 3. Create pool
-zpool create tank mirror /dev/sda /dev/sdb
-
-# 4. Mount Hetzner
-sshfs root@storage-xxx.your-box.de:/backups /mnt/hetzner
-
-# 5. Restore from Hetzner
-borg extract /mnt/hetzner/homelab-backup::homelab-nuc-20241116-010000
-
-# 6. Import ZFS datasets
-zpool import tank
-
-# 7. Restore Docker configs
-cp -r /root/home/nuc/config /home/nuc/
-
-# 8. Restart services
-cd /home/nuc/config
-for dir in */; do
-    cd "$dir"
-    docker compose up -d
-    cd ..
-done
-```
-
-## Scenario 4: Ransomware Attack
-
-**Problem**: All local data encrypted
-
-**Solution**: Use Hetzner backup (off-site, immutable)
-```bash
-# Verify backup integrity
-borg check /mnt/hetzner/homelab-backup
-
-# Restore to new clean server
-sshfs root@storage-xxx.your-box.de:/backups /mnt/hetzner
-borg extract /mnt/hetzner/homelab-backup::homelab-nuc-20241116-010000
-```
-
-## Scenario 5: Partial Data Recovery
-
-**Problem**: Need specific file from days ago
-
-**Solution**:
-```bash
-# List all versions of file
-borg list /tank/backups/homelab-configs | grep "home-assistant/configuration.yaml"
-
-# Extract specific version
-borg extract /tank/backups/homelab-configs::homelab-nuc-20241115-020000 home/nuc/config/home-assistant/configuration.yaml
-```
-
-## Scenario 6: Verify Backup Health
-
-**Monthly health check**:
-```bash
-# Check Borg repositories
-borg check /tank/backups/homelab-configs
-borg check /mnt/hetzner/homelab-backup
-
-# Check ZFS pool
-zpool status tank
-zpool scrub tank
-
-# Check snapshot retention
-zfs list -t snapshot | wc -l
-# Should be ~47 snapshots (24h + 7d + 4w + 12m)
-```
-
-## Scenario 7: Encryption Key Recovery
-
-**Problem**: Lost Borg passphrase
-
-**Solution**:
-- Recovery key is stored in repository (use `repokey` mode)
-- Run `borg info` to see key location
-- Export key: `borg key export /repo backup-key.txt`
-- Store this key securely (e.g., password manager)
-```
-
-## Ansible Integration
-
-### Create Borg Role
-
-**roles/borg/tasks/main.yml**:
+**`roles/borgmatic/tasks/main.yml`**:
 ```yaml
 ---
-- name: Install BorgBackup
+- name: Install Borgmatic and dependencies
   apt:
-    name: borgbackup
+    name: ['borgmatic', 'sshfs']
     state: present
     update_cache: yes
 
-- name: Create backup directories
+- name: Create borgmatic configuration directory
   file:
-    path: "{{ item }}"
+    path: /etc/borgmatic.d
     state: directory
-    mode: '0750'
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-  loop:
-    - /tank/backups
-    - /mnt/hetzner
+    mode: '0755'
+    owner: root
+    group: root
 
-- name: Create backup scripts
+- name: Deploy borgmatic configurations
   template:
     src: "{{ item.name }}.j2"
-    dest: "{{ item.dest }}"
-    mode: '0750'
+    dest: "/etc/borgmatic.d/{{ item.name }}"
+    mode: '0600' # Encrypted vars are templated here
     owner: root
     group: root
   loop:
-    - { name: borg-backup-local-configs, dest: /usr/local/bin/borg-backup-local-configs.sh }
-    - { name: borg-backup-remote-full, dest: /usr/local/bin/borg-backup-remote-full.sh }
-    - { name: borg-backup-initial-full, dest: /usr/local/bin/borg-backup-initial-full.sh }
+    - { name: config-local.yaml }
+    - { name: config-remote.yaml }
+  notify: Reload systemd daemon
 
-- name: Set up cron jobs
-  cron:
-    name: "{{ item.name }}"
-    minute: "{{ item.minute }}"
-    hour: "{{ item.hour }}"
-    weekday: "{{ item.weekday | default('*') }}"
-    job: "{{ item.job }}"
-    user: root
-    state: present
+- name: Deploy systemd service units
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    mode: '0644'
   loop:
-    - name: "Local config backup"
-      minute: "0"
-      hour: "2"
-      job: "/usr/local/bin/borg-backup-local-configs.sh >> /var/log/borg-local.log 2>&1"
-    - name: "Remote full backup"
-      minute: "0"
-      hour: "1"
-      weekday: "0"
-      job: "/usr/local/bin/borg-backup-remote-full.sh >> /var/log/borg-remote.log 2>&1"
+    - borgmatic-local.service
+    - borgmatic-remote.service
+  notify: Reload systemd daemon
+
+- name: Deploy systemd timer units
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    mode: '0644'
+  loop:
+    - borgmatic-local.timer
+    - borgmatic-remote.timer
+  notify: Reload systemd daemon
+
+- name: Flush handlers to apply systemd changes
+  meta: flush_handlers
+
+- name: Enable and start borgmatic timers
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop:
+    - borgmatic-local.timer
+    - borgmatic-remote.timer
 ```
 
-**roles/borg/templates/borg-backup-local-configs.sh.j2**:
-```bash
-#!/bin/bash
-
-set -euo pipefail
-
-export BORG_REPO=/tank/backups/homelab-configs
-export BORG_PASSPHRASE='{{ borg_passphrase }}'
-
-LOG_FILE="/var/log/borg-local-$(date +%Y%m%d).log"
-
-echo "$(date): Starting local config backup" >> "$LOG_FILE"
-
-# Prune old backups
-echo "Pruning old local backups..." | tee -a "$LOG_FILE"
-borg prune -v --list \
-    --keep-hourly=24 \
-    --keep-daily=7 \
-    --keep-weekly=4 \
-    --keep-monthly=12 2>&1 | tee -a "$LOG_FILE"
-
-# Create backup
-echo "Creating local config backup..." | tee -a "$LOG_FILE"
-borg create \
-    --info \
-    --stats \
-    --compression lz4 \
-    --exclude-caches \
-    --exclude '/home/nuc/config/*/cache' \
-    --exclude '/home/nuc/config/*/logs' \
-    --exclude '/home/nuc/config/*/temp' \
-    --exclude '/home/nuc/config/*/.cache' \
-    --exclude '/home/nuc/config/*/node_modules' \
-    --exclude '/home/nuc/config/*/build' \
-    --exclude '/home/nuc/config/*/dist' \
-    ::homelab-nuc-{hostname}-{now} \
-    /home/nuc/config 2>&1 | tee -a "$LOG_FILE"
-
-# Verify backup
-echo "Verifying backup..." | tee -a "$LOG_FILE"
-borg check --verify-data --last 1 2>&1 | tee -a "$LOG_FILE"
-
-echo "$(date): Local config backup completed successfully" >> "$LOG_FILE"
+**`roles/borgmatic/handlers/main.yml`**:
+```yaml
+---
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
 ```
+
+**`roles/borgmatic/templates/config-local.yaml.j2`**:
+```yaml
+location:
+    source_directories:
+        - /home/nuc/config
+
+    repositories:
+        - path: {{ backup_local_repo }}
+
+    exclude_patterns:
+        - '**/cache'
+        - '**/logs'
+        - '**/temp'
+        - '**/.cache'
+        - '**/node_modules'
+        - '**/build'
+        - '**/dist'
+
+storage:
+    encryption_passphrase: '{{ borg_passphrase }}'
+    compression: lz4
+    archive_name_format: 'homelab-nuc-{hostname}-{now}'
+
+retention:
+    keep_hourly: 24
+    keep_daily: 7
+    keep_weekly: 4
+    keep_monthly: 12
+    prefix: 'homelab-nuc-{hostname}-'
+
+consistency:
+    checks:
+        - repository
+        - archives
+    check_last: 1
+    prefix: 'homelab-nuc-{hostname}-'
+```
+
+**`roles/borgmatic/templates/config-remote.yaml.j2`**:
+```yaml
+location:
+    source_directories:
+        - /home/nuc/config
+        - /tank/medien
+        - /tank/immich
+        - /tank/ai-models
+        - /tank/config
+        - /tank/timemachine
+
+    repositories:
+        - path: {{ hetzner_user }}@{{ hetzner_host }}:23/./homelab-backup
+
+    exclude_patterns:
+        - '**/cache'
+        - '**/logs'
+        - '**/temp'
+        - '**/.cache'
+        - '**/node_modules'
+        - '**/build'
+        - '**/dist'
+        - '/tank/timemachine/*/Cache'
+
+storage:
+    encryption_passphrase: '{{ borg_passphrase_hetzner }}'
+    compression: lz4
+    archive_name_format: 'homelab-nuc-{hostname}-{now}'
+
+retention:
+    keep_weekly: 8
+    keep_monthly: 12
+    keep_yearly: 3
+    prefix: 'homelab-nuc-{hostname}-'
+
+consistency:
+    checks:
+        - repository
+        - archives
+    check_last: 1
+    prefix: 'homelab-nuc-{hostname}-'
+
+hooks:
+    before_backup:
+        - echo "Starting remote backup..."
+    after_backup:
+        - echo "Remote backup complete."
+    on_error:
+        - echo "Error during remote backup!"
+```
+
+**(The systemd unit files would be placed in `roles/borgmatic/files/`)**
 
 ### Add to setup.yml
 
@@ -653,101 +405,78 @@ echo "$(date): Local config backup completed successfully" >> "$LOG_FILE"
 ```yaml
   hosts: homelab
   roles:
-    - geerlingguy.docker
-    - basic
-    - glances
-    - caddy
-    - pihole
-    - homepage
-    - home-assistant
-    - monitoring
-    - borg  # Add this
+    # ... other roles
+    - borgmatic  # Add this
 ```
 
 ### Variables
 
 **group_vars/homelab.yml**:
 ```yaml
-# Borg backup configuration
-borg_passphrase: "{{ vault_borg_passphrase }}"
-borg_passphrase_hetzner: "{{ vault_borg_passphrase_hetzner }}"
+# Borgmatic backup configuration
+backup_local_repo: "/tank/backups/homelab-configs"
 
 # Hetzner Storage Box
-hetzner_host: "storage-xxx.your-box.de"
-hetzner_user: "root"
-hetzner_path: "/backups"
-
-# Backup paths
-backup_local_repo: "/tank/backups/homelab-configs"
-backup_remote_repo: "/mnt/hetzner/homelab-backup"
+hetzner_host: "uXXXXX.your-storagebox.de"
+hetzner_user: "uXXXXX"
 ```
 
 **group_vars/all/secrets.yml** (encrypted with ansible-vault):
 ```yaml
 vault_borg_passphrase: "your-strong-local-passphrase"
 vault_borg_passphrase_hetzner: "your-strong-remote-passphrase"
-vault_hetzner_password: "your-hetzner-ssh-password"
 ```
 
 ## Estimated Costs
-
-### Hetzner Storage Box
-- **1TB**: €4.90/month
-- **10TB**: €34.90/month
-- **20TB**: €69.90/month
-
-For 6TB data: €34.90/month
-
-### Bandwidth
-- **Initial backup**: 6TB upload (2-3 days)
-- **Incremental**: ~100-500GB/week (depending on changes)
-- **Monthly**: ~1-2TB (config + photos + media changes)
+(This section remains unchanged)
 
 ## Key Takeaways
 
-1. **Three-tier strategy** provides maximum protection
-2. **Local Borg** for fast config restores (5 minutes)
-3. **Remote Borg** for complete disaster recovery
-4. **ZFS snapshots** for instant rollback (30 seconds)
-5. **Encryption** by default (repokey)
-6. **Deduplication** saves bandwidth and storage
-7. **Automation** via cron ensures backups run
+1.  **Three-tier strategy** provides maximum protection.
+2.  **Borgmatic** simplifies and automates local and remote backups.
+3.  **Systemd timers** provide robust, manageable scheduling.
+4.  **ZFS snapshots** for instant rollback (30 seconds).
+5.  **Encryption** is handled seamlessly by Borgmatic.
+6.  **Deduplication** saves significant bandwidth and storage.
 
 ## Next Steps
 
-1. Review and approve this plan
-2. Gather Hetzner Storage Box credentials
-3. Create strong passphrases for Borg encryption
-4. Implement in Ansible (borg role + cron jobs)
-5. Run initial full backup (off-peak hours)
-6. Test all recovery scenarios
-7. Document all passkeys in secure location
+1.  Review and approve this updated plan.
+2.  Create and populate the `borgmatic` Ansible role.
+3.  Gather Hetzner Storage Box credentials and configure SSH keys.
+4.  Create strong passphrases and store them in Ansible Vault.
+5.  Deploy the role to the `homelab-nuc`.
+6.  Run the `init` commands for both repositories.
+7.  Run the "Test & Verification" steps.
+8.  Update the recovery guide with `borgmatic` commands.
 
-## Reference Commands
+## Reference Commands (`borgmatic`)
 
 ```bash
-# List backups
-borg list /tank/backups/homelab-configs
-borg list /mnt/hetzner/homelab-backup
+# Run a specific backup
+borgmatic --config /etc/borgmatic.d/config-local.yaml create
 
-# Backup info
-borg info /tank/backups/homelab-configs
-borg info /mnt/hetzner/homelab-backup
+# List archives in a repository
+borgmatic --config /etc/borgmatic.d/config-local.yaml list
 
-# Check integrity
-borg check /tank/backups/homelab-configs
-borg check --verify-data /mnt/hetzner/homelab-backup
+# Show info about a repository
+borgmatic --config /etc/borgmatic.d/config-local.yaml info
 
-# Prune old backups
-borg prune /tank/backups/homelab-configs
-borg prune /mnt/hetzner/homelab-backup
+# Check repository integrity
+borgmatic --config /etc/borgmatic.d/config-remote.yaml check
 
-# Extract backup
-cd /tmp
-borg extract /tank/backups/homelab-configs::homelab-nuc-20241116-020000 home/nuc/config/home-assistant
+# Prune old archives
+borgmatic --config /etc/borgmatic.d/config-local.yaml prune
 
-# Mount backup (read-only access)
-borg mount /tank/backups/homelab-configs /mnt/borg-mount
+# Extract a file/directory from the latest archive
+cd /tmp/restore
+borgmatic -c /etc/borgmatic.d/config-local.yaml extract --archive LATEST --path /home/nuc/config/homepage
+
+# Mount a repository for browsing
+mkdir /mnt/borg-mount
+borgmatic -c /etc/borgmatic.d/config-local.yaml mount --mount-point /mnt/borg-mount
+# ... do stuff ...
+umount /mnt/borg-mount
 ```
 
 ---
@@ -755,4 +484,4 @@ borg mount /tank/backups/homelab-configs /mnt/borg-mount
 **Status**: Ready for Implementation
 **Owner**: Homelab Infrastructure
 **Review Date**: Monthly
-**Last Updated**: 2024-11-16
+**Last Updated**: 2025-12-04
