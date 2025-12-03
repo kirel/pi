@@ -75,7 +75,7 @@ llamaswap_models:
   - alias: Qwen3-VL-30B-A3B-Instruct
     cmd: >-
       /app/llama-server
-      -hf unsloth/Qwen3-VL-30B-A3B-Instruct-GGUF:Q4_K_XL
+      -hf unsloth/Qwen3-VL-30B-A3B-Instruct-GGUF:Q3_K_XL
       --port ${PORT}
       --ctx-size 32768
       --n-predict 32768
@@ -83,7 +83,10 @@ llamaswap_models:
       --n-gpu-layers 99
       --cache-type-k q8_0
       --cache-type-v q8_0
-      -ot ".ffn_.*_exps.=CPU"
+      --threads -1
+      --batch-size 512
+      --ubatch-size 512
+      --n-cpu-moe 0
       --top-p 0.8
       --top-k 20
       --temp 0.7
@@ -98,13 +101,13 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Qwen3-VL-30B-A3B-Thinking-GGUF:Q4_K_XL
       --port ${PORT}
-      --ctx-size 40960
+      --ctx-size 32768
       --n-predict 40960
       --flash-attn auto
       --n-gpu-layers 99
       --cache-type-k q8_0
       --cache-type-v q8_0
-      -ot ".ffn_.*_exps.=CPU"
+      --n-cpu-moe 5
       --top-p 0.95
       --top-k 20
       --temp 1.0
@@ -119,11 +122,12 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:Q4_K_XL
       --port ${PORT}
-      --ctx-size 32684
+      --ctx-size 131072
+      --n-predict 32768
       --n-gpu-layers 99
       --cache-type-k q8_0
       --cache-type-v q8_0
-      -ot ".ffn_.*_exps.=CPU"
+      --n-cpu-moe 20
       --threads -1
       --temp 0.7
       --min-p 0.0
@@ -138,9 +142,9 @@ llamaswap_models:
     cmd: >-
       /app/llama-server
       -hf unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF:Q4_K_XL
-      -hfd unsloth/Qwen3-0.6B-GGUF:Q4_K_XL
       --port ${PORT}
       --ctx-size 24000
+      --n-predict 32768
       --flash-attn auto
       --n-gpu-layers 99
       --cache-type-k q8_0
@@ -148,6 +152,7 @@ llamaswap_models:
       --threads -1
       --batch-size 512
       --ubatch-size 512
+      --n-cpu-moe 0
       --temp 0.7
       --min-p 0.0
       --top-p 0.8

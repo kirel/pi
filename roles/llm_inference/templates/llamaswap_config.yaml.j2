@@ -4,7 +4,8 @@
 models:
   {% for model in llamaswap_models -%}
   {{ model.alias }}:
-    cmd: "{{ model.cmd }}"
+    cmd: |
+      {{ model.cmd | indent(width=6, first=True) }}
     env:
       - "GGML_CUDA_MOUNT=/usr/lib/x86_64-linux-gnu/libcudart.so.12"
   {% endfor %}
@@ -36,4 +37,4 @@ server:
 hooks:
   on_startup:
     preload:
-      - home-fast
+      - GPT-OSS-20B-F16
