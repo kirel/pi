@@ -1,0 +1,79 @@
+---
+# ZFS Datasets - including Immich for snapshots
+zfs_datasets:
+  - name: "{{ zfs_pool_name }}/medien"
+    properties:
+      mountpoint: /tank/medien
+      recordsize: 128K
+      compression: lz4
+    owner: root
+    group: users
+    mode: "0775"
+
+  - name: "{{ zfs_pool_name }}/config"
+    properties:
+      mountpoint: /tank/config
+      recordsize: 128K
+      compression: lz4
+    owner: root
+    group: users
+    mode: "0775"
+
+  - name: "{{ zfs_pool_name }}/timemachine"
+    properties:
+      mountpoint: /tank/timemachine
+      recordsize: 128K
+      compression: lz4
+    owner: root
+    group: users
+    mode: "0755"
+
+  - name: "{{ zfs_pool_name }}/backups"
+    properties:
+      mountpoint: /tank/backups
+      recordsize: 128K
+      compression: lz4
+    owner: root
+    group: users
+    mode: "0755"
+
+  - name: "{{ zfs_pool_name }}/timemachine/daniel"
+    properties:
+      mountpoint: /tank/timemachine/daniel
+      recordsize: 128K
+      compression: lz4
+    owner: daniel
+    group: users
+    mode: "0700"
+
+  - name: "{{ zfs_pool_name }}/ai-models"
+    properties:
+      mountpoint: /tank/ai-models
+      recordsize: 1M
+      compression: lz4
+    owner: root
+    group: users
+    mode: "0755"
+
+  - name: "{{ zfs_pool_name }}/immich"
+    properties:
+      mountpoint: "{{ immich_library_path | default('/tank/immich/library') }}"
+      recordsize: 128K
+      compression: lz4
+      atime: "on"
+    owner: root
+    group: users
+    mode: "0755"
+
+  - name: "{{ zfs_pool_name }}/immich/postgres"
+    properties:
+      mountpoint: "{{ immich_postgres_path | default('/tank/immich/postgres') }}"
+      recordsize: 16K
+      compression: lz4
+      atime: "off"
+    owner: root
+    group: root
+    mode: "0755"
+
+# Enable ZFS snapshots for all datasets (including Immich)
+zfs_snapshots_enabled: true
