@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Three-tier backup strategy** combining ZFS snapshots, local Borg, and remote Borg to Hetzner Storage Box.
+**Three-tier backup strategy** combining ZFS snapshots, local Borg, and remote Borg to Remote Backup Location.
 
 ### Strategy Summary
 
@@ -23,7 +23,7 @@
 │                                         │
 │  Tier 3: Borg (remote)                  │
 │  ⏳ PENDING                              │
-│      └── Hetzner/Remote NAS             │
+│      └── Remote Backup Location             │
 │          └── Everything (6TB)           │
 └─────────────────────────────────────────┘
 ```
@@ -43,8 +43,17 @@
 | **Config corruption** | Borg local | 5 min | Configs only |
 | **Accidental delete** | ZFS rollback | 30 sec | Any dataset |
 | **Disk failure** | ZFS mirror | 0 sec | Hardware redundancy |
-| **Server death** | Borg Hetzner | 6-24 hours | Everything |
-| **Ransomware** | Borg Hetzner | 6-24 hours | Everything (off-site) |
+| **Server death** | Borg Remote | 6-24 hours | Everything |
+| **Ransomware** | Borg Remote | 6-24 hours | Everything (off-site) |
+
+## Remote Backup Destination Requirements (Tier 3)
+
+The "Tier 3" remote backup is designed to be location-agnostic. While the documentation often refers to a "Remote Backup Location" or a "Remote NAS," any remote machine can serve as a backup destination, provided it meets two simple prerequisites:
+
+1.  **SSH Access**: The backup source machine (`homelab-nuc`) must be able to connect to the remote destination via SSH, preferably using key-based authentication for security and automation.
+2.  **Borg Installation**: The `borg` binary must be installed on the remote destination. The version should be compatible with the Borg version running on the source machine.
+
+This flexibility means a dedicated storage service (like Hetzner) or a self-managed server (e.g., a NAS located at a family member's house) are both equally viable options. The connection is handled directly through Borg's native SSH support (`ssh://user@host:port/path/to/repo`), which is configured in the `borgmatic` configuration file (`config-remote.yaml`).
 
 ## Option A: Dual Borg Approach (Recommended)
 
@@ -59,9 +68,9 @@
 - **Purpose**: Quick config restores (5 minutes)
 - **Encryption**: repokey
 
-**Remote Borg Repository (Hetzner Storage Box)**
+**Remote Borg Repository (Remote Backup Location)**
 ```
-Hetzner Storage Box: homelab-backup/
+Remote Backup Location: homelab-backup/
 ```
 - **Scope**: Everything (configs + all ZFS data)
   - `/home/nuc/config/`
@@ -153,7 +162,7 @@ sudo chown -R nuc:nuc /tank/backups/homelab-configs
 
 ### Phase 4: Create Remote Borg Repository
 
-**Pre-requisite**: Ensure the `root` user on `homelab-nuc` can SSH into the Hetzner Storage Box using key-based authentication. The `distribute_ssh_key.yml` playbook can be adapted for this.
+**Pre-requisite**: Ensure the `root` user on `homelab-nuc` can SSH into the Remote Backup Location using key-based authentication. The `distribute_ssh_key.yml` playbook can be adapted for this.
 
 **Initialize remote repository**:
 ```bash
@@ -355,12 +364,11 @@ location:
         - /home/nuc/config
         - /tank/medien
         - /tank/immich
-        - /tank/ai-models
         - /tank/config
         - /tank/timemachine
 
     repositories:
-        - path: {{ hetzner_user }}@{{ hetzner_host }}:23/./homelab-backup
+        - path: '{{ remote_backup_user }}@{{ remote_backup_host }}:{{ remote_backup_repo_path }}'
 
     exclude_patterns:
         - '**/cache'
@@ -373,7 +381,7 @@ location:
         - '/tank/timemachine/*/Cache'
 
 storage:
-    encryption_passphrase: '{{ borg_passphrase_hetzner }}'
+    encryption_passphrase: '{{ vault_borg_passphrase }}'
     compression: lz4
     archive_name_format: 'homelab-nuc-{hostname}-{now}'
 
@@ -399,7 +407,7 @@ hooks:
         - echo "Error during remote backup!"
 ```
 
-**(The systemd unit files would be placed in `roles/borgmatic/files/`)**
+(The systemd unit files would be placed in `roles/borgmatic/files/`)
 
 ### Add to setup.yml
 
@@ -418,15 +426,14 @@ hooks:
 # Borgmatic backup configuration
 backup_local_repo: "/tank/backups/homelab-configs"
 
-# Hetzner Storage Box
-hetzner_host: "uXXXXX.your-storagebox.de"
+# Remote Backup Location
+hetzner_host: "uXXXXX.your-server.de"
 hetzner_user: "uXXXXX"
 ```
 
 **group_vars/all/secrets.yml** (encrypted with ansible-vault):
 ```yaml
-vault_borg_passphrase: "your-strong-local-passphrase"
-vault_borg_passphrase_hetzner: "your-strong-remote-passphrase"
+vault_borg_passphrase: "your-strong-passphrase"
 ```
 
 ## Estimated Costs
@@ -445,7 +452,7 @@ vault_borg_passphrase_hetzner: "your-strong-remote-passphrase"
 
 1.  Review and approve this updated plan.
 2.  Create and populate the `borgmatic` Ansible role.
-3.  Gather Hetzner Storage Box credentials and configure SSH keys.
+3.  Gather Remote Backup Location credentials and configure SSH keys.
 4.  Create strong passphrases and store them in Ansible Vault.
 5.  Deploy the role to the `homelab-nuc`.
 6.  Run the `init` commands for both repositories.
@@ -492,7 +499,7 @@ umount /mnt/borg-mount
   - Deployment: `uv run ansible-playbook setup.yml --tags borgmatic --limit homelab`
 
 ### **REMAINING**
-- ⏳ **Tier 3**: Remote backup (Hetzner/Remote NAS)
+- ⏳ **Tier 3**: Remote backup (Remote Backup Location)
   - Add `config-remote.yaml.j2` template
   - Add remote systemd service/timer
   - Configure Hetzner/NAS SSH credentials
@@ -504,11 +511,15 @@ umount /mnt/borg-mount
    uv run ansible-vault encrypt_string 'your-strong-passphrase' --name 'vault_borg_passphrase'
    ```
 
-2. Initialize repository on homelab-nuc:
+2. Initialize repositories on homelab-nuc:
    ```bash
+   # Initialize local repository
    sudo borgmatic --config /etc/borgmatic.d/config-local.yaml init --encryption repokey
-   sudo chown -R nuc:nuc /tank/backups/homelab-configs
    sudo systemctl enable --now borgmatic-local.timer
+
+   # Initialize remote repository (once configured)
+   # sudo borgmatic --config /etc/borgmatic.d/config-remote.yaml init --encryption repokey
+   # sudo systemctl enable --now borgmatic-remote.timer
    ```
 
 3. Test backup:

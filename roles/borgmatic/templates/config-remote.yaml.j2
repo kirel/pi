@@ -1,0 +1,46 @@
+location:
+    source_directories:
+        - /home/nuc/config
+        - /tank/medien
+        - /tank/immich
+        - /tank/config
+        - /tank/timemachine
+
+    repositories:
+        - path: '{{ remote_backup_user }}@{{ remote_backup_host }}:{{ remote_backup_repo_path }}'
+
+    exclude_patterns:
+        - '**/cache'
+        - '**/logs'
+        - '**/temp'
+        - '**/.cache'
+        - '**/node_modules'
+        - '**/build'
+        - '**/dist'
+        - '/tank/timemachine/*/Cache'
+
+storage:
+    encryption_passphrase: '{{ vault_borg_passphrase }}'
+    compression: lz4
+    archive_name_format: 'homelab-nuc-{hostname}-{now}'
+
+retention:
+    keep_weekly: 8
+    keep_monthly: 12
+    keep_yearly: 3
+    prefix: 'homelab-nuc-{hostname}-'
+
+consistency:
+    checks:
+        - repository
+        - archives
+    check_last: 1
+    prefix: 'homelab-nuc-{hostname}-'
+
+hooks:
+    before_backup:
+        - echo "Starting remote backup..."
+    after_backup:
+        - echo "Remote backup complete."
+    on_error:
+        - echo "Error during remote backup!"
