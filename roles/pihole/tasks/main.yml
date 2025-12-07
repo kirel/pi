@@ -8,6 +8,57 @@
 - ansible.builtin.debug:
     var: leases_service
 
+# =============================================================================
+# Host DNS Configuration - Configure the host to use Pi-hole
+# =============================================================================
+
+- name: Check if systemd-resolved is running
+  ansible.builtin.systemd:
+    name: systemd-resolved
+  register: systemd_resolved_status
+  become: yes
+
+- name: Stop and disable systemd-resolved to prevent self-query loops
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+    masked: yes
+  when: systemd_resolved_status.status.ActiveState == "active"
+  become: yes
+
+- name: Backup original resolv.conf
+  ansible.builtin.copy:
+    src: /etc/resolv.conf
+    dest: "/etc/resolv.conf.backup.{{ ansible_date_time.epoch }}"
+    remote_src: yes
+    force: yes
+  when: inventory_hostname == "nameserver-pi" or inventory_hostname == "homelab-nuc"
+  become: yes
+
+- name: Configure resolv.conf to use Pi-hole
+  ansible.builtin.template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: '0644'
+  when: inventory_hostname == "nameserver-pi" or inventory_hostname == "homelab-nuc"
+  notify: Reload pihole dns
+  become: yes
+
+- name: Make resolv.conf immutable to prevent modifications
+  ansible.builtin.command: chattr +i /etc/resolv.conf
+  args:
+    creates: /etc/resolv.conf
+  when: inventory_hostname == "nameserver-pi" or inventory_hostname == "homelab-nuc"
+  ignore_errors: yes
+  become: yes
+
+# =============================================================================
+# End Host DNS Configuration
+# =============================================================================
+
 - name: Create folder config folders
   ansible.builtin.file:
     path: "{{ item }}"
@@ -127,6 +178,12 @@
             FTLCONF_dns_hosts: "{{ custom_dns_list }}"
             FTLCONF_dns_cnameRecords: "{{ custom_cname_list }}"
             FTLCONF_dhcp_hosts: "{{ static_dhcp_list }}"
+            # DNS Cache Optimization
+            FTLCONF_dns_cacheSize: "{{ pihole_cache_size | default(100000) }}"
+            FTLCONF_dns_cacheMaxAge: "{{ pihole_cache_max_age | default(86400) }}"
+            FTLCONF_dns_cacheOptimistic: "true"
+            # Rate limiting to prevent self-query issues
+            FTLCONF_RATE_LIMIT: "{{ pihole_rate_limit | default('1000/1h') }}"
           # Volumes store your data between container upgrades
           volumes:
             - "{{ pihole_config_folder }}:/etc/pihole/"
