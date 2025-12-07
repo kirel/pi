@@ -161,17 +161,18 @@
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: "{{ litellm_proxy_container_name }}"
 
-        mcp-proxy:
-          image: "{{ mcp_proxy_image_custom }}"
-          container_name: "{{ mcp_proxy_container_name }}"
-          ports:
-            - "{{ mcp_proxy_service_port }}:{{ mcp_proxy_service_port }}"
-          volumes:
-            - "{{ mcp_proxy_config_full_host_path }}:/app/servers.json:ro"
-          command: "mcp-proxy --port {{ mcp_proxy_service_port }} --host 0.0.0.0 --named-server-config /app/servers.json --pass-environment"
-          restart: unless-stopped
-          networks:
-            - llm-network
+        # mcp-proxy removed - using MetaMCP instead
+        # mcp-proxy:
+        #   image: "{{ mcp_proxy_image_custom }}"
+        #   container_name: "{{ mcp_proxy_container_name }}"
+        #   ports:
+        #     - "{{ mcp_proxy_service_port }}:{{ mcp_proxy_service_port }}"
+        #   volumes:
+        #     - "{{ mcp_proxy_config_full_host_path }}:/app/servers.json:ro"
+        #   command: "mcp-proxy --port {{ mcp_proxy_service_port }} --host 0.0.0.0 --named-server-config /app/servers.json --pass-environment"
+        #   restart: unless-stopped
+        #   networks:
+        #     - llm-network
 
         open-webui:
           image: ghcr.io/open-webui/open-webui:main
@@ -203,8 +204,7 @@
           depends_on:
             litellm-proxy:
               condition: service_started
-            mcp-proxy:
-              condition: service_started
+            # mcp-proxy removed - using MetaMCP instead
 
         google-workspace-mcp:
           image: "{{ google_workspace_mcp_image }}"

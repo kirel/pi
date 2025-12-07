@@ -27,7 +27,10 @@ danishkirel.asuscomm.com {
         }
         tls internal
 {% else %}
-        reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.target }}:{{ props.http_port }}
+        # Use localhost if the target is the current host (homelab-nuc)
+        {% set target_host = (props.target | regex_replace('\\.lan$', '')) if props.target.endswith('.lan') else props.target %}
+        {% set backend_host = 'localhost' if target_host == 'homelab-nuc' else props.target %}
+        reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ backend_host }}:{{ props.http_port }}
         {% set domain = props.domain | default(service ~ ".lan") %}
         {% if not props.tls_skip | default(false) and (domain.endswith(".lan") or props.force_tls_internal | default(false)) %}
         tls internal
@@ -38,13 +41,13 @@ danishkirel.asuscomm.com {
                 handle @502 {
                         # Add custom fields to the log entry generated when this error handler runs
                         log_append wol_triggered "true"
-                        log_append wol_target "{{ props.target }}"
+                        log_append wol_target "{{ backend_host }}"
                         log_append wol_mac "{{ props.wol }}"
                         log_append wol_triggering_request "{http.request.method} {http.request.uri} from {http.request.remote.ip}"
                         log_append wol_error_status "{err.status_code}"
 
                         wake_on_lan {{ props.wol }} # MAC address from service definition
-                        reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.target }}:{{ props.http_port }} {
+                        reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ backend_host }}:{{ props.http_port }} {
                                 lb_try_duration {{ props.try | default('60s') }}
                         }
                 }

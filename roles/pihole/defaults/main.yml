@@ -3,3 +3,8 @@
 google_dns_servers:
   - 8.8.8.8
   - 8.8.4.4
+
+# Pi-hole cache optimization settings
+pihole_cache_size: 100000
+pihole_cache_max_age: 86400  # 24 hours in seconds
+pihole_rate_limit: "1000/1h"

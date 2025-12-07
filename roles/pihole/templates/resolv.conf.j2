@@ -1,0 +1,11 @@
+# Configured by Ansible Pi-hole role
+# Pi-hole handles all DNS queries for this host
+nameserver {{ ansible_default_ipv4.address }}
+{% if inventory_hostname == "homelab-nuc" %}
+nameserver {{ nameserver_pi_ip }}
+{% else %}
+nameserver {{ homelab_nuc_ip }}
+{% endif %}
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+search .
