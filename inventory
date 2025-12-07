@@ -13,8 +13,5 @@ ailab-ubuntu ansible_host=192.168.50.10 ansible_user=daniel ansible_python_inter
 [ailab_windows]
 winhost1 ansible_host=192.168.50.11 ansible_user=AdminUser ansible_password=SecretPassword ansible_connection=winrm ansible_winrm_server_cert_validation=ignore
 
-[mic_satellites]
-micpi ansible_host=192.168.50.7 ansible_user=daniel ansible_python_interpreter=/usr/bin/python3
-
 # [virtualhere]
 # virtualhere-pi ansible_host=192.168.50.7 ansible_user=pi ansible_python_interpreter=/usr/bin/python3

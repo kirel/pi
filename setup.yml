@@ -20,7 +20,6 @@
     - { role: homeassistant, become: true, tags: [ha] }
     - { role: fix_hass_bluetooth, become: true, tags: [ha] }
     - { role: babybuddy, become: true, tags: [babybuddy] }
-    - { role: wyoming, become: true, tags: [wyoming] }
     - { role: media, become: true, tags: [media] }
     - { role: monitoring, become: true, tags: [monitoring] }
     - { role: homepage, become: true, tags: [homepage] }
@@ -90,21 +89,6 @@
     - { role: immich_ml, become: true, tags: [immich, immich-ml] }
     - { role: wyoming_openai, become: true, tags: [wyoming-openai] }
     - { role: syncthing, become: true, tags: [syncthing] }
-
-- name: Setup mic sattelites
-  hosts: mic_satellites
-  ignore_unreachable: true
-  roles:
-    - { role: pi, become: true, tags: [pi] }
-    - { role: basic, become: true, tags: [basic] }
-    - { role: geerlingguy.pip, become: true, tags: [docker] }
-    - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
-    - { role: dockerhub, become: true, tags: [docker, dockerhub] }
-    - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
-    - { role: glances, become: true, tags: [glances] }
-    - { role: satellite_audio, become: true, tags: [wyoming, satellite-audio] } # Consider renaming tag too?
-    - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
 
 - name: Setup SSH key distribution
   hosts: ailab_ubuntus,homelab,nameserver,proxmox,mic_satellites

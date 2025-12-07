@@ -77,9 +77,6 @@ homelab-nuc ansible_host=192.168.50.5 ansible_user=root
 
 [ailab_ubuntus]
 ailab-ubuntu ansible_host=192.168.50.10 ansible_user=daniel
-
-[mic_satellites]
-micpi ansible_host=192.168.50.7 ansible_user=daniel
 ```
 
 The role will:
@@ -88,7 +85,6 @@ The role will:
   - User `pi` on `nameserver-pi`
   - User `root` on `homelab-nuc`
   - User `daniel` on `ailab-ubuntu` (self)
-  - User `daniel` on `micpi`
 
 ## Verification
 

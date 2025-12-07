@@ -150,7 +150,6 @@ curl http://ailab-ubuntu.lan:11434/api/tags
 - `nameserver-pi` (192.168.50.4): Pi-hole DNS/DHCP server (Raspberry Pi)
 - `homelab-nuc` (192.168.50.5): Main Docker host (Intel NUC) - runs ~30 services
 - `ailab-ubuntu` (192.168.50.10): AI/ML server with GPU support
-- `micpi` (192.168.50.7): Audio satellites for Alexa integration
 
 ### Core Components
 
@@ -477,7 +476,6 @@ The `inventory` file defines all hosts and their SSH users. **When connecting vi
 - `homelab-nuc` (192.168.50.5): SSH user = `root`
 - `ailab-proxmox` (192.168.50.9): SSH user = `root`
 - `ailab-ubuntu` (192.168.50.10): SSH user = `daniel`
-- `micpi` (192.168.50.7): SSH user = `daniel`
 
 **Example SSH Commands:**
 ```bash
@@ -492,10 +490,6 @@ ssh root@homelab-nuc.lan
 # AI Lab Ubuntu
 ssh daniel@ailab-ubuntu.lan
 # or: ssh daniel@192.168.50.10
-
-# Audio satellites
-ssh daniel@micpi.lan
-# or: ssh daniel@192.168.50.7
 ```
 
 ## Service Categories
@@ -515,7 +509,7 @@ Common tags for `--tags` flag:
 - `caddy`, `pihole`, `homepage`, `ha`, `media`, `monitoring`
 - `docker`, `basic`, `glances`, `portainer`
 - `llm`, `llm-tools`, `llm-inference`, `llm-observability`
-- `satellite-audio`, `wyoming`
+- `satellite-audio`,
 - `wallabag`, `readeck`, `linkding`, `n8n`
 - `gpu`, `comfyui`
 - `netplan`, `network`
@@ -531,7 +525,6 @@ Common tags for `--tags` flag:
 - **Nameserver** (nameserver-pi): `ssh pi@nameserver-pi.lan` - Pi-hole DNS/DHCP server
 - **AI Lab Ubuntu** (ailab-ubuntu): `ssh daniel@ailab-ubuntu.lan` - AI/ML server with GPU support
 - **Proxmox** (ailab-proxmox): `ssh root@ailab-proxmox.lan` - Virtualization host
-- **Audio satellites** (micpi): `ssh daniel@micpi.lan` - Alexa integration
 
 **Note:** The `.lan` domains are automatically created by Pi-hole's local DNS. You can also use IP addresses (e.g., `ssh root@192.168.50.5`) if DNS is not available.
 

@@ -96,11 +96,6 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ glances_http_port }}"
     group: Monitoring
-  glances-micpi:
-    name: Glances Mic Pi
-    target: micpi.lan # Assuming micpi.lan is the target hostname
-    http_port: "{{ glances_http_port }}"
-    group: Monitoring
   nodered:
     target: homelab-nuc.lan
     http_port: "{{ nodered_http_port }}"

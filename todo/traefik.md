@@ -26,7 +26,6 @@ Replace Caddy reverse proxy with Traefik for dynamic, Docker-native routing that
 From `group_vars/all/services.yml`:
 
 **Cross-host Docker:**
-- `glances-micpi` → `micpi.lan:61208` (different host)
 - `ollama-ailab` → `ailab-ubuntu.lan` (AI lab server)
 
 **Non-Docker/Bare-metal:**
