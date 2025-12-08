@@ -4,6 +4,9 @@
   gather_facts: no
   become: false
 
+  vars:
+    ssh_public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
   tasks:
     - name: Read SSH public key from ailab-ubuntu
       ansible.builtin.slurp:
