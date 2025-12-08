@@ -1,17 +1,4 @@
 ---
-- name: Increase swap size
-  ansible.builtin.lineinfile:
-    path: /etc/dphys-swapfile
-    regexp: ^CONF_SWAPSIZE=
-    insertbefore: EOF
-    line: CONF_SWAPSIZE=1024
-  register: swap
-
-- name: Run swap setup if file was changed
-  ansible.builtin.command: dphys-swapfile setup
-  become: true
-  when: swap.changed
-
 - name: Update apt repo and cache on all Debian/Ubuntu boxes
   ansible.builtin.apt:
     update_cache: true
