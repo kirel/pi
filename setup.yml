@@ -6,7 +6,6 @@
     - { role: basic, become: true, tags: [basic] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: portainer, become: true, tags: [docker, portainer] }
@@ -15,7 +14,7 @@
     - { role: storage, become: true, tags: [storage] }
     - { role: caddy, become: true, tags: [caddy] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
-    - { role: resolved, become: true, tags: [pihole] }
+
     - { role: pihole, become: true, tags: [pihole] }
     - { role: homeassistant, become: true, tags: [ha] }
     - { role: fix_hass_bluetooth, become: true, tags: [ha] }
@@ -33,6 +32,7 @@
     - { role: immich, become: true, tags: [immich] }
     - { role: teslamate, become: true, tags: [teslamate] }
     - { role: n8n, become: true, tags: [n8n] }
+    - { role: prunemate, become: true, tags: [prunemate] }
 
 - name: Setup nameserver
   hosts: nameserver
@@ -41,7 +41,6 @@
     - { role: basic, become: true, tags: [basic] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
@@ -57,7 +56,6 @@
     - { role: basic, become: true, tags: [basic] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: glances, become: true, tags: [glances] }
@@ -71,7 +69,6 @@
     - { role: netplan-static-ip, become: true, tags: [netplan, network] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
-    - { role: dockercleanup, become: true, tags: [docker, cleanup] }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
     - { role: portainer, become: true, tags: [docker, portainer] }

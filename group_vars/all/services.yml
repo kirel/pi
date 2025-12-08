@@ -66,6 +66,12 @@ services:
     domain: changedetection.lan
     group: Monitoring
     icon: change-detection
+  prunemate:
+    name: PruneMate
+    target: homelab-nuc.lan
+    http_port: 7676
+    group: Monitoring
+    icon: mdi-docker
   n8n:
     name: n8n
     target: homelab-nuc.lan

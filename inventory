@@ -1,5 +1,5 @@
 [nameserver]
-nameserver-pi ansible_host=192.168.50.4 ansible_user=pi ansible_python_interpreter=/usr/bin/python3
+nameserver-pi ansible_host=192.168.50.4 ansible_user=daniel ansible_python_interpreter=/usr/bin/python3
 
 [homelab]
 homelab-nuc ansible_host=192.168.50.5 ansible_user=root ansible_python_interpreter=/usr/bin/python3
