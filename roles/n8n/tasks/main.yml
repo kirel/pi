@@ -29,6 +29,7 @@
     name: custom/n8n
     tag: latest
     source: build
+    force_source: true
     build:
       path: "{{ dockerfile_temp_dir.path }}"
       pull: true
