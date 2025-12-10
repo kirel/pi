@@ -28,56 +28,6 @@
     group: "{{ uid }}"
   become: true
 
-# Block for MCP-Proxy setup
-- name: MCP-Proxy Setup
-  become: true
-  block:
-    - name: Ensure old mcp-bridge container is removed to free up port
-      community.docker.docker_container:
-        name: "mcp-bridge-container"
-        state: absent
-
-    - name: Define MCP-Proxy related facts
-      ansible.builtin.set_fact:
-        mcp_proxy_config_full_host_path: "{{ mcp_proxy_config_dir_host }}/{{ mcp_proxy_config_filename }}"
-        mcp_proxy_build_context_path: "{{ mcp_proxy_config_dir_host }}/build"
-
-    - name: Ensure mcp-proxy build directory exists
-      ansible.builtin.file:
-        path: "{{ mcp_proxy_build_context_path }}"
-        state: directory
-        mode: "0755"
-
-    - name: Template custom Dockerfile for mcp-proxy
-      ansible.builtin.template:
-        src: Dockerfile.mcp-proxy.j2
-        dest: "{{ mcp_proxy_build_context_path }}/Dockerfile"
-        mode: "0644"
-      register: dockerfile_result
-
-    - name: Build the custom mcp-proxy image
-      community.docker.docker_image:
-        name: "{{ mcp_proxy_image_custom }}"
-        source: build
-        force_source: "{{ dockerfile_result.changed or force_update | default(false) }}"
-        build:
-          path: "{{ mcp_proxy_build_context_path }}"
-          pull: true
-          rm: true
-        state: present
-
-    - name: Ensure mcp-proxy config directory exists on host
-      ansible.builtin.file:
-        path: "{{ mcp_proxy_config_dir_host }}"
-        state: directory
-        mode: "0755"
-
-    - name: Template mcp-proxy servers.json
-      ansible.builtin.template:
-        src: mcp_proxy_servers.json.j2
-        dest: "{{ mcp_proxy_config_full_host_path }}"
-        mode: "0644"
-
 - name: Deploy all LiteLLM services using Docker Compose
   community.docker.docker_compose_v2:
     project_name: litellm

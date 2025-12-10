@@ -2,28 +2,37 @@
 # Models to load and serve
 
 models:
-  {% for model in llamaswap_models -%}
+{% for model in llamaswap_models %}
   {{ model.alias }}:
     cmd: |
-      {{ model.cmd | indent(width=6, first=True) }}
+      {{ model.cmd }}
     env:
       - "GGML_CUDA_MOUNT=/usr/lib/x86_64-linux-gnu/libcudart.so.12"
-  {% endfor %}
+{% if model.env is defined %}
+{% for env_var in model.env %}
+      - "{{ env_var }}"
+{% endfor %}
+{% endif %}
+{% endfor %}
 
 {% if llamaswap_model_groups is defined %}
 groups:
-  {% for group_name, group_config in llamaswap_model_groups.items() %}
-
+{% for group_name, group_config in llamaswap_model_groups.items() %}
   "{{ group_name }}":
-    {% if group_config.persistent is defined %}persistent: {{ group_config.persistent | lower }}{% endif +%}
-    {% if group_config.swap is defined %}swap: {{ group_config.swap | lower }}{% endif +%}
-    {% if group_config.exclusive is defined %}exclusive: {{ group_config.exclusive | lower }}{% endif +%}
-
+{% if group_config.persistent is defined %}
+    persistent: {{ group_config.persistent | lower }}
+{% endif %}
+{% if group_config.swap is defined %}
+    swap: {{ group_config.swap | lower }}
+{% endif %}
+{% if group_config.exclusive is defined %}
+    exclusive: {{ group_config.exclusive | lower }}
+{% endif %}
     members:
-      {% for model in llamaswap_models if group_name == model.group -%}
+{% for model in llamaswap_models if group_name == model.group %}
       - "{{ model.alias }}"
-      {% endfor %}
-  {% endfor %}
+{% endfor %}
+{% endfor %}
 {% endif %}
 
 # Global settings
@@ -36,5 +45,9 @@ server:
 # Preload models on startup
 hooks:
   on_startup:
+    {% if llamaswap_preload is defined and llamaswap_preload %}
     preload:
-      - GPT-OSS-20B-F16
+      {% for model_alias in llamaswap_preload %}
+      - {{ model_alias }}
+      {% endfor %}
+    {% endif %}

@@ -59,7 +59,7 @@
 - name: Start the llama-swap container
   community.docker.docker_container:
     name: "{{ llamaswap_container_name }}"
-    image: ghcr.io/mostlygeek/llama-swap:v172-cuda-b7018
+    image: ghcr.io/mostlygeek/llama-swap:cuda
     image_name_mismatch: recreate
     pull: true
     state: started
@@ -68,7 +68,7 @@
       - "{{ llamaswap_port }}:8080"
     volumes:
       - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
-      - "{{ llamaswap_config_path }}/cache:/app/.cache"
+      - "{{ llamaswap_config_path }}/cache:/root/.cache"
     device_requests:
       - driver: nvidia
         count: -1

@@ -12,6 +12,7 @@ ollama_restart_policy: "unless-stopped"
 llamaswap_container_name: "llama-swap"
 llamaswap_port: "8080"
 llamaswap_config_path: "{{ llamaswap_host_path }}"
+llamaswap_preload: []
 
 # --- Context Length Settings ---
 ollama_num_parallel: "2"

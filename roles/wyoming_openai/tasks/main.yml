@@ -67,6 +67,7 @@
             - log_level=info
             - WHISPER__MODEL={{ stt_model }}
             - WHISPER__compute_type=int8_float32
+            - CUDA_VISIBLE_DEVICES=1
           volumes:
             - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
           healthcheck:
@@ -89,7 +90,7 @@
           # Use build context with uv-optimized Dockerfile for better performance
           build:
             context: https://github.com/travisvn/chatterbox-tts-api.git#main
-            dockerfile: docker/Dockerfile.uv.gpu
+            dockerfile: docker/Dockerfile.blackwell
           restart: unless-stopped
           ports:
             - "{{ chatterbox_tts_external_port }}:{{ chatterbox_tts_internal_port }}"
@@ -141,7 +142,7 @@
               reservations:
                 devices:
                   - driver: nvidia
-                    count: 1
+                    device_ids: ["GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f"]
                     capabilities: [gpu]
 
         chatterbox-frontend:

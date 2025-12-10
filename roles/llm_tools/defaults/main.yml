@@ -20,13 +20,6 @@ litellm_redis_port_host: 6380
 litellm_redis_port_container: 6379
 litellm_redis_data_dir: "{{ llm_base_config_path }}/litellm/redis"
 
-# --- MCP-Proxy Settings ---
-mcp_proxy_image_base: "ghcr.io/sparfenyuk/mcp-proxy:latest"
-mcp_proxy_image_custom: "mcp-proxy:custom"
-mcp_proxy_container_name: "mcp-proxy"
-mcp_proxy_service_port: 8009 # Port mcp-proxy will listen on
-mcp_proxy_config_dir_host: "{{ llm_base_config_path }}/mcp-proxy"
-mcp_proxy_config_filename: "servers.json"
 
 # --- LiteLLM Proxy Settings ---
 litellm_proxy_image: "ghcr.io/berriai/litellm-database:main-stable"  # Database-enabled image
