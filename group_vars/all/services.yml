@@ -184,7 +184,7 @@ services:
   # nameserver
   pihole-nameserver-pi:
     name: Pihole Nameserver
-    target: pihole-pi.lan
+    target: nameserver-pi.lan
     http_port: "{{ pihole_http_port }}"
     domain: pihole-nameserver.lan
     group: Network
@@ -192,16 +192,16 @@ services:
     name: DHCP Leases Nameserver
     group: Network
     domain: leases-nameserver.lan
-    target: pihole-pi.lan
+    target: nameserver-pi.lan
     http_port: 5005
   portainer-nameserver-pi:
     name: Portainer Nameserver
-    target: pihole-pi.lan
+    target: nameserver-pi.lan
     http_port: "{{ portainer_http_port }}"
     group: Monitoring
   glances-nameserver-pi:
     name: Glances Nameserver
-    target: pihole-pi.lan
+    target: nameserver-pi.lan
     http_port: "{{ glances_http_port }}"
     group: Monitoring
   # ailab
