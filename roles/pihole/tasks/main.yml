@@ -173,17 +173,16 @@
             FTLCONF_dhcp_start: "{{ dhcp_start }}"
             FTLCONF_dhcp_end: "{{ dhcp_end }}"
             FTLCONF_dhcp_router: "{{ router_ip }}"
-            FTLCONF_dns_domain: lan
+            FTLCONF_dns_domain_name: lan
             FTLCONF_misc_etc_dnsmasq_d: "true"
             FTLCONF_dns_hosts: "{{ custom_dns_list }}"
             FTLCONF_dns_cnameRecords: "{{ custom_cname_list }}"
             FTLCONF_dhcp_hosts: "{{ static_dhcp_list }}"
             # DNS Cache Optimization
-            FTLCONF_dns_cacheSize: "{{ pihole_cache_size | default(100000) }}"
-            FTLCONF_dns_cacheMaxAge: "{{ pihole_cache_max_age | default(86400) }}"
-            FTLCONF_dns_cacheOptimistic: "true"
+            FTLCONF_dns_cache_size: "{{ pihole_cache_size | default(10000) }}"
             # Rate limiting to prevent self-query issues
-            FTLCONF_RATE_LIMIT: "{{ pihole_rate_limit | default('1000/1h') }}"
+            FTLCONF_dns_rateLimit_count: "{{ pihole_rate_limit | default('1000') }}"
+            FTLCONF_dns_rateLimit_interval: "{{ pihole_rate_limit_interval | default('60') }}"
           # Volumes store your data between container upgrades
           volumes:
             - "{{ pihole_config_folder }}:/etc/pihole/"
