@@ -47,7 +47,7 @@ model_list:
 router_settings:
   model_group_alias: {{ model_group_alias }}
   # Fallback from home to home-remote when local model fails
-  fallbacks: [{"home": ["home-remote"]}]
+  fallbacks: [{"home": ["home-remote"], "home-fast": ["home-remote"], "home-smart": ["home-remote"]}]
   redis_host: "{{ litellm_redis_container_name }}"
   redis_port: "{{ litellm_redis_port_container }}"
 
