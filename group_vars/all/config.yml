@@ -298,6 +298,8 @@ immich_db_port: 5432
 immich_redis_hostname: "192.168.50.5"  # homelab-nuc IP
 immich_redis_port: 6379
 immich_ml_gpu_enabled: true
+# GPU configuration
+primary_gpu_uuid: "GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f"
 open_webui_config_folder: "{{ config_root }}/open-webui"
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990

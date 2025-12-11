@@ -29,7 +29,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f"]
+              device_ids: ["{{ primary_gpu_uuid }}"]
               capabilities: [gpu]
 {% endif %}
     labels:
