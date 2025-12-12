@@ -48,6 +48,16 @@ hooks:
     {% if llamaswap_preload is defined and llamaswap_preload %}
     preload:
       {% for model_alias in llamaswap_preload %}
-      - {{ model_alias }}
+        {% set found = namespace(base_alias=model_alias) %}
+        {% for model in llamaswap_models %}
+          {% if model.variants is defined %}
+            {% for variant_name, _ in model.variants.items() %}
+              {% if model.alias ~ '-' ~ variant_name == model_alias %}
+                {% set found.base_alias = model.alias %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      - {{ found.base_alias }}
       {% endfor %}
     {% endif %}

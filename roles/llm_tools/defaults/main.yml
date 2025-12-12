@@ -28,7 +28,6 @@ litellm_proxy_config_dir_host: "{{ llm_base_config_path }}/litellm"
 litellm_proxy_config_filename: "config.yaml"
 litellm_proxy_port_host: "{{ litellm_proxy_port }}" # Host port for LiteLLM
 litellm_proxy_port_container: "4000" # Container port for LiteLLM (default)
-litellm_proxy_ui_port_host: "{{ litellm_proxy_ui_port }}" # UI port for admin dashboard
 langfuse_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ langfuse_port }}"
 
 # Database connection string

@@ -76,6 +76,52 @@ uv run ansible-playbook setup.yml --tags caddy --limit homelab
 uv run ansible-playbook setup.yml --tags pihole --limit nameserver
 ```
 
+## LLM Service Architecture
+
+The homelab runs a suite of interconnected services for Large Language Model (LLM) operations, spanning orchestration, inference, and observability.
+
+### Host Roles
+
+-   **`llm-tools`** (`homelab-nuc`): Orchestration, proxying, and user interfaces.
+-   **`llm-observability`** (`homelab-nuc`): Monitoring and tracing for LLM systems.
+-   **`llm-inference`** (`ailab-ubuntu`): GPU-accelerated model execution.
+
+### Core Services
+
+| Service | URL | Host | Description |
+| :--- | :--- | :--- | :--- |
+| **Open WebUI** | https://open-webui.lan | `homelab-nuc` | Chat interface for interacting with LLMs. |
+| **LiteLLM Admin** | https://litellm-ui.lan | `homelab-nuc` | Admin UI for the LiteLLM proxy. |
+| **Langfuse** | https://langfuse.lan | `homelab-nuc` | LLM tracing, analytics, and monitoring. |
+| **ComfyUI** | https://comfyui.lan | `ailab-ubuntu` | Node-based UI for Stable Diffusion. |
+| **Ollama** | `http://ailab-ubuntu.lan:11434` | `ailab-ubuntu`| Local LLM inference engine. |
+
+### Service Dependencies
+
+```
+Open WebUI (homelab-nuc) → LiteLLM Proxy (homelab-nuc) → Ollama (ailab-ubuntu)
+                                  ↓
+                           MCP-Proxy + Google Workspace MCP
+                                  ↓
+                           Langfuse (homelab-nuc) [observability]
+```
+
+### Deployment Commands
+
+```bash
+# Deploy all LLM tools to homelab-nuc
+uv run ansible-playbook setup.yml --tags llm-tools --limit homelab
+
+# Deploy all LLM inference services to ailab-ubuntu
+uv run ansible-playbook setup.yml --tags llm-inference --limit ailab_ubuntus
+
+# Deploy observability (Langfuse)
+uv run ansible-playbook setup.yml --tags llm-observability --limit homelab
+
+# Deploy everything LLM-related
+uv run ansible-playbook setup.yml --tags llm --limit homelab,ailab_ubuntus
+```
+
 ## Secrets
 
 Edit secrets

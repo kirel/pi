@@ -69,7 +69,8 @@ immich_redis_hostname: "192.168.50.5"  # homelab-nuc IP
 immich_redis_port: 6379
 immich_ml_gpu_enabled: true
 # GPU configuration
-primary_gpu_uuid: "GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f"
+blackwell_gpu_uuid: "GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f"
+ampere_gpu_uuid: "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc"
 open_webui_config_folder: "{{ config_root }}/open-webui"
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990
@@ -91,7 +92,6 @@ config_root: /home/{{ username }}/config
 base_src_path: /opt/src # Base path for cloning source repos
 ollama_host: ailab-ubuntu.lan
 litellm_proxy_port: 4000
-litellm_proxy_ui_port: 4001
 langfuse_port: 3003
 homeassistant_config_folder: "{{ config_root }}/home-assistant"
 homeassistant_media_folder: /tank/medien
