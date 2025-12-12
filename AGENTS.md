@@ -95,10 +95,12 @@ The homelab runs LLM (Large Language Model) services across multiple hosts with 
   - 128K context window, fully GPU-accelerated
   - Accessible via homelab-nuc's LiteLLM proxy
 
-- **ComfyUI** - HTTP 8188 (http://ailab-ubuntu.lan:8188)
-  - Node-based UI for stable diffusion
-  - GPU-accelerated image generation
-  - Web UI: https://comfyui.lan
+- **llama-swap** - HTTP 8080
+  - Dynamically loads and unloads LLM models based on usage.
+  - Efficiently manages GPU memory across multiple models.
+  - Used by LiteLLM Proxy.
+
+Note: ComfyUI is deployed via its own dedicated role (`comfyui`) to `ailab-ubuntu`.
 
 ### Service Dependencies
 
