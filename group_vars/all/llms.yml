@@ -3,11 +3,11 @@ model_group_alias:
   home-fast: "GPT-OSS-20B-F16-low"
   home-smart: "GPT-OSS-20B-F16-high"
   home-vision: "Qwen3-VL-8B-Instruct"
-  home-tiny: "Qwen3-0.6B-cpu"
+  home-tiny: "Qwen3-4B-Instruct-2507"
 litellm_fallbacks:
-  - home: ["home-remote"]
-  - home-fast: ["home-remote"]
-  - home-smart: ["home-remote"]
+  - home: ["home-tiny"]
+  - home-fast: ["home-tiny"]
+  - home-smart: ["home-tiny"]
 llamaswap_models:
   - alias: Qwen3-VL-8B-Instruct
     cmd: >-
