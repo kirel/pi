@@ -156,6 +156,130 @@ llamaswap_models:
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
 
+  - alias: Apriel-1.6-15b-Thinker
+    cmd: >-
+      /app/llama-server
+      -hf bartowski/ServiceNow-AI_Apriel-1.6-15b-Thinker-GGUF:Q6_K
+      --port ${PORT}
+      --ctx-size 65536
+      --n-predict 32768
+      --flash-attn auto
+      --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --threads -1
+      --jinja
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+
+  - alias: Devstral-Small-2-24B-Instruct
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF:Q5_K_XL
+      --port ${PORT}
+      --ctx-size 65536
+      --flash-attn auto
+      --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --threads -1
+      --temp 0.15
+      --min-p 0.01
+      --jinja
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: false
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+
+  - alias: GLM-4.6V-Flash
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/GLM-4.6V-Flash-GGUF:Q8_K_XL
+      --port ${PORT}
+      --ctx-size 65536
+      --flash-attn auto
+      --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --threads -1
+      --top-p 0.6
+      --top-k 2
+      --temp 0.8
+      --repeat-penalty 1.1
+      --n-predict 16384
+      --jinja
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+    variants:
+      think:
+        chat_template_kwargs:
+          enable_thinking: true
+      nothink:
+        chat_template_kwargs:
+          enable_thinking: false
+
+  - alias: Qwen3-Next-80B-A3B-Instruct
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF:Q4_K_XL
+      --port ${PORT}
+      --ctx-size 32768
+      --flash-attn auto
+      --n-gpu-layers 99
+      --tensor-split 36,16
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --threads -1
+      --temp 0.7
+      --top-p 0.8
+      --top-k 20
+      --min-p 0.0
+      --presence-penalty 1.0
+      --n-predict 16384
+      --n-cpu-moe 1
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: false
+    group: "big_boys"
+
+  - alias: gpt-oss-120b
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/gpt-oss-120b-GGUF:F16
+      --port ${PORT}
+      --threads -1
+      --ctx-size 16384
+      --n-gpu-layers 99
+      --tensor-split 36,16
+      --temp 1.0
+      --min-p 0.0
+      --top-p 1.0
+      --top-k 0.0
+      --n-cpu-moe 1
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "big_boys"
+    variants:
+      high:
+        chat_template_kwargs:
+          reasoning_effort: "high"
+      low:
+        chat_template_kwargs:
+          reasoning_effort: "low"
+
   - alias: GPT-OSS-20B-F16
     cmd: >-
       /app/llama-server
