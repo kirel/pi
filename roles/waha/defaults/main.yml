@@ -7,3 +7,6 @@ waha_sessions_folder: "{{ waha_config_folder }}/sessions"
 waha_engine: "WEBJS" # Options: WEBJS (Puppeteer) or NOWEB (Baileys)
 waha_api_key: "{{ waha_api_key_secret | default('waha_default_secret') }}"
 waha_webhook_url: "" # Set this in secrets or host_vars to point to n8n
+waha_dashboard_username: "{{ waha_dashboard_username_secret | default('admin') }}"
+waha_dashboard_password: "{{ waha_dashboard_password_secret | default('waha_default_secret') }}"
+

@@ -21,12 +21,17 @@
       - "{{ waha_port }}:3000"
     volumes:
       - "{{ waha_sessions_folder }}:/app/.sessions"
+      - "{{ caddy_data_folder }}/caddy/pki/authorities/local/root.crt:/usr/local/share/ca-certificates/caddy_local_root.crt:ro"
     env:
       WHATSAPP_DEFAULT_ENGINE: "{{ waha_engine }}"
       WAHA_API_KEY: "{{ waha_api_key }}"
       WAHA_WEBHOOK_URL: "{{ waha_webhook_url | default('') }}"
       # Print QR code to console for easy setup if needed
       WAHA_PRINT_QR: "True"
+      NODE_EXTRA_CA_CERTS: /usr/local/share/ca-certificates/caddy_local_root.crt
+      WAHA_DASHBOARD_USERNAME: "{{ waha_dashboard_username }}"
+      WAHA_DASHBOARD_PASSWORD: "{{ waha_dashboard_password }}"
+
     labels:
       homepage.group: "{{ services['waha'].group }}"
       homepage.name: "{{ services['waha'].name }}"
