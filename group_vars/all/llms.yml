@@ -110,12 +110,12 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:Q4_K_XL
       --port ${PORT}
-      --ctx-size 196608
+      --ctx-size 98304
       --n-predict 32768
       --n-gpu-layers 99
       --cache-type-k q8_0
       --cache-type-v q8_0
-      --n-cpu-moe 20
+      --n-cpu-moe 0
       --threads -1
       --temp 0.7
       --min-p 0.0
