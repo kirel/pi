@@ -261,12 +261,12 @@ llamaswap_models:
       --threads -1
       --ctx-size 16384
       --n-gpu-layers 99
-      --tensor-split 36,16
+      --tensor-split 6,1
       --temp 1.0
       --min-p 0.0
       --top-p 1.0
       --top-k 0.0
-      --n-cpu-moe 1
+      --n-cpu-moe 20
       --jinja
     supports_function_calling: true
     supports_vision: false
