@@ -49,6 +49,7 @@
     volumes:
       - "{{ n8n_config_folder }}:/home/node/.n8n"
       - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
+      - n8n_tmp_data:/tmp/data
     env:
       GENERIC_TIMEZONE: "{{ system_timezone }}"
       TZ: "{{ system_timezone }}"
@@ -57,6 +58,8 @@
       WEBHOOK_URL: "https://{{ services['n8n'].domain }}"
       N8N_PROXY_HOPS: "1"
       NODE_TLS_REJECT_UNAUTHORIZED: "0"  # Allow self-signed certs for webhooks for now - fix later
+      NODES_EXCLUDE: "[]"
+      N8N_RESTRICT_FILE_ACCESS_TO: "/tmp/data"
     labels:
       homepage.group: "{{ services['n8n'].group }}"
       homepage.name: "{{ services['n8n'].name }}"
