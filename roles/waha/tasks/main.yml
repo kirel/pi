@@ -1,0 +1,38 @@
+---
+- name: Ensure waha directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: "0755"
+  loop:
+    - "{{ waha_config_folder }}"
+    - "{{ waha_sessions_folder }}"
+  become: true
+
+- name: Start WAHA container
+  community.docker.docker_container:
+    name: "{{ waha_container_name }}"
+    image: "{{ waha_image }}"
+    pull: true
+    restart_policy: unless-stopped
+    ports:
+      - "{{ waha_port }}:3000"
+    volumes:
+      - "{{ waha_sessions_folder }}:/app/.sessions"
+    env:
+      WHATSAPP_DEFAULT_ENGINE: "{{ waha_engine }}"
+      WAHA_API_KEY: "{{ waha_api_key }}"
+      WAHA_WEBHOOK_URL: "{{ waha_webhook_url | default('') }}"
+      # Print QR code to console for easy setup if needed
+      WAHA_PRINT_QR: "True"
+    labels:
+      homepage.group: "{{ services['waha'].group }}"
+      homepage.name: "{{ services['waha'].name }}"
+      homepage.href: "https://waha.lan }}"
+      homepage.icon: "{{ services['waha'].icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: "{{ waha_container_name }}"
+  become: true
+  notify: Restart waha

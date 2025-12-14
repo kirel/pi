@@ -32,6 +32,7 @@
     - { role: immich, become: true, tags: [immich] }
     - { role: teslamate, become: true, tags: [teslamate] }
     - { role: n8n, become: true, tags: [n8n] }
+    - { role: waha, become: true, tags: [waha] }
     - { role: prunemate, become: true, tags: [prunemate] }
 
 - name: Setup nameserver

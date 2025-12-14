@@ -138,3 +138,4 @@ n8n_config_folder: "{{ config_root }}/n8n"
 teddycloud_config_folder: "{{ config_root }}/teddycloud"
 timemachine_max_size: 1000G
 google_workspace_mcp_port_host: 8014
+waha_port: 3006

@@ -268,3 +268,10 @@ services:
     domain: google-workspace-mcp.net
     group: AI
     icon: google.png
+# WAHA - WhatsApp HTTP API
+  waha:
+    name: WhatsApp API
+    target: homelab-nuc.lan
+    http_port: "{{ waha_port }}"
+    group: Productivity
+    icon: whatsapp.png

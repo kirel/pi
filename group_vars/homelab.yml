@@ -3,3 +3,4 @@ username: nuc
 dhcp_start: 192.168.50.175
 dhcp_end: 192.168.50.250
 pihole_virtual_host: pihole-homelab.lan
+waha_webhook_url: "https://n8n.kirelabs.org/webhook/whatsapp"

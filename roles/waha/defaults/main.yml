@@ -1,0 +1,9 @@
+---
+waha_image: "devlikeapro/waha:latest"
+waha_container_name: "waha"
+waha_port: 3000
+waha_config_folder: "{{ config_root }}/waha"
+waha_sessions_folder: "{{ waha_config_folder }}/sessions"
+waha_engine: "WEBJS" # Options: WEBJS (Puppeteer) or NOWEB (Baileys)
+waha_api_key: "{{ waha_api_key_secret | default('waha_default_secret') }}"
+waha_webhook_url: "" # Set this in secrets or host_vars to point to n8n
