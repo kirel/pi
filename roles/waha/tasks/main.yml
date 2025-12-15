@@ -25,7 +25,6 @@
     env:
       WHATSAPP_DEFAULT_ENGINE: "{{ waha_engine }}"
       WAHA_API_KEY: "{{ waha_api_key_secret | default('w4h4') }}"
-      WAHA_WEBHOOK_URL: "{{ waha_webhook_url | default('') }}"
       # Print QR code to console for easy setup if needed
       WAHA_PRINT_QR: "True"
       NODE_EXTRA_CA_CERTS: /usr/local/share/ca-certificates/caddy_local_root.crt
