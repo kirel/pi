@@ -1,6 +1,10 @@
 # llama-swap configuration
 # Models to load and serve
 
+healthCheckTimeout: 500
+sendLoadingState: true
+
+
 models:
 {% for model in llamaswap_models %}
   {{ model.alias }}:
