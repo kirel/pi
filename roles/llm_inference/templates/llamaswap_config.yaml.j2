@@ -7,7 +7,7 @@ models:
     cmd: |
       {{ model.cmd }}
     env:
-      - "GGML_CUDA_MOUNT=/usr/lib/x86_64-linux-gnu/libcudart.so.12"
+
 {% if model.env is defined %}
 {% for env_var in model.env %}
       - "{{ env_var }}"
