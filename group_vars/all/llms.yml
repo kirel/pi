@@ -1,7 +1,7 @@
 model_group_alias:
-  home: "Devstral-Small-2-24B-Instruct"
-  home-fast: "Devstral-Small-2-24B-Instruct"
-  home-smart: "Devstral-Small-2-24B-Instruct"
+  home: "GPT-OSS-20B-F16"
+  home-fast: "GPT-OSS-20B-F16-low"
+  home-smart: "GPT-OSS-20B-F16-high"
   home-vision: "Qwen3-VL-8B-Instruct"
   home-tiny: "Qwen3-4B-Instruct-2507"
 litellm_fallbacks:
