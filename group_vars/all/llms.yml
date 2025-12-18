@@ -176,6 +176,10 @@ llamaswap_models:
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+    variants:
+      nothink:
+        chat_template_kwargs:
+          enable_thinking: false
 
   - alias: Apriel-1.6-15b-Thinker
     cmd: >-
@@ -279,12 +283,12 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Seed-OSS-36B-Instruct-GGUF:Q6_K
       --port ${PORT}
-      --ctx-size 65536
+      --ctx-size 16384
       --flash-attn auto
       --n-gpu-layers 99
-      --tensor-split 44,20
-      --cache-type-k q8_0
-      --cache-type-v q8_0
+      --tensor-split 3,1
+      --cache-type-k q4_0
+      --cache-type-v q4_0
       --threads -1
       --temp 1.1
       --top-p 0.95
