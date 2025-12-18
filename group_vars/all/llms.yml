@@ -186,7 +186,7 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q6_K_XL
       --port ${PORT}
-      --ctx-size 65536
+      --ctx-size 32768
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 3,1
@@ -206,10 +206,12 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q6_K_XL
       --port ${PORT}
-      --ctx-size 65536
+      --ctx-size 32768
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 1,0
+      --cache-type-k q4_0
+      --cache-type-v q4_0
       --threads -1
       --prio 3
       --min-p 0.01
