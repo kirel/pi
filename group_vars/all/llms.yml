@@ -217,7 +217,8 @@ llamaswap_models:
       --min-p 0.01
       --temp 0.6
       --top-p 0.95
-      -ot "blk\\.(1[2-9]|2[0-5])\\.mlp\\.experts.*=CUDA1"
+      -ot "blk\\.(2[0-9]|3[0-5])\\.ffn_(up|down)_exps\\.weight=CUDA1"
+      -ot "blk\\.(2[0-9]|3[0-5])\\.ffn_(up|down)_shexp\\.weight=CUDA1"
       --jinja
     supports_function_calling: true
     supports_vision: false
