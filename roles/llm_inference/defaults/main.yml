@@ -10,6 +10,7 @@ ollama_restart_policy: "unless-stopped"
 
 # --- llama-swap Settings ---
 llamaswap_container_name: "llama-swap"
+llamaswap_image: "ghcr.io/mostlygeek/llama-swap:cuda"
 llamaswap_port: "8080"
 llamaswap_config_path: "{{ llamaswap_host_path }}"
 llamaswap_preload: []

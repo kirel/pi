@@ -9,7 +9,16 @@ models:
 {% for model in llamaswap_models %}
   {{ model.alias }}:
     cmd: |
+{% if model.group in ['3090', '5060ti'] %}
+      /bin/sh -c '
+{% for bb in llamaswap_models if bb.group == 'big_boys' %}
+      curl -s -X POST http://localhost:8080/api/models/unload/{{ bb.alias }} || true;
+{% endfor %}
+      exec {{ model.cmd }}
+      '
+{% else %}
       {{ model.cmd }}
+{% endif %}
     env:
 
 {% if model.env is defined %}
