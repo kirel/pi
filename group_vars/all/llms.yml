@@ -1,7 +1,7 @@
 model_group_alias:
-  home: "GPT-OSS-20B-F16"
-  home-fast: "GPT-OSS-20B-F16-low"
-  home-smart: "GPT-OSS-20B-F16-high"
+  home: "Nemotron-3-Nano-30B-A3B-nothink"
+  home-fast: "Nemotron-3-Nano-30B-A3B-nothink"
+  home-smart: "Nemotron-3-Nano-30B-A3B"
   home-vision: "Qwen3-VL-8B-Instruct"
   home-tiny: "Qwen3-4B-Instruct-2507"
 litellm_fallbacks:
