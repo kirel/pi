@@ -1,7 +1,7 @@
 model_group_alias:
-  home: "Nemotron-3-Nano-30B-A3B"
-  home-fast: "Nemotron-3-Nano-30B-A3B"
-  home-smart: "Nemotron-3-Nano-30B-A3B"
+  home: "Devstral-Small-2-24B-Instruct"
+  home-fast: "Devstral-Small-2-24B-Instruct"
+  home-smart: "Devstral-Small-2-24B-Instruct"
   home-vision: "Qwen3-VL-8B-Instruct"
   home-tiny: "Qwen3-4B-Instruct-2507"
 litellm_fallbacks:
