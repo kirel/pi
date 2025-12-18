@@ -201,6 +201,33 @@ llamaswap_models:
     supports_reasoning: true
     group: "big_boys"
 
+  - alias: Nemotron-3-Nano-30B-A3B-hybrid
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q6_K_XL
+      --port ${PORT}
+      --ctx-size 65536
+      --flash-attn auto
+      --n-gpu-layers 99
+      --tensor-split 1,0
+      --threads -1
+      --prio 3
+      --min-p 0.01
+      --temp 0.6
+      --top-p 0.95
+      -ot "blk\\.(1[2-9]|2[0-5])\\.mlp\\.experts.*=CUDA1"
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "big_boys"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}},{{blackwell_gpu_uuid}}"
+    variants:
+      nothink:
+        chat_template_kwargs:
+          enable_thinking: false
+
   - alias: Apriel-1.6-15b-Thinker
     cmd: >-
       /app/llama-server
