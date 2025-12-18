@@ -1,6 +1,6 @@
 model_group_alias:
-  home: "Nemotron-3-Nano-30B-A3B-nothink"
-  home-fast: "Nemotron-3-Nano-30B-A3B-nothink"
+  home: "Nemotron-3-Nano-30B-A3B"
+  home-fast: "Nemotron-3-Nano-30B-A3B"
   home-smart: "Nemotron-3-Nano-30B-A3B"
   home-vision: "Qwen3-VL-8B-Instruct"
   home-tiny: "Qwen3-4B-Instruct-2507"
