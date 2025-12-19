@@ -279,7 +279,7 @@ llamaswap_models:
       --min-p 0.0
       --presence-penalty 1.0
       --n-predict 16384
-      --n-cpu-moe 1
+      --n-cpu-moe 40
       --jinja
     supports_function_calling: true
     supports_vision: false
