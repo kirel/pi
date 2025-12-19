@@ -310,7 +310,7 @@ llamaswap_models:
       --ctx-size 32768
       --flash-attn auto
       --n-gpu-layers 99
-      --tensor-split 36,16
+      --tensor-split 30,8
       --cache-type-k q8_0
       --cache-type-v q8_0
       --threads -1
@@ -320,7 +320,7 @@ llamaswap_models:
       --min-p 0.0
       --presence-penalty 1.0
       --n-predict 16384
-      --n-cpu-moe 1
+      --n-cpu-moe 40
       --jinja
     supports_function_calling: true
     supports_vision: false
