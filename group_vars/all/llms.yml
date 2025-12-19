@@ -201,24 +201,23 @@ llamaswap_models:
     supports_reasoning: true
     group: "big_boys"
 
-  - alias: Nemotron-3-Nano-30B-A3B-hybrid
+  - alias: Nemotron-3-Nano-30B-A3B-Q6-dual
     cmd: >-
       /app/llama-server
       -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q6_K_XL
       --port ${PORT}
-      --ctx-size 32768
+      --ctx-size 131072
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 1,0
-      --cache-type-k q4_0
-      --cache-type-v q4_0
+      --cache-type-k q8_0
+      --cache-type-v q8_0
       --threads -1
       --prio 3
       --min-p 0.01
       --temp 0.6
       --top-p 0.95
-      -ot "blk\\.(2[0-9]|3[0-5])\\.ffn_(up|down)_exps\\.weight=CUDA1"
-      -ot "blk\\.(2[0-9]|3[0-5])\\.ffn_(up|down)_shexp\\.weight=CUDA1"
+      -ot "blk\\.(19|2[0-9]|3[0-5])\\.ffn_.*exp.*=CUDA1"
       --jinja
     supports_function_calling: true
     supports_vision: false
