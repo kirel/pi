@@ -21,7 +21,7 @@
       - "{{ ollama_path }}:/root/.ollama"
     device_requests:
       - driver: nvidia
-        count: -1
+        device_ids: ["{{ blackwell_gpu_uuid }}"]
         capabilities:
           - [gpu]
     env:
