@@ -1,13 +1,20 @@
+ollama_models:
+  - alias: Qwen3-4B-Instruct-2507-Q8
+    name: qwen3:4b-instruct-2507-q8_0
+    num_ctx: 16384
+
 model_group_alias:
   home: "GPT-OSS-20B-F16"
   home-fast: "GPT-OSS-20B-F16-low"
   home-smart: "GPT-OSS-20B-F16-high"
   home-vision: "Qwen3-VL-8B-Instruct"
   home-tiny: "Qwen3-4B-Instruct-2507"
+
 litellm_fallbacks:
   - home: ["home-tiny"]
   - home-fast: ["home-tiny"]
   - home-smart: ["home-tiny"]
+
 llamaswap_models:
   - alias: Qwen3-VL-8B-Instruct
     cmd: >-
@@ -32,6 +39,7 @@ llamaswap_models:
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+
   - alias: Qwen3-VL-32B-Instruct
     cmd: >-
       /app/llama-server
@@ -54,33 +62,7 @@ llamaswap_models:
     supports_vision: true
     supports_reasoning: false
     group: "big_boys"
-  - alias: Qwen3-VL-30B-A3B-Instruct
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3-VL-30B-A3B-Instruct-GGUF:Q4_K_XL
-      --port ${PORT}
-      --ctx-size 65536
-      --n-predict 32768
-      --flash-attn auto
-      --n-gpu-layers 99
-      --cache-type-k q8_0
-      --cache-type-v q8_0
-      --threads -1
-      --batch-size 512
-      --ubatch-size 512
-      --n-cpu-moe 0
-      --top-p 0.8
-      --top-k 20
-      --temp 0.7
-      --min-p 0.0
-      --presence-penalty 1.5
-      --jinja
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+
   - alias: Qwen3-VL-30B-A3B-Thinking
     cmd: >-
       /app/llama-server
@@ -105,6 +87,7 @@ llamaswap_models:
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+
   - alias: Qwen3-Coder-30B-A3B-Instruct
     cmd: >-
       /app/llama-server
@@ -126,32 +109,6 @@ llamaswap_models:
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-  - alias: Qwen3-30B-A3B-Instruct-2507
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF:Q4_K_XL
-      --port ${PORT}
-      --ctx-size 96608
-      --n-predict 32768
-      --flash-attn auto
-      --n-gpu-layers 99
-      --cache-type-k q8_0
-      --cache-type-v q8_0
-      --threads -1
-      --batch-size 512
-      --ubatch-size 512
-      --n-cpu-moe 0
-      --temp 0.7
-      --min-p 0.0
-      --top-p 0.8
-      --top-k 20
-      --presence-penalty 1.0
-      --jinja
-    supports_function_calling: true
-    supports_vision: false
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
@@ -181,15 +138,17 @@ llamaswap_models:
         chat_template_kwargs:
           enable_thinking: false
 
-  - alias: Nemotron-3-Nano-30B-A3B-Q6
+  - alias: Nemotron-3-Nano-30B-A3B-Q6-Balanced
     cmd: >-
       /app/llama-server
       -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q6_K_XL
       --port ${PORT}
-      --ctx-size 32768
+      --ctx-size 131072
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 3,1
+      --cache-type-k q8_0
+      --cache-type-v q8_0
       --threads -1
       --prio 3
       --min-p 0.01
@@ -201,7 +160,7 @@ llamaswap_models:
     supports_reasoning: true
     group: "big_boys"
 
-  - alias: Nemotron-3-Nano-30B-A3B-Q6-dual
+  - alias: Nemotron-3-Nano-30B-A3B-Q6-Expert-Offload
     cmd: >-
       /app/llama-server
       -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q6_K_XL
@@ -255,7 +214,7 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF:Q5_K_XL
       --port ${PORT}
-      --ctx-size 65536
+      --ctx-size 98304
       --flash-attn auto
       --n-gpu-layers 99
       --cache-type-k q8_0
@@ -310,7 +269,7 @@ llamaswap_models:
       --ctx-size 32768
       --flash-attn auto
       --n-gpu-layers 99
-      --tensor-split 36,16
+      --tensor-split 3,1
       --cache-type-k q8_0
       --cache-type-v q8_0
       --threads -1
@@ -330,7 +289,7 @@ llamaswap_models:
   - alias: Seed-OSS-36B-Instruct
     cmd: >-
       /app/llama-server
-      -hf unsloth/Seed-OSS-36B-Instruct-GGUF:Q6_K
+      -hf unsloth/Seed-OSS-36B-Instruct-GGUF:Q5_K_XL
       --port ${PORT}
       --ctx-size 16384
       --flash-attn auto
@@ -456,56 +415,6 @@ llamaswap_models:
       low:
         chat_template_kwargs:
           reasoning_effort: "low"
-
-  - alias: GPT-OSS-20B-F16-blackwell
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/gpt-oss-20b-GGUF:F16
-      --port ${PORT}
-      --ctx-size 131072
-      --n-gpu-layers 99
-      --cache-type-k q8_0
-      --cache-type-v q8_0
-      --threads -1
-      --temp 1.0
-      --top-p 1.0
-      --top-k 0
-      --jinja
-    supports_function_calling: true
-    supports_vision: false
-    group: "5060ti"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{blackwell_gpu_uuid}}"
-    variants:
-      high:
-        chat_template_kwargs:
-          reasoning_effort: "high"
-      low:
-        chat_template_kwargs:
-          reasoning_effort: "low"
-
-  - alias: Qwen3-4B-Instruct-2507
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3-4B-Instruct-2507-GGUF:Q8_K_XL
-      --port ${PORT}
-      --ctx-size 32768
-      --flash-attn auto
-      --n-gpu-layers 99
-      --cache-type-k q8_0
-      --cache-type-v q8_0
-      --temp 0.7
-      --min-p 0.0
-      --top-p 0.8
-      --top-k 20
-      --presence-penalty 1.0
-      --jinja
-    env:
-      - "CUDA_VISIBLE_DEVICES={{blackwell_gpu_uuid}}"
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: false
-    group: "5060ti"
 
 llamaswap_model_groups:
   forever:
