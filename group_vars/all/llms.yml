@@ -286,6 +286,40 @@ llamaswap_models:
     supports_reasoning: false
     group: "big_boys"
 
+  - alias: Seed-OSS-36B-Instruct-Magic
+    cmd: >-
+      /app/llama-server
+      -hf magiccodingman/Seed-OSS-36B-Instruct-unsloth-MagicQuant-Hybrid-GGUF:Seed-OSS-36B-Instruct-mxfp4_moe-EHQKOUD-IQ4NL.gguf
+      --port ${PORT}
+      --ctx-size 16384
+      --flash-attn auto
+      --n-gpu-layers 99
+      --tensor-split 3,1
+      --cache-type-k q4_0
+      --cache-type-v q4_0
+      --threads -1
+      --temp 1.1
+      --top-p 0.95
+      --n-predict 16384
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "big_boys"
+    variants:
+      high:
+        chat_template_kwargs:
+          thinking_budget: 2048
+      medium:
+        chat_template_kwargs:
+          thinking_budget: 1024
+      low:
+        chat_template_kwargs:
+          thinking_budget: 512
+      nothink:
+        chat_template_kwargs:
+          thinking_budget: 0
+
   - alias: Seed-OSS-36B-Instruct
     cmd: >-
       /app/llama-server
