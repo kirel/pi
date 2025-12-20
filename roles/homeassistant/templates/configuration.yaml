@@ -25,12 +25,13 @@ mqtt:
 
 # Serial settings
 serial:
-  # Location of CC2531 USB sniffer
-  port: /dev/ttyACM1
-  adapter: zstack
+  port: tcp://192.168.50.226:6638
+  baudrate: 115200
+  adapter: ember
+  rtscts: false
 
 frontend:
-  port: {{ z2m_http_port }}
+  port: '{{ z2m_http_port }}'
 
 devices: devices.yml
 groups: groups.yml
