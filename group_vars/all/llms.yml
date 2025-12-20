@@ -266,7 +266,7 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF:Q4_K_XL
       --port ${PORT}
-      --ctx-size 32768
+      --ctx-size 65536
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 3,1
@@ -279,7 +279,7 @@ llamaswap_models:
       --min-p 0.0
       --presence-penalty 1.0
       --n-predict 16384
-      --n-cpu-moe 40
+      --n-cpu-moe 15
       --jinja
     supports_function_calling: true
     supports_vision: false
