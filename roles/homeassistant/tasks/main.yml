@@ -127,6 +127,7 @@
           #  - /dev/ttyACM0 # zigbee coordinator - z2m uses this
           environment:
             - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+            - SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
           labels:
             - wud.tag.include=^\d+\.\d+\.\d+$$
             - wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}

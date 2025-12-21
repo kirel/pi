@@ -45,7 +45,7 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Qwen3-VL-32B-Instruct-GGUF:Q6_K_XL
       --port ${PORT}
-      --ctx-size 65536
+      --ctx-size 32768
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 36,16
@@ -68,7 +68,7 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Qwen3-VL-32B-Instruct-GGUF:Q4_K_XL
       --port ${PORT}
-      --ctx-size 65536
+      --ctx-size 32768
       --flash-attn auto
       --n-gpu-layers 99
       --cache-type-k q4_0
