@@ -146,6 +146,13 @@ static_dhcp:
 
 
   # IP Cam .70-.79
+  tapo-97a0:
+    mac: "98:03:8e:59:97:a0"
+    ip_suffix: 70
+  tapo-c260:
+    mac: "A8:29:48:7F:85:40"
+    ip_suffix: 71
+
   # Devices .80-.99
   vacuum:
     mac: D4:D2:D6:F7:BF:60
