@@ -126,6 +126,11 @@ uv run ansible-playbook setup.yml --tags llm-observability --limit homelab
 
 # Deploy everything LLM-related
 uv run ansible-playbook setup.yml --tags llm --limit homelab,ailab_ubuntus
+
+# ⚡ TIP: Efficient Model Config Updates
+# When only modifying llama-server flags (e.g., context size, KV cache) in llms.yml,
+# you only need to redeploy the inference service:
+uv run ansible-playbook setup.yml --tags llm-inference --limit ailab_ubuntus
 ```
 
 ### Service Verification
