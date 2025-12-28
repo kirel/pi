@@ -22,6 +22,7 @@ llamaswap_models:
       -hf unsloth/Qwen3-VL-8B-Instruct-GGUF:Q8_K_XL
       --port ${PORT}
       --ctx-size 131072
+      --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
       --cache-type-k q4_0
@@ -46,6 +47,7 @@ llamaswap_models:
       -hf unsloth/Qwen3-VL-32B-Instruct-GGUF:Q6_K_XL
       --port ${PORT}
       --ctx-size 32768
+      --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 36,16
@@ -69,6 +71,7 @@ llamaswap_models:
       -hf unsloth/Qwen3-VL-32B-Instruct-GGUF:Q4_K_XL
       --port ${PORT}
       --ctx-size 32768
+      --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
       --cache-type-k q4_0
@@ -143,10 +146,39 @@ llamaswap_models:
       -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q4_K_XL
       --port ${PORT}
       --ctx-size 98304
+      --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
-      --cache-type-k q4_0
-      --cache-type-v q4_0
+      --cache-type-k f16
+      --cache-type-v f16
+      --threads -1
+      --prio 3
+      --min-p 0.01
+      --temp 0.6
+      --top-p 0.95
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+    variants:
+      nothink:
+        chat_template_kwargs:
+          enable_thinking: false
+
+  - alias: Nemotron-3-Nano-30B-A3B-MXFP4
+    cmd: >-
+      /app/llama-server
+      -hf noctrex/Nemotron-3-Nano-30B-A3B-MXFP4_MOE-GGUF:MXFP4_MOE
+      --port ${PORT}
+      --ctx-size 0
+      --n-predict 16384
+      --flash-attn auto
+      --n-gpu-layers 99
+      --cache-type-k f16
+      --cache-type-v f16
       --threads -1
       --prio 3
       --min-p 0.01
@@ -170,6 +202,7 @@ llamaswap_models:
       -hf unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF:Q5_K_XL
       --port ${PORT}
       --ctx-size 98304
+      --n-predict 32768
       --flash-attn auto
       --n-gpu-layers 99
       --cache-type-k q4_0
@@ -315,6 +348,7 @@ llamaswap_models:
       --threads 12
       --threads-batch 12
       --ctx-size 16384
+      --n-predict 16384
       --flash-attn on
       --n-gpu-layers 99
       --cache-type-k q4_0
@@ -350,6 +384,7 @@ llamaswap_models:
       --threads 12
       --threads-batch 12
       --ctx-size 16384
+      --n-predict 16384
       --flash-attn on
       --n-gpu-layers 99
       --cache-type-k q4_0
@@ -382,6 +417,7 @@ llamaswap_models:
       -hf unsloth/gpt-oss-20b-GGUF:F16
       --port ${PORT}
       --ctx-size 131072
+      --n-predict 16384
       --n-gpu-layers 99
       --cache-type-k q8_0
       --cache-type-v q8_0
@@ -395,6 +431,34 @@ llamaswap_models:
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+    variants:
+      high:
+        chat_template_kwargs:
+          reasoning_effort: "high"
+      low:
+        chat_template_kwargs:
+          reasoning_effort: "low"
+
+  - alias: GPT-OSS-20B-blackwell
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/gpt-oss-20b-GGUF:F16
+      --port ${PORT}
+      --ctx-size 131072
+      --n-predict 16384
+      --n-gpu-layers 99
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --threads -1
+      --temp 1.0
+      --top-p 1.0
+      --top-k 0
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
+    group: "5060ti"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{blackwell_gpu_uuid}}"
     variants:
       high:
         chat_template_kwargs:
