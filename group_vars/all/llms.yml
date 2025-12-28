@@ -11,9 +11,9 @@ model_group_alias:
   home-tiny: "Qwen3-4B-Instruct-2507-Q8"
 
 litellm_fallbacks:
-  - home: ["home-tiny"]
-  - home-fast: ["home-tiny"]
-  - home-smart: ["home-tiny"]
+  - home: ["home-tiny", "home-remote"]
+  - home-fast: ["home-tiny", "home-remote"]
+  - home-smart: ["home-remote"]
 
 llamaswap_models:
   - alias: Qwen3-VL-8B-Instruct
