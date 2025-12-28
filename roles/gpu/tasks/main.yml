@@ -1,89 +1,30 @@
 ---
 # tasks file for gpu
-- name: Ensure ubuntu-drivers-common is installed
+- name: Download CUDA keyring
+  ansible.builtin.get_url:
+    url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
+    dest: /tmp/cuda-keyring_1.1-1_all.deb
+    mode: '0644'
+  become: true
+
+- name: Install CUDA keyring
   ansible.builtin.apt:
-    name: ubuntu-drivers-common
-    state: present
+    deb: /tmp/cuda-keyring_1.1-1_all.deb
+  become: true
+
+- name: Update apt cache
+  ansible.builtin.apt:
     update_cache: true
   become: true
-  environment:
-    DEBIAN_FRONTEND: noninteractive
 
-- name: Check currently installed NVIDIA driver version
-  ansible.builtin.shell: |
-    # Check for various nvidia driver package patterns
-    if dpkg -l | grep -q "nvidia-driver-[0-9]"; then
-      dpkg -l | grep "nvidia-driver-[0-9]" | head -1 | awk '{print $2}' | sed 's/nvidia-driver-//'
-    elif dpkg -l | grep -q "nvidia-utils-[0-9]"; then
-      dpkg -l | grep "nvidia-utils-[0-9]" | head -1 | awk '{print $2}' | sed 's/nvidia-utils-//'
-    elif nvidia-smi --version 2>/dev/null | grep -q "Driver Version"; then
-      nvidia-smi --version | grep "Driver Version" | awk '{print $6}' | cut -d'.' -f1-2
-    else
-      echo "none"
-    fi
-  register: current_nvidia_driver
-  changed_when: false
-  failed_when: false
-
-- name: Debug NVIDIA driver version check
-  ansible.builtin.debug:
-    msg:
-      - "Current installed driver: {{ current_nvidia_driver.stdout }}"
-      - "Desired driver version: {{ nvidia_driver_version }}"
-      - "Will purge old drivers: {{ (current_nvidia_driver.stdout != 'none' and current_nvidia_driver.stdout != nvidia_driver_version and current_nvidia_driver.stdout != '') | bool }}"
-
-- name: Purge old NVIDIA drivers if version changed
+- name: Install CUDA toolkit and NVIDIA drivers
   ansible.builtin.apt:
-    name: "nvidia-*"
-    state: absent
-    purge: true
-  become: true
-  when:
-    - current_nvidia_driver.stdout != "none"
-    - current_nvidia_driver.stdout != nvidia_driver_version
-    - current_nvidia_driver.stdout != ""
-  notify: reboot system
-  environment:
-    DEBIAN_FRONTEND: noninteractive
-
-- name: Remove orphaned packages after purge
-  ansible.builtin.apt:
-    autoremove: true
-  become: true
-  when:
-    - current_nvidia_driver.stdout != "none"
-    - current_nvidia_driver.stdout != nvidia_driver_version
-    - current_nvidia_driver.stdout != ""
-  environment:
-    DEBIAN_FRONTEND: noninteractive
-
-- name: Clean package cache after purge
-  ansible.builtin.apt:
-    autoclean: true
-  become: true
-  when:
-    - current_nvidia_driver.stdout != "none"
-    - current_nvidia_driver.stdout != nvidia_driver_version
-    - current_nvidia_driver.stdout != ""
-  environment:
-    DEBIAN_FRONTEND: noninteractive
-
-- name: Install NVIDIA GPGPU drivers using ubuntu-drivers
-  ansible.builtin.command:
-    cmd: "ubuntu-drivers install --gpgpu nvidia:{{ nvidia_driver_version }}"
-  register: driver_install
-  changed_when: "'All the available drivers are already installed.' not in driver_install.stdout"
-  become: true
-  notify: reboot system
-  environment:
-    DEBIAN_FRONTEND: noninteractive
-
-- name: Install nvidia utils
-  ansible.builtin.apt:
-    name: "nvidia-utils-{{ nvidia_driver_version | regex_replace('-open$', '') }}"
+    name:
+      - cuda-toolkit
+      - nvidia-open
     state: present
-    update_cache: true
   become: true
+  notify: reboot system
 
 - name: Setup NVIDIA container toolkit repository
   block:
