@@ -28,7 +28,7 @@ litellm_proxy_config_dir_host: "{{ llm_base_config_path }}/litellm"
 litellm_proxy_config_filename: "config.yaml"
 litellm_proxy_port_host: "{{ litellm_proxy_port }}" # Host port for LiteLLM
 litellm_proxy_port_container: "4000" # Container port for LiteLLM (default)
-langfuse_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ langfuse_port }}"
+phoenix_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ phoenix_grpc_port }}"
 
 # Database connection string
 litellm_database_url: "postgresql://{{ litellm_db_user }}:{{ litellm_db_password }}@{{ litellm_db_container_name }}:{{ litellm_db_port_container }}/{{ litellm_db_name }}"

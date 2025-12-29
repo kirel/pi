@@ -65,7 +65,7 @@ router_settings:
   redis_port: "{{ litellm_redis_port_container }}"
 
 litellm_settings:
-  success_callback: ["langfuse"]
+  callbacks: ["arize_phoenix"]
 
 general_settings:
   master_key: "{{ litellm_master_key }}"
