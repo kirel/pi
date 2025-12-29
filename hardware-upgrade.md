@@ -50,18 +50,21 @@ The "Taichi Lite" is no longer available. We must move to the premium segment to
 | :--- | :--- | :--- |
 | **CPU** | Keep (i5-12500) | Fully supports x8/x8 bifurcation. |
 | **RAM** | **Upgrade Likely** | Most premium Z790 boards are **DDR5 only**. |
-| **Case** | **UPGRADE REQUIRED** | Need an **E-ATX compatible case** (e.g., Lian Li O11 Dynamic EVO, Corsair 5000D/7000D). |
+| **Case** | **SELECTED** | **Density CX3150X (3U Rackmount)**. Fits E-ATX up to 12"x13". |
+| **Cooling** | **NEW LIMIT** | **115mm Max Height**. Needs low-profile cooler (e.g. Noctua NH-D9L). |
 | **PSU** | **Check Wattage** | Recommend **1000W ATX 3.0** to handle 3090 transients. |
 | **Riser** | **DISCARD** | Both GPUs must plug **DIRECTLY** into the motherboard. |
 
 ---
 
 ## 5. Final Recommendation & Plan
-1.  **Primary Path:** Buy the **ASRock Z790 Taichi** and a **Lian Li O11 Dynamic EVO**. 
-2.  **Mounting:** Put the **4060 Ti in PCIE1 (Top)** and the **3090 Turbo in PCIE2 (Bottom)**. 
-    - The blower fan on the bottom will have its own intake space, and the 4060 Ti on top will stay cool thanks to the empty slot gap.
+1.  **Primary Path:** Buy the **ASRock Z790 Taichi** and the **Density CX3150X (3U Rackmount)**.
+2.  **Mounting:** Put the **4060 Ti in PCIE1 (Top)** and the **3090 Turbo in PCIE2 (Bottom)**.
+    - The blower fan on the bottom will have its own intake space in the rack airflow path.
+    - The 4060 Ti on top will stay cool thanks to the empty slot gap provided by the Taichi layout.
 3.  **Storage:** Plug your NVMe into **M2_2** (the second slot). **Do not touch M2_1**, or your GPUs will drop to x8/x4 speeds.
-4.  **Software:** Manually set PCIe Link Speed to **"Gen 4"** in BIOS for maximum reliability.
+4.  **Cooling:** Ensure the CPU cooler is under **115mm**. The Noctua NH-D9L is a proven choice for 3U builds.
+5.  **Software:** Manually set PCIe Link Speed to **"Gen 4"** in BIOS for maximum reliability.
 
 ---
-**Verification Result:** Confirmed that the i5-12500 supports the `1x16` or `2x8` configuration via the Intel Alder Lake specification (End-2025).
+**Verification Result:** Confirmed that the i5-12500 supports the `1x16` or `2x8` configuration via the Intel Alder Lake specification. The CX3150X dimensions (3U) perfectly accommodate E-ATX motherboards and the ASUS Turbo 3090's length.
