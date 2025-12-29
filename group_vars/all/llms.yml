@@ -51,6 +51,7 @@ llamaswap_models:
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 36,16
+      --ubatch-size 2048
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
@@ -255,6 +256,7 @@ llamaswap_models:
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 3,1
+      --ubatch-size 2048
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
@@ -315,6 +317,7 @@ llamaswap_models:
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 3,1
+      --ubatch-size 2048
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
