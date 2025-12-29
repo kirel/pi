@@ -151,12 +151,12 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ open_webui_http_port }}"
     group: AI
-  langfuse:
-    name: Langfuse
+  phoenix:
+    name: Arize Phoenix
     target: homelab-nuc.lan
-    http_port: "{{ langfuse_port }}"
+    http_port: "{{ phoenix_port }}"
     group: AI
-    icon: langfuse.png
+    icon: phoenix.png
   litellm-ui:
     name: LiteLLM Admin
     target: homelab-nuc.lan
