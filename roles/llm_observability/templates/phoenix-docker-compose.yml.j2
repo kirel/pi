@@ -1,0 +1,14 @@
+services:
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    container_name: phoenix
+    ports:
+      - "{{ phoenix_port }}:6006"
+      - "{{ phoenix_grpc_port }}:4317"
+      - "9090:9090"
+    environment:
+      - PHOENIX_WORKING_DIR={{ phoenix_working_dir }}
+      - TZ={{ system_timezone }}
+    volumes:
+      - "{{ phoenix_data_folder }}:{{ phoenix_working_dir }}"
+    restart: unless-stopped
