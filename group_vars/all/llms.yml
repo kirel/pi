@@ -197,6 +197,33 @@ llamaswap_models:
         chat_template_kwargs:
           enable_thinking: false
 
+  - alias: Nemotron-3-Nano-30B-A3B-Q6
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q6_K_XL
+      --port ${PORT}
+      --ctx-size 0
+      --n-predict 16384
+      --flash-attn auto
+      --n-gpu-layers 99
+      --tensor-split 3,1
+      --cache-type-k f16
+      --cache-type-v f16
+      --threads -1
+      --prio 3
+      --min-p 0.01
+      --temp 0.6
+      --top-p 0.95
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "big_boys"
+    variants:
+      nothink:
+        chat_template_kwargs:
+          enable_thinking: false
+
   - alias: Devstral-Small-2-24B-Instruct
     cmd: >-
       /app/llama-server
