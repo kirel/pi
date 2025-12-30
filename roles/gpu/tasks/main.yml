@@ -101,23 +101,45 @@
     mode: '0644'
   become: true
 
-- name: Check current GPU power limit
+- name: Apply persistence mode immediately
+  ansible.builtin.command:
+    cmd: "nvidia-smi -pm 1"
+  become: true
+  when: gpu_persistence_mode
+  changed_when: false
+
+- name: Check current GPU power limits
   ansible.builtin.shell: |
-    nvidia-smi --query-gpu=power.limit --format=csv,noheader,nounits | head -1 | tr -d ' '
-  register: current_power_limit
+    nvidia-smi --query-gpu=power.limit --format=csv,noheader,nounits | tr -d ' '
+  register: current_power_limits
   changed_when: false
   failed_when: false
   become: true
 
-- name: Apply power limit immediately if different
+- name: Apply power limits immediately if different
   ansible.builtin.command:
-    cmd: "nvidia-smi -pl {{ gpu_power_limit_watts }}"
+    cmd: "nvidia-smi {% if item.uuid is defined %}-i {{ item.uuid }}{% endif %} -pl {{ item.power_limit | default(gpu_power_limit_watts) }}"
   become: true
-  when:
-    - current_power_limit.stdout != ""
-    - current_power_limit.stdout | int != gpu_power_limit_watts | int
+  loop: "{{ gpu_configs | default([{'power_limit': gpu_power_limit_watts}]) }}"
   register: power_limit_applied
   changed_when: power_limit_applied.rc == 0
+  when: current_power_limits.stdout != ""
+
+- name: Apply graphics clock locks immediately
+  ansible.builtin.command:
+    cmd: "nvidia-smi -i {{ item.uuid }} -lgc {{ item.min_graphics_clock }},{{ item.max_graphics_clock }}"
+  become: true
+  loop: "{{ gpu_configs | default([]) }}"
+  when: item.min_graphics_clock is defined
+  changed_when: false
+
+- name: Apply memory clock locks immediately
+  ansible.builtin.command:
+    cmd: "nvidia-smi -i {{ item.uuid }} -lmc {{ item.memory_clock }}"
+  become: true
+  loop: "{{ gpu_configs | default([]) }}"
+  when: item.memory_clock is defined
+  changed_when: false
 
 - name: Enable and start nvidia-power-limit service
   ansible.builtin.systemd:
