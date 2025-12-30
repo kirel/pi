@@ -51,7 +51,8 @@ llamaswap_models:
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 36,16
-      --ubatch-size 2048
+      --ubatch-size 4096
+      --batch-size 16384
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
@@ -75,6 +76,8 @@ llamaswap_models:
       --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
+      --ubatch-size 4096
+      --batch-size 16384
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
@@ -100,6 +103,8 @@ llamaswap_models:
       --n-predict 40960
       --flash-attn auto
       --n-gpu-layers 99
+      --ubatch-size 4096
+      --batch-size 16384
       --cache-type-k q4_0
       --cache-type-v q4_0
       --n-cpu-moe 0
@@ -124,6 +129,8 @@ llamaswap_models:
       --ctx-size 98304
       --n-predict 32768
       --n-gpu-layers 99
+      --ubatch-size 4096
+      --batch-size 16384
       --cache-type-k q4_0
       --cache-type-v q4_0
       --n-cpu-moe 0
@@ -150,6 +157,8 @@ llamaswap_models:
       --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
+      --ubatch-size 4096
+      --batch-size 16384
       --cache-type-k f16
       --cache-type-v f16
       --threads -1
@@ -178,6 +187,8 @@ llamaswap_models:
       --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
+      --ubatch-size 4096
+      --batch-size 16384
       --cache-type-k f16
       --cache-type-v f16
       --threads -1
@@ -202,12 +213,13 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q6_K_XL
       --port ${PORT}
-      --ctx-size 0
+      --ctx-size 65536
       --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
-      --tensor-split 24,10
-      --ubatch-size 2048
+      --tensor-split 22,10
+      --ubatch-size 4096
+      --batch-size 16384
       --cache-type-k f16
       --cache-type-v f16
       --threads -1
