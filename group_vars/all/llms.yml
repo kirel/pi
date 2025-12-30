@@ -206,7 +206,8 @@ llamaswap_models:
       --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
-      --tensor-split 3,1
+      --tensor-split 24,10
+      --ubatch-size 2048
       --cache-type-k f16
       --cache-type-v f16
       --threads -1
