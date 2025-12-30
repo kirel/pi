@@ -76,8 +76,6 @@ llamaswap_models:
       --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
-      --ubatch-size 4096
-      --batch-size 16384
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
@@ -103,8 +101,6 @@ llamaswap_models:
       --n-predict 40960
       --flash-attn auto
       --n-gpu-layers 99
-      --ubatch-size 4096
-      --batch-size 16384
       --cache-type-k q4_0
       --cache-type-v q4_0
       --n-cpu-moe 0
@@ -129,8 +125,6 @@ llamaswap_models:
       --ctx-size 98304
       --n-predict 32768
       --n-gpu-layers 99
-      --ubatch-size 4096
-      --batch-size 16384
       --cache-type-k q4_0
       --cache-type-v q4_0
       --n-cpu-moe 0
@@ -157,8 +151,6 @@ llamaswap_models:
       --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
-      --ubatch-size 4096
-      --batch-size 16384
       --cache-type-k f16
       --cache-type-v f16
       --threads -1
@@ -187,8 +179,6 @@ llamaswap_models:
       --n-predict 16384
       --flash-attn auto
       --n-gpu-layers 99
-      --ubatch-size 4096
-      --batch-size 16384
       --cache-type-k f16
       --cache-type-v f16
       --threads -1
