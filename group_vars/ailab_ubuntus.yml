@@ -11,3 +11,17 @@ comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage # Specific p
 
 # llm specific vars
 ollama_host_path: /opt/ollama # Path for ollama models on ailab
+
+# GPU performance and stability
+gpu_persistence_mode: true
+gpu_configs:
+  - uuid: "{{ ampere_gpu_uuid }}"
+    power_limit: 250
+    min_graphics_clock: 1500
+    max_graphics_clock: 1700
+    memory_clock: 9501
+  - uuid: "{{ blackwell_gpu_uuid }}"
+    power_limit: 175
+    min_graphics_clock: 2100
+    max_graphics_clock: 2600
+    memory_clock: 14001

@@ -1,12 +1,36 @@
 [Unit]
-Description=Set NVIDIA GPU Power Limit
+Description=NVIDIA GPU Performance and Power Management
 After=multi-user.target
 Wants=multi-user.target
 
 [Service]
 Type=oneshot
+# Wait for nvidia-smi to be available
 ExecStartPre=/bin/bash -c 'until /usr/bin/nvidia-smi -L >/dev/null 2>&1; do sleep 2; done'
+
+# Enable Persistence Mode for all GPUs
+{% if gpu_persistence_mode %}
+ExecStart=/usr/bin/nvidia-smi -pm 1
+{% endif %}
+
+# Apply GPU-specific configurations
+{% if gpu_configs is defined %}
+{% for config in gpu_configs %}
+# Apply Power Limit for {{ config.uuid }}
+ExecStart=/usr/bin/nvidia-smi -i {{ config.uuid }} -pl {{ config.power_limit }}
+# Apply Locked Graphics Clock for {{ config.uuid }}
+{% if config.min_graphics_clock is defined and config.max_graphics_clock is defined %}
+ExecStart=/usr/bin/nvidia-smi -i {{ config.uuid }} -lgc {{ config.min_graphics_clock }},{{ config.max_graphics_clock }}
+{% endif %}
+# Apply Locked Memory Clock for {{ config.uuid }}
+{% if config.memory_clock is defined %}
+ExecStart=/usr/bin/nvidia-smi -i {{ config.uuid }} -lmc {{ config.memory_clock }}
+{% endif %}
+{% endfor %}
+{% else %}
 ExecStart=/usr/bin/nvidia-smi -pl {{ gpu_power_limit_watts }}
+{% endif %}
+
 RemainAfterExit=yes
 Restart=on-failure
 RestartSec=10s

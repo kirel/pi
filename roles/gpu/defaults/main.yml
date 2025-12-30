@@ -1,4 +1,12 @@
 ---
 # defaults file for gpu
 gpu_power_limit_watts: 250
+gpu_persistence_mode: true
 nvidia_container_toolkit_version: 1.18.1-1
+
+# Per-GPU specific settings (optional)
+# gpu_configs:
+#   - uuid: "GPU-xxx"
+#     power_limit: 250
+#   - uuid: "GPU-yyy"
+#     power_limit: 175
