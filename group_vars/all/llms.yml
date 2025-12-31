@@ -52,8 +52,7 @@ llamaswap_models:
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 36,16
-      --ubatch-size 4096
-      --batch-size 16384
+      --ubatch-size 512
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
@@ -63,6 +62,7 @@ llamaswap_models:
       --min-p 0.0
       --presence-penalty 1.5
       --jinja
+      --swa-checkpoints 0
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: false
@@ -214,8 +214,7 @@ llamaswap_models:
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 22,10
-      --ubatch-size 4096
-      --batch-size 16384
+      --ubatch-size 512
       --cache-type-k f16
       --cache-type-v f16
       --threads -1
@@ -224,6 +223,7 @@ llamaswap_models:
       --temp 0.6
       --top-p 0.95
       --jinja
+      --swa-checkpoints 0
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: true
@@ -294,7 +294,7 @@ llamaswap_models:
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 3,1
-      --ubatch-size 2048
+      --ubatch-size 512
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
@@ -306,6 +306,7 @@ llamaswap_models:
       --n-predict 16384
       --n-cpu-moe 15
       --jinja
+      --swa-checkpoints 0
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: false
@@ -356,7 +357,7 @@ llamaswap_models:
       --flash-attn auto
       --n-gpu-layers 99
       --tensor-split 3,1
-      --ubatch-size 2048
+      --ubatch-size 512
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
@@ -364,6 +365,7 @@ llamaswap_models:
       --top-p 0.95
       --n-predict 16384
       --jinja
+      --swa-checkpoints 0
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: true
@@ -441,7 +443,9 @@ llamaswap_models:
       -ot "blk\\.([0-4])\\.ffn_.*_exps.*=CUDA1"
       -ot "blk\\.([5-9]|1[0-9]|2[0-4])\\.ffn_.*_exps.*=CPU"
       -ot "blk\\.(2[5-9]|3[0-5])\\.ffn_.*_exps.*=CUDA0"
+      --ubatch-size 512
       --jinja
+      --swa-checkpoints 0
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: true
