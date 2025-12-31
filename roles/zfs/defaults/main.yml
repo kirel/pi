@@ -57,7 +57,7 @@ zfs_datasets:
       compression: lz4
     owner: "{{ username }}"
     group: users
-    mode: "0755"
+    mode: "0775"
 
   - name: "{{ zfs_pool_name }}/timemachine/{{ username_personal }}"
     properties:
@@ -75,7 +75,7 @@ zfs_datasets:
       compression: lz4
     owner: "{{ username }}"
     group: users
-    mode: "0755"
+    mode: "0775"
 
 # Scrub schedule (monthly on first Sunday at 2 AM)
 zfs_scrub_enabled: true

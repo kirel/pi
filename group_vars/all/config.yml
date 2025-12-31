@@ -82,6 +82,7 @@ shares:
   - medien
   - config
   - ai-models
+  - backups
 timemachine_shares:
   - timemachine
 dataset_shares: "{{ shares }}"
