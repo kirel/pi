@@ -69,6 +69,8 @@
     volumes:
       - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
       - "{{ llamaswap_config_path }}/cache:/root/.cache"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/usr/bin/docker:/usr/bin/docker"
     device_requests:
       - driver: nvidia
         count: -1

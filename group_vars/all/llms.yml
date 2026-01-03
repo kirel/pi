@@ -4,9 +4,9 @@ ollama_models:
     num_ctx: 16384
 
 model_group_alias:
-  home: "GPT-OSS-20B-F16"
-  home-fast: "GPT-OSS-20B-F16-low"
-  homeo-smart: "GPT-OSS-20B-F16-high"
+  home: "GPT-OSS-20B-vLLM-high"
+  home-fast: "GPT-OSS-20B-vLLM-low"
+  home-smart: "GPT-OSS-20B-vLLM-high"
   home-vision: "Qwen3-VL-8B-Instruct"
   home-tiny: "Qwen3-4B-Instruct-2507-Q8"
 
@@ -474,6 +474,35 @@ llamaswap_models:
           reasoning_effort: "high"
       low:
         chat_template_kwargs:
+          reasoning_effort: "low"
+
+  - alias: GPT-OSS-20B-vLLM
+    cmd: >-
+      docker run --rm --init --name ${MODEL_ID}
+      --runtime nvidia --gpus '"device={{ampere_gpu_uuid}}"'
+      --network container:llama-swap
+      -v {{ llamaswap_config_path }}/cache:/root/.cache
+      --ipc=host
+      -e HF_HOME=/root/.cache/huggingface
+      vllm/vllm-openai:latest
+      openai/gpt-oss-20b
+      --served-model-name ${MODEL_ID}
+      --port ${PORT}
+      --max-num-seqs 1
+      --max-num-batched-tokens 2048
+      --stream-interval 1
+      --tool-call-parser openai
+      --enable-auto-tool-choice
+    cmdStop: docker stop ${MODEL_ID}
+    supports_function_calling: true
+    supports_vision: false
+    group: "3090"
+    variants:
+      high:
+        extra_body:
+          reasoning_effort: "high"
+      low:
+        extra_body:
           reasoning_effort: "low"
 
 llamaswap_model_groups:
