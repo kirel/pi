@@ -122,6 +122,26 @@ uv run ansible-playbook setup.yml --tags llm-observability --limit homelab
 uv run ansible-playbook setup.yml --tags llm --limit homelab,ailab_ubuntus
 ```
 
+### Benchmarking
+
+A utility script is provided to compare end-to-end latency (TTFT) and throughput (TPS) across different models and variants (e.g., vLLM vs. llama.cpp).
+
+**Location:** `todo/scripts/llm_benchmark.py`
+
+**Usage:**
+```bash
+# Run with default settings (8000 prompt tokens, 5 iterations)
+LITELLM_MASTER_KEY=<your-key> uv run --with openai python3 todo/scripts/llm_benchmark.py
+```
+
+The script measures:
+- **Avg TTFT:** Time to First Token (prefill latency).
+- **Prefill T/s:** Tokens processed per second during prompt ingestion.
+- **Decode T/s:** Tokens generated per second.
+- **Total Time:** End-to-end request duration.
+
+Note: The script cycles prompts across iterations to avoid skewed results from prefix caching.
+
 ## Secrets
 
 Edit secrets
