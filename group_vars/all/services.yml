@@ -66,6 +66,13 @@ services:
     domain: changedetection.lan
     group: Monitoring
     icon: change-detection
+  dockhand:
+    name: Dockhand
+    target: homelab-nuc.lan
+    http_port: "{{ dockhand_http_port }}"
+    domain: dockhand.lan
+    group: Monitoring
+    icon: mdi-docker
   prunemate:
     name: PruneMate
     target: homelab-nuc.lan

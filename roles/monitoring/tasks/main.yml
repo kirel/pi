@@ -7,6 +7,7 @@
     mode: "{{ item.mode | default('0755') }}"
   with_items:
     - path: "{{ uptime_kuma_data_folder }}"
+    - path: "{{ dockhand_data_folder }}"
     - path: "{{ semaphore_data_folder }}"
       owner: "1001"  # Semaphore container runs as user 1001
 
@@ -72,6 +73,23 @@
             homepage.widget.type: whatsupdocker
             homepage.widget.url: https://wud.lan
 
+        dockhand:
+          image: fnsys/dockhand:latest
+          container_name: dockhand
+          restart: unless-stopped
+          ports:
+            - "{{ dockhand_http_port }}:3000"
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - "{{ dockhand_data_folder }}:/app/data"
+          labels:
+            homepage.group: "{{ services.dockhand.group }}"
+            homepage.name: "{{ services.dockhand.name }}"
+            homepage.href: https://dockhand.lan
+            homepage.icon: mdi-docker
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: dockhand
+
         semaphore:
           image: semaphoreui/semaphore:latest
           container_name: semaphore
@@ -131,4 +149,5 @@
     that:
       - output.containers | selectattr('Name', 'equalto', 'uptime_kuma') | map(attribute='State') | list | first == 'running'
       - output.containers | selectattr('Name', 'equalto', 'wud') | map(attribute='State') | list | first == 'running'
+      - output.containers | selectattr('Name', 'equalto', 'dockhand') | map(attribute='State') | list | first == 'running'
       - output.containers | selectattr('Name', 'equalto', 'semaphore') | map(attribute='State') | list | first == 'running'

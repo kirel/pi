@@ -56,6 +56,7 @@ teddycloud_http_port: 8013
 teddycloud_box_port: 4443
 metamcp_port_host: 8015
 changedetection_http_port: 8016
+dockhand_http_port: 8017
 immich_http_port: 2283
 immich_ml_http_port: 3003
 immich_ml_hostname: "ailab-ubuntu.lan"
@@ -135,6 +136,7 @@ wallabag_db_data_folder: "{{ wallabag_config_folder }}/data"
 wallabag_domain_name: wallabag.lan
 readeck_data_folder: "{{ config_root }}/readeck"
 readeck_domain_name: readeck.lan
+dockhand_data_folder: "{{ config_root }}/dockhand"
 linkding_data_folder: "{{ config_root }}/linkding"
 linkding_domain_name: linkding.lan
 n8n_config_folder: "{{ config_root }}/n8n"
