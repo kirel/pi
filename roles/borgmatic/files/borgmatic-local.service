@@ -1,0 +1,17 @@
+[Unit]
+Description=Borgmatic Local Backup Service
+Documentation=https://torsion.org/borgmatic/docs/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/borgmatic --config /etc/borgmatic.d/config-local.yaml --verbosity 1
+User=root
+Group=root
+LockFile=/var/lock/borgmatic-local.lock
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

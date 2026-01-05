@@ -1,0 +1,63 @@
+---
+- name: Install Borgmatic and dependencies
+  ansible.builtin.apt:
+    name:
+      - borgmatic
+      - sshfs
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Create borgmatic configuration directory
+  ansible.builtin.file:
+    path: /etc/borgmatic.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+
+- name: Create backup repository directory
+  ansible.builtin.file:
+    path: "{{ backup_local_repo }}"
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+  become: true
+
+- name: Deploy borgmatic configuration
+  ansible.builtin.template:
+    src: "config-local.yaml.j2"
+    dest: "/etc/borgmatic.d/config-local.yaml"
+    mode: '0600'
+    owner: root
+    group: root
+  become: true
+  notify: Reload systemd daemon
+
+- name: Deploy systemd service unit
+  ansible.builtin.copy:
+    src: "borgmatic-local.service"
+    dest: "/etc/systemd/system/borgmatic-local.service"
+    mode: '0644'
+  become: true
+  notify: Reload systemd daemon
+
+- name: Deploy systemd timer unit
+  ansible.builtin.copy:
+    src: "borgmatic-local.timer"
+    dest: "/etc/systemd/system/borgmatic-local.timer"
+    mode: '0644'
+  become: true
+  notify: Reload systemd daemon
+
+- name: Flush handlers to apply systemd changes
+  meta: flush_handlers
+
+- name: Enable borgmatic timer
+  ansible.builtin.systemd:
+    name: borgmatic-local.timer
+    enabled: yes
+    state: started
+  become: true

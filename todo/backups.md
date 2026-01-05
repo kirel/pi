@@ -16,12 +16,14 @@
 │  ├── tank/ai-models@snapshots           │
 │  └── tank/config@snapshots              │
 │                                         │
-│  Tier 2: Borg (local)                   │
+│  Tier 2: Borgmatic (local)              │
+│  ✅ IMPLEMENTED                          │
 │  └── /tank/backups/homelab-configs      │
 │      └── Only service configs           │
 │                                         │
 │  Tier 3: Borg (remote)                  │
-│      └── Hetzner Storage Box            │
+│  ⏳ PENDING                              │
+│      └── Hetzner/Remote NAS             │
 │          └── Everything (6TB)           │
 └─────────────────────────────────────────┘
 ```
@@ -479,9 +481,45 @@ borgmatic -c /etc/borgmatic.d/config-local.yaml mount --mount-point /mnt/borg-mo
 umount /mnt/borg-mount
 ```
 
+## ✅ Implementation Status
+
+### **COMPLETED**
+- ✅ **Tier 2**: Borgmatic local backup system (2025-12-04)
+  - Ansible role: `roles/borgmatic/`
+  - Integration: Added to `setup.yml`
+  - Configuration: `group_vars/homelab.yml`
+  - Automation: systemd timer (daily)
+  - Deployment: `uv run ansible-playbook setup.yml --tags borgmatic --limit homelab`
+
+### **REMAINING**
+- ⏳ **Tier 3**: Remote backup (Hetzner/Remote NAS)
+  - Add `config-remote.yaml.j2` template
+  - Add remote systemd service/timer
+  - Configure Hetzner/NAS SSH credentials
+  - Test remote backup
+
+### **POST-DEPLOYMENT STEPS** (Required before first run)
+1. Add encryption passphrase to `group_vars/all/secrets.yml`:
+   ```bash
+   uv run ansible-vault encrypt_string 'your-strong-passphrase' --name 'vault_borg_passphrase'
+   ```
+
+2. Initialize repository on homelab-nuc:
+   ```bash
+   sudo borgmatic --config /etc/borgmatic.d/config-local.yaml init --encryption repokey
+   sudo chown -R nuc:nuc /tank/backups/homelab-configs
+   sudo systemctl enable --now borgmatic-local.timer
+   ```
+
+3. Test backup:
+   ```bash
+   sudo borgmatic --config /etc/borgmatic.d/config-local.yaml create --verbosity 1
+   sudo borgmatic --config /etc/borgmatic.d/config-local.yaml list
+   ```
+
 ---
 
-**Status**: Ready for Implementation
+**Status**: ✅ Tier 2 Complete | ⏳ Tier 3 Pending
 **Owner**: Homelab Infrastructure
 **Review Date**: Monthly
 **Last Updated**: 2025-12-04

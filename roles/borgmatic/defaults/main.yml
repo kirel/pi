@@ -1,0 +1,33 @@
+---
+# Borgmatic backup configuration
+backup_local_repo: "/tank/backups/homelab-configs"
+
+# Source directories to backup (service configs)
+backup_source_directories:
+  - /home/nuc/config
+
+# Backup retention policies
+backup_retention:
+  keep_hourly: 24
+  keep_daily: 7
+  keep_weekly: 4
+  keep_monthly: 12
+
+# Archive naming
+backup_archive_name_format: 'homelab-nuc-{hostname}-{now}'
+
+# Compression algorithm
+backup_compression: lz4
+
+# Encryption (managed via secrets.yml)
+# vault_borg_passphrase: "TODO: Set this in group_vars/all/secrets.yml"
+
+# Exclude patterns (common cache/log directories)
+backup_exclude_patterns:
+  - '**/cache'
+  - '**/logs'
+  - '**/temp'
+  - '**/.cache'
+  - '**/node_modules'
+  - '**/build'
+  - '**/dist'

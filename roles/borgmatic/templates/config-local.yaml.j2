@@ -1,0 +1,31 @@
+location:
+    source_directories:
+{% for dir in backup_source_directories %}
+        - {{ dir }}
+{% endfor %}
+
+    repositories:
+        - {{ backup_local_repo }}
+
+    exclude_patterns:
+{% for pattern in backup_exclude_patterns %}
+        - '{{ pattern }}'
+{% endfor %}
+
+storage:
+    encryption_passphrase: '{{ vault_borg_passphrase }}'
+    compression: {{ backup_compression }}
+    archive_name_format: {{ backup_archive_name_format }}
+
+retention:
+{% for key, value in backup_retention.items() %}
+    {{ key }}: {{ value }}
+{% endfor %}
+    prefix: 'homelab-nuc-{hostname}-'
+
+consistency:
+    checks:
+        - repository
+        - archives
+    check_last: 1
+    prefix: 'homelab-nuc-{hostname}-'

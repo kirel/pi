@@ -3,3 +3,15 @@ username: nuc
 dhcp_start: 192.168.50.175
 dhcp_end: 192.168.50.250
 pihole_virtual_host: pihole-homelab.lan
+
+# Borgmatic backup configuration (Tier 2: Local configs only)
+backup_local_repo: "/tank/backups/homelab-configs"
+backup_source_directories:
+  - /home/nuc/config
+
+# Backup retention policies
+backup_retention:
+  keep_hourly: 24
+  keep_daily: 7
+  keep_weekly: 4
+  keep_monthly: 12
