@@ -15,3 +15,6 @@ backup_retention:
   keep_daily: 7
   keep_weekly: 4
   keep_monthly: 12
+
+# Monitoring
+uptime_kuma_push_url: "https://uptime.lan/api/push/xvea108uQa"

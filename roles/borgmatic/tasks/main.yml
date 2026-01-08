@@ -1,12 +1,43 @@
 ---
-- name: Install Borgmatic and dependencies
+- name: Install system dependencies for Borgmatic
   ansible.builtin.apt:
     name:
-      - borgmatic
+      - borgbackup
       - sshfs
+      - libssl-dev
+      - libacl1-dev
     state: present
     update_cache: yes
   become: true
+
+- name: Remove system borgmatic if present
+  ansible.builtin.apt:
+    name: borgmatic
+    state: absent
+  become: true
+
+- name: Install uv
+  ansible.builtin.pip:
+    name: uv
+    state: present
+    break_system_packages: true
+  become: true
+
+- name: Install Borgmatic via uv tool
+  ansible.builtin.command:
+    cmd: uv tool install borgmatic
+    creates: /root/.local/bin/borgmatic
+  environment:
+    UV_TOOL_BIN_DIR: /usr/local/bin
+  become: true
+
+- name: Upgrade Borgmatic via uv tool
+  ansible.builtin.command:
+    cmd: uv tool upgrade borgmatic
+  environment:
+    UV_TOOL_BIN_DIR: /usr/local/bin
+  become: true
+  changed_when: false
 
 - name: Create borgmatic configuration directory
   ansible.builtin.file:
@@ -35,6 +66,16 @@
     group: root
   become: true
   notify: Reload systemd daemon
+
+- name: Initialize Borg repository
+  ansible.builtin.command:
+    cmd: uv tool run borgmatic --config /etc/borgmatic.d/config-local.yaml init --encryption repokey
+  environment:
+    UV_TOOL_BIN_DIR: /usr/local/bin
+  become: true
+  register: init_result
+  failed_when: init_result.rc != 0 and "already exists" not in init_result.stderr
+  changed_when: init_result.rc == 0
 
 - name: Deploy systemd service unit
   ansible.builtin.copy:

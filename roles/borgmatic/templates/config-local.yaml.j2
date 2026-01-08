@@ -1,31 +1,36 @@
-location:
-    source_directories:
+source_directories:
 {% for dir in backup_source_directories %}
-        - {{ dir }}
+    - {{ dir }}
 {% endfor %}
 
-    repositories:
-        - {{ backup_local_repo }}
+repositories:
+    - path: {{ backup_local_repo }}
+      label: local
 
-    exclude_patterns:
+exclude_patterns:
 {% for pattern in backup_exclude_patterns %}
-        - '{{ pattern }}'
+    - '{{ pattern }}'
 {% endfor %}
 
-storage:
-    encryption_passphrase: '{{ vault_borg_passphrase }}'
-    compression: {{ backup_compression }}
-    archive_name_format: {{ backup_archive_name_format }}
+encryption_passphrase: '{{ vault_borg_passphrase }}'
+compression: {{ backup_compression }}
+archive_name_format: {{ backup_archive_name_format }}
 
-retention:
 {% for key, value in backup_retention.items() %}
-    {{ key }}: {{ value }}
+{{ key }}: {{ value }}
 {% endfor %}
-    prefix: 'homelab-nuc-{hostname}-'
 
-consistency:
-    checks:
-        - repository
-        - archives
-    check_last: 1
-    prefix: 'homelab-nuc-{hostname}-'
+checks:
+    - name: repository
+    - name: archives
+check_last: 1
+
+{% if uptime_kuma_push_url is defined and uptime_kuma_push_url %}
+uptime_kuma:
+    push_url: {{ uptime_kuma_push_url }}
+    states:
+        - start
+        - finish
+        - fail
+    verify_tls: false
+{% endif %}
