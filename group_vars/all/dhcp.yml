@@ -144,6 +144,11 @@ static_dhcp:
     mac: "C4:5B:BE:5F:FC:31"
     ip_suffix: 65
 
+  # --- Zigbee ---
+  zigbee-dongle:
+    mac: "28:05:A5:BE:2A:73"
+    ip: "{{ zigbee_dongle_ip }}"
+
 
   # IP Cam .70-.79
   tapo-97a0:

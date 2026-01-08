@@ -12,6 +12,9 @@
     - GL-MT3000:
         - abbr: PL
           href: http://{{ static_dhcp["gl-mt3000"].ip|default("192.168.50."~static_dhcp["gl-mt3000"].ip_suffix) }}
+    - Zigbee Dongle:
+        - abbr: ZB
+          href: http://{{ zigbee_dongle_ip }}
 
 - Gaming:
     - Sunshine Webinterface:

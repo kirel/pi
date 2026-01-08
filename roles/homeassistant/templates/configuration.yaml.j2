@@ -25,7 +25,7 @@ mqtt:
 
 # Serial settings
 serial:
-  port: tcp://192.168.50.226:6638
+  port: tcp://{{ zigbee_dongle_ip }}:6638
   baudrate: 115200
   adapter: ember
   rtscts: false
