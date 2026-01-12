@@ -13,7 +13,8 @@ When adding or modifying services in `group_vars/all/services.yml`, you **MUST**
 uv run ansible-playbook setup.yml --tags caddy --limit homelab
 
 # 2. Deploy Pi-hole (DNS + DHCP)
-uv run ansible-playbook setup.yml --tags pihole --limit nameserver
+# Note: Pi-hole runs on both nameserver and homelab, so it must always be deployed to both.
+uv run ansible-playbook setup.yml --tags pihole --limit nameserver,homelab
 ```
 
 **Why both?**
@@ -57,6 +58,7 @@ The homelab runs LLM (Large Language Model) services across multiple hosts with 
   - Database persistence (PostgreSQL on port 5433)
   - Redis cache (port 6380)
   - Admin UI: https://litellm-ui.lan
+  - API Endpoint: https://litellm.lan (v1 API)
 
 - **Open WebUI** - HTTP 3123
   - Chat interface for interacting with LLMs
@@ -663,10 +665,10 @@ If context is lower than 128256, the model is using the default or has been rese
 ```bash
 # Via OpenAI SDK
 export OPENAI_API_KEY="sk-litellm-key"
-export OPENAI_BASE_URL="http://litellm-proxy:4000"
+export OPENAI_BASE_URL="https://litellm.lan"
 
 # Use the home model
-curl -X POST http://litellm-proxy:4000/v1/chat/completions \
+curl -X POST https://litellm.lan/v1/chat/completions \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

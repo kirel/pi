@@ -1,0 +1,7 @@
+---
+- name: Restart glances
+  community.docker.docker_container:
+    name: glances
+    state: started
+    restart: true
+  become: true

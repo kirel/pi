@@ -76,6 +76,8 @@
         count: -1
         capabilities:
           - [gpu]
+    capabilities:
+      - SYS_NICE
     env:
       LLAMASWAP_RESTART_TOKEN: "{{ ansible_facts.date_time.epoch }}"
     labels:

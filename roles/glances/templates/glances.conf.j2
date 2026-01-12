@@ -1,0 +1,6 @@
+[fs]
+# Hide irrelevant file systems
+# 1. Hide loop devices (Snap packages)
+# 2. Hide docker internal mounts (overlay, shm, etc.)
+# 3. Hide specific file mounts injected into containers
+hide=^/dev/loop.*,^/var/lib/docker.*,^/run/docker.*,^/etc/.*,^/lib/.*,^/usr/.*,.*\.conf$,.*\.crt$
