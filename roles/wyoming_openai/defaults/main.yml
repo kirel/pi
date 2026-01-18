@@ -18,10 +18,10 @@ wyoming_languages: en es fr de it pt ru ja ko ar da el fi he hi ms nl no pl sv s
 # wyoming_openai config
 
 stt_backend: "SPEACHES"
-stt_openai_url: "http://speaches:{{ speaches_internal_port }}/v1"
+stt_openai_url: "http://speaches:8000/v1"
 stt_model: "Systran/faster-whisper-medium"
 tts_backend: "SPEACHES"
-tts_openai_url: "http://speaches:{{ speaches_internal_port }}/v1"
+tts_openai_url: "http://speaches:8000/v1"
 # stt_openai_url: "http://chatterbox-tts:{{ chatterbox_tts_internal_port }}/v1"
 tts_model: "systemofapwne/piper-de_DE-glados-high"
 
@@ -32,6 +32,7 @@ speaches_internal_port: 8000
 # TTS Configuration
 # tts_voices: "default Sabine Merkel"
 tts_voices: "glados"
+tts_voice_sample_file: "{{ config_root }}/wyoming-openai/voice-sample.mp3"
 tts_speed: "1.0"
 
 # wyoming_chatterbox config

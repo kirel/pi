@@ -159,7 +159,7 @@
             - "{{ ansible_default_ipv4.address }}:{{ ports[inventory_hostname | replace('-', '_')].dns }}:53/udp"
             # - "{{ ansible_default_ipv4.address }}:{{ ports[inventory_hostname | replace('-', '_')].dhcp }}:67/udp" # used by the relay
             - "{{ ports[inventory_hostname | replace('-', '_')].pihole_web }}:80/tcp"
-            - "{{ ports[inventory_hostname | replace('-', '_')].ntp | default(123) }}:123/udp"
+            - "{{ ports[inventory_hostname | replace('-', '_')].ntp }}:123/udp"
           environment:
             TZ: Europe/Berlin
             FTLCONF_dns_reply_host_force4: "true"

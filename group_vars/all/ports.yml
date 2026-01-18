@@ -47,7 +47,7 @@ ports:
     phoenix_ui: 6006
     phoenix_grpc: 4317
     phoenix_prometheus: 9091
-    phoenix_internal: 9090
+
 
     # AI Audio (Legacy/Migration)
     openwakeword: 10400

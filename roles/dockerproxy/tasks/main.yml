@@ -29,7 +29,7 @@
             VOLUMES: "1"
             DISABLE_IPV6: "0"
           ports:
-            - "{{ ports[inventory_hostname | replace('-', '_')].docker_proxy | default(2375) }}:2375"
+            - "{{ ports[inventory_hostname | replace('-', '_')].docker_proxy }}:2375"
           networks:
             - dockerproxy
           volumes:
