@@ -8,12 +8,12 @@
 
 homelab-nuc:
   host: dockerproxy
-  port: 2375
+  port: {{ ports.homelab_nuc.docker_proxy | default(2375) }}
 
 nameserver-pi:
   host: {{ nameserver_pi_ip }}
-  port: 2375
+  port: {{ ports.nameserver_pi.docker_proxy | default(2375) }}
 
 ailab:
   host: {{ ailab_ubuntu_ip }}
-  port: 2375
+  port: {{ ports.ailab_ubuntu.docker_proxy | default(2375) }}

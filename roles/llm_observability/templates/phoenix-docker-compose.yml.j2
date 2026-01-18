@@ -3,9 +3,9 @@ services:
     image: arizephoenix/phoenix:latest
     container_name: phoenix
     ports:
-      - "{{ phoenix_port }}:6006"
-      - "{{ phoenix_grpc_port }}:4317"
-      - "9091:9090"
+      - "{{ ports.homelab_nuc.phoenix_ui }}:6006"
+      - "{{ ports.homelab_nuc.phoenix_grpc }}:4317"
+      - "{{ ports.homelab_nuc.phoenix_prometheus }}:{{ ports.homelab_nuc.phoenix_internal }}"
     environment:
       - PHOENIX_WORKING_DIR={{ phoenix_working_dir }}
       - TZ={{ system_timezone }}

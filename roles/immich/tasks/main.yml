@@ -93,8 +93,8 @@
       - immich_db_password | length > 0
       - immich_ml_hostname is defined
       - immich_ml_hostname | length > 0
-      - immich_ml_port is defined
-    fail_msg: "immich_db_password, immich_ml_hostname, and immich_ml_port must be set in group or host vars"
+      - ports.ailab_ubuntu.immich_ml is defined
+    fail_msg: "immich_db_password, immich_ml_hostname, and ports.ailab_ubuntu.immich_ml must be set"
 
 - name: Persist database password for reference
   ansible.builtin.copy:

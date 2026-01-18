@@ -41,7 +41,7 @@
           volumes:
             - "{{ babybuddy_config_folder }}:/config"
           ports:
-            - "{{ babybuddy_http_port }}:8000"
+            - "{{ ports.homelab_nuc.babybuddy }}:8000"
           restart: unless-stopped
           labels:
             - wud.tag.include=^\d+\.\d+\.\d+$$

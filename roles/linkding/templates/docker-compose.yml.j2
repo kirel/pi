@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     pull_policy: always
     ports:
-      - "{{ linkding_http_port }}:9090"
+      - "{{ ports.homelab_nuc.linkding }}:9090"
     volumes:
       - "{{ linkding_data_folder }}:/etc/linkding/data"
       - /etc/ssl/certs:/etc/ssl/certs:ro

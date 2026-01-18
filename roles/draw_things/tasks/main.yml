@@ -28,6 +28,6 @@
     volumes:
       - "{{ draw_things_models_path }}:/grpc-models"
     env:
-      PORT: "{{ draw_things_port }}"
-    command: ["gRPCServerCLI", "--model-browser", "/grpc-models", "-p", "{{ draw_things_port }}"]
+      PORT: "{{ ports.ailab_ubuntu.draw_things }}"
+    command: ["gRPCServerCLI", "--model-browser", "/grpc-models", "-p", "{{ ports.ailab_ubuntu.draw_things }}"]
   become: true

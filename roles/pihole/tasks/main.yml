@@ -155,11 +155,11 @@
           hostname: pihole
           image: pihole/pihole:latest
           ports:
-            - "{{ ansible_default_ipv4.address }}:53:53/tcp"
-            - "{{ ansible_default_ipv4.address }}:53:53/udp"
-            # - "{{ ansible_default_ipv4.address }}:67:67/udp" # used by the relay
-            - "{{ pihole_http_port }}:80/tcp"
-            - 123:123/udp
+            - "{{ ansible_default_ipv4.address }}:{{ ports[inventory_hostname | replace('-', '_')].dns }}:53/tcp"
+            - "{{ ansible_default_ipv4.address }}:{{ ports[inventory_hostname | replace('-', '_')].dns }}:53/udp"
+            # - "{{ ansible_default_ipv4.address }}:{{ ports[inventory_hostname | replace('-', '_')].dhcp }}:67/udp" # used by the relay
+            - "{{ ports[inventory_hostname | replace('-', '_')].pihole_web }}:80/tcp"
+            - "{{ ports[inventory_hostname | replace('-', '_')].ntp }}:123/udp"
           environment:
             TZ: Europe/Berlin
             FTLCONF_dns_reply_host_force4: "true"
@@ -225,7 +225,7 @@
           image: kirel/dnsmasq-leases-ui:latest
           container_name: dnsmasq_leases_ui
           ports:
-            - "{{ leases_service.http_port }}:5000"
+            - "{{ ports[inventory_hostname | replace('-', '_')].dhcp_leases }}:5000"
           volumes:
             - "{{ pihole_config_folder }}/dhcp.leases:/var/lib/misc/dnsmasq.leases:ro"
           restart: unless-stopped

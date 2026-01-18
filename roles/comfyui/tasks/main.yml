@@ -23,7 +23,7 @@
         capabilities:
           - ["gpu"]
     ports:
-      - "{{ comfyui_port }}:8188"
+      - "{{ ports.ailab_ubuntu.comfyui }}:8188"
     volumes:
       - "{{ comfyui_storage_path }}:/root"
     env:

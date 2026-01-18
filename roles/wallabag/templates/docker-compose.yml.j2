@@ -13,7 +13,7 @@ services:
       #- SYMFONY__ENV__FROM_EMAIL={{ wallabag_from_email }}
       - TRUSTED_PROXIES="10.0.0.0/8,192.168.0.0/16"
     ports:
-      - "{{ wallabag_http_port }}:80"
+      - "{{ ports.homelab_nuc.wallabag }}:80"
     volumes:
       - "{{ wallabag_images_folder }}:/var/www/wallabag/web/assets/images"
       - "{{ wallabag_db_data_folder }}:/var/www/wallabag/data"

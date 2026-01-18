@@ -60,7 +60,7 @@
           volumes:
             - "{{ teslamate_grafana_data_folder }}:/var/lib/grafana"
           ports:
-            - "{{ grafana_http_port }}:3000"
+            - "{{ ports.homelab_nuc.teslamate_grafana }}:3000"
           networks:
             - teslamate
           depends_on:
@@ -77,12 +77,12 @@
             - DATABASE_NAME={{ teslamate_db_name }}
             - DATABASE_HOST=teslamate-db
             - MQTT_HOST={{ mosquitto_address }}
-            - MQTT_PORT={{ mosquitto_port }}
+            - MQTT_PORT={{ ports.homelab_nuc.mosquitto }}
             - ENCRYPTION_KEY={{ teslamate_encryption_key }}
           volumes:
             - "{{ teslamate_data_folder }}:/opt/teslamate/data"
           ports:
-            - "{{ teslamate_http_port }}:4000"
+            - "{{ ports.homelab_nuc.teslamate }}:4000"
           networks:
             - teslamate
           depends_on:
@@ -93,7 +93,7 @@
             - wud.link.template=https://github.com/adriankumpf/teslamate/releases/tag/$${major}.$${minor}.$${patch}
             - homepage.group={{ services.teslamate.group }}
             - homepage.name={{ services.teslamate.name }}
-            - homepage.href=http://{{ inventory_hostname }}:{{ teslamate_http_port }}
+            - homepage.href=http://{{ inventory_hostname }}:{{ ports.homelab_nuc.teslamate }}
             - homepage.icon=teslamate.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=teslamate

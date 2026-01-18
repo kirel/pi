@@ -8,7 +8,7 @@ speaches_container_name: speaches
 chatterbox_container_name: chatterbox-tts
 
 # Wyoming OpenAI Gateway (Wyoming protocol) - SPEACHES (STT + TTS)
-wyoming_openai_external_port: 10300
+wyoming_openai_external_port: "{{ ports.ailab_ubuntu.wyoming_openai }}"
 wyoming_openai_internal_port: 10300
 
 wyoming_uri: "tcp://0.0.0.0:{{ wyoming_openai_internal_port }}"
@@ -18,26 +18,27 @@ wyoming_languages: en es fr de it pt ru ja ko ar da el fi he hi ms nl no pl sv s
 # wyoming_openai config
 
 stt_backend: "SPEACHES"
-stt_openai_url: "http://speaches:{{ speaches_internal_port }}/v1"
+stt_openai_url: "http://speaches:8000/v1"
 stt_model: "Systran/faster-whisper-medium"
 tts_backend: "SPEACHES"
-tts_openai_url: "http://speaches:{{ speaches_internal_port }}/v1"
+tts_openai_url: "http://speaches:8000/v1"
 # stt_openai_url: "http://chatterbox-tts:{{ chatterbox_tts_internal_port }}/v1"
 tts_model: "systemofapwne/piper-de_DE-glados-high"
 
 # SPEACHES (Whisper STT)
-speaches_external_port: 8001
+speaches_external_port: "{{ ports.ailab_ubuntu.speaches }}"
 speaches_internal_port: 8000
 
 # TTS Configuration
 # tts_voices: "default Sabine Merkel"
 tts_voices: "glados"
+tts_voice_sample_file: "{{ config_root }}/wyoming-openai/voice-sample.mp3"
 tts_speed: "1.0"
 
 # wyoming_chatterbox config
 
 # Wyoming OpenAI Gateway - Chatterbox (TTS only)
-wyoming_openai_chatterbox_external_port: 10301
+wyoming_openai_chatterbox_external_port: "{{ ports.ailab_ubuntu.wyoming_chatterbox }}"
 wyoming_openai_chatterbox_internal_port: 10301
 wyoming_chatterbox_uri: "tcp://0.0.0.0:{{ wyoming_openai_chatterbox_internal_port }}"
 
@@ -47,11 +48,11 @@ chatterbox_voices: "default Merkel Sabine Adolf"
 
 
 # Chatterbox TTS
-chatterbox_tts_external_port: 4123
+chatterbox_tts_external_port: "{{ ports.ailab_ubuntu.chatterbox_tts }}"
 chatterbox_tts_internal_port: 4123
 
 # Chatterbox Frontend UI
-chatterbox_frontend_external_port: 4321
+chatterbox_frontend_external_port: "{{ ports.ailab_ubuntu.chatterbox_ui }}"
 chatterbox_frontend_internal_port: 80
 
 huggingface_cache_folder: "{{ config_root }}/wyoming-openai/huggingface-cache"

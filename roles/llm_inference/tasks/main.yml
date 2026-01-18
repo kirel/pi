@@ -16,7 +16,7 @@
     state: started
     restart_policy: "{{ ollama_restart_policy }}"
     ports:
-      - "{{ ollama_port }}:{{ ollama_port }}"
+      - "{{ ports.ailab_ubuntu.ollama }}:11434"
     volumes:
       - "{{ ollama_path }}:/root/.ollama"
     device_requests:
@@ -65,7 +65,7 @@
     state: started
     restart_policy: unless-stopped
     ports:
-      - "{{ llamaswap_port }}:8080"
+      - "{{ ports.ailab_ubuntu.llamaswap }}:8080"
     volumes:
       - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
       - "{{ llamaswap_config_path }}/cache:/root/.cache"

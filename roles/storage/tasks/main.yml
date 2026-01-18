@@ -101,10 +101,10 @@
             TZ: Europe/Berlin
           volumes: "{{ syncthing_volumes }}"
           ports:
-            - "{{ syncthing_http_port }}:8384"
-            - 22000:22000/tcp
-            - 22000:22000/udp
-            - 21027:21027/udp
+            - "{{ ports.homelab_nuc.syncthing_gui }}:8384"
+            - "{{ ports.homelab_nuc.syncthing_sync }}:22000/tcp"
+            - "{{ ports.homelab_nuc.syncthing_sync }}:22000/udp"
+            - "{{ ports.homelab_nuc.syncthing_discovery }}:21027/udp"
           restart: unless-stopped
           labels:
             - wud.tag.include=^\d+\.\d+\.\d+$$

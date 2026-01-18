@@ -45,7 +45,7 @@
     restart_policy: unless-stopped
     user: "{{ uid }}:{{ uid }}"
     ports:
-      - "{{ n8n_http_port }}:5678"
+      - "{{ ports.homelab_nuc.n8n }}:5678"
     volumes:
       - "{{ n8n_config_folder }}:/home/node/.n8n"
       - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"

@@ -5,7 +5,7 @@ model_list:
   - model_name: {{ model.alias }}
     litellm_params:
       model: "openai/{{ model.alias }}"
-      api_base: "http://{{ ollama_host }}:{{ llamaswap_port }}/v1"
+      api_base: "http://{{ ollama_host }}:{{ ports.ailab_ubuntu.llamaswap }}/v1"
       api_key: "llama-swap"
       {% if model.allowed_openai_params is defined -%}
       allowed_openai_params: {{ model.allowed_openai_params }}
@@ -20,7 +20,7 @@ model_list:
   - model_name: {{ model.alias }}-{{ variant_name }}
     litellm_params:
       model: "openai/{{ model.alias }}"
-      api_base: "http://{{ ollama_host }}:{{ llamaswap_port }}/v1"
+      api_base: "http://{{ ollama_host }}:{{ ports.ailab_ubuntu.llamaswap }}/v1"
       api_key: "llama-swap"
       {% if model.allowed_openai_params is defined -%}
       allowed_openai_params: {{ model.allowed_openai_params }}
@@ -39,7 +39,7 @@ model_list:
   - model_name: {{ model.alias }}
     litellm_params:
       model: "ollama_chat/{{ model.name }}"
-      api_base: "http://{{ ollama_host }}:{{ ollama_port }}"
+      api_base: "http://{{ ollama_host }}:{{ ports.ailab_ubuntu.ollama }}"
 {% if model.num_ctx is defined %}
       num_ctx: {{ model.num_ctx }}
 {% endif %}
@@ -62,7 +62,7 @@ router_settings:
   # Fallback from home to home-remote when local model fails
   fallbacks: {{ litellm_fallbacks }}
   redis_host: "{{ litellm_redis_container_name }}"
-  redis_port: "{{ litellm_redis_port_container }}"
+  redis_port: 6379
 
 litellm_settings:
   callbacks: ["arize_phoenix"]

@@ -1,0 +1,140 @@
+---
+ports:
+  # ==============================================================================
+  # HOST: homelab-nuc (192.168.50.5)
+  # ==============================================================================
+  homelab_nuc:
+    # Infrastructure
+    portainer: 9002
+    portainer_edge: 8000
+    glances: 61208
+    glances_query: 61209
+    docker_proxy: 2375
+
+    # Network
+    dns: 53
+    dhcp: 67
+    ntp: 123
+    pihole_web: 81
+    dhcp_leases: 5005
+
+    # Monitoring
+    uptime_kuma: 3001
+    wud: 3000
+    dockhand: 8017
+    semaphore: 3005
+
+    # Smart Home
+    homeassistant: 8123
+    homeassistant_vscode: 8443
+    mosquitto: 1883
+    mosquitto_ws: 9001
+    z2m: 8080
+    nodered: 1880
+    frigate_web: 5000
+    frigate_rtsp: 8554
+    frigate_webrtc: 8555
+    ring_mqtt_rtsp: 8556
+
+    # AI Tools (Homelab side)
+    litellm: 4000
+    litellm_pg: 5433
+    litellm_redis: 6380
+    open_webui: 3123
+    metamcp: 8015
+    metamcp_pg: 9433
+    google_workspace_mcp: 8014
+    phoenix_ui: 6006
+    phoenix_grpc: 4317
+    phoenix_prometheus: 9091
+
+
+    # AI Audio (Legacy/Migration)
+    openwakeword: 10400
+    piper: 10200
+    whisper: 10300
+
+    # Media
+    jellyfin: 8096
+    navidrome: 4533
+    music_assistant: 8095
+
+    # Productivity & Family
+    babybuddy: 8008
+    wallabag: 8010
+    readeck: 8011
+    linkding: 8012
+    n8n: 5678
+    changedetection: 8016
+    teddycloud: 8013
+    teddycloud_box: 4443
+
+    # Teslamate (Moved to avoid conflicts)
+    teslamate: 8098
+    teslamate_grafana: 3004
+
+    # Immich (Main)
+    immich_web: 2283
+    immich_db: 5432
+    immich_redis: 6379
+
+    # Storage
+    syncthing_gui: 8384
+    syncthing_sync: 22000
+    syncthing_discovery: 21027
+
+    # Dashboard
+    homepage: 3002
+
+  # ==============================================================================
+  # HOST: nameserver-pi (192.168.50.4)
+  # ==============================================================================
+  nameserver_pi:
+    dns: 53
+    dhcp: 67
+    pihole_web: 81
+    dhcp_leases: 5005
+    portainer: 9002
+    portainer_edge: 8000
+    glances: 61208
+
+  # ==============================================================================
+  # HOST: ailab-ubuntu (192.168.50.10)
+  # ==============================================================================
+  ailab_ubuntu:
+    # Infrastructure
+    portainer: 9002
+    portainer_edge: 8000
+    glances: 61208
+    glances_query: 61209
+    docker_proxy: 2375
+
+    # AI Inference
+    ollama: 11434
+    llamaswap: 9292
+    comfyui: 8188
+    draw_things: 7888
+
+    # Wyoming OpenAI Stack
+    speaches: 8001
+    chatterbox_tts: 4123
+    chatterbox_ui: 4321
+    wyoming_openai: 10300
+    wyoming_chatterbox: 10301
+
+    # Immich ML
+    immich_ml: 3003
+
+    # Remote Access / Streaming
+    wolf: 47990
+
+    # Storage
+    syncthing_gui: 8384
+    syncthing_sync: 22000
+    syncthing_discovery: 21027
+
+  # ==============================================================================
+  # HOST: ailab-proxmox (192.168.50.9)
+  # ==============================================================================
+  ailab_proxmox:
+    proxmox_web: 8006

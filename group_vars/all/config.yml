@@ -19,63 +19,22 @@ ailab_ubuntu_ip: 192.168.50.10
 zigbee_dongle_ip: "{{ ip_prefix }}226"
 ailab_proxmox_ip: "{{ hostvars['ailab-proxmox'].ansible_host }}"
 cidr: 192.168.50.0/24
-pihole_http_port: 81
-portainer_http_port: 9002
-glances_http_port: 61208
-homeassistant_http_port: 8123
-homepage_http_port: 3002
-music_assistant_http_port: 8095
-uptime_kuma_http_port: 3001
-wud_http_port: 3000
-semaphore_http_port: 3005
-vscode_http_port: 8443
-nodered_http_port: 1880
 mosquitto_address: "{{ ansible_default_ipv4.address }}"
-mosquitto_port: 1883
-mosquitto_websockets_port: 9001
-z2m_http_port: 8080
-frigate_http_port: 5000
-jellyfin_http_port: 8096
-navidrome_http_port: 4533
-teslamate_http_port: 8098
-grafana_http_port: 3004
-syncthing_http_port: 8384
-ring_mqtt_rtsp_port: 8556
-open_webui_http_port: 3123
-comfyui_port: 8188
-ollama_port: 11434 # Default Ollama API port
-llamaswap_port: 9292 # llama-swap API port
 llamaswap_container_name: llama-swap
 llamaswap_config_path: "{{ config_root }}/llama-swap"
 
-babybuddy_http_port: 8008
-wallabag_http_port: 8010
-readeck_http_port: 8011
-linkding_http_port: 8012
-n8n_http_port: 5678
-teddycloud_http_port: 8013
-teddycloud_box_port: 4443
-metamcp_port_host: 8015
-changedetection_http_port: 8016
-dockhand_http_port: 8017
-immich_http_port: 2283
-immich_ml_http_port: 3003
 immich_ml_hostname: "ailab-ubuntu.lan"
-immich_ml_port: "{{ immich_ml_http_port }}"
 immich_db_name: "immich"
 immich_db_username: "postgres"
 immich_db_password: "test123"  # Shared password for split deployment
 immich_db_hostname: "192.168.50.5"  # homelab-nuc IP
-immich_db_port: 5432
 immich_redis_hostname: "192.168.50.5"  # homelab-nuc IP
-immich_redis_port: 6379
 immich_ml_gpu_enabled: true
 # GPU configuration
 blackwell_gpu_uuid: "GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f"
 ampere_gpu_uuid: "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc"
 open_webui_config_folder: "{{ config_root }}/open-webui"
 sunshine_address: 192.168.50.33
-sunshine_http_port: 47990
 uid: 1000 # TODO move to host_vars
 username_personal: daniel
 uid_personal: 1001
@@ -94,9 +53,6 @@ syncthing_datasets:
 config_root: /home/{{ username }}/config
 base_src_path: /opt/src # Base path for cloning source repos
 ollama_host: ailab-ubuntu.lan
-litellm_proxy_port: 4000
-phoenix_port: 6006
-phoenix_grpc_port: 4317
 phoenix_data_folder: "{{ config_root }}/phoenix"
 homeassistant_config_folder: "{{ config_root }}/home-assistant"
 homeassistant_media_folder: /tank/medien
@@ -143,6 +99,3 @@ linkding_domain_name: linkding.lan
 n8n_config_folder: "{{ config_root }}/n8n"
 teddycloud_config_folder: "{{ config_root }}/teddycloud"
 timemachine_max_size: 1000G
-google_workspace_mcp_port_host: 8014
-speaches_port: 8001
-waha_port: 3006

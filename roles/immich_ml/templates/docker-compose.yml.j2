@@ -12,9 +12,9 @@ services:
       - DB_PASSWORD={{ immich_db_password }}
       - DB_DATABASE_NAME={{ immich_db_name }}
       - DB_HOSTNAME={{ immich_db_hostname }}
-      - DB_PORT={{ immich_db_port }}
+      - DB_PORT={{ ports.homelab_nuc.immich_db }}
       - REDIS_HOSTNAME={{ immich_redis_hostname }}
-      - REDIS_PORT={{ immich_redis_port }}
+      - REDIS_PORT={{ ports.homelab_nuc.immich_redis }}
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
       - CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
     volumes:
@@ -22,7 +22,7 @@ services:
       - /etc/ssl/certs:/etc/ssl/certs:ro
       - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
     ports:
-      - "{{ immich_ml_http_port }}:3003"
+      - "{{ ports.ailab_ubuntu.immich_ml }}:3003"
 {% if immich_ml_gpu_enabled %}
     deploy:
       resources:
