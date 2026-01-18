@@ -6,38 +6,12 @@
     mode: "0644"
   notify: Restart udev
 
-- name: Check if nvidia-driver-vol exists
-  ansible.builtin.shell: docker volume ls -q -f name=nvidia-driver-vol
-  register: nvidia_driver_vol_exists
-  changed_when: false
-
-- name: Build nvidia-driver image and create volume
-  when: not nvidia_driver_vol_exists.stdout
-  block:
-    - name: Get NVIDIA driver version
-      ansible.builtin.shell: cat /sys/module/nvidia/version
-      register: nvidia_version
-      changed_when: false
-
-    - name: Build nvidia-driver image
-      ansible.builtin.shell: >
-        curl https://raw.githubusercontent.com/games-on-whales/gow/master/images/nvidia-driver/Dockerfile |
-        docker build -t gow/nvidia-driver:latest -f - --build-arg NV_VERSION={{ nvidia_version.stdout }} .
-      args:
-        warn: false
-
-    - name: Create nvidia-driver-vol
-      ansible.builtin.shell: docker create --rm --mount source=nvidia-driver-vol,destination=/usr/nvidia gow/nvidia-driver:latest sh
-
 - name: Start wolf
   community.docker.docker_compose_v2:
     project_name: wolf
     pull: always # Set to "always", "missing", "never", or "policy" based on your needs
     state: present # Ensure the services are started
     definition:
-      volumes:
-        nvidia-driver-vol:
-          external: true
       services:
         wolf:
           image: ghcr.io/games-on-whales/wolf:stable
@@ -46,27 +20,27 @@
           environment:
             WOLF_LOG_LEVEL: debug
             XDG_RUNTIME_DIR: /tmp/sockets
-            NVIDIA_DRIVER_VOLUME_NAME: nvidia-driver-vol
             HOST_APPS_STATE_FOLDER: /etc/wolf
+            NVIDIA_DRIVER_CAPABILITIES: all
+            NVIDIA_VISIBLE_DEVICES: all
           volumes:
             - /etc/wolf/:/etc/wolf
             - /tmp/sockets:/tmp/sockets:rw
             - /var/run/docker.sock:/var/run/docker.sock:rw
             - /dev/:/dev/:rw
             - /run/udev:/run/udev:rw
-            - nvidia-driver-vol:/usr/nvidia:rw
           devices:
             - /dev/dri
             - /dev/uinput
             - /dev/uhid
-            - /dev/nvidia-uvm
-            - /dev/nvidia-uvm-tools
-            - /dev/nvidia-caps/nvidia-cap1
-            - /dev/nvidia-caps/nvidia-cap2
-            - /dev/nvidiactl
-            - /dev/nvidia0
-            - /dev/nvidia-modeset
           device_cgroup_rules:
             - c 13:* rmw
+          deploy:
+            resources:
+              reservations:
+                devices:
+                  - driver: nvidia
+                    count: 1
+                    capabilities: [gpu]
           network_mode: host
           restart: unless-stopped

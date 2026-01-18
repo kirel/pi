@@ -3,6 +3,25 @@
   ansible.builtin.set_fact:
     glances_service: "{{ services['glances-'~inventory_hostname] }}"
 
+- name: Create Glances config directory
+  ansible.builtin.file:
+    path: "{{ config_root }}/glances"
+    state: directory
+    owner: "{{ username | default(username_personal) }}"
+    group: "{{ username | default(username_personal) }}"
+    mode: '0755'
+  become: true
+
+- name: Deploy Glances configuration
+  ansible.builtin.template:
+    src: glances.conf.j2
+    dest: "{{ config_root }}/glances/glances.conf"
+    owner: "{{ username | default(username_personal) }}"
+    group: "{{ username | default(username_personal) }}"
+    mode: '0644'
+  become: true
+  notify: Restart glances
+
 - name: Start glances
   community.docker.docker_compose_v2:
     project_name: glances
@@ -20,11 +39,13 @@
       ports:
         - "61208-61209:61208-61209"
       environment:
-        GLANCES_OPT: -w
+        GLANCES_OPT: "-w -C /glances/conf/glances.conf"
         TZ: "Europe/Berlin"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /etc/os-release:/etc/os-release:ro
+        - "{{ config_root }}/glances/glances.conf:/glances/conf/glances.conf:ro"
+        - /:/mnt/host:ro
       pid: host
       labels:
         homepage.group: "{{ glances_service.group }}"
@@ -36,7 +57,7 @@
     _glances_nvidia_definition:
       environment:
         NVIDIA_VISIBLE_DEVICES: "all"
-        GLANCES_OPT: "-w --meangpu"
+        GLANCES_OPT: "-w -C /glances/conf/glances.conf --meangpu"
       deploy:
         resources:
           reservations:
