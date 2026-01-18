@@ -76,7 +76,7 @@ services:
   prunemate:
     name: PruneMate
     target: homelab-nuc.lan
-    http_port: 7676
+    http_port: "{{ prunemate_port }}"
     group: Monitoring
     icon: mdi-docker
   n8n:
@@ -199,7 +199,7 @@ services:
     group: Network
     domain: leases-homelab.lan
     target: homelab-nuc.lan
-    http_port: 5005
+    http_port: "{{ dhcp_leases_port }}"
   # nameserver
   pihole-nameserver-pi:
     name: Pihole Nameserver
@@ -212,7 +212,7 @@ services:
     group: Network
     domain: leases-nameserver.lan
     target: nameserver-pi.lan
-    http_port: 5005
+    http_port: "{{ dhcp_leases_port }}"
   portainer-nameserver-pi:
     name: Portainer Nameserver
     target: nameserver-pi.lan
@@ -226,7 +226,7 @@ services:
   # ailab
   proxmox:
     name: Proxmox VE
-    http_port: 8006
+    http_port: "{{ proxmox_port }}"
     target: ailab-proxmox.lan
     group: Network
     icon: proxmox
@@ -243,7 +243,7 @@ services:
   llama-swap:
     name: LlamaSwap
     target: ailab-ubuntu.lan
-    http_port: 9292
+    http_port: "{{ llamaswap_port }}"
     group: AI
     wol: "{{ ailab_mac_address }}"
     try: 360s
@@ -258,7 +258,7 @@ services:
   chatterbox-ui:
     name: Chatterbox UI
     target: ailab-ubuntu.lan
-    http_port: 4321
+    http_port: "{{ chatterbox_ui_port }}"
     group: AI
     icon: audio
   portainer-ailab-ubuntu:

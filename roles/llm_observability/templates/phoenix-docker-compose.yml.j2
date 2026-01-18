@@ -5,7 +5,7 @@ services:
     ports:
       - "{{ phoenix_port }}:6006"
       - "{{ phoenix_grpc_port }}:4317"
-      - "9091:9090"
+      - "{{ phoenix_ui_port }}:{{ phoenix_internal_port }}"
     environment:
       - PHOENIX_WORKING_DIR={{ phoenix_working_dir }}
       - TZ={{ system_timezone }}

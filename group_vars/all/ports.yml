@@ -1,0 +1,82 @@
+---
+# Network Services
+pihole_http_port: 81
+dns_port: 53
+dhcp_port: 67
+dhcp_leases_port: 5005
+proxmox_port: 8006
+
+# Monitoring & Management
+portainer_http_port: 9002
+glances_http_port: 61208
+homepage_http_port: 3002
+uptime_kuma_http_port: 3001
+wud_http_port: 3000
+dockhand_http_port: 8017
+prunemate_port: 7676
+phoenix_port: 6006
+phoenix_grpc_port: 4317
+phoenix_ui_port: 9091
+# This is an internal port for Phoenix, but we track it to avoid conflicts
+phoenix_internal_port: 9090
+
+# Home Automation & IoT
+homeassistant_http_port: 8123
+mosquitto_port: 1883
+mosquitto_websockets_port: 9001
+z2m_http_port: 8080
+nodered_http_port: 1880
+openwakeword_port: 10400
+piper_port: 10200
+whisper_port: 10300
+wyoming_openai_port: 10300 # Uses same port as whisper if they are exclusive or same service stack
+
+# Media
+jellyfin_http_port: 8096
+navidrome_http_port: 4533
+music_assistant_http_port: 8095
+teddycloud_http_port: 8013
+teddycloud_box_port: 4443
+
+# Productivity & Tools
+babybuddy_http_port: 8008
+wallabag_http_port: 8010
+readeck_http_port: 8011
+linkding_http_port: 8012
+n8n_http_port: 5678
+vscode_http_port: 8443
+semaphore_http_port: 3005
+changedetection_http_port: 8016
+syncthing_http_port: 8384
+waha_port: 3006
+
+# AI & LLM
+ollama_port: 11434
+llamaswap_port: 9292
+open_webui_http_port: 3123
+comfyui_port: 8188
+chatterbox_ui_port: 4321
+litellm_proxy_port: 4000
+google_workspace_mcp_port_host: 8014
+metamcp_port_host: 8015
+speaches_port: 8001
+
+# Photos (Immich)
+immich_http_port: 2283
+immich_ml_http_port: 3003
+immich_db_port: 5432
+immich_redis_port: 6379
+
+# Vehicle
+teslamate_http_port: 8098
+grafana_http_port: 3004
+
+# Camera/Security
+frigate_http_port: 5000
+frigate_rtsp_port: 8554
+frigate_webrtc_tcp_port: 8555
+frigate_webrtc_udp_port: 8555
+ring_mqtt_rtsp_port: 8556
+
+# Remote Access / Gaming
+sunshine_http_port: 47990
