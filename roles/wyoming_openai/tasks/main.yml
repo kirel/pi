@@ -61,7 +61,7 @@
           image: "{{ speaches_image }}"
           restart: unless-stopped
           ports:
-            - "{{ speaches_external_port }}:{{ speaches_internal_port }}"
+            - "{{ ports.ailab_ubuntu.speaches }}:8000"
           environment:
             - enable_ui=False
             - log_level=info
@@ -70,7 +70,7 @@
           volumes:
             - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
           healthcheck:
-            test: ["CMD", "curl", "-f", "http://localhost:{{ speaches_internal_port }}/health"]
+            test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
             interval: 30s
             timeout: 10s
             retries: 3
@@ -93,10 +93,10 @@
             dockerfile: docker/Dockerfile.blackwell
           restart: unless-stopped
           ports:
-            - "{{ chatterbox_tts_external_port }}:{{ chatterbox_tts_internal_port }}"
+            - "{{ ports.ailab_ubuntu.chatterbox_tts }}:4123"
           environment:
             # Server Configuration
-            - PORT={{ chatterbox_tts_internal_port }}
+            - PORT=4123
             - HOST=0.0.0.0
             - CORS_ORIGINS={{ chatterbox_cors_origins }}
             # TTS Model Settings
@@ -132,7 +132,7 @@
             - "{{ chatterbox_voices_folder }}:/voices"
             - "{{ chatterbox_longtext_data_folder }}:/data/long_text_jobs"
           healthcheck:
-            test: ["CMD", "curl", "-f", "http://localhost:{{ chatterbox_tts_internal_port }}/health"]
+            test: ["CMD", "curl", "-f", "http://localhost:4123/health"]
             interval: 30s
             timeout: 10s
             retries: 3
@@ -151,7 +151,7 @@
             dockerfile: Dockerfile
           container_name: chatterbox-tts-frontend
           ports:
-            - "{{ chatterbox_frontend_external_port }}:{{ chatterbox_frontend_internal_port }}"
+            - "{{ ports.ailab_ubuntu.chatterbox_ui }}:80"
           depends_on:
             - chatterbox-tts
           restart: unless-stopped
@@ -161,7 +161,7 @@
           image: "{{ wyoming_openai_image }}"
           restart: unless-stopped
           ports:
-            - "{{ wyoming_openai_external_port }}:{{ wyoming_openai_internal_port }}"
+            - "{{ ports.ailab_ubuntu.wyoming_openai }}:10300"
           environment:
             WYOMING_URI: "{{ wyoming_uri }}"
             WYOMING_LOG_LEVEL: "{{ wyoming_log_level }}"
@@ -193,13 +193,13 @@
           image: "{{ wyoming_openai_image }}"
           restart: unless-stopped
           ports:
-            - "{{ wyoming_openai_chatterbox_external_port }}:{{ wyoming_openai_chatterbox_internal_port }}"
+            - "{{ ports.ailab_ubuntu.wyoming_chatterbox }}:10301"
           environment:
             WYOMING_URI: "{{ wyoming_chatterbox_uri }}"
             WYOMING_LOG_LEVEL: "{{ wyoming_log_level }}"
             WYOMING_LANGUAGES: "{{ wyoming_languages }}"
             # Chatterbox Gateway is TTS only - no STT configuration
-            TTS_OPENAI_URL: "http://chatterbox-tts:{{ chatterbox_tts_internal_port }}/v1"
+            TTS_OPENAI_URL: "http://chatterbox-tts:4123/v1"
             TTS_MODELS: "{{ chatterbox_use_multilingual_model | string | lower }}"
             TTS_BACKEND: "{{ wyoming_chatterbox_tts_backend }}"
             TTS_VOICES: "{{ chatterbox_voices }}"

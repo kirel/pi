@@ -2,22 +2,22 @@
 services:
   homepage:
     target: homelab-nuc.lan
-    http_port: "{{ homepage_http_port }}"
+    http_port: "{{ ports.homelab_nuc.homepage }}"
     group: Smart Home
   homeassistant:
     name: Home Assistant
-    http_port: "{{ homeassistant_http_port }}"
+    http_port: "{{ ports.homelab_nuc.homeassistant }}"
     target: homelab-nuc.lan
     group: Smart Home
   musicassistant:
     name: Music Assistant
-    http_port: "{{ music_assistant_http_port }}"
+    http_port: "{{ ports.homelab_nuc.music_assistant }}"
     target: homelab-nuc.lan
     group: Media
   immich:
     name: Immich
     target: homelab-nuc.lan
-    http_port: "{{ immich_http_port }}"
+    http_port: "{{ ports.homelab_nuc.immich_web }}"
     domain: immich.kirelabs.org
     group: Media
     icon: immich
@@ -25,64 +25,64 @@ services:
     name: Uptime Kuma
     group: Monitoring
     target: homelab-nuc.lan
-    http_port: "{{ uptime_kuma_http_port }}"
+    http_port: "{{ ports.homelab_nuc.uptime_kuma }}"
   wud:
     name: What's up Docker?
     target: homelab-nuc.lan
-    http_port: "{{ wud_http_port }}"
+    http_port: "{{ ports.homelab_nuc.wud }}"
     group: Monitoring
   semaphore:
     name: "Semaphore CI/CD"
     target: "homelab-nuc.lan"
-    http_port: "{{ semaphore_http_port }}"
+    http_port: "{{ ports.homelab_nuc.semaphore }}"
     domain: semaphore.lan
     group: "Monitoring"
     icon: "mdi-play-circle"
   wallabag:
     name: Wallabag
     target: homelab-nuc.lan
-    http_port: "{{ wallabag_http_port }}"
+    http_port: "{{ ports.homelab_nuc.wallabag }}"
     domain: "{{ wallabag_domain_name }}"
     group: Productivity
     icon: wallabag
   readeck:
     name: Readeck
     target: homelab-nuc.lan
-    http_port: "{{ readeck_http_port }}"
+    http_port: "{{ ports.homelab_nuc.readeck }}"
     domain: "{{ readeck_domain_name }}"
     group: Productivity
     icon: readeck
   linkding:
     name: Linkding
     target: homelab-nuc.lan
-    http_port: "{{ linkding_http_port }}"
+    http_port: "{{ ports.homelab_nuc.linkding }}"
     domain: "{{ linkding_domain_name }}"
     group: Productivity
     icon: linkding
   changedetection:
     name: ChangeDetection.io
     target: homelab-nuc.lan
-    http_port: "{{ changedetection_http_port }}"
+    http_port: "{{ ports.homelab_nuc.changedetection }}"
     domain: changedetection.lan
     group: Monitoring
     icon: change-detection
   dockhand:
     name: Dockhand
     target: homelab-nuc.lan
-    http_port: "{{ dockhand_http_port }}"
+    http_port: "{{ ports.homelab_nuc.dockhand }}"
     domain: dockhand.lan
     group: Monitoring
     icon: mdi-docker
   prunemate:
     name: PruneMate
     target: homelab-nuc.lan
-    http_port: "{{ prunemate_port }}"
+    http_port: "{{ ports.homelab_nuc.prunemate }}"
     group: Monitoring
     icon: mdi-docker
   n8n:
     name: n8n
     target: homelab-nuc.lan
-    http_port: "{{ n8n_http_port }}"
+    http_port: "{{ ports.homelab_nuc.n8n }}"
     domain: n8n.kirelabs.org
     # force_tls_internal: true
     group: Productivity
@@ -90,108 +90,108 @@ services:
   teddycloud:
     name: TeddyCloud
     target: homelab-nuc.lan
-    http_port: "{{ teddycloud_http_port }}"
+    http_port: "{{ ports.homelab_nuc.teddycloud }}"
     domain: teddycloud.lan
     group: Family
   babybuddy:
     name: Baby Buddy
     target: homelab-nuc.lan
-    http_port: "{{ babybuddy_http_port }}"
+    http_port: "{{ ports.homelab_nuc.babybuddy }}"
     domain: bb.lan
     group: Family
   portainer-homelab-nuc:
     name: Portainer Homelab
     target: homelab-nuc.lan
-    http_port: "{{ portainer_http_port }}"
+    http_port: "{{ ports.homelab_nuc.portainer }}"
     group: Monitoring
   glances-homelab-nuc:
     name: Glances Homelab
     target: homelab-nuc.lan
-    http_port: "{{ glances_http_port }}"
+    http_port: "{{ ports.homelab_nuc.glances }}"
     group: Monitoring
   nodered:
     target: homelab-nuc.lan
-    http_port: "{{ nodered_http_port }}"
+    http_port: "{{ ports.homelab_nuc.nodered }}"
     group: Smart Home
   vscode:
     name: Visual Studio Code
     target: homelab-nuc.lan
-    http_port: "{{ vscode_http_port }}"
+    http_port: "{{ ports.homelab_nuc.vscode }}"
     group: Config
   z2m:
     name: Zigbee2MQTT
     target: homelab-nuc.lan
-    http_port: "{{ z2m_http_port }}"
+    http_port: "{{ ports.homelab_nuc.z2m }}"
     group: Smart Home
   teslamate:
     name: TeslaMate
     target: homelab-nuc.lan
-    http_port: "{{ teslamate_http_port }}"
+    http_port: "{{ ports.homelab_nuc.teslamate }}"
     group: Smart Home
     icon: teslamate
   teslamate-grafana:
     name: TeslaMate Grafana
     target: homelab-nuc.lan
-    http_port: "{{ grafana_http_port }}"
+    http_port: "{{ ports.homelab_nuc.teslamate_grafana }}"
     group: Smart Home
   frigate:
     name: Frigate
     target: homelab-nuc.lan
-    http_port: "{{ frigate_http_port }}"
+    http_port: "{{ ports.homelab_nuc.frigate_web }}"
     group: Smart Home
   jellyfin:
     target: homelab-nuc.lan
-    http_port: "{{ jellyfin_http_port }}"
+    http_port: "{{ ports.homelab_nuc.jellyfin }}"
     domain: jellyfin.kirelabs.org
     group: Media
   music:
     target: homelab-nuc.lan
-    http_port: "{{ navidrome_http_port }}"
+    http_port: "{{ ports.homelab_nuc.navidrome }}"
     group: Media
   syncthing-homelab:
     name: Syncthing Homelab
     target: homelab-nuc.lan
-    http_port: "{{ syncthing_http_port }}"
+    http_port: "{{ ports.homelab_nuc.syncthing_gui }}"
     group: NAS
   open-webui:
     name: Open WebUI
     target: homelab-nuc.lan
-    http_port: "{{ open_webui_http_port }}"
+    http_port: "{{ ports.homelab_nuc.open_webui }}"
     group: AI
   phoenix:
     name: Arize Phoenix
     target: homelab-nuc.lan
-    http_port: "{{ phoenix_port }}"
+    http_port: "{{ ports.homelab_nuc.phoenix_ui }}"
     group: AI
     icon: phoenix.png
   litellm:
     name: LiteLLM API
     target: homelab-nuc.lan
-    http_port: "{{ litellm_proxy_port }}"
+    http_port: "{{ ports.homelab_nuc.litellm }}"
     group: AI
     icon: litellm.png
   litellm-ui:
     name: LiteLLM Admin
     target: homelab-nuc.lan
-    http_port: "{{ litellm_proxy_port }}"
+    http_port: "{{ ports.homelab_nuc.litellm }}"
     group: AI
     icon: litellm.png
   metamcp:
     name: MetaMCP
     target: homelab-nuc.lan
-    http_port: "{{ metamcp_port_host }}"
+    http_port: "{{ ports.homelab_nuc.metamcp }}"
     group: AI
     icon: gateway.png
   speaches:
     name: SPEACHES
     target: ailab-ubuntu.lan
-    http_port: "{{ speaches_port }}"
+    http_port: "{{ ports.ailab_ubuntu.speaches }}"
     group: AI
     icon: audio
   pihole-homelab-nuc:
     name: Pihole Homelab
     target: homelab-nuc.lan
-    http_port: "{{ pihole_http_port }}"
+    http_port: "{{ ports.homelab_nuc.pihole_web }}"
     domain: pihole-homelab.lan
     group: Network
   dnsmasq-leases-ui-homelab-nuc:
@@ -199,12 +199,12 @@ services:
     group: Network
     domain: leases-homelab.lan
     target: homelab-nuc.lan
-    http_port: "{{ dhcp_leases_port }}"
+    http_port: "{{ ports.homelab_nuc.dhcp_leases }}"
   # nameserver
   pihole-nameserver-pi:
     name: Pihole Nameserver
     target: nameserver-pi.lan
-    http_port: "{{ pihole_http_port }}"
+    http_port: "{{ ports.nameserver_pi.pihole_web }}"
     domain: pihole-nameserver.lan
     group: Network
   dnsmasq-leases-ui-nameserver-pi:
@@ -212,21 +212,21 @@ services:
     group: Network
     domain: leases-nameserver.lan
     target: nameserver-pi.lan
-    http_port: "{{ dhcp_leases_port }}"
+    http_port: "{{ ports.nameserver_pi.dhcp_leases }}"
   portainer-nameserver-pi:
     name: Portainer Nameserver
     target: nameserver-pi.lan
-    http_port: "{{ portainer_http_port }}"
+    http_port: "{{ ports.nameserver_pi.portainer }}"
     group: Monitoring
   glances-nameserver-pi:
     name: Glances Nameserver
     target: nameserver-pi.lan
-    http_port: "{{ glances_http_port }}"
+    http_port: "{{ ports.nameserver_pi.glances }}"
     group: Monitoring
   # ailab
   proxmox:
     name: Proxmox VE
-    http_port: "{{ proxmox_port }}"
+    http_port: "{{ ports.ailab_proxmox.proxmox_web }}"
     target: ailab-proxmox.lan
     group: Network
     icon: proxmox
@@ -234,23 +234,23 @@ services:
     tls_skip: false
   ollama-ailab:
     name: Ollama AI Lab
-    proxy_port: "{{ ollama_port }}"
+    proxy_port: "{{ ports.ailab_ubuntu.ollama }}"
     target: ailab-ubuntu.lan
-    http_port: "{{ ollama_port }}"
+    http_port: "{{ ports.ailab_ubuntu.ollama }}"
     wol: "{{ ailab_mac_address }}"
     tls_skip: true
     try: 360s
   llama-swap:
     name: LlamaSwap
     target: ailab-ubuntu.lan
-    http_port: "{{ llamaswap_port }}"
+    http_port: "{{ ports.ailab_ubuntu.llamaswap }}"
     group: AI
     wol: "{{ ailab_mac_address }}"
     try: 360s
   comfyui:
     name: ComfyUI
     target: ailab-ubuntu.lan
-    http_port: "{{ comfyui_port }}"
+    http_port: "{{ ports.ailab_ubuntu.comfyui }}"
     group: AI
     icon: comfy-ui
     wol: "{{ ailab_mac_address }}"
@@ -258,32 +258,32 @@ services:
   chatterbox-ui:
     name: Chatterbox UI
     target: ailab-ubuntu.lan
-    http_port: "{{ chatterbox_ui_port }}"
+    http_port: "{{ ports.ailab_ubuntu.chatterbox_ui }}"
     group: AI
     icon: audio
   portainer-ailab-ubuntu:
     name: Portainer AI Lab
     target: ailab-ubuntu.lan
-    http_port: "{{ portainer_http_port }}"
+    http_port: "{{ ports.ailab_ubuntu.portainer }}"
     group: Monitoring
     icon: portainer.png
   glances-ailab-ubuntu:
     name: Glances AI Lab
     target: ailab-ubuntu.lan
-    http_port: "{{ glances_http_port }}"
+    http_port: "{{ ports.ailab_ubuntu.glances }}"
     group: Monitoring
     icon: glances.png
   syncthing-ailab:
     name: Syncthing AI Lab
     target: ailab-ubuntu.lan
-    http_port: "{{ syncthing_http_port }}"
+    http_port: "{{ ports.ailab_ubuntu.syncthing_gui }}"
     nodocker: true
     group: NAS
     icon: syncthing.png
   google-workspace-mcp:
     name: Google Workspace MCP
     target: homelab-nuc.lan
-    http_port: "{{ google_workspace_mcp_port_host }}"
+    http_port: "{{ ports.homelab_nuc.google_workspace_mcp }}"
     domain: google-workspace-mcp.net
     group: AI
     icon: google.png
@@ -291,6 +291,6 @@ services:
   waha:
     name: WhatsApp API
     target: homelab-nuc.lan
-    http_port: "{{ waha_port }}"
+    http_port: "{{ ports.homelab_nuc.waha }}"
     group: Productivity
     icon: whatsapp.png

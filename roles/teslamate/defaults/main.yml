@@ -14,8 +14,8 @@ teslamate_db_name: "teslamate"
 teslamate_db_host: "teslamate-db"
 
 # Port Configuration
-teslamate_http_port: "{{ teslamate_http_port | default(8098) }}"
-grafana_http_port: "{{ grafana_http_port | default(3004) }}"
+teslamate_http_port: "{{ ports.homelab_nuc.teslamate | default(8098) }}"
+grafana_http_port: "{{ ports.homelab_nuc.teslamate_grafana | default(3004) }}"
 
 # Data Directory
 teslamate_data_folder: "{{ config_root }}/teslamate"

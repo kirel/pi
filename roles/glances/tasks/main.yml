@@ -37,7 +37,8 @@
       privileged: true
       restart: always
       ports:
-        - "61208-61209:61208-61209"
+        - "{{ ports[inventory_hostname | replace('-', '_')].glances }}:61208"
+        - "{{ ports[inventory_hostname | replace('-', '_')].glances_query }}:61209"
       environment:
         GLANCES_OPT: "-w -C /glances/conf/glances.conf"
         TZ: "Europe/Berlin"

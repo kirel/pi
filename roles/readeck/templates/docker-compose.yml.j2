@@ -18,7 +18,7 @@ services:
       # CA certificate for HTTPS requests
       - SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
     ports:
-      - "{{ readeck_http_port }}:8000"
+      - "{{ ports.homelab_nuc.readeck }}:8000"
     volumes:
       - "{{ readeck_data_folder }}:/readeck"
       - /etc/ssl/certs:/etc/ssl/certs:ro

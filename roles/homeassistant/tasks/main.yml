@@ -176,7 +176,7 @@
             - "{{ vscode_config_folder }}:/config"
             - "{{ homeassistant_config_folder }}:/config/workspace"
           ports:
-            - 8443:8443
+            - "{{ ports.homelab_nuc.homeassistant_vscode }}:8443"
           security_opt:
             - seccomp:unconfined # because strange PI issue see https://stackoverflow.com/questions/69775057/docker-image-fails-to-run-on-raspberry-pi-with-strange-node-error
           restart: unless-stopped
@@ -193,7 +193,7 @@
         #   container_name: nodered
         #   image: nodered/node-red
         #   ports:
-        #     - "{{ nodered_http_port }}:1880"
+        #     - "{{ ports.homelab_nuc.nodered }}:1880"
         #   volumes:
         #     - "{{ nodered_config_folder }}:/data"
         #   depends_on:
@@ -207,8 +207,8 @@
           image: eclipse-mosquitto:latest
           user: "{{ uid }}:{{ uid }}"
           ports:
-            - "{{ mosquitto_port }}:1883"
-            - "{{ mosquitto_websockets_port }}:9001"
+            - "{{ ports.homelab_nuc.mosquitto }}:1883"
+            - "{{ ports.homelab_nuc.mosquitto_ws }}:9001"
           volumes:
             - "{{ mosquitto_config_folder }}/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro"
             - "{{ mosquitto_data_folder }}:/mosquitto/data"
@@ -231,7 +231,7 @@
             - "{{ zigbee2mqtt_data_folder }}:/app/data"
             - /run/udev:/run/udev:ro
           ports:
-            - "{{ z2m_http_port }}:8080"
+            - "{{ ports.homelab_nuc.z2m }}:8080"
           environment:
             - TZ=Europe/Berlin
           restart: always
@@ -262,8 +262,8 @@
           hostname: teddycloud
           image: ghcr.io/toniebox-reverse-engineering/teddycloud:latest
           ports:
-            - "{{ teddycloud_http_port }}:80"
-            - "{{ teddycloud_box_port }}:443"
+            - "{{ ports.homelab_nuc.teddycloud }}:80"
+            - "{{ ports.homelab_nuc.teddycloud_box }}:443"
           volumes:
             - "{{ teddycloud_config_folder }}/certs:/teddycloud/certs"
             - "{{ teddycloud_config_folder }}/config:/teddycloud/config"
@@ -291,10 +291,10 @@
               tmpfs:
                 size: 1000000000
           ports:
-            - "{{ frigate_http_port }}:5000"
-            - 8554:8554 # RTSP feeds
-            - 8555:8555/tcp # WebRTC over tcp
-            - 8555:8555/udp # WebRTC over udp
+            - "{{ ports.homelab_nuc.frigate_web }}:5000"
+            - "{{ ports.homelab_nuc.frigate_rtsp }}:8554" # RTSP feeds
+            - "{{ ports.homelab_nuc.frigate_webrtc }}:8555/tcp" # WebRTC over tcp
+            - "{{ ports.homelab_nuc.frigate_webrtc }}:8555/udp" # WebRTC over udp
           environment:
             FRIGATE_RTSP_PASSWORD: password
           labels:

@@ -10,7 +10,7 @@ services:
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
       - CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
     ports:
-      - "{{ changedetection_http_port }}:5000"
+      - "{{ ports.homelab_nuc.changedetection }}:5000"
     volumes:
       - "{{ changedetection_config_folder }}:/datastore"
       - /etc/ssl/certs:/etc/ssl/certs:ro

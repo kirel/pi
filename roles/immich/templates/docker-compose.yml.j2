@@ -18,7 +18,7 @@ services:
       - DB_TYPE=postgres
       - REDIS_HOSTNAME=redis
       - REDIS_PORT=6379
-      - IMMICH_MACHINE_LEARNING_URL=http://{{ immich_ml_hostname }}:{{ immich_ml_port }}
+      - IMMICH_MACHINE_LEARNING_URL=http://{{ immich_ml_hostname }}:{{ ports.ailab_ubuntu.immich_ml }}
       - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
     volumes:
       - "{{ immich_library_path }}:/data"
@@ -26,7 +26,7 @@ services:
       - /etc/ssl/certs:/etc/ssl/certs:ro
       - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
     ports:
-      - "{{ immich_http_port }}:2283"
+      - "{{ ports.homelab_nuc.immich_web }}:2283"
     devices:
       - /dev/dri:/dev/dri
     depends_on:

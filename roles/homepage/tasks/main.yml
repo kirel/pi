@@ -43,7 +43,7 @@
             - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"
           ports:
-            - "{{ homepage_http_port }}:3000"
+            - "{{ ports.homelab_nuc.homepage }}:3000"
           volumes:
             - "{{ homepage_config_folder }}:/app/config"
             - /var/run/docker.sock:/var/run/docker.sock:ro

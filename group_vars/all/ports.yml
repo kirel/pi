@@ -1,82 +1,140 @@
 ---
-# Network Services
-pihole_http_port: 81
-dns_port: 53
-dhcp_port: 67
-dhcp_leases_port: 5005
-proxmox_port: 8006
+ports:
+  # ==============================================================================
+  # HOST: homelab-nuc (192.168.50.5)
+  # ==============================================================================
+  homelab_nuc:
+    # Infrastructure
+    portainer: 9002
+    portainer_edge: 8000
+    glances: 61208
+    glances_query: 61209
+    docker_proxy: 2375
 
-# Monitoring & Management
-portainer_http_port: 9002
-glances_http_port: 61208
-homepage_http_port: 3002
-uptime_kuma_http_port: 3001
-wud_http_port: 3000
-dockhand_http_port: 8017
-prunemate_port: 7676
-phoenix_port: 6006
-phoenix_grpc_port: 4317
-phoenix_ui_port: 9091
-# This is an internal port for Phoenix, but we track it to avoid conflicts
-phoenix_internal_port: 9090
+    # Network
+    dns: 53
+    dhcp: 67
+    ntp: 123
+    pihole_web: 81
+    dhcp_leases: 5005
 
-# Home Automation & IoT
-homeassistant_http_port: 8123
-mosquitto_port: 1883
-mosquitto_websockets_port: 9001
-z2m_http_port: 8080
-nodered_http_port: 1880
-openwakeword_port: 10400
-piper_port: 10200
-whisper_port: 10300
-wyoming_openai_port: 10300 # Uses same port as whisper if they are exclusive or same service stack
+    # Monitoring
+    uptime_kuma: 3001
+    wud: 3000
+    dockhand: 8017
+    semaphore: 3005
 
-# Media
-jellyfin_http_port: 8096
-navidrome_http_port: 4533
-music_assistant_http_port: 8095
-teddycloud_http_port: 8013
-teddycloud_box_port: 4443
+    # Smart Home
+    homeassistant: 8123
+    homeassistant_vscode: 8443
+    mosquitto: 1883
+    mosquitto_ws: 9001
+    z2m: 8080
+    nodered: 1880
+    frigate_web: 5000
+    frigate_rtsp: 8554
+    frigate_webrtc: 8555
+    ring_mqtt_rtsp: 8556
 
-# Productivity & Tools
-babybuddy_http_port: 8008
-wallabag_http_port: 8010
-readeck_http_port: 8011
-linkding_http_port: 8012
-n8n_http_port: 5678
-vscode_http_port: 8443
-semaphore_http_port: 3005
-changedetection_http_port: 8016
-syncthing_http_port: 8384
-waha_port: 3006
+    # AI Tools (Homelab side)
+    litellm: 4000
+    litellm_pg: 5433
+    litellm_redis: 6380
+    open_webui: 3123
+    metamcp: 8015
+    metamcp_pg: 9433
+    google_workspace_mcp: 8014
+    phoenix_ui: 6006
+    phoenix_grpc: 4317
+    phoenix_prometheus: 9091
+    phoenix_internal: 9090
 
-# AI & LLM
-ollama_port: 11434
-llamaswap_port: 9292
-open_webui_http_port: 3123
-comfyui_port: 8188
-chatterbox_ui_port: 4321
-litellm_proxy_port: 4000
-google_workspace_mcp_port_host: 8014
-metamcp_port_host: 8015
-speaches_port: 8001
+    # AI Audio (Legacy/Migration)
+    openwakeword: 10400
+    piper: 10200
+    whisper: 10300
 
-# Photos (Immich)
-immich_http_port: 2283
-immich_ml_http_port: 3003
-immich_db_port: 5432
-immich_redis_port: 6379
+    # Media
+    jellyfin: 8096
+    navidrome: 4533
+    music_assistant: 8095
 
-# Vehicle
-teslamate_http_port: 8098
-grafana_http_port: 3004
+    # Productivity & Family
+    babybuddy: 8008
+    wallabag: 8010
+    readeck: 8011
+    linkding: 8012
+    n8n: 5678
+    changedetection: 8016
+    teddycloud: 8013
+    teddycloud_box: 4443
 
-# Camera/Security
-frigate_http_port: 5000
-frigate_rtsp_port: 8554
-frigate_webrtc_tcp_port: 8555
-frigate_webrtc_udp_port: 8555
-ring_mqtt_rtsp_port: 8556
+    # Teslamate (Moved to avoid conflicts)
+    teslamate: 8098
+    teslamate_grafana: 3004
 
-# Remote Access / Gaming
-sunshine_http_port: 47990
+    # Immich (Main)
+    immich_web: 2283
+    immich_db: 5432
+    immich_redis: 6379
+
+    # Storage
+    syncthing_gui: 8384
+    syncthing_sync: 22000
+    syncthing_discovery: 21027
+
+    # Dashboard
+    homepage: 3002
+
+  # ==============================================================================
+  # HOST: nameserver-pi (192.168.50.4)
+  # ==============================================================================
+  nameserver_pi:
+    dns: 53
+    dhcp: 67
+    pihole_web: 81
+    dhcp_leases: 5005
+    portainer: 9002
+    portainer_edge: 8000
+    glances: 61208
+
+  # ==============================================================================
+  # HOST: ailab-ubuntu (192.168.50.10)
+  # ==============================================================================
+  ailab_ubuntu:
+    # Infrastructure
+    portainer: 9002
+    portainer_edge: 8000
+    glances: 61208
+    glances_query: 61209
+    docker_proxy: 2375
+
+    # AI Inference
+    ollama: 11434
+    llamaswap: 9292
+    comfyui: 8188
+    draw_things: 7888
+
+    # Wyoming OpenAI Stack
+    speaches: 8001
+    chatterbox_tts: 4123
+    chatterbox_ui: 4321
+    wyoming_openai: 10300
+    wyoming_chatterbox: 10301
+
+    # Immich ML
+    immich_ml: 3003
+
+    # Remote Access / Streaming
+    wolf: 47990
+
+    # Storage
+    syncthing_gui: 8384
+    syncthing_sync: 22000
+    syncthing_discovery: 21027
+
+  # ==============================================================================
+  # HOST: ailab-proxmox (192.168.50.9)
+  # ==============================================================================
+  ailab_proxmox:
+    proxmox_web: 8006

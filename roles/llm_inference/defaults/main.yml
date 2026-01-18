@@ -4,14 +4,8 @@
 # --- Ollama Settings ---
 ollama_image: "ollama/ollama:latest"
 ollama_container_name: "ollama"
-ollama_port: "11434"
-ollama_path: "{{ ollama_host_path }}" # Default path on host for ollama models
-ollama_restart_policy: "unless-stopped"
-
-# --- llama-swap Settings ---
-llamaswap_container_name: "llama-swap"
-llamaswap_image: "ghcr.io/mostlygeek/llama-swap:cuda"
-llamaswap_port: "8080"
+ollama_port: "{{ ports.ailab_ubuntu.ollama }}"
+llamaswap_port: "{{ ports.ailab_ubuntu.llamaswap }}"
 llamaswap_config_path: "{{ llamaswap_host_path }}"
 llamaswap_preload: []
 

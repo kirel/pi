@@ -6,7 +6,7 @@ llm_network_name: "llm-network"
 # --- Database Settings ---
 litellm_db_image: "postgres:16-alpine"
 litellm_db_container_name: "litellm-postgres"
-litellm_db_port_host: 5433
+litellm_db_port_host: "{{ ports.homelab_nuc.litellm_pg }}"
 litellm_db_port_container: 5432
 litellm_db_data_dir: "{{ llm_base_config_path }}/litellm/postgres"
 litellm_db_user: "litellm"
@@ -16,7 +16,7 @@ litellm_db_name: "litellm"
 # --- Redis Settings ---
 litellm_redis_image: "redis:7-alpine"
 litellm_redis_container_name: "litellm-redis"
-litellm_redis_port_host: 6380
+litellm_redis_port_host: "{{ ports.homelab_nuc.litellm_redis }}"
 litellm_redis_port_container: 6379
 litellm_redis_data_dir: "{{ llm_base_config_path }}/litellm/redis"
 
@@ -26,18 +26,18 @@ litellm_proxy_image: "ghcr.io/berriai/litellm-database:main-stable"  # Database-
 litellm_proxy_container_name: "litellm-proxy-container"
 litellm_proxy_config_dir_host: "{{ llm_base_config_path }}/litellm"
 litellm_proxy_config_filename: "config.yaml"
-litellm_proxy_port_host: "{{ litellm_proxy_port }}" # Host port for LiteLLM
+litellm_proxy_port_host: "{{ ports.homelab_nuc.litellm }}" # Host port for LiteLLM
 litellm_proxy_port_container: "4000" # Container port for LiteLLM (default)
-phoenix_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ phoenix_grpc_port }}"
+phoenix_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ ports.homelab_nuc.phoenix_grpc }}"
 
 # Database connection string
 litellm_database_url: "postgresql://{{ litellm_db_user }}:{{ litellm_db_password }}@{{ litellm_db_container_name }}:{{ litellm_db_port_container }}/{{ litellm_db_name }}"
 
 # --- Open-WebUI Settings ---
-ollama_base_url_for_webui: "http://{{ ollama_host }}:{{ ollama_port }}"
+ollama_base_url_for_webui: "http://{{ ollama_host }}:{{ ports.ailab_ubuntu.ollama }}"
 
 # --- Google Workspace MCP Settings ---
 google_workspace_mcp_image: "ghcr.io/astral-sh/uv:debian"
 google_workspace_mcp_container_name: "google-workspace-mcp"
-google_workspace_mcp_port_host: "{{ google_workspace_mcp_port_host | default(8014) }}"
+google_workspace_mcp_port_host: "{{ ports.homelab_nuc.google_workspace_mcp }}"
 google_workspace_mcp_port_container: 8000

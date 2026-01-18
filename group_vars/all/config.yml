@@ -24,7 +24,6 @@ llamaswap_container_name: llama-swap
 llamaswap_config_path: "{{ config_root }}/llama-swap"
 
 immich_ml_hostname: "ailab-ubuntu.lan"
-immich_ml_port: "{{ immich_ml_http_port }}"
 immich_db_name: "immich"
 immich_db_username: "postgres"
 immich_db_password: "test123"  # Shared password for split deployment

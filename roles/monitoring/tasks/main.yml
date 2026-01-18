@@ -22,7 +22,7 @@
           image: louislam/uptime-kuma:2
           container_name: uptime_kuma
           ports:
-            - "{{ uptime_kuma_http_port }}:3001"
+            - "{{ ports.homelab_nuc.uptime_kuma }}:3001"
           restart: always
           volumes:
             - "{{ uptime_kuma_data_folder }}:/app/data"
@@ -51,13 +51,13 @@
           volumes:
             - /var/run/docker.sock:/var/run/docker.sock
           ports:
-            - "{{ wud_http_port }}:3000"
+            - "{{ ports.homelab_nuc.wud }}:3000"
           restart: always
           environment:
             WUD_WATCHER_LOCAL_SOCKET: /var/run/docker.sock
             WUD_WATCHER_NAMESERVERPI_HOST: "{{ nameserver_pi_ip }}"
             # - WUD_WATCHER_AILABUM_HOST={{ ailab_um_ip }}
-            WUD_TRIGGER_MQTT_MOSQUITTO_URL: mqtt://{{ mosquitto_address }}:{{ mosquitto_port }}
+            WUD_TRIGGER_MQTT_MOSQUITTO_URL: mqtt://{{ mosquitto_address }}:{{ ports.homelab_nuc.mosquitto }}
             WUD_TRIGGER_MQTT_MOSQUITTO_HASS_ENABLED: "true"
             WUD_REGISTRY_GHCR_TOKEN: "{{ gh_access_token }}"
             WUD_REGISTRY_LSCR_TOKEN: "{{ gh_access_token }}"
@@ -78,7 +78,7 @@
           container_name: dockhand
           restart: unless-stopped
           ports:
-            - "{{ dockhand_http_port }}:3000"
+            - "{{ ports.homelab_nuc.dockhand }}:3000"
           volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - "{{ dockhand_data_folder }}:/app/data"
@@ -94,7 +94,7 @@
           image: semaphoreui/semaphore:latest
           container_name: semaphore
           ports:
-            - "{{ semaphore_http_port }}:{{ semaphore_port_internal }}"
+            - "{{ ports.homelab_nuc.semaphore }}:{{ semaphore_port_internal }}"
           environment:
             # Database - keep it simple with SQLite
             SEMAPHORE_DB_DIALECT: sqlite
@@ -107,7 +107,7 @@
 
             # Web interface
             SEMAPHORE_WEB_ROOT: "https://semaphore.lan"
-            SEMAPHORE_PORT: "{{ semaphore_port_internal }}"
+            SEMAPHORE_PORT: "3000"
             SEMAPHORE_INTERFACE: "0.0.0.0"
 
             # Security

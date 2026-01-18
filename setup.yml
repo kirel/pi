@@ -1,4 +1,30 @@
 ---
+- name: Pre-flight Checks
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Verify port registry for host collisions
+      ansible.builtin.set_fact:
+        host_ports: >-
+          {% set p = [] %}
+          {% for host_slug, host_services in ports.items() | default({}) %}
+            {% if host_slug | replace('_', '-') in inventory_hostname %}
+              {% for service, port in host_services.items() %}
+                {% if port is number %}
+                  {% set _ = p.append(port) %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+          {{ p }}
+      tags: [always, preflight]
+
+    - name: Fail if port collision detected on current host
+      ansible.builtin.fail:
+        msg: "Port collision detected on {{ inventory_hostname }}! Ports: {{ host_ports | count }} total, {{ host_ports | unique | count }} unique. Assigned ports: {{ host_ports | sort }}"
+      when: host_ports | count != (host_ports | unique | count)
+      tags: [always, preflight]
+
 - name: Set up homelab
   hosts: homelab
   roles:

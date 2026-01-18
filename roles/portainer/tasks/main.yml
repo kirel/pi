@@ -15,8 +15,8 @@
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
     ports:
-      - 8000:8000
-      - "{{ portainer_http_port }}:9000"
+      - "{{ ports[inventory_hostname | replace('-', '_')].portainer_edge }}:8000"
+      - "{{ ports[inventory_hostname | replace('-', '_')].portainer }}:9000"
     restart_policy: always
     pull: true
     labels:

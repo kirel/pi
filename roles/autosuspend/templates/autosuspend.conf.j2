@@ -31,13 +31,13 @@ ports = 22
 [check.ComfyUI]
 class = ActiveConnection
 enabled = true
-ports = {{ comfyui_port | default(8188) }}
+ports = {{ ports.ailab_ubuntu.comfyui | default(8188) }}
 
 # Check for active Ollama API connections (default port)
 [check.Ollama]
 class = ActiveConnection
 enabled = true
-ports = {{ ollama_port | default(11434) }}
+ports = {{ ports.ailab_ubuntu.ollama | default(11434) }}
 
 # Check for significant network activity on the primary interface
 [check.Network]

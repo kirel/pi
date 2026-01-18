@@ -40,7 +40,7 @@
           pull_policy: always
           container_name: "{{ litellm_db_container_name }}"
           ports:
-            - "{{ litellm_db_port_host }}:{{ litellm_db_port_container }}"
+            - "{{ ports.homelab_nuc.litellm_pg }}:5432"
           volumes:
             - "{{ litellm_db_data_dir }}:/var/lib/postgresql/data"
           environment:
@@ -61,7 +61,7 @@
           pull_policy: always
           container_name: "{{ litellm_redis_container_name }}"
           ports:
-            - "{{ litellm_redis_port_host }}:{{ litellm_redis_port_container }}"
+            - "{{ ports.homelab_nuc.litellm_redis }}:6379"
           volumes:
             - "{{ litellm_redis_data_dir }}:/data"
           command: redis-server --appendonly yes
@@ -74,7 +74,7 @@
           pull_policy: always
           container_name: "{{ litellm_proxy_container_name }}"
           ports:
-            - "{{ litellm_proxy_port_host }}:{{ litellm_proxy_port_container }}"
+            - "{{ ports.homelab_nuc.litellm }}:4000"
           volumes:
             - "{{ litellm_proxy_config_full_host_path }}:/app/config.yaml:ro"
             - /etc/ssl/certs:/etc/ssl/certs:ro
@@ -84,12 +84,12 @@
             LITELLM_MASTER_KEY: "{{ litellm_master_key }}"
             DATABASE_URL: "{{ litellm_database_url }}"
             REDIS_HOST: "{{ litellm_redis_container_name }}"
-            REDIS_PORT: "{{ litellm_redis_port_container }}"
+            REDIS_PORT: "6379"
             GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
             ANTHROPIC_API_KEY: "{{ ANTHROPIC_API_KEY }}"
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
-          command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"]
+          command: ["--config", "/app/config.yaml", "--port", "4000"]
           depends_on:
             postgres:
               condition: service_healthy
@@ -126,7 +126,7 @@
           pull_policy: always
           container_name: open-webui
           ports:
-            - "{{ open_webui_http_port }}:8080"
+            - "{{ ports.homelab_nuc.open_webui }}:8080"
           environment:
             OLLAMA_BASE_URL: "{{ ollama_base_url_for_webui }}"
             WEBUI_SECRET_KEY: t0p-s3cr3t
@@ -158,7 +158,7 @@
           pull_policy: always
           container_name: "{{ google_workspace_mcp_container_name }}"
           ports:
-            - "{{ google_workspace_mcp_port_host }}:{{ google_workspace_mcp_port_container }}"
+            - "{{ ports.homelab_nuc.google_workspace_mcp }}:8000"
           volumes:
             - /etc/ssl/certs:/etc/ssl/certs:ro
             - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"

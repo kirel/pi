@@ -70,7 +70,7 @@
           container_name: navidrome
           user: "{{ uid }}:{{ uid }}" # should be owner of volumes
           ports:
-            - "{{ navidrome_http_port }}:4533"
+            - "{{ ports.homelab_nuc.navidrome }}:4533"
           restart: unless-stopped
           volumes:
             - "{{ navidrome_data_folder }}:/data"

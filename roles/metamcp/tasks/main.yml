@@ -54,7 +54,7 @@
             POSTGRES_USER: "{{ metamcp_postgres_user }}"
             POSTGRES_PASSWORD: "{{ metamcp_postgres_password }}"
           ports:
-            - "{{ metamcp_postgres_port_host }}:{{ metamcp_postgres_port_container }}"
+            - "{{ ports.homelab_nuc.metamcp_pg }}:5432"
           volumes:
             - postgres_data:/var/lib/postgresql/data
           healthcheck:
@@ -72,7 +72,7 @@
           restart: unless-stopped
           environment: "{{ metamcp_final_env | combine({'NODE_EXTRA_CA_CERTS': '/certs/caddy_local_root.crt'}) }}"
           ports:
-            - "{{ metamcp_port_host }}:{{ metamcp_port_container }}"
+            - "{{ ports.homelab_nuc.metamcp }}:12008"
           volumes:
             - "/usr/local/share/ca-certificates/caddy_local_root.crt:/certs/caddy_local_root.crt:ro"
           labels:

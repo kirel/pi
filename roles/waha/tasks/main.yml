@@ -18,7 +18,7 @@
     pull: true
     restart_policy: unless-stopped
     ports:
-      - "{{ waha_port }}:3000"
+      - "{{ ports.homelab_nuc.waha }}:3000"
     volumes:
       - "{{ waha_sessions_folder }}:/app/.sessions"
       - "{{ caddy_data_folder }}/caddy/pki/authorities/local/root.crt:/usr/local/share/ca-certificates/caddy_local_root.crt:ro"

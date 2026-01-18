@@ -7,7 +7,7 @@
 }
 
 danishkirel.asuscomm.com {
-        reverse_proxy {{ homelab_nuc_ip }}:{{ homeassistant_http_port }}
+        reverse_proxy {{ homelab_nuc_ip }}:{{ ports.homelab_nuc.homeassistant }}
         log
 }
 

@@ -7,14 +7,14 @@ metamcp_image: "ghcr.io/metatool-ai/metamcp:latest"
 metamcp_container_name: "metamcp"
 
 # Port configuration
-metamcp_port_host: 8015  # Host port for MetaMCP
+metamcp_port_host: "{{ ports.homelab_nuc.metamcp }}"  # Host port for MetaMCP
 metamcp_port_container: 12008  # Container port (default from MetaMCP)
 
 # PostgreSQL Configuration
 metamcp_postgres_enabled: true
 metamcp_postgres_image: "postgres:16-alpine"
 metamcp_postgres_container_name: "metamcp-pg"
-metamcp_postgres_port_host: 9433  # Host port for PostgreSQL
+metamcp_postgres_port_host: "{{ ports.homelab_nuc.metamcp_pg }}"  # Host port for PostgreSQL
 metamcp_postgres_port_container: 5432  # Container port
 metamcp_postgres_db: "metamcp_db"
 metamcp_postgres_user: "metamcp_user"

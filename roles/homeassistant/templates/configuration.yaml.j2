@@ -18,7 +18,7 @@ mqtt:
   # MQTT base topic for zigbee2mqtt MQTT messages
   base_topic: zigbee2mqtt
   # MQTT server URL
-  server: 'mqtt://{{ mosquitto_address }}:{{ mosquitto_port }}'
+  server: 'mqtt://{{ mosquitto_address }}:{{ ports.homelab_nuc.mosquitto }}'
   # MQTT server authentication, uncomment if required:
   # user: my_user
   # password: my_password
@@ -31,7 +31,7 @@ serial:
   rtscts: false
 
 frontend:
-  port: {{ z2m_http_port }}
+  port: {{ ports.homelab_nuc.z2m }}
 
 devices: devices.yml
 groups: groups.yml
