@@ -67,6 +67,6 @@
   ansible.builtin.xml:
     path: "/home/{{ syncthing_user }}/.local/state/syncthing/config.xml"
     xpath: /configuration/gui/address
-    value: "0.0.0.0:8384"
+    value: "0.0.0.0:{{ ports[inventory_hostname | replace('-', '_')].syncthing_gui | default(8384) }}"
   become: true
   notify: restart syncthing
