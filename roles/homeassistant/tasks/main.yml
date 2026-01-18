@@ -274,35 +274,35 @@
             - "{{ teddycloud_config_folder }}/data/cache:/teddycloud/data/cache"
           restart: unless-stopped
 
-        frigate:
-          container_name: frigate
-          privileged: true # this may not be necessary for all setups
-          restart: unless-stopped
-          image: ghcr.io/blakeblackshear/frigate:stable
-          shm_size: 64mb # update for your cameras based on calculation above
-          devices:
-            - /dev/bus/usb:/dev/bus/usb
-          volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - "{{ frigate_config_folder }}:/config"
-            - "{{ frigate_media_folder }}:/media/frigate"
-            - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
-              target: /tmp/cache
-              tmpfs:
-                size: 1000000000
-          ports:
-            - "{{ frigate_http_port }}:5000"
-            - 8554:8554 # RTSP feeds
-            - 8555:8555/tcp # WebRTC over tcp
-            - 8555:8555/udp # WebRTC over udp
-          environment:
-            FRIGATE_RTSP_PASSWORD: password
-          labels:
-            - wud.tag.include=^\d+\.\d+\.\d+$$
-            - wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}
-            - homepage.group={{ services.frigate.group }}
-            - homepage.name={{ services.frigate.name }}
-            - homepage.href=https://frigate.lan
-            - homepage.icon=frigate.png
-            - homepage.server={{ inventory_hostname }}
-            - homepage.container=frigate
+        # frigate:
+        #   container_name: frigate
+        #   privileged: true # this may not be necessary for all setups
+        #   restart: unless-stopped
+        #   image: ghcr.io/blakeblackshear/frigate:stable
+        #   shm_size: 64mb # update for your cameras based on calculation above
+        #   devices:
+        #     - /dev/bus/usb:/dev/bus/usb
+        #   volumes:
+        #     - /etc/localtime:/etc/localtime:ro
+        #     - "{{ frigate_config_folder }}:/config"
+        #     - "{{ frigate_media_folder }}:/media/frigate"
+        #     - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+        #       target: /tmp/cache
+        #       tmpfs:
+        #         size: 1000000000
+        #   ports:
+        #     - "{{ frigate_http_port }}:5000"
+        #     - 8554:8554 # RTSP feeds
+        #     - 8555:8555/tcp # WebRTC over tcp
+        #     - 8555:8555/udp # WebRTC over udp
+        #   environment:
+        #     FRIGATE_RTSP_PASSWORD: password
+        #   labels:
+        #     - wud.tag.include=^\d+\.\d+\.\d+$$
+        #     - wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}
+        #     - homepage.group={{ services.frigate.group }}
+        #     - homepage.name={{ services.frigate.name }}
+        #     - homepage.href=https://frigate.lan
+        #     - homepage.icon=frigate.png
+        #     - homepage.server={{ inventory_hostname }}
+        #     - homepage.container=frigate
