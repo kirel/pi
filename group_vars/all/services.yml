@@ -182,6 +182,12 @@ services:
     http_port: "{{ metamcp_port_host }}"
     group: AI
     icon: gateway.png
+  speaches:
+    name: SPEACHES
+    target: ailab-ubuntu.lan
+    http_port: "{{ speaches_port }}"
+    group: AI
+    icon: audio
   pihole-homelab-nuc:
     name: Pihole Homelab
     target: homelab-nuc.lan

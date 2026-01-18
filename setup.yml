@@ -79,7 +79,6 @@
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
 
     #- { role: autosuspend, become: true, tags: [autosuspend] }
-    - { role: system_bridge, become: true, tags: [system-bridge] }
     #- { role: intel_gpu_driver, become: true, tags: [intel-gpu, gpu-driver] }
     - { role: llm_inference, become: true, tags: [llm, llm-inference] }
     - { role: wolf, become: true, tags: [wolf] }
