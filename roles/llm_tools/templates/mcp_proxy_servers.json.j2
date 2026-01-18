@@ -12,7 +12,7 @@
         "mcp-proxy"
       ],
       "env": {
-        "SSE_URL": "http://192.168.50.5:8123/mcp_server/sse",
+        "SSE_URL": "http://{{ homelab_nuc_ip }}:{{ ports.homelab_nuc.homeassistant }}/mcp_server/sse",
         "API_ACCESS_TOKEN": "{{ ha_access_token }}"
       }
     },

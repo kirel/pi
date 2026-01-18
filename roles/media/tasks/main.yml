@@ -49,7 +49,7 @@
           restart: unless-stopped
           # Optional - alternative address used for autodiscovery
           environment:
-            JELLYFIN_PublishedServerUrl: http://192.168.50.5:8096
+            JELLYFIN_PublishedServerUrl: http://{{ homelab_nuc_ip }}:{{ ports.homelab_nuc.jellyfin }}
             SSL_CA_FILE: /etc/ssl/certs/ca-certificates.crt
           # Optional - may be necessary for docker healthcheck to pass if running in host network mode
           extra_hosts:
@@ -62,7 +62,7 @@
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: jellyfin
             homepage.widget.type: jellyfin
-            homepage.widget.url: http://192.168.50.5:8096
+            homepage.widget.url: http://{{ homelab_nuc_ip }}:{{ ports.homelab_nuc.jellyfin }}
             homepage.widget.key: "{{ jellyfin_api_key }}"
 
         navidrome:
