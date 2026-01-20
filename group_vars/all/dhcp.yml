@@ -32,6 +32,9 @@ static_dhcp:
   ailab-windows:
     mac: BC:24:11:3F:D5:78
     ip_suffix: 11
+  clawd:
+    mac: "BC:24:11:2D:36:C8"
+    ip_suffix: 12
   xbox:
     mac: "04:27:28:7D:C2:CD"
     ip_suffix: 13
