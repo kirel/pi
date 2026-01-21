@@ -375,6 +375,7 @@ llamaswap_models:
       --ctx-size 16384
       --n-predict 16384
       --n-gpu-layers 99
+      -fa
       --cache-type-k q4_0
       --cache-type-v q4_0
       --temp 1.0
@@ -465,12 +466,13 @@ llamaswap_models:
       -v {{ llamaswap_config_path }}/cache:/root/.cache
       --ipc=host
       -e HF_HOME=/root/.cache/huggingface
-      vllm/vllm-openai:v0.13.0
+      vllm/vllm-openai:v0.14.0
       openai/gpt-oss-20b
       --served-model-name ${MODEL_ID}
       --port ${PORT}
       --max-num-seqs 1
       --max-num-batched-tokens 2048
+      --max-model-len auto
       --stream-interval 1
       --tool-call-parser openai
       --enable-auto-tool-choice
@@ -494,7 +496,7 @@ llamaswap_models:
       -v {{ llamaswap_config_path }}/cache:/root/.cache
       --ipc=host
       -e HF_HOME=/root/.cache/huggingface
-      vllm/vllm-openai:nightly
+      vllm/vllm-openai:cu130-nightly
       cyankiwi/GLM-4.7-Flash-AWQ-4bit
       --served-model-name ${MODEL_ID}
       --port ${PORT}
@@ -511,6 +513,27 @@ llamaswap_models:
     supports_vision: false
     supports_reasoning: true
     group: "3090"
+
+  - alias: GLM-4.7-Flash
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/GLM-4.7-Flash-GGUF:GLM-4.7-Flash-UD-Q4_K_XL.gguf
+      --port ${PORT}
+      --threads -1
+      --fit on
+      --seed 3407
+      --temp 0.2
+      --top-k 50
+      --top-p 0.95
+      --min-p 0.01
+      --dry-multiplier 1.1
+      --jinja
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
 
 llamaswap_model_groups:
   forever:
