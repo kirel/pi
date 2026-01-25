@@ -39,6 +39,13 @@
     mode: "0755"
   become: true
 
+- name: Ensure llama-swap config directory exists
+  ansible.builtin.file:
+    path: "{{ llamaswap_config_path }}/docker"
+    state: directory
+    mode: "0755"
+  become: true
+
 - name: Ensure llama-swap cache directory exists
   ansible.builtin.file:
     path: "{{ llamaswap_config_path }}/cache"

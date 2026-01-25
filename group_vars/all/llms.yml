@@ -4,9 +4,9 @@ ollama_models:
     num_ctx: 16384
 
 model_group_alias:
-  home: "GPT-OSS-20B-vLLM-high"
-  home-fast: "GPT-OSS-20B-vLLM-low"
-  home-smart: "GPT-OSS-20B-vLLM-high"
+  home: "GLM-4.7-Flash-Q6-nothink"
+  home-fast: "GLM-4.7-Flash-Q6-nothink"
+  home-smart: "GLM-4.7-Flash-Q6"
   home-vision: "Qwen3-VL-8B-Instruct"
   home-tiny: "Qwen3-4B-Instruct-2507-Q8"
 
@@ -23,6 +23,7 @@ llamaswap_models:
       --port ${PORT}
       --n-predict 16384
       --n-gpu-layers 99
+      -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
       --top-p 0.8
@@ -48,6 +49,7 @@ llamaswap_models:
       --flash-attn auto
       --n-gpu-layers 99
       --ubatch-size 512
+      -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
       --threads -1
@@ -72,6 +74,7 @@ llamaswap_models:
       --port ${PORT}
       --n-predict 16384
       --n-gpu-layers 99
+      -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
       --top-p 0.8
@@ -96,6 +99,7 @@ llamaswap_models:
       --port ${PORT}
       --n-predict 40960
       --n-gpu-layers 99
+      -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
       --top-p 0.95
@@ -119,6 +123,7 @@ llamaswap_models:
       --port ${PORT}
       --n-predict 32768
       --n-gpu-layers 99
+      -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
       --temp 0.7
@@ -128,65 +133,13 @@ llamaswap_models:
       --repeat-penalty 1.05
       --jinja
       --fit on
+      --fit-target 512
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: false
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-
-  - alias: Nemotron-3-Nano-30B-A3B
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q4_K_XL
-      --port ${PORT}
-      --n-predict 16384
-      --n-gpu-layers 99
-      --prio 3
-      --min-p 0.01
-      --temp 0.6
-      --top-p 0.95
-      --jinja
-      --fit on
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: true
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-    variants:
-      nothink:
-        chat_template_kwargs:
-          enable_thinking: false
-
-  - alias: Nemotron-3-Nano-30B-A3B-Q6
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Nemotron-3-Nano-30B-A3B-GGUF:Q6_K_XL
-      --port ${PORT}
-      --n-predict 16384
-      --flash-attn auto
-      --n-gpu-layers 99
-      --ubatch-size 512
-      --cache-type-k f16
-      --cache-type-v f16
-      --threads -1
-      --prio 3
-      --min-p 0.01
-      --temp 0.6
-      --top-p 0.95
-      --jinja
-      --fit on
-      --fit-target 512,5120
-      --swa-checkpoints 0
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: true
-    group: "big_boys"
-    variants:
-      nothink:
-        chat_template_kwargs:
-          enable_thinking: false
 
   - alias: Devstral-Small-2-24B-Instruct
     cmd: >-
@@ -195,12 +148,14 @@ llamaswap_models:
       --port ${PORT}
       --n-predict 32768
       --n-gpu-layers 99
+      -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
       --temp 0.15
       --min-p 0.01
       --jinja
       --fit on
+      --fit-target 512
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: false
@@ -214,6 +169,7 @@ llamaswap_models:
       -hf unsloth/GLM-4.6V-Flash-GGUF:Q8_K_XL
       --port ${PORT}
       --n-gpu-layers 99
+      -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
       --top-p 0.6
@@ -223,6 +179,7 @@ llamaswap_models:
       --n-predict 16384
       --jinja
       --fit on
+      --fit-target 512
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -260,75 +217,6 @@ llamaswap_models:
     supports_vision: false
     supports_reasoning: false
     group: "big_boys"
-
-  - alias: Seed-OSS-36B-Instruct-Magic
-    cmd: >-
-      /app/llama-server
-      -hf magiccodingman/Seed-OSS-36B-Instruct-unsloth-MagicQuant-Hybrid-GGUF:Seed-OSS-36B-Instruct-mxfp4_moe-EHQKOUD-IQ4NL.gguf
-      --port ${PORT}
-      --n-gpu-layers 99
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --temp 1.1
-      --top-p 0.95
-      --n-predict 16384
-      --jinja
-      --fit on
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: true
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-    variants:
-      high:
-        chat_template_kwargs:
-          thinking_budget: 2048
-      medium:
-        chat_template_kwargs:
-          thinking_budget: 1024
-      low:
-        chat_template_kwargs:
-          thinking_budget: 512
-      nothink:
-        chat_template_kwargs:
-          thinking_budget: 0
-
-  - alias: Seed-OSS-36B-Instruct
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Seed-OSS-36B-Instruct-GGUF:Q5_K_XL
-      --port ${PORT}
-      --n-predict 16384
-      --flash-attn auto
-      --n-gpu-layers 99
-      --ubatch-size 512
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --threads -1
-      --temp 1.1
-      --top-p 0.95
-      --jinja
-      --fit on
-      --fit-target 512,5120
-      --swa-checkpoints 0
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: true
-    group: "big_boys"
-    variants:
-      high:
-        chat_template_kwargs:
-          thinking_budget: 2048
-      medium:
-        chat_template_kwargs:
-          thinking_budget: 1024
-      low:
-        chat_template_kwargs:
-          thinking_budget: 512
-      nothink:
-        chat_template_kwargs:
-          thinking_budget: 0
 
   - alias: gpt-oss-120b
     cmd: >-
@@ -375,7 +263,7 @@ llamaswap_models:
       --ctx-size 16384
       --n-predict 16384
       --n-gpu-layers 99
-      -fa
+      -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
       --temp 1.0
@@ -416,6 +304,7 @@ llamaswap_models:
       --top-k 0
       --jinja
       --fit on
+      --fit-target 512
     supports_function_calling: true
     supports_vision: false
     group: "3090"
@@ -496,13 +385,13 @@ llamaswap_models:
       -v {{ llamaswap_config_path }}/cache:/root/.cache
       --ipc=host
       -e HF_HOME=/root/.cache/huggingface
-      vllm/vllm-openai:cu130-nightly
+      vllm-openai:nightly
       cyankiwi/GLM-4.7-Flash-AWQ-4bit
       --served-model-name ${MODEL_ID}
       --port ${PORT}
       --max-num-seqs 1
       --max-num-batched-tokens 2048
-      --stream-interval 1
+      --max-model-len auto
       --speculative-config.method mtp
       --speculative-config.num_speculative_tokens 1
       --tool-call-parser glm47
@@ -520,13 +409,14 @@ llamaswap_models:
       -hf unsloth/GLM-4.7-Flash-GGUF:GLM-4.7-Flash-UD-Q4_K_XL.gguf
       --port ${PORT}
       --threads -1
+      -fa on
+      --cache-type-k q8_0
+      --cache-type-v q8_0
       --fit on
       --seed 3407
-      --temp 0.2
-      --top-k 50
-      --top-p 0.95
+      --temp 0.7
+      --top-p 1.0
       --min-p 0.01
-      --dry-multiplier 1.1
       --jinja
     supports_function_calling: true
     supports_vision: false
@@ -534,6 +424,35 @@ llamaswap_models:
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+    variants:
+      nothink:
+        chat_template_kwargs:
+          enable_thinking: false
+
+  - alias: GLM-4.7-Flash-Q6
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/GLM-4.7-Flash-GGUF:GLM-4.7-Flash-UD-Q6_K_XL.gguf
+      --port ${PORT}
+      --threads -1
+      -fa on
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --seed 3407
+      --temp 0.7
+      --top-p 1.0
+      --min-p 0.01
+      --jinja
+      --fit on
+      --fit-target 512,5120
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "big_boys"
+    variants:
+      nothink:
+        chat_template_kwargs:
+          enable_thinking: false
 
 llamaswap_model_groups:
   forever:
