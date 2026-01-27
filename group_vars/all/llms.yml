@@ -4,9 +4,9 @@ ollama_models:
     num_ctx: 16384
 
 model_group_alias:
-  home: "GLM-4.7-Flash-Q6-nothink"
-  home-fast: "GLM-4.7-Flash-Q6-nothink"
-  home-smart: "GLM-4.7-Flash-Q6"
+  home: "GLM-4.7-Flash-nothink"
+  home-fast: "GLM-4.7-Flash-nothink"
+  home-smart: "GLM-4.7-Flash"
   home-vision: "Qwen3-VL-8B-Instruct"
   home-tiny: "Qwen3-4B-Instruct-2507-Q8"
 
@@ -33,6 +33,7 @@ llamaswap_models:
       --presence-penalty 1.5
       --jinja
       --fit on
+      --fit-target 768
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: false
@@ -52,7 +53,6 @@ llamaswap_models:
       -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
-      --threads -1
       --top-p 0.8
       --top-k 20
       --temp 0.7
@@ -60,7 +60,7 @@ llamaswap_models:
       --presence-penalty 1.5
       --jinja
       --fit on
-      --fit-target 512,5120
+      --fit-target 768,5120
       --swa-checkpoints 0
     supports_function_calling: true
     supports_vision: true
@@ -84,7 +84,7 @@ llamaswap_models:
       --presence-penalty 1.5
       --jinja
       --fit on
-      --fit-target 2048
+      --fit-target 768
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: false
@@ -109,6 +109,7 @@ llamaswap_models:
       --presence-penalty 0.0
       --jinja
       --fit on
+      --fit-target 768
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -133,7 +134,7 @@ llamaswap_models:
       --repeat-penalty 1.05
       --jinja
       --fit on
-      --fit-target 512
+      --fit-target 768
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: false
@@ -155,7 +156,7 @@ llamaswap_models:
       --min-p 0.01
       --jinja
       --fit on
-      --fit-target 512
+      --fit-target 768
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: false
@@ -179,7 +180,7 @@ llamaswap_models:
       --n-predict 16384
       --jinja
       --fit on
-      --fit-target 512
+      --fit-target 768
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -201,7 +202,6 @@ llamaswap_models:
       --ubatch-size 512
       --cache-type-k q4_0
       --cache-type-v q4_0
-      --threads -1
       --temp 0.7
       --top-p 0.8
       --top-k 20
@@ -211,7 +211,7 @@ llamaswap_models:
       --n-cpu-moe 15
       --jinja
       --fit on
-      --fit-target 512,5120
+      --fit-target 768,5120
       --swa-checkpoints 0
     supports_function_calling: true
     supports_vision: false
@@ -223,8 +223,6 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/gpt-oss-120b-GGUF:F16
       --port ${PORT}
-      --threads 12
-      --threads-batch 12
       --ctx-size 16384
       --n-predict 16384
       --n-gpu-layers 99
@@ -258,8 +256,6 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/gpt-oss-120b-GGUF:F16
       --port ${PORT}
-      --threads 12
-      --threads-batch 12
       --ctx-size 16384
       --n-predict 16384
       --n-gpu-layers 99
@@ -304,7 +300,7 @@ llamaswap_models:
       --top-k 0
       --jinja
       --fit on
-      --fit-target 512
+      --fit-target 768
     supports_function_calling: true
     supports_vision: false
     group: "3090"
@@ -327,7 +323,6 @@ llamaswap_models:
       --n-gpu-layers 99
       --cache-type-k q8_0
       --cache-type-v q8_0
-      --threads -1
       --temp 1.0
       --top-p 1.0
       --top-k 0
@@ -408,11 +403,12 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/GLM-4.7-Flash-GGUF:GLM-4.7-Flash-UD-Q4_K_XL.gguf
       --port ${PORT}
-      --threads -1
       -fa on
+      -kvu
       --cache-type-k q8_0
       --cache-type-v q8_0
       --fit on
+      --fit-target 768
       --seed 3407
       --temp 0.7
       --top-p 1.0
@@ -434,8 +430,8 @@ llamaswap_models:
       /app/llama-server
       -hf unsloth/GLM-4.7-Flash-GGUF:GLM-4.7-Flash-UD-Q6_K_XL.gguf
       --port ${PORT}
-      --threads -1
       -fa on
+      -kvu
       --cache-type-k q8_0
       --cache-type-v q8_0
       --seed 3407
@@ -444,7 +440,7 @@ llamaswap_models:
       --min-p 0.01
       --jinja
       --fit on
-      --fit-target 512,5120
+      --fit-target 768,5120
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: true
