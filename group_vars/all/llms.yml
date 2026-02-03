@@ -4,9 +4,9 @@ ollama_models:
     num_ctx: 16384
 
 model_group_alias:
-  home: "GLM-4.7-Flash-nothink"
-  home-fast: "GLM-4.7-Flash-nothink"
-  home-smart: "GLM-4.7-Flash"
+  home: "GLM-4.7-Flash-Q6-nothink"
+  home-fast: "GLM-4.7-Flash-Q6-nothink"
+  home-smart: "GLM-4.7-Flash-Q6"
   home-vision: "Qwen3-VL-8B-Instruct"
   home-tiny: "Qwen3-4B-Instruct-2507-Q8"
 
@@ -421,7 +421,7 @@ llamaswap_models:
       --jinja
       --fit on
       --fit-target 1024,5120
-      -np 2
+      -np 8
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: true
@@ -430,6 +430,37 @@ llamaswap_models:
       nothink:
         chat_template_kwargs:
           enable_thinking: false
+
+  - alias: GLM-4.7-Flash-AWQ
+    cmd: >-
+      docker run --rm --init --name ${MODEL_ID}
+      --runtime nvidia --gpus '"device={{ampere_gpu_uuid}}"'
+      --network container:llama-swap
+      -v {{ llamaswap_config_path }}/cache:/root/.cache
+      --ipc=host
+      --ulimit memlock=-1
+      --ulimit stack=67108864
+      --privileged
+      -e HF_HOME=/root/.cache/huggingface
+      sglang-custom:local
+      python3 -m sglang.launch_server
+      --model-path cyankiwi/GLM-4.7-Flash-AWQ-4bit
+      --tp-size 1
+      --tool-call-parser glm47
+      --reasoning-parser glm45
+      --speculative-algorithm EAGLE
+      --speculative-num-steps 3
+      --speculative-eagle-topk 1
+      --speculative-num-draft-tokens 4
+      --mem-fraction-static 0.8
+      --served-model-name GLM-4.7-Flash-AWQ
+      --port ${PORT}
+      --host 0.0.0.0
+    cmdStop: docker stop ${MODEL_ID}
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "3090"
 
 llamaswap_model_groups:
   forever:
