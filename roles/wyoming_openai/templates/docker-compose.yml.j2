@@ -3,7 +3,7 @@ services:
     container_name: init-speaches
     image: ghcr.io/speaches-ai/speaches:latest-cuda
     environment:
-      - SPEACHES_BASE_URL={{ stt_openai_url }}
+      - SPEACHES_BASE_URL=http://speaches:8000
     command: >
       /bin/bash -c '
         curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -46,6 +46,7 @@ services:
       start_period: 40s
     labels:
       - 'wud.tag.include=^v\d+\.\d+\.\d+$'
+    runtime: nvidia
     deploy:
       resources:
         reservations:
@@ -150,7 +151,7 @@ services:
       TTS_STREAMING_MODELS: "{{ tts_streaming_models }}"
       TTS_STREAMING_MIN_WORDS: "{{ tts_streaming_min_words }}"
       TTS_STREAMING_MAX_CHARS: "{{ tts_streaming_max_chars }}"
-      INVALIDATE: "3"  # increment to force redeploy
+      INVALIDATE: "5"  # increment to force redeploy
     depends_on:
       speaches:
         condition: service_healthy
