@@ -4,10 +4,10 @@ ollama_models:
     num_ctx: 16384
 
 model_group_alias:
-  home: "GLM-4.7-Flash-Q6-nothink"
-  home-fast: "GLM-4.7-Flash-Q6-nothink"
-  home-smart: "GLM-4.7-Flash-Q6"
-  home-vision: "Qwen3-VL-8B-Instruct"
+  home: "GLM-4.7-Flash-nothink"
+  home-fast: "GLM-4.7-Flash-nothink"
+  home-smart: "GLM-4.7-Flash"
+  home-vision: "GLM-4.6V-Flash"
   home-tiny: "Qwen3-4B-Instruct-2507-Q8"
 
 litellm_fallbacks:
@@ -38,82 +38,6 @@ llamaswap_models:
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-
-  - alias: Qwen3-VL-32B-Instruct-Q6
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3-VL-32B-Instruct-GGUF:Q6_K_XL
-      --port ${PORT}
-      --n-predict 16384
-      --flash-attn auto
-      --n-gpu-layers 99
-      --ubatch-size 512
-      -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --top-p 0.8
-      --top-k 20
-      --temp 0.7
-      --min-p 0.0
-      --presence-penalty 1.5
-      --jinja
-      --fit on
-      --fit-target 768,5120
-      --swa-checkpoints 0
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: false
-    group: "big_boys"
-
-  - alias: Qwen3-VL-32B-Instruct
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3-VL-32B-Instruct-GGUF:Q4_K_XL
-      --port ${PORT}
-      --n-predict 16384
-      --n-gpu-layers 99
-      -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --top-p 0.8
-      --top-k 20
-      --temp 0.7
-      --min-p 0.0
-      --presence-penalty 1.5
-      --jinja
-      --fit on
-      --fit-target 768
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-
-  - alias: Qwen3-VL-30B-A3B-Thinking
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3-VL-30B-A3B-Thinking-GGUF:Q4_K_XL
-      --port ${PORT}
-      --n-predict 40960
-      --n-gpu-layers 99
-      -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --top-p 0.95
-      --top-k 20
-      --temp 1.0
-      --min-p 0.0
-      --presence-penalty 0.0
-      --jinja
-      --fit on
-      --fit-target 768
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: true
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
@@ -172,8 +96,8 @@ llamaswap_models:
       --port ${PORT}
       --n-gpu-layers 99
       -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
+      --cache-type-k q8_0
+      --cache-type-v q4_1
       --top-p 0.6
       --top-k 2
       --temp 0.8
@@ -213,7 +137,7 @@ llamaswap_models:
       --n-cpu-moe 15
       --jinja
       --fit on
-      --fit-target 768,5120
+      --fit-target 768,2500
       --swa-checkpoints 0
     supports_function_calling: true
     supports_vision: false
@@ -297,6 +221,7 @@ llamaswap_models:
       --n-gpu-layers 99
       --cache-type-k q8_0
       --cache-type-v q8_0
+      -fa on
       --temp 1.0
       --top-p 1.0
       --top-k 0
@@ -324,13 +249,18 @@ llamaswap_models:
       --n-predict 16384
       --n-gpu-layers 99
       --cache-type-k q8_0
-      --cache-type-v q8_0
+      --cache-type-v q4_0
+      -fa on
       --temp 1.0
       --top-p 1.0
       --top-k 0
       --jinja
       --fit on
-      --fit-target 5120
+      --fit-target 768
+      -b 8192
+      -ub 512
+      --cache-reuse 256
+      --slot-save-path /root/.cache
     supports_function_calling: true
     supports_vision: false
     group: "5060ti"
@@ -382,11 +312,13 @@ llamaswap_models:
       -fa on
       -kvu
       --cache-type-k q8_0
-      --cache-type-v q8_0
+      --cache-type-v q4_1
       --fit on
       --fit-target 1024
-      -np 4
+      -np 8
       -sps 0.5
+      --cache-reuse 256
+      --slot-save-path /root/.cache      
       --seed 3407
       --temp 0.7
       --top-p 1.0
@@ -420,7 +352,7 @@ llamaswap_models:
       --min-p 0.01
       --jinja
       --fit on
-      --fit-target 1024,5120
+      --fit-target 1024,2500
       -np 8
     supports_function_calling: true
     supports_vision: false
@@ -449,43 +381,12 @@ llamaswap_models:
       --seed 3407
       --jinja
       --fit on
-      --fit-target 768,5120
+      --fit-target 768,2500
       --swa-checkpoints 0
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: false
     group: "big_boys"
-
-  - alias: GLM-4.7-Flash-AWQ
-    cmd: >-
-      docker run --rm --init --name ${MODEL_ID}
-      --runtime nvidia --gpus '"device={{ampere_gpu_uuid}}"'
-      --network container:llama-swap
-      -v {{ llamaswap_config_path }}/cache:/root/.cache
-      --ipc=host
-      --ulimit memlock=-1
-      --ulimit stack=67108864
-      --privileged
-      -e HF_HOME=/root/.cache/huggingface
-      sglang-custom:local
-      python3 -m sglang.launch_server
-      --model-path cyankiwi/GLM-4.7-Flash-AWQ-4bit
-      --tp-size 1
-      --tool-call-parser glm47
-      --reasoning-parser glm45
-      --speculative-algorithm EAGLE
-      --speculative-num-steps 3
-      --speculative-eagle-topk 1
-      --speculative-num-draft-tokens 4
-      --mem-fraction-static 0.8
-      --served-model-name GLM-4.7-Flash-AWQ
-      --port ${PORT}
-      --host 0.0.0.0
-    cmdStop: docker stop ${MODEL_ID}
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: true
-    group: "3090"
 
 llamaswap_model_groups:
   forever:

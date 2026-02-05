@@ -39,32 +39,6 @@
     mode: "0755"
   become: true
 
-- name: Ensure llama-swap config directory exists
-  ansible.builtin.file:
-    path: "{{ llamaswap_config_path }}/docker/sglang"
-    state: directory
-    mode: "0755"
-  become: true
-
-- name: Template sglang Dockerfile
-  ansible.builtin.template:
-    src: Dockerfile.sglang.j2
-    dest: "{{ llamaswap_config_path }}/docker/sglang/Dockerfile"
-    mode: "0644"
-  become: true
-  register: sglang_dockerfile
-
-- name: Build custom sglang image
-  community.docker.docker_image:
-    name: sglang-custom
-    tag: local
-    build:
-      path: "{{ llamaswap_config_path }}/docker/sglang"
-      pull: true
-    source: build
-    force_source: "{{ sglang_dockerfile.changed or force_rebuild | default(false) }}"
-  become: true
-
 - name: Create llama-swap config file
   ansible.builtin.template:
     src: llamaswap_config.yaml.j2
