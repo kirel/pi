@@ -47,6 +47,10 @@
             POSTGRES_USER: "{{ litellm_db_user }}"
             POSTGRES_PASSWORD: "{{ litellm_db_password }}"
             POSTGRES_DB: "{{ litellm_db_name }}"
+          deploy:
+            resources:
+              limits:
+                memory: 1g
           healthcheck:
             test: ["CMD-SHELL", "pg_isready -U {{ litellm_db_user }}"]
             interval: 5s
@@ -65,6 +69,10 @@
           volumes:
             - "{{ litellm_redis_data_dir }}:/data"
           command: redis-server --appendonly yes
+          deploy:
+            resources:
+              limits:
+                memory: 512m
           restart: unless-stopped
           networks:
             - llm-network
@@ -90,6 +98,10 @@
             ANTHROPIC_API_KEY: "{{ ANTHROPIC_API_KEY }}"
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
           command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"]
+          deploy:
+            resources:
+              limits:
+                memory: 2g
           depends_on:
             postgres:
               condition: service_healthy
@@ -136,6 +148,10 @@
           volumes:
             - "{{ open_webui_config_folder }}:/app/backend/data"
             - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro"
+          deploy:
+            resources:
+              limits:
+                memory: 2g
           labels:
             wud.tag.include: main
             wud.watch.digest: "true"
@@ -170,6 +186,10 @@
             WORKSPACE_EXTERNAL_URL: "https://google-workspace-mcp.net"
             REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
             CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+          deploy:
+            resources:
+              limits:
+                memory: 1g
           command:
             - "uvx"
             - "workspace-mcp"
