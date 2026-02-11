@@ -19,7 +19,7 @@
     restart_policy: unless-stopped
     device_requests:
       - driver: nvidia
-        device_ids: ["{{ ampere_gpu_uuid }}"]
+        device_ids: ["{{ blackwell_gpu_uuid }}"]
         capabilities:
           - ["gpu"]
     ports:
