@@ -1,7 +1,0 @@
----
-- name: Restart waha
-  community.docker.docker_container:
-    name: "{{ waha_container_name }}"
-    state: started
-    restart: true
-  become: true
