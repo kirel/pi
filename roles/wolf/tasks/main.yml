@@ -22,7 +22,7 @@
             XDG_RUNTIME_DIR: /tmp/sockets
             HOST_APPS_STATE_FOLDER: /etc/wolf
             NVIDIA_DRIVER_CAPABILITIES: all
-            NVIDIA_VISIBLE_DEVICES: all
+            NVIDIA_VISIBLE_DEVICES: "{{ blackwell_gpu_uuid }}"
           volumes:
             - /etc/wolf/:/etc/wolf
             - /tmp/sockets:/tmp/sockets:rw
@@ -40,7 +40,7 @@
               reservations:
                 devices:
                   - driver: nvidia
-                    count: 1
+                    device_ids: ["{{ blackwell_gpu_uuid }}"]
                     capabilities: [gpu]
           network_mode: host
           restart: unless-stopped

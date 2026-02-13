@@ -78,7 +78,7 @@ llamaswap_models:
       --fit on
       --fit-target 2500
     supports_function_calling: true
-    supports_vision: true
+    supports_vision: false
     supports_reasoning: false
     group: "3090"
     env:
@@ -304,5 +304,5 @@ llamaswap_model_groups:
     exclusive: false
 
 llamaswap_preload:
-  - "{{ model_group_alias.home_tiny }}"
-  - "{{ model_group_alias.home_fast }}"
+  - "{{ model_group_alias['home-tiny'] }}"
+  - "{{ model_group_alias['home-fast'] }}"
