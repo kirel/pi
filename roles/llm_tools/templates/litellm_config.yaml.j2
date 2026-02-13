@@ -65,9 +65,15 @@ router_settings:
   redis_port: "{{ litellm_redis_port_container }}"
 
 litellm_settings:
+  drop_params: true
+  master_key: "{{ litellm_master_key }}"
+  cache: true
+  cache_params:
+    type: redis
+    host: "{{ litellm_redis_container_name }}"
+    port: "{{ litellm_redis_port_container }}"
   callbacks: ["arize_phoenix"]
 
 general_settings:
-  master_key: "{{ litellm_master_key }}"
   store_model_in_db: true
   store_prompts_in_spend_logs: true
