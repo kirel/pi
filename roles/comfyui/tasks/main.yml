@@ -42,3 +42,12 @@
       - "label=type:nvidia_container_t"
 
   become: true
+
+- name: Configure git safe.directory for ComfyUI
+  community.docker.docker_exec:
+    container: "{{ comfyui_container_name }}"
+    command: git config --global --add safe.directory /root/ComfyUI
+  changed_when: false
+  # Retry in case container was just started
+  retries: 3
+  delay: 2
