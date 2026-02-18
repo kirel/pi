@@ -15,6 +15,7 @@
       services:
         wolf:
           image: ghcr.io/games-on-whales/wolf:stable
+          privileged: false
           security_opt:
             - apparmor:unconfined
           environment:
@@ -23,18 +24,25 @@
             HOST_APPS_STATE_FOLDER: /etc/wolf
             NVIDIA_DRIVER_CAPABILITIES: all
             NVIDIA_VISIBLE_DEVICES: "{{ blackwell_gpu_uuid }}"
+            WOLF_RENDER_NODE: /dev/dri/renderD129
           volumes:
             - /etc/wolf/:/etc/wolf
             - /tmp/sockets:/tmp/sockets:rw
             - /var/run/docker.sock:/var/run/docker.sock:rw
-            - /dev/:/dev/:rw
             - /run/udev:/run/udev:rw
           devices:
-            - /dev/dri
+            - /dev/nvidia1:/dev/nvidia1
+            - /dev/nvidiactl:/dev/nvidiactl
+            - /dev/nvidia-modeset:/dev/nvidia-modeset
+            - /dev/nvidia-uvm:/dev/nvidia-uvm
+            - /dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools
+            - /dev/dri/card2:/dev/dri/card2
+            - /dev/dri/renderD129:/dev/dri/renderD129
             - /dev/uinput
             - /dev/uhid
           device_cgroup_rules:
             - c 13:* rmw
+            - c 226:* rmw
           deploy:
             resources:
               reservations:
