@@ -4,6 +4,7 @@ model_group_alias:
   home-smart: "GPT-OSS-20B-vLLM-high"
   home-vision: "GLM-4.6V-Flash"
   home-tiny: "GPT-OSS-20B-vLLM-low"
+  home-embed: "embeddinggemma"
 
 litellm_fallbacks:
   - home: ["home-tiny", "home-remote"]
@@ -291,6 +292,22 @@ llamaswap_models:
     supports_vision: false
     supports_reasoning: false
     group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+
+  - alias: embeddinggemma
+    cmd: >-
+      /app/llama-server
+      -hf ggml-org/embeddinggemma-300m-qat-q8_0-GGUF
+      --port ${PORT}
+      --embeddings
+      --ctx-size 8192
+      --n-gpu-layers 99
+    supports_function_calling: false
+    supports_vision: false
+    supports_reasoning: false
+    encoding_format: "float"
+    group: "forever"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
 
