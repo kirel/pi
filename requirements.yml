@@ -1,3 +1,7 @@
 ---
-- src: geerlingguy.pip
-- src: geerlingguy.docker
+roles:
+  - src: geerlingguy.pip
+  - src: geerlingguy.docker
+
+collections:
+  - name: community.docker
