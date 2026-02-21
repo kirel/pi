@@ -55,6 +55,16 @@ model_list:
       model: anthropic/claude-haiku-4-5
       api_key: "os.environ/ANTHROPIC_API_KEY"
 
+  - model_name: minimax/MiniMax-M2.5
+    litellm_params:
+      model: anthropic/MiniMax-M2.5
+      api_key: "os.environ/MINIMAX_API_KEY"
+      api_base: https://api.minimax.io/anthropic/
+    model_info:
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+      max_input_tokens: 196608
+
   # Wildcard for other providers
   - model_name: "*"
     litellm_params:
