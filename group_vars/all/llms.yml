@@ -117,13 +117,13 @@ llamaswap_models:
   - alias: Qwen3.5-35B-A3B-Instruct
     cmd: >-
       /app/llama-server
-      -hf unsloth/Qwen3.5-35B-A3B-GGUF:MXFP4_MOE
+      -hf unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q3_K_XL
       --port ${PORT}
       --n-predict 32768
       --n-gpu-layers 99
       -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
+      --cache-type-k q8_0
+      --cache-type-v q8_0
       --temp 1.0
       --top-p 0.95
       --top-k 20
