@@ -1,9 +1,9 @@
 model_group_alias:
-  home: "GPT-OSS-20B-vLLM-low"
-  home-fast: "GPT-OSS-20B-vLLM-low"
-  home-smart: "GPT-OSS-20B-vLLM-high"
-  home-vision: "GLM-4.6V-Flash"
-  home-tiny: "GPT-OSS-20B-vLLM-low"
+  home: "Qwen3.5-35B-A3B-Instruct-nothink"
+  home-fast: "Qwen3.5-35B-A3B-Instruct-nothink"
+  home-smart: "Qwen3.5-35B-A3B-Instruct"
+  home-vision: "Qwen3.5-35B-A3B-Instruct"
+  home-tiny: "Qwen3.5-35B-A3B-Instruct"
   home-embed: "embeddinggemma"
 
 litellm_fallbacks:
@@ -330,23 +330,6 @@ llamaswap_models:
     cmd: >-
       /app/llama-server
       -hf ggml-org/embeddinggemma-300m-qat-q8_0-GGUF
-      --port ${PORT}
-      --embeddings
-      --ctx-size 8192
-      --batch-size 8192
-      --n-gpu-layers 99
-    supports_function_calling: false
-    supports_vision: false
-    supports_reasoning: false
-    encoding_format: "float"
-    group: "forever"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-
-  - alias: nomic-embed-text-v2-moe
-    cmd: >-
-      /app/llama-server
-      -hf nomic-ai/nomic-embed-text-v2-moe-GGUF:Q6_K
       --port ${PORT}
       --embeddings
       --ctx-size 8192
