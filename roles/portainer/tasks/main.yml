@@ -22,7 +22,7 @@
     labels:
       homepage.group: "{{ portainer_service.group }}"
       homepage.name: "{{ portainer_service.name }}"
-      homepage.href: https://portainer-{{ inventory_hostname }}.lan
+      homepage.href: https://{{ services['portainer-'~inventory_hostname].domain }}
       homepage.icon: portainer.png
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: portainer

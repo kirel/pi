@@ -33,7 +33,7 @@
       wud.tag.include: "^v\\d+\\.\\d+\\.\\d+$$"
       homepage.group: "{{ services.comfyui.group }}"
       homepage.name: "{{ services.comfyui.name }}"
-      homepage.href: "https://comfyui.lan"
+      homepage.href: "https://{{ services.comfyui.domain }}"
       homepage.icon: "{{ services.comfyui.icon }}"
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: "{{ comfyui_container_name }}"

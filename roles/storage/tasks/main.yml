@@ -110,7 +110,7 @@
             - wud.tag.include=^\d+\.\d+\.\d+$$
             - homepage.group={{ services['syncthing-homelab'].group }}
             - homepage.name={{ services['syncthing-homelab'].name }}
-            - homepage.href=https://syncthing-homelab.lan
+            - homepage.href=https://{{ services['syncthing-homelab'].domain }}
             - homepage.icon=syncthing.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=syncthing

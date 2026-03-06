@@ -47,7 +47,7 @@
             - wud.tag.include=^\d+\.\d+\.\d+$$
             - homepage.group={{ services.babybuddy.group }}
             - homepage.name={{ services.babybuddy.name }}
-            - homepage.href=https://bb.lan
+            - homepage.href=https://{{ services.babybuddy.domain }}
             - homepage.icon=babybuddy
             - homepage.server={{ inventory_hostname }}
             - homepage.container=babybuddy

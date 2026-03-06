@@ -18,7 +18,7 @@
           labels:
             homepage.group: "{{ services.prunemate.group }}"
             homepage.name: "{{ services.prunemate.name }}"
-            homepage.href: "https://prunemate.lan"
+            homepage.href: "https://{{ services.prunemate.domain }}"
             homepage.icon: "{{ services.prunemate.icon }}"
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: prunemate

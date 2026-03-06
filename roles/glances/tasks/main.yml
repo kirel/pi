@@ -50,7 +50,7 @@
       labels:
         homepage.group: "{{ glances_service.group }}"
         homepage.name: "{{ glances_service.name }}"
-        homepage.href: "https://glances-{{ inventory_hostname }}.lan"
+        homepage.href: "https://{{ services['glances-'~inventory_hostname].domain }}"
         homepage.icon: glances.png
         homepage.server: "{{ inventory_hostname }}"
         homepage.container: glances

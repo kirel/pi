@@ -133,7 +133,7 @@
             - wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}
             - homepage.group={{ services.homeassistant.group }}
             - homepage.name={{ services.homeassistant.name }}
-            - homepage.href=https://homeassistant.lan
+            - homepage.href=https://{{ services.homeassistant.domain }}
             - homepage.icon=home-assistant.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=homeassistant
@@ -158,7 +158,7 @@
             - wud.link.template=https://github.com/music-assistant/server/releases/tag/$${major}.$${minor}.$${patch}
             - homepage.group={{ services.musicassistant.group }}
             - homepage.name={{ services.musicassistant.name }}
-            - homepage.href=https://musicassistant.lan
+            - homepage.href=https://{{ services.musicassistant.domain }}
             - homepage.icon=home-assistant.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=music-assistant-server
@@ -185,7 +185,7 @@
             - wud.watch.digest=true
             - homepage.group={{ services.vscode.group }}
             - homepage.name={{ services.vscode.name }}
-            - homepage.href=https://vscode.lan
+            - homepage.href=https://{{ services.vscode.domain }}
             - homepage.icon=vscode.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=code-server
@@ -240,7 +240,7 @@
             - wud.watch.digest=true
             - homepage.group={{ services.z2m.group }}
             - homepage.name={{ services.z2m.name }}
-            - homepage.href=https://z2m.lan
+            - homepage.href=https://{{ services.z2m.domain }}
             - homepage.icon=mdi-zigbee
             - homepage.server={{ inventory_hostname }}
             - homepage.container=zigbee2mqtt
