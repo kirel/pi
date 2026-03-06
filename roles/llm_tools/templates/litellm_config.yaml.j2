@@ -5,7 +5,7 @@ model_list:
   - model_name: {{ model.alias }}
     litellm_params:
       model: "openai/{{ model.alias }}"
-      api_base: "http://{{ ollama_host }}:{{ llamaswap_port }}/v1"
+      api_base: "http://{{ llm_inference_host }}:{{ llamaswap_port }}/v1"
       api_key: "llama-swap"
 {% if model.allowed_openai_params is defined %}
       allowed_openai_params: {{ model.allowed_openai_params }}
@@ -23,7 +23,7 @@ model_list:
   - model_name: {{ model.alias }}-{{ variant_name }}
     litellm_params:
       model: "openai/{{ model.alias }}"
-      api_base: "http://{{ ollama_host }}:{{ llamaswap_port }}/v1"
+      api_base: "http://{{ llm_inference_host }}:{{ llamaswap_port }}/v1"
       api_key: "llama-swap"
       {% if model.allowed_openai_params is defined -%}
       allowed_openai_params: {{ model.allowed_openai_params }}
@@ -42,10 +42,20 @@ model_list:
   - model_name: {{ model.alias }}
     litellm_params:
       model: "ollama_chat/{{ model.name }}"
-      api_base: "http://{{ ollama_host }}:{{ ollama_port }}"
+      api_base: "http://{{ llm_inference_host }}:{{ ollama_port }}"
 {% if model.num_ctx is defined %}
       num_ctx: {{ model.num_ctx }}
 {% endif %}
+{% endfor %}
+{% endif %}
+
+  # OpenRouter models
+{% if openrouter_models is defined %}
+{% for model in openrouter_models %}
+  - model_name: {{ model }}
+    litellm_params:
+      model: "openrouter/{{ model }}"
+      api_key: "os.environ/OPENROUTER_API_KEY"
 {% endfor %}
 {% endif %}
 

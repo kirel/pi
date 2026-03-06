@@ -232,14 +232,6 @@ services:
     icon: proxmox
     nodocker: true
     tls_skip: false
-  ollama-ailab:
-    name: Ollama AI Lab
-    proxy_port: "{{ ollama_port }}"
-    target: ailab-ubuntu.lan
-    http_port: "{{ ollama_port }}"
-    wol: "{{ ailab_mac_address }}"
-    tls_skip: true
-    try: 360s
   llama-swap:
     name: LlamaSwap
     target: ailab-ubuntu.lan

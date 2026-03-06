@@ -141,7 +141,6 @@
           ports:
             - "{{ open_webui_http_port }}:8080"
           environment:
-            OLLAMA_BASE_URL: "{{ ollama_base_url_for_webui }}"
             WEBUI_SECRET_KEY: t0p-s3cr3t
             SSL_CERT_FILE: "/etc/ssl/certs/ca-certificates.crt"
             PUID: "{{ uid }}"

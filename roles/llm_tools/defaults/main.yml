@@ -33,9 +33,6 @@ phoenix_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ phoenix_grpc_port }}"
 # Database connection string
 litellm_database_url: "postgresql://{{ litellm_db_user }}:{{ litellm_db_password }}@{{ litellm_db_container_name }}:{{ litellm_db_port_container }}/{{ litellm_db_name }}"
 
-# --- Open-WebUI Settings ---
-ollama_base_url_for_webui: "http://{{ ollama_host }}:{{ ollama_port }}"
-
 # --- Google Workspace MCP Settings ---
 google_workspace_mcp_image: "ghcr.io/astral-sh/uv:debian"
 google_workspace_mcp_container_name: "google-workspace-mcp"
