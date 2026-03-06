@@ -63,6 +63,7 @@
             - "{{ caddy_config_folder }}:/config"
           environment:
             CADDY_ADMIN: "0.0.0.0:2019"
+            REGFISH_TOKEN: "{{ regfish_token }}"
           dns:
             - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"

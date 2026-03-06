@@ -6,6 +6,11 @@
         }
 }
 
+(internal_only) {
+        @denied not remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.1 ::1
+        abort @denied
+}
+
 danishkirel.asuscomm.com {
         reverse_proxy {{ homelab_nuc_ip }}:{{ homeassistant_http_port }}
         log
@@ -15,6 +20,7 @@ danishkirel.asuscomm.com {
 {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.domain|default(service ~ ".lan") }}{% if props.proxy_port is defined %}:{{ props.proxy_port }}{% endif %} {
 {% if service == "proxmox" %}
         # Special Proxmox configuration with HTTPS proxying
+        import internal_only
         reverse_proxy https://{{ props.target }}:{{ props.http_port }} {
                 transport http {
                         tls_server_name {{ props.domain | default(service ~ ".lan") }}
@@ -30,10 +36,26 @@ danishkirel.asuscomm.com {
         # Use localhost if the target is the current host (homelab-nuc)
         {% set target_host = (props.target | regex_replace('\\.lan$', '')) if props.target.endswith('.lan') else props.target %}
         {% set backend_host = 'localhost' if target_host == 'homelab-nuc' else props.target %}
-        reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ backend_host }}:{{ props.http_port }}
+        reverse_proxy {% if props.tls_skip | default(false) %}http://{% endif %}{{ backend_host }}:{{ props.http_port }} {
+                {% if service == 'metamcp' %}
+                header_up Connection "keep-alive"
+                header_up Upgrade {>Upgrade}
+                header_up X-Accel-Buffering no
+                flush_interval -1
+                {% endif %}
+        }
         {% set domain = props.domain | default(service ~ ".lan") %}
-        {% if not props.tls_skip | default(false) and (domain.endswith(".lan") or props.force_tls_internal | default(false)) %}
+        {% if not props.public | default(false) %}
+        import internal_only
+        {% endif %}
+        {% if not props.tls_skip | default(false) %}
+            {% if domain.endswith(".kirelabs.org") %}
+        tls {
+            dns regfish {env.REGFISH_TOKEN}
+        }
+            {% elif domain.endswith(".lan") or props.force_tls_internal | default(false) %}
         tls internal
+            {% endif %}
         {% endif %}
         {% if props.wol is defined %}
         handle_errors {
