@@ -11,6 +11,13 @@ litellm_fallbacks:
   - home-fast: ["home-tiny", "home-remote"]
   - home-smart: ["home-remote"]
 
+openrouter_models:
+  - openai/gpt-5.4
+  - anthropic/claude-haiku-4.5
+  - anthropic/claude-sonnet-4.6
+  - anthropic/claude-opus-4.6
+  - minimax/minimax-m2.5
+
 llamaswap_models:
   - alias: Qwen3-VL-8B-Instruct
     cmd: >-
