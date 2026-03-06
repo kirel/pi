@@ -3,16 +3,19 @@ services:
   homepage:
     target: homelab-nuc.lan
     http_port: "{{ homepage_http_port }}"
+    domain: homepage.kirelabs.org
     group: Smart Home
   homeassistant:
     name: Home Assistant
     http_port: "{{ homeassistant_http_port }}"
     target: homelab-nuc.lan
+    domain: homeassistant.kirelabs.org
     group: Smart Home
   musicassistant:
     name: Music Assistant
     http_port: "{{ music_assistant_http_port }}"
     target: homelab-nuc.lan
+    domain: musicassistant.kirelabs.org
     group: Media
   immich:
     name: Immich
@@ -21,62 +24,66 @@ services:
     domain: immich.kirelabs.org
     group: Media
     icon: immich
+    public: true
   uptime:
     name: Uptime Kuma
     group: Monitoring
     target: homelab-nuc.lan
     http_port: "{{ uptime_kuma_http_port }}"
+    domain: uptime.kirelabs.org
   wud:
     name: What's up Docker?
     target: homelab-nuc.lan
     http_port: "{{ wud_http_port }}"
+    domain: wud.kirelabs.org
     group: Monitoring
   semaphore:
     name: "Semaphore CI/CD"
     target: "homelab-nuc.lan"
     http_port: "{{ semaphore_http_port }}"
-    domain: semaphore.lan
+    domain: semaphore.kirelabs.org
     group: "Monitoring"
     icon: "mdi-play-circle"
   wallabag:
     name: Wallabag
     target: homelab-nuc.lan
     http_port: "{{ wallabag_http_port }}"
-    domain: "{{ wallabag_domain_name }}"
+    domain: wallabag.kirelabs.org
     group: Productivity
     icon: wallabag
   readeck:
     name: Readeck
     target: homelab-nuc.lan
     http_port: "{{ readeck_http_port }}"
-    domain: "{{ readeck_domain_name }}"
+    domain: readeck.kirelabs.org
     group: Productivity
     icon: readeck
   linkding:
     name: Linkding
     target: homelab-nuc.lan
     http_port: "{{ linkding_http_port }}"
-    domain: "{{ linkding_domain_name }}"
+    domain: linkding.kirelabs.org
     group: Productivity
     icon: linkding
   changedetection:
     name: ChangeDetection.io
     target: homelab-nuc.lan
     http_port: "{{ changedetection_http_port }}"
-    domain: changedetection.lan
+    domain: changedetection.kirelabs.org
     group: Monitoring
     icon: change-detection
   dockhand:
     name: Dockhand
     target: homelab-nuc.lan
     http_port: "{{ dockhand_http_port }}"
-    domain: dockhand.lan
+    domain: dockhand.kirelabs.org
     group: Monitoring
     icon: mdi-docker
   prunemate:
     name: PruneMate
     target: homelab-nuc.lan
     http_port: 7676
+    domain: prunemate.kirelabs.org
     group: Monitoring
     icon: mdi-docker
   n8n:
@@ -87,117 +94,135 @@ services:
     # force_tls_internal: true
     group: Productivity
     icon: n8n.svg
+    public: true
   teddycloud:
     name: TeddyCloud
     target: homelab-nuc.lan
     http_port: "{{ teddycloud_http_port }}"
-    domain: teddycloud.lan
+    domain: teddycloud.kirelabs.org
     group: Family
   babybuddy:
     name: Baby Buddy
     target: homelab-nuc.lan
     http_port: "{{ babybuddy_http_port }}"
-    domain: bb.lan
+    domain: bb.kirelabs.org
     group: Family
   portainer-homelab-nuc:
     name: Portainer Homelab
     target: homelab-nuc.lan
     http_port: "{{ portainer_http_port }}"
+    domain: portainer-homelab.kirelabs.org
     group: Monitoring
   glances-homelab-nuc:
     name: Glances Homelab
     target: homelab-nuc.lan
     http_port: "{{ glances_http_port }}"
+    domain: glances-homelab.kirelabs.org
     group: Monitoring
   nodered:
     target: homelab-nuc.lan
     http_port: "{{ nodered_http_port }}"
+    domain: nodered.kirelabs.org
     group: Smart Home
   vscode:
     name: Visual Studio Code
     target: homelab-nuc.lan
     http_port: "{{ vscode_http_port }}"
+    domain: vscode.kirelabs.org
     group: Config
   z2m:
     name: Zigbee2MQTT
     target: homelab-nuc.lan
     http_port: "{{ z2m_http_port }}"
+    domain: z2m.kirelabs.org
     group: Smart Home
   teslamate:
     name: TeslaMate
     target: homelab-nuc.lan
     http_port: "{{ teslamate_http_port }}"
+    domain: teslamate.kirelabs.org
     group: Smart Home
     icon: teslamate
   teslamate-grafana:
     name: TeslaMate Grafana
     target: homelab-nuc.lan
     http_port: "{{ grafana_http_port }}"
+    domain: teslamate-grafana.kirelabs.org
     group: Smart Home
   frigate:
     name: Frigate
     target: homelab-nuc.lan
     http_port: "{{ frigate_http_port }}"
+    domain: frigate.kirelabs.org
     group: Smart Home
   jellyfin:
     target: homelab-nuc.lan
     http_port: "{{ jellyfin_http_port }}"
     domain: jellyfin.kirelabs.org
     group: Media
+    public: true
   music:
     target: homelab-nuc.lan
     http_port: "{{ navidrome_http_port }}"
+    domain: music.kirelabs.org
     group: Media
   syncthing-homelab:
     name: Syncthing Homelab
     target: homelab-nuc.lan
     http_port: "{{ syncthing_http_port }}"
+    domain: syncthing-homelab.kirelabs.org
     group: NAS
   open-webui:
     name: Open WebUI
     target: homelab-nuc.lan
     http_port: "{{ open_webui_http_port }}"
+    domain: open-webui.kirelabs.org
     group: AI
   phoenix:
     name: Arize Phoenix
     target: homelab-nuc.lan
     http_port: "{{ phoenix_port }}"
+    domain: phoenix.kirelabs.org
     group: AI
     icon: phoenix.png
   litellm:
     name: LiteLLM API
     target: homelab-nuc.lan
     http_port: "{{ litellm_proxy_port }}"
+    domain: litellm.kirelabs.org
     group: AI
     icon: litellm.png
   litellm-ui:
     name: LiteLLM Admin
     target: homelab-nuc.lan
     http_port: "{{ litellm_proxy_port }}"
+    domain: litellm-ui.kirelabs.org
     group: AI
     icon: litellm.png
   metamcp:
     name: MetaMCP
     target: homelab-nuc.lan
     http_port: "{{ metamcp_port_host }}"
+    domain: metamcp.kirelabs.org
     group: AI
     icon: gateway.png
   speaches:
     name: SPEACHES
     target: ailab-ubuntu.lan
     http_port: "{{ speaches_port }}"
+    domain: speaches.kirelabs.org
     group: AI
     icon: audio
   pihole-homelab-nuc:
     name: Pihole Homelab
     target: homelab-nuc.lan
     http_port: "{{ pihole_http_port }}"
-    domain: pihole-homelab.lan
+    domain: pihole-homelab.kirelabs.org
     group: Network
   dnsmasq-leases-ui-homelab-nuc:
     name: DHCP Leases Homelab
     group: Network
-    domain: leases-homelab.lan
+    domain: leases-homelab.kirelabs.org
     target: homelab-nuc.lan
     http_port: 5005
   # nameserver
@@ -205,29 +230,32 @@ services:
     name: Pihole Nameserver
     target: nameserver-pi.lan
     http_port: "{{ pihole_http_port }}"
-    domain: pihole-nameserver.lan
+    domain: pihole-nameserver.kirelabs.org
     group: Network
   dnsmasq-leases-ui-nameserver-pi:
     name: DHCP Leases Nameserver
     group: Network
-    domain: leases-nameserver.lan
+    domain: leases-nameserver.kirelabs.org
     target: nameserver-pi.lan
     http_port: 5005
   portainer-nameserver-pi:
     name: Portainer Nameserver
     target: nameserver-pi.lan
     http_port: "{{ portainer_http_port }}"
+    domain: portainer-nameserver.kirelabs.org
     group: Monitoring
   glances-nameserver-pi:
     name: Glances Nameserver
     target: nameserver-pi.lan
     http_port: "{{ glances_http_port }}"
+    domain: glances-nameserver.kirelabs.org
     group: Monitoring
   # ailab
   proxmox:
     name: Proxmox VE
     http_port: 8006
     target: ailab-proxmox.lan
+    domain: proxmox.kirelabs.org
     group: Network
     icon: proxmox
     nodocker: true
@@ -237,6 +265,7 @@ services:
     proxy_port: "{{ ollama_port }}"
     target: ailab-ubuntu.lan
     http_port: "{{ ollama_port }}"
+    domain: ollama.kirelabs.org
     wol: "{{ ailab_mac_address }}"
     tls_skip: true
     try: 360s
@@ -244,6 +273,7 @@ services:
     name: LlamaSwap
     target: ailab-ubuntu.lan
     http_port: 9292
+    domain: llama-swap.kirelabs.org
     group: AI
     wol: "{{ ailab_mac_address }}"
     try: 360s
@@ -251,6 +281,7 @@ services:
     name: ComfyUI
     target: ailab-ubuntu.lan
     http_port: "{{ comfyui_port }}"
+    domain: comfyui.kirelabs.org
     group: AI
     icon: comfy-ui
     wol: "{{ ailab_mac_address }}"
@@ -259,24 +290,28 @@ services:
     name: Chatterbox UI
     target: ailab-ubuntu.lan
     http_port: 4321
+    domain: chatterbox-ui.kirelabs.org
     group: AI
     icon: audio
   portainer-ailab-ubuntu:
     name: Portainer AI Lab
     target: ailab-ubuntu.lan
     http_port: "{{ portainer_http_port }}"
+    domain: portainer-ailab.kirelabs.org
     group: Monitoring
     icon: portainer.png
   glances-ailab-ubuntu:
     name: Glances AI Lab
     target: ailab-ubuntu.lan
     http_port: "{{ glances_http_port }}"
+    domain: glances-ailab.kirelabs.org
     group: Monitoring
     icon: glances.png
   syncthing-ailab:
     name: Syncthing AI Lab
     target: ailab-ubuntu.lan
     http_port: "{{ syncthing_http_port }}"
+    domain: syncthing-ailab.kirelabs.org
     nodocker: true
     group: NAS
     icon: syncthing.png
@@ -284,6 +319,6 @@ services:
     name: Google Workspace MCP
     target: homelab-nuc.lan
     http_port: "{{ google_workspace_mcp_port_host }}"
-    domain: google-workspace-mcp.net
+    domain: google-workspace-mcp.kirelabs.org
     group: AI
     icon: google.png
