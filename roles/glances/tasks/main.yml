@@ -32,7 +32,7 @@
         glances: "{{ _glances_definition }}"
   vars:
     _glances_base_definition:
-      image: nicolargo/glances:ubuntu-latest-full
+      image: "{{ glances_image | default('nicolargo/glances:latest-full') }}"
       container_name: glances
       privileged: true
       restart: always

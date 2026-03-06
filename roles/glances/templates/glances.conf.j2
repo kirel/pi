@@ -1,6 +1,26 @@
+[global]
+refresh=10
+history_size=1200
+
 [fs]
 # Hide irrelevant file systems
 # 1. Hide loop devices (Snap packages)
 # 2. Hide docker internal mounts (overlay, shm, etc.)
 # 3. Hide specific file mounts injected into containers
 hide=^/dev/loop.*,^/var/lib/docker.*,^/run/docker.*,^/etc/.*,^/lib/.*,^/usr/.*,.*\.conf$,.*\.crt$
+
+[network]
+# Disable network monitoring to save CPU
+disable=True
+
+[diskio]
+# Disable disk I/O monitoring to save CPU
+disable=True
+
+[docker]
+# Disable docker monitoring to save CPU
+disable=True
+
+[process]
+# Disable process monitoring to save CPU
+disable=True
