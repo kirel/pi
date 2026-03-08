@@ -93,7 +93,7 @@
             - wud.link.template=https://github.com/adriankumpf/teslamate/releases/tag/$${major}.$${minor}.$${patch}
             - homepage.group={{ services.teslamate.group }}
             - homepage.name={{ services.teslamate.name }}
-            - homepage.href=http://{{ inventory_hostname }}:{{ teslamate_http_port }}
+            - homepage.href=https://{{ services.teslamate.domain }}
             - homepage.icon=teslamate.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=teslamate

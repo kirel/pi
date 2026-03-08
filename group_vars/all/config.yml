@@ -133,12 +133,12 @@ babybuddy_config_folder: "{{ config_root }}/babybuddy"
 wallabag_config_folder: "{{ config_root }}/wallabag"
 wallabag_images_folder: "{{ wallabag_config_folder }}/images"
 wallabag_db_data_folder: "{{ wallabag_config_folder }}/data"
-wallabag_domain_name: wallabag.lan
+wallabag_domain_name: wallabag.kirelabs.org
 readeck_data_folder: "{{ config_root }}/readeck"
-readeck_domain_name: readeck.lan
+readeck_domain_name: readeck.kirelabs.org
 dockhand_data_folder: "{{ config_root }}/dockhand"
 linkding_data_folder: "{{ config_root }}/linkding"
-linkding_domain_name: linkding.lan
+linkding_domain_name: linkding.kirelabs.org
 n8n_config_folder: "{{ config_root }}/n8n"
 teddycloud_config_folder: "{{ config_root }}/teddycloud"
 timemachine_max_size: 1000G

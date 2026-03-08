@@ -36,19 +36,6 @@ model_list:
   {% endif %}
   {% endfor %}
 
-  # Standard Ollama models
-{% if ollama_models is defined %}
-{% for model in ollama_models %}
-  - model_name: {{ model.alias }}
-    litellm_params:
-      model: "ollama_chat/{{ model.name }}"
-      api_base: "http://{{ llm_inference_host }}:{{ ollama_port }}"
-{% if model.num_ctx is defined %}
-      num_ctx: {{ model.num_ctx }}
-{% endif %}
-{% endfor %}
-{% endif %}
-
   # OpenRouter models
 {% if openrouter_models is defined %}
 {% for model in openrouter_models %}

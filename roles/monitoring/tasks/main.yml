@@ -40,7 +40,7 @@
             wud.watch.digest: "true"
             homepage.group: "{{ services.uptime.group }}"
             homepage.name: "{{ services.uptime.name }}"
-            homepage.href: https://uptime.lan
+            homepage.href: https://{{ services.uptime.domain }}
             homepage.icon: mdi-server
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: uptime_kuma
@@ -66,12 +66,12 @@
             wud.link.template: https://github.com/fmartinou/whats-up-docker/releases/tag/$${major}.$${minor}.$${patch}
             homepage.group: "{{ services.wud.group }}"
             homepage.name: "{{ services.wud.name }}"
-            homepage.href: https://wud.lan
+            homepage.href: https://{{ services.wud.domain }}
             homepage.icon: mdi-docker
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: wud
             homepage.widget.type: whatsupdocker
-            homepage.widget.url: https://wud.lan
+            homepage.widget.url: https://{{ services.wud.domain }}
 
         dockhand:
           image: fnsys/dockhand:latest
@@ -85,7 +85,7 @@
           labels:
             homepage.group: "{{ services.dockhand.group }}"
             homepage.name: "{{ services.dockhand.name }}"
-            homepage.href: https://dockhand.lan
+            homepage.href: https://{{ services.dockhand.domain }}
             homepage.icon: mdi-docker
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: dockhand
@@ -136,7 +136,7 @@
             wud.tag.include: latest
             homepage.group: "{{ services.semaphore.group }}"
             homepage.name: "{{ services.semaphore.name }}"
-            homepage.href: https://semaphore.lan
+            homepage.href: https://{{ services.semaphore.domain }}
             homepage.icon: "mdi-play-circle"
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: semaphore

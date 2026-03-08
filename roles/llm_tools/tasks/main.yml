@@ -116,7 +116,7 @@
             wud.watch.digest: "true"
             homepage.group: "{{ services['litellm-ui'].group }}"
             homepage.name: "{{ services['litellm-ui'].name }}"
-            homepage.href: https://litellm-ui.lan
+            homepage.href: https://{{ services['litellm-ui'].domain }}
             homepage.icon: "{{ services['litellm-ui'].icon | default('litellm.png') }}"
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: "{{ litellm_proxy_container_name }}"
@@ -157,7 +157,7 @@
             wud.watch.digest: "true"
             homepage.group: "{{ services['open-webui'].group }}"
             homepage.name: "{{ services['open-webui'].name }}"
-            homepage.href: https://open-webui.lan
+            homepage.href: https://{{ services['open-webui'].domain }}
             homepage.icon: openai.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: open-webui
@@ -183,7 +183,7 @@
             GOOGLE_OAUTH_CLIENT_SECRET: "{{ google_workspace_oauth_client_secret }}"
             MCP_ENABLE_OAUTH21: "true"
             WORKSPACE_MCP_STATELESS_MODE: "true"
-            WORKSPACE_EXTERNAL_URL: "https://google-workspace-mcp.net"
+            WORKSPACE_EXTERNAL_URL: "https://{{ services['google-workspace-mcp'].domain }}"
             REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
             CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
           deploy:

@@ -33,12 +33,6 @@ class = ActiveConnection
 enabled = true
 ports = {{ comfyui_port | default(8188) }}
 
-# Check for active Ollama API connections (default port)
-[check.Ollama]
-class = ActiveConnection
-enabled = true
-ports = {{ ollama_port | default(11434) }}
-
 # Check for significant network activity on the primary interface
 [check.Network]
 class = NetworkBandwidth

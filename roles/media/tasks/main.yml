@@ -78,7 +78,7 @@
           labels:
             homepage.group: "{{ services.music.group }}"
             homepage.name: Navidrome
-            homepage.href: https://music.lan
+            homepage.href: https://{{ services.music.domain }}
             homepage.icon: navidrome.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: navidrome

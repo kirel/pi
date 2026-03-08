@@ -3,7 +3,10 @@
 
 - name: Set up MetaMCP environment variables
   ansible.builtin.set_fact:
-    metamcp_final_env: "{{ metamcp_env | default({}) }}"
+    metamcp_final_env: "{{ metamcp_env | default({}) | combine({
+      'APP_URL': 'https://' ~ services.metamcp.domain,
+      'NEXT_PUBLIC_APP_URL': 'https://' ~ services.metamcp.domain
+      }) }}"
 
 - name: Add OAuth environment variables (if enabled)
   ansible.builtin.set_fact:
@@ -80,7 +83,7 @@
             wud.watch.digest: "true"
             homepage.group: "{{ services['metamcp'].group }}"
             homepage.name: "{{ services['metamcp'].name }}"
-            homepage.href: https://metamcp.lan
+            homepage.href: https://{{ services.metamcp.domain }}
             homepage.icon: gateway.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: "{{ metamcp_container_name }}"
