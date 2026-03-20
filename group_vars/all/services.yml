@@ -31,26 +31,6 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ uptime_kuma_http_port }}"
     domain: uptime.kirelabs.org
-  wud:
-    name: What's up Docker?
-    target: homelab-nuc.lan
-    http_port: "{{ wud_http_port }}"
-    domain: wud.kirelabs.org
-    group: Monitoring
-  semaphore:
-    name: "Semaphore CI/CD"
-    target: "homelab-nuc.lan"
-    http_port: "{{ semaphore_http_port }}"
-    domain: semaphore.kirelabs.org
-    group: "Monitoring"
-    icon: "mdi-play-circle"
-  wallabag:
-    name: Wallabag
-    target: homelab-nuc.lan
-    http_port: "{{ wallabag_http_port }}"
-    domain: wallabag.kirelabs.org
-    group: Productivity
-    icon: wallabag
   readeck:
     name: Readeck
     target: homelab-nuc.lan
@@ -101,18 +81,6 @@ services:
     http_port: "{{ teddycloud_http_port }}"
     domain: teddycloud.kirelabs.org
     group: Family
-  babybuddy:
-    name: Baby Buddy
-    target: homelab-nuc.lan
-    http_port: "{{ babybuddy_http_port }}"
-    domain: bb.kirelabs.org
-    group: Family
-  portainer-homelab-nuc:
-    name: Portainer Homelab
-    target: homelab-nuc.lan
-    http_port: "{{ portainer_http_port }}"
-    domain: portainer-homelab.kirelabs.org
-    group: Monitoring
   glances-homelab-nuc:
     name: Glances Homelab
     target: homelab-nuc.lan
@@ -124,12 +92,6 @@ services:
     http_port: "{{ nodered_http_port }}"
     domain: nodered.kirelabs.org
     group: Smart Home
-  vscode:
-    name: Visual Studio Code
-    target: homelab-nuc.lan
-    http_port: "{{ vscode_http_port }}"
-    domain: vscode.kirelabs.org
-    group: Config
   z2m:
     name: Zigbee2MQTT
     target: homelab-nuc.lan
@@ -148,12 +110,6 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ grafana_http_port }}"
     domain: teslamate-grafana.kirelabs.org
-    group: Smart Home
-  frigate:
-    name: Frigate
-    target: homelab-nuc.lan
-    http_port: "{{ frigate_http_port }}"
-    domain: frigate.kirelabs.org
     group: Smart Home
   jellyfin:
     target: homelab-nuc.lan
@@ -238,12 +194,6 @@ services:
     domain: leases-nameserver.kirelabs.org
     target: nameserver-pi.lan
     http_port: 5005
-  portainer-nameserver-pi:
-    name: Portainer Nameserver
-    target: nameserver-pi.lan
-    http_port: "{{ portainer_http_port }}"
-    domain: portainer-nameserver.kirelabs.org
-    group: Monitoring
   glances-nameserver-pi:
     name: Glances Nameserver
     target: nameserver-pi.lan
@@ -284,13 +234,6 @@ services:
     domain: chatterbox-ui.kirelabs.org
     group: AI
     icon: audio
-  portainer-ailab-ubuntu:
-    name: Portainer AI Lab
-    target: ailab-ubuntu.lan
-    http_port: "{{ portainer_http_port }}"
-    domain: portainer-ailab.kirelabs.org
-    group: Monitoring
-    icon: portainer.png
   glances-ailab-ubuntu:
     name: Glances AI Lab
     target: ailab-ubuntu.lan

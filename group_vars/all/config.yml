@@ -20,15 +20,11 @@ zigbee_dongle_ip: "{{ ip_prefix }}226"
 ailab_proxmox_ip: "{{ hostvars['ailab-proxmox'].ansible_host }}"
 cidr: 192.168.50.0/24
 pihole_http_port: 81
-portainer_http_port: 9002
 glances_http_port: 61208
 homeassistant_http_port: 8123
 homepage_http_port: 3002
 music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
-wud_http_port: 3000
-semaphore_http_port: 3005
-vscode_http_port: 8443
 nodered_http_port: 1880
 mosquitto_address: "{{ ansible_default_ipv4.address }}"
 mosquitto_port: 1883
@@ -47,8 +43,6 @@ llamaswap_port: 9292 # llama-swap API port
 llamaswap_container_name: llama-swap
 llamaswap_config_path: "{{ config_root }}/llama-swap"
 
-babybuddy_http_port: 8008
-wallabag_http_port: 8010
 readeck_http_port: 8011
 linkding_http_port: 8012
 n8n_http_port: 5678
@@ -103,7 +97,6 @@ music_assistant_data_folder: "{{ config_root }}/music-assistant"
 music_assistant_media_folder: /tank/medien/Musik
 frigate_config_folder: "{{ config_root }}/frigate"
 frigate_media_folder: /tank/medien/Frigate
-vscode_config_folder: "{{ config_root }}/vscode"
 nodered_config_folder: "{{ config_root }}/node-red"
 mosquitto_config_folder: "{{ config_root }}/mosquitto/config"
 mosquitto_data_folder: "{{ config_root }}/mosquitto/data"
@@ -129,11 +122,6 @@ openwakeword_data_folder: "{{ config_root }}/openwakeword"
 satellite_data_folder: "{{ config_root }}/satellite"
 piper_data_folder: "{{ config_root }}/piper"
 whisper_data_folder: "{{ config_root }}/whisper"
-babybuddy_config_folder: "{{ config_root }}/babybuddy"
-wallabag_config_folder: "{{ config_root }}/wallabag"
-wallabag_images_folder: "{{ wallabag_config_folder }}/images"
-wallabag_db_data_folder: "{{ wallabag_config_folder }}/data"
-wallabag_domain_name: wallabag.kirelabs.org
 readeck_data_folder: "{{ config_root }}/readeck"
 readeck_domain_name: readeck.kirelabs.org
 dockhand_data_folder: "{{ config_root }}/dockhand"

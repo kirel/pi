@@ -8,8 +8,6 @@
   with_items:
     - path: "{{ uptime_kuma_data_folder }}"
     - path: "{{ dockhand_data_folder }}"
-    - path: "{{ semaphore_data_folder }}"
-      owner: "1001"  # Semaphore container runs as user 1001
 
 - name: Start monitoring
   community.docker.docker_compose_v2:
@@ -45,34 +43,6 @@
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: uptime_kuma
 
-        whatsupdocker:
-          image: fmartinou/whats-up-docker:6.3.0
-          container_name: wud
-          volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-          ports:
-            - "{{ wud_http_port }}:3000"
-          restart: always
-          environment:
-            WUD_WATCHER_LOCAL_SOCKET: /var/run/docker.sock
-            WUD_WATCHER_NAMESERVERPI_HOST: "{{ nameserver_pi_ip }}"
-            # - WUD_WATCHER_AILABUM_HOST={{ ailab_um_ip }}
-            WUD_TRIGGER_MQTT_MOSQUITTO_URL: mqtt://{{ mosquitto_address }}:{{ mosquitto_port }}
-            WUD_TRIGGER_MQTT_MOSQUITTO_HASS_ENABLED: "true"
-            WUD_REGISTRY_GHCR_TOKEN: "{{ gh_access_token }}"
-            WUD_REGISTRY_LSCR_TOKEN: "{{ gh_access_token }}"
-          labels:
-            wud.tag.include: ^\d+\.\d+\.\d+$$
-            wud.link.template: https://github.com/fmartinou/whats-up-docker/releases/tag/$${major}.$${minor}.$${patch}
-            homepage.group: "{{ services.wud.group }}"
-            homepage.name: "{{ services.wud.name }}"
-            homepage.href: https://{{ services.wud.domain }}
-            homepage.icon: mdi-docker
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: wud
-            homepage.widget.type: whatsupdocker
-            homepage.widget.url: https://{{ services.wud.domain }}
-
         dockhand:
           image: fnsys/dockhand:latest
           container_name: dockhand
@@ -90,56 +60,6 @@
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: dockhand
 
-        semaphore:
-          image: semaphoreui/semaphore:latest
-          container_name: semaphore
-          ports:
-            - "{{ semaphore_http_port }}:{{ semaphore_port_internal }}"
-          environment:
-            # Database - keep it simple with SQLite
-            SEMAPHORE_DB_DIALECT: sqlite
-
-            # Admin user
-            SEMAPHORE_ADMIN: "semaphore"
-            SEMAPHORE_ADMIN_PASSWORD: "{{ vault_semaphore_admin_password | default('changeme') }}"
-            SEMAPHORE_ADMIN_NAME: "Semaphore Admin"
-            SEMAPHORE_ADMIN_EMAIL: "semaphore@{{ ansible_domain | default('lan') }}"
-
-            # Web interface
-            SEMAPHORE_WEB_ROOT: "https://semaphore.lan"
-            SEMAPHORE_PORT: "{{ semaphore_port_internal }}"
-            SEMAPHORE_INTERFACE: "0.0.0.0"
-
-            # Security
-            SEMAPHORE_PASSWORD_LOGIN_DISABLED: "false"
-            SEMAPHORE_NON_ADMIN_CAN_CREATE_PROJECT: "false"
-            SEMAPHORE_MAX_PARALLEL_TASKS: "2"
-
-            # Ansible configuration
-            ANSIBLE_HOST_KEY_CHECKING: "false"
-
-            # Notifications (disabled for homelab simplicity)
-            SEMAPHORE_EMAIL_ALERT: "false"
-            SEMAPHORE_TELEGRAM_ALERT: "false"
-            SEMAPHORE_SLACK_ALERT: "false"
-
-            # Logging
-            SEMAPHORE_TASK_LOG_ENABLED: "true"
-
-          volumes:
-            - "{{ semaphore_data_folder }}:/var/lib/semaphore"
-          restart: unless-stopped
-          dns:
-            - "{{ nameserver_pi_ip }}"
-            - "{{ homelab_nuc_ip }}"
-          labels:
-            wud.tag.include: latest
-            homepage.group: "{{ services.semaphore.group }}"
-            homepage.name: "{{ services.semaphore.name }}"
-            homepage.href: https://{{ services.semaphore.domain }}
-            homepage.icon: "mdi-play-circle"
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: semaphore
   register: output
 
 - ansible.builtin.debug:
@@ -148,6 +68,4 @@
 - ansible.builtin.assert:
     that:
       - output.containers | selectattr('Name', 'equalto', 'uptime_kuma') | map(attribute='State') | list | first == 'running'
-      - output.containers | selectattr('Name', 'equalto', 'wud') | map(attribute='State') | list | first == 'running'
       - output.containers | selectattr('Name', 'equalto', 'dockhand') | map(attribute='State') | list | first == 'running'
-      - output.containers | selectattr('Name', 'equalto', 'semaphore') | map(attribute='State') | list | first == 'running'

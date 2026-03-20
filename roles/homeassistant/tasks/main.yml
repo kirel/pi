@@ -17,7 +17,6 @@
     - "{{ music_assistant_data_folder }}"
     - "{{ frigate_config_folder }}"
     - "{{ frigate_media_folder }}"
-    - "{{ vscode_config_folder }}"
     - "{{ nodered_config_folder }}"
     - "{{ mosquitto_config_folder }}"
     - "{{ mosquitto_data_folder }}"
@@ -84,7 +83,6 @@
     - "{{ homeassistant_config_folder }}"
     - "{{ frigate_config_folder }}"
     - "{{ frigate_media_folder }}"
-    - "{{ vscode_config_folder }}"
     - "{{ nodered_config_folder }}"
     - "{{ mosquitto_config_folder }}"
     - "{{ mosquitto_data_folder }}"
@@ -162,33 +160,6 @@
             - homepage.icon=home-assistant.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=music-assistant-server
-        code-server:
-          image: lscr.io/linuxserver/code-server
-          container_name: code-server
-          environment:
-            - PUID={{ uid }}
-            - PGID={{ uid }}
-            - TZ=Europe/Berlin
-            - UMASK=007
-            # - PROXY_DOMAIN=code-server.my.domain # optional
-            # - DEFAULT_WORKSPACE=/config/workspace # optional
-          volumes:
-            - "{{ vscode_config_folder }}:/config"
-            - "{{ homeassistant_config_folder }}:/config/workspace"
-          ports:
-            - 8443:8443
-          security_opt:
-            - seccomp:unconfined # because strange PI issue see https://stackoverflow.com/questions/69775057/docker-image-fails-to-run-on-raspberry-pi-with-strange-node-error
-          restart: unless-stopped
-          labels:
-            - wud.tag.include=latest
-            - wud.watch.digest=true
-            - homepage.group={{ services.vscode.group }}
-            - homepage.name={{ services.vscode.name }}
-            - homepage.href=https://{{ services.vscode.domain }}
-            - homepage.icon=vscode.png
-            - homepage.server={{ inventory_hostname }}
-            - homepage.container=code-server
         # nodered:
         #   container_name: nodered
         #   image: nodered/node-red

@@ -7,8 +7,7 @@
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
-    - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
-    - { role: portainer, become: true, tags: [docker, portainer] }
+    - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
     - { role: glances, become: true, tags: [glances] }
     - { role: zfs, become: true, tags: [zfs, storage] }
     - { role: storage, become: true, tags: [storage] }
@@ -19,14 +18,12 @@
     - { role: pihole, become: true, tags: [pihole] }
     - { role: homeassistant, become: true, tags: [ha] }
     - { role: fix_hass_bluetooth, become: true, tags: [ha] }
-    - { role: babybuddy, become: true, tags: [babybuddy] }
     - { role: media, become: true, tags: [media] }
     - { role: monitoring, become: true, tags: [monitoring] }
     - { role: homepage, become: true, tags: [homepage] }
     - { role: llm_tools, become: true, tags: [llm, llm-tools] }
     - { role: llm_observability, become: true, tags: [llm, llm-observability] }
     - { role: metamcp, become: true, tags: [metamcp] }
-    - { role: wallabag, become: true, tags: [wallabag] }
     - { role: readeck, become: true, tags: [readeck] }
     - { role: linkding, become: true, tags: [linkding] }
     - { role: changedetection, become: true, tags: [changedetection] }
@@ -43,9 +40,8 @@
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
-    - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
+    - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
-    - { role: portainer, become: true, tags: [docker, portainer] }
     - { role: glances, become: true, tags: [glances] }
     - { role: pihole, become: true, tags: [pihole] }
 
@@ -58,7 +54,7 @@
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
-    - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
+    - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
     - { role: glances, become: true, tags: [glances] }
     - { role: virtualhere, become: true, tags: [virtualhere] }
 
@@ -73,8 +69,7 @@
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
-    - { role: dockerproxy, become: true, tags: [docker, dockerproxy, portainer] }
-    - { role: portainer, become: true, tags: [docker, portainer] }
+    - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
     - { role: gpu, become: true, tags: [gpu, gpu-driver] }
     - { role: glances, become: true, tags: [glances], vars: { glances_nvidia_support: true } }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
