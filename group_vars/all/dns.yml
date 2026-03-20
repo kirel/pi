@@ -3,3 +3,6 @@
 additional_dns_entries:
   router.lan: "{{ router_ip }}"
   proxmox.lan: "{{ ailab_proxmox_ip }}"
+  ha-hausfee.lan: "{{ ip_prefix }}12"
+  pihole-nameserver.lan: "{{ nameserver_pi_ip }}"
+  pihole-homelab.lan: "{{ homelab_nuc_ip }}"

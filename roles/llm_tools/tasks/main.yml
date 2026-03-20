@@ -83,6 +83,10 @@
           container_name: "{{ litellm_proxy_container_name }}"
           ports:
             - "{{ litellm_proxy_port_host }}:{{ litellm_proxy_port_container }}"
+          ulimits:
+            stack:
+              soft: 67108864
+              hard: 67108864
           volumes:
             - "{{ litellm_proxy_config_full_host_path }}:/app/config.yaml:ro"
             - /etc/ssl/certs:/etc/ssl/certs:ro
@@ -95,14 +99,12 @@
             REDIS_PORT: "{{ litellm_redis_port_container }}"
             GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
-            ANTHROPIC_API_KEY: "{{ ANTHROPIC_API_KEY }}"
-            MINIMAX_API_KEY: "{{ MINIMAX_API_KEY }}"
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
           command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"]
           deploy:
             resources:
               limits:
-                memory: 2g
+                memory: 3g
           depends_on:
             postgres:
               condition: service_healthy

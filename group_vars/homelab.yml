@@ -17,4 +17,4 @@ backup_retention:
   keep_monthly: 12
 
 # Monitoring
-uptime_kuma_push_url: "https://uptime.lan/api/push/xvea108uQa"
+uptime_kuma_push_url: "https://uptime.kirelabs.org/api/push/xvea108uQa"

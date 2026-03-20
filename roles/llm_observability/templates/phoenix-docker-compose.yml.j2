@@ -11,4 +11,11 @@ services:
       - TZ={{ system_timezone }}
     volumes:
       - "{{ phoenix_data_folder }}:{{ phoenix_working_dir }}"
+    labels:
+      homepage.group: "{{ services.phoenix.group }}"
+      homepage.name: "{{ services.phoenix.name }}"
+      homepage.href: "https://{{ services.phoenix.domain }}"
+      homepage.icon: "{{ services.phoenix.icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: "phoenix"
     restart: unless-stopped

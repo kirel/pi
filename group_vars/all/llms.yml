@@ -4,7 +4,7 @@ model_group_alias:
   home-smart: "Qwen3.5-35B-A3B-Instruct"
   home-vision: "Qwen3.5-35B-A3B-Instruct"
   home-tiny: "Qwen3.5-35B-A3B-Instruct-nothink"
-  home-embed: "embeddinggemma"
+  home-embed: "qwen3-embedding"
 
 litellm_fallbacks:
   - home: ["home-tiny", "home-remote"]
@@ -19,32 +19,6 @@ openrouter_models:
   - minimax/minimax-m2.5
 
 llamaswap_models:
-  - alias: Qwen3-VL-8B-Instruct
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3-VL-8B-Instruct-GGUF:Q8_K_XL
-      --port ${PORT}
-      --n-predict 16384
-      --n-gpu-layers 99
-      -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --top-p 0.8
-      --top-k 20
-      --temp 0.7
-      --min-p 0.0
-      --presence-penalty 1.5
-      --jinja
-      --fit on
-      --fit-target 2500
-      -np 2
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-
   - alias: Qwen3-Coder-30B-A3B-Instruct
     cmd: >-
       /app/llama-server
@@ -86,40 +60,11 @@ llamaswap_models:
       --fit on
       --fit-target 2500
     supports_function_calling: true
-    supports_vision: false
+    supports_vision: true
     supports_reasoning: false
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-
-  - alias: GLM-4.6V-Flash
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/GLM-4.6V-Flash-GGUF:Q8_K_XL
-      --port ${PORT}
-      --n-gpu-layers 99
-      -fa on
-      --cache-type-k q8_0
-      --cache-type-v q4_1
-      --top-p 0.6
-      --top-k 2
-      --temp 0.8
-      --repeat-penalty 1.1
-      --n-predict 16384
-      --jinja
-      --fit on
-      --fit-target 2500
-      -np 2
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: true
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-    variants:
-      nothink:
-        chat_template_kwargs:
-          enable_thinking: false
 
   - alias: Qwen3.5-35B-A3B-Instruct
     cmd: >-
@@ -152,66 +97,36 @@ llamaswap_models:
         chat_template_kwargs:
           enable_thinking: false
 
-  - alias: Qwen3-Next-80B-A3B-Instruct
+  - alias: Qwen3.5-27B-Instruct
     cmd: >-
       /app/llama-server
-      -hf unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF:Q4_K_XL
+      -hf unsloth/Qwen3.5-27B-GGUF:UD-Q4_K_XL
       --port ${PORT}
-      --flash-attn auto
+      --n-predict 32768
       --n-gpu-layers 99
-      --ubatch-size 512
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --temp 0.7
-      --top-p 0.8
+      -fa on
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --temp 1.0
+      --top-p 0.95
       --top-k 20
       --min-p 0.0
-      --presence-penalty 1.0
-      --n-predict 16384
-      --n-cpu-moe 15
+      --presence-penalty 1.5
       --jinja
       --fit on
       --fit-target 2500
-      --swa-checkpoints 0
     supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-
-  - alias: gpt-oss-120b
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/gpt-oss-120b-GGUF:F16
-      --port ${PORT}
-      --ctx-size 16384
-      --n-predict 16384
-      --n-gpu-layers 99
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --temp 1.0
-      --min-p 0.0
-      --top-p 1.0
-      --top-k 0.0
-      -ot ".*attn_.*=CUDA0"
-      -ot ".*ffn_(norm|gate_inp).*=CUDA0"
-      -ot "blk\\.([0-9]|1[0-9]|2[0-4])\\.ffn_.*_exps.*=CPU"
-      -ot "blk\\.(2[5-9]|3[0-5])\\.ffn_.*_exps.*=CUDA0"
-      --jinja
-    supports_function_calling: true
-    supports_vision: false
+    supports_vision: true
     supports_reasoning: true
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
     variants:
-      high:
+      nothink:
+        temperature: 0.7
+        top_p: 0.8
         chat_template_kwargs:
-          reasoning_effort: "high"
-      low:
-        chat_template_kwargs:
-          reasoning_effort: "low"
+          enable_thinking: false
 
   - alias: GPT-OSS-20B-F16
     cmd: >-
@@ -242,101 +157,28 @@ llamaswap_models:
         chat_template_kwargs:
           reasoning_effort: "low"
 
-  - alias: GPT-OSS-20B-vLLM
-    cmd: >-
-      docker run --rm --init --name ${MODEL_ID}
-      --runtime nvidia --gpus '"device={{ampere_gpu_uuid}}"'
-      --network container:llama-swap
-      -v {{ llamaswap_config_path }}/cache:/root/.cache
-      --ipc=host
-      -e HF_HOME=/root/.cache/huggingface
-      vllm/vllm-openai:v0.14.0
-      openai/gpt-oss-20b
-      --served-model-name ${MODEL_ID}
-      --port ${PORT}
-      --gpu-memory-utilization 0.85
-      --max-num-seqs 1
-      --max-num-batched-tokens 2048
-      --max-model-len auto
-      --stream-interval 1
-      --tool-call-parser openai
-      --enable-auto-tool-choice
-    cmdStop: docker stop ${MODEL_ID}
-    supports_function_calling: true
-    supports_vision: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-    variants:
-      high:
-        extra_body:
-          reasoning_effort: "high"
-      low:
-        extra_body:
-          reasoning_effort: "low"
-
-  - alias: GLM-4.7-Flash
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/GLM-4.7-Flash-GGUF:GLM-4.7-Flash-UD-Q4_K_XL.gguf
-      --port ${PORT}
-      -fa on
-      -kvu
-      --cache-type-k q8_0
-      --cache-type-v q4_1
-      --fit on
-      --fit-target 2500
-      -np 4
-      -sps 0.5
-      --cache-reuse 256
-      --slot-save-path /root/.cache
-      --seed 3407
-      --temp 0.7
-      --top-p 1.0
-      --min-p 0.01
-      --jinja
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: true
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-    variants:
-      nothink:
-        chat_template_kwargs:
-          enable_thinking: false
-
-  - alias: Qwen3-Coder-Next-Q3
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3-Coder-Next-GGUF:Q3_K_XL
-      --port ${PORT}
-      --n-predict 16384
-      --flash-attn auto
-      --n-gpu-layers 99
-      --ubatch-size 512
-      --cache-type-k q4_1
-      --cache-type-v q4_1
-      --temp 1.0
-      --top-p 0.95
-      --min-p 0.01
-      --top-k 40
-      --seed 3407
-      --jinja
-      --fit on
-      --fit-target 2500
-      --swa-checkpoints 0
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-
   - alias: embeddinggemma
     cmd: >-
       /app/llama-server
       -hf ggml-org/embeddinggemma-300m-qat-q8_0-GGUF
+      --port ${PORT}
+      --embeddings
+      --ctx-size 8192
+      --batch-size 8192
+      --n-gpu-layers 99
+      --fit off
+    supports_function_calling: false
+    supports_vision: false
+    supports_reasoning: false
+    encoding_format: "float"
+    group: "forever"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+
+  - alias: qwen3-embedding
+    cmd: >-
+      /app/llama-server
+      -hf Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0
       --port ${PORT}
       --embeddings
       --ctx-size 8192

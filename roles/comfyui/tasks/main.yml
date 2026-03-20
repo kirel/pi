@@ -56,3 +56,14 @@
   # Retry in case container was just started
   retries: 3
   delay: 2
+
+- name: Configure restricted SSH key for OpenClaw (ComfyUI docker exec only)
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    key: "{{ comfyui_openclaw_ssh_key }}"
+    key_options: 'command="docker exec {{ comfyui_container_name }} sh -c \"$SSH_ORIGINAL_COMMAND\"",restrict'
+    state: present
+    exclusive: false
+    manage_dir: true
+  become: true
+  when: comfyui_openclaw_ssh_enabled | default(true)

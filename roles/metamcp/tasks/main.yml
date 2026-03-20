@@ -87,6 +87,10 @@
             homepage.icon: gateway.png
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: "{{ metamcp_container_name }}"
+          deploy:
+            resources:
+              limits:
+                memory: 1536m
           depends_on:
             postgres:
               condition: service_healthy
