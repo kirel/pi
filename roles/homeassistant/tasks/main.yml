@@ -1,12 +1,4 @@
 ---
-- name: Allow conbee with non-root user
-  ansible.builtin.template:
-    src: 50-ttyacm.rules
-    dest: /etc/udev/rules.d/50-ttyacm.rules
-    owner: root
-    group: root
-  notify: Reload udev rules
-
 - name: Create config folders
   ansible.builtin.file:
     path: "{{ item }}"
