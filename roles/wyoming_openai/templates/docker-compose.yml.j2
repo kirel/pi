@@ -44,8 +44,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    labels:
-      - 'wud.tag.include=^v\d+\.\d+\.\d+$'
     runtime: nvidia
     deploy:
       resources:
@@ -159,8 +157,6 @@ services:
       chatterbox-tts:
         condition: service_healthy
 {% endif %}
-    labels:
-      - 'wud.tag.include=^v\d+\.\d+\.\d+$'
 
 {% if wyoming_openai_enable_chatterbox %}
   wyoming_openai_chatterbox:
@@ -187,6 +183,4 @@ services:
     depends_on:
       chatterbox-tts:
         condition: service_healthy
-    labels:
-      - 'wud.tag.include=^v\d+\.\d+\.\d+$'
 {% endif %}

@@ -70,8 +70,6 @@
           cap_add:
             - NET_ADMIN
           labels:
-            - wud.tag.include=latest
-            - wud.watch.digest=true
             - homepage.group=Network
             - homepage.name=Caddy
             - homepage.icon=mdi-server

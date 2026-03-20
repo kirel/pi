@@ -51,8 +51,6 @@
           networks:
             - dockerproxy
             - homepage
-          labels:
-            wud.tag.include: ^v\d+\.\d+\.\d+$$
   register: output
 
 - name: Assert homepage container is running

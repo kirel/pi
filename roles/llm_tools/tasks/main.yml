@@ -114,8 +114,6 @@
           networks:
             - llm-network
           labels:
-            wud.tag.include: main
-            wud.watch.digest: "true"
             homepage.group: "{{ services['litellm-ui'].group }}"
             homepage.name: "{{ services['litellm-ui'].name }}"
             homepage.href: https://{{ services['litellm-ui'].domain }}
@@ -155,8 +153,6 @@
               limits:
                 memory: 2g
           labels:
-            wud.tag.include: main
-            wud.watch.digest: "true"
             homepage.group: "{{ services['open-webui'].group }}"
             homepage.name: "{{ services['open-webui'].name }}"
             homepage.href: https://{{ services['open-webui'].domain }}

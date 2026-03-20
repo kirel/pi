@@ -89,8 +89,6 @@
             teslamate-db:
               condition: service_healthy
           labels:
-            - wud.tag.include=^\d+\.\d+\.\d+$$
-            - wud.link.template=https://github.com/adriankumpf/teslamate/releases/tag/$${major}.$${minor}.$${patch}
             - homepage.group={{ services.teslamate.group }}
             - homepage.name={{ services.teslamate.name }}
             - homepage.href=https://{{ services.teslamate.domain }}

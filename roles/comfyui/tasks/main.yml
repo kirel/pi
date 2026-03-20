@@ -30,7 +30,6 @@
       CLI_ARGS: "{{ comfyui_cli_args }}"
       HOME: "/root"
     labels:
-      wud.tag.include: "^v\\d+\\.\\d+\\.\\d+$$"
       homepage.group: "{{ services.comfyui.group }}"
       homepage.name: "{{ services.comfyui.name }}"
       homepage.href: "https://{{ services.comfyui.domain }}"

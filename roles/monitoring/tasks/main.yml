@@ -34,8 +34,6 @@
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/caddy_local_root.crt
           network_mode: bridge
           labels:
-            wud.tag.include: ^2$$
-            wud.watch.digest: "true"
             homepage.group: "{{ services.uptime.group }}"
             homepage.name: "{{ services.uptime.name }}"
             homepage.href: https://{{ services.uptime.domain }}

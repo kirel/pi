@@ -119,8 +119,6 @@
             - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
             - SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
           labels:
-            - wud.tag.include=^\d+\.\d+\.\d+$$
-            - wud.link.template=https://github.com/home-assistant/core/releases/tag/$${major}.$${minor}.$${patch}
             - homepage.group={{ services.homeassistant.group }}
             - homepage.name={{ services.homeassistant.name }}
             - homepage.href=https://{{ services.homeassistant.domain }}
@@ -144,8 +142,6 @@
           environment:
             - LOG_LEVEL=info
           labels:
-            - wud.tag.include=^\d+\.\d+\.\d+$$
-            - wud.link.template=https://github.com/music-assistant/server/releases/tag/$${major}.$${minor}.$${patch}
             - homepage.group={{ services.musicassistant.group }}
             - homepage.name={{ services.musicassistant.name }}
             - homepage.href=https://{{ services.musicassistant.domain }}
@@ -181,9 +177,6 @@
             options:
               max-size: "10m"
               max-file: "3"
-          labels:
-            - wud.tag.include=latest
-            - wud.watch.digest=true
         zigbee2mqtt:
           container_name: zigbee2mqtt
           image: koenkk/zigbee2mqtt:latest
@@ -199,8 +192,6 @@
             - TZ=Europe/Berlin
           restart: always
           labels:
-            - wud.tag.include=latest
-            - wud.watch.digest=true
             - homepage.group={{ services.z2m.group }}
             - homepage.name={{ services.z2m.name }}
             - homepage.href=https://{{ services.z2m.domain }}
@@ -261,8 +252,6 @@
         #   environment:
         #     FRIGATE_RTSP_PASSWORD: password
         #   labels:
-        #     - wud.tag.include=^\d+\.\d+\.\d+$$
-        #     - wud.link.template=https://github.com/blakeblackshear/frigate/releases/tag/$${major}.$${minor}.$${patch}
         #     - homepage.group={{ services.frigate.group }}
         #     - homepage.name={{ services.frigate.name }}
         #     - homepage.href=https://frigate.lan

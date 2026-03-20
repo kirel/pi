@@ -198,8 +198,6 @@
             - SYS_NICE
           restart: unless-stopped
           labels:
-            wud.tag.include: latest
-            wud.watch.digest: true
             homepage.group: "{{ pihole_service.group }}"
             homepage.name: "{{ pihole_service.name }}"
             homepage.href: https://{{ pihole_service.domain }}/admin/
@@ -230,8 +228,6 @@
             - "{{ pihole_config_folder }}/dhcp.leases:/var/lib/misc/dnsmasq.leases:ro"
           restart: unless-stopped
           labels:
-            wud.tag.include: latest
-            wud.watch.digest: true
             homepage.group: "{{ leases_service.group }}"
             homepage.name: "{{ leases_service.name }}"
             homepage.href: https://{{ leases_service.domain }}

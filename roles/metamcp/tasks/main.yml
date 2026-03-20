@@ -79,8 +79,6 @@
           volumes:
             - "/usr/local/share/ca-certificates/caddy_local_root.crt:/certs/caddy_local_root.crt:ro"
           labels:
-            wud.tag.include: latest
-            wud.watch.digest: "true"
             homepage.group: "{{ services['metamcp'].group }}"
             homepage.name: "{{ services['metamcp'].name }}"
             homepage.href: https://{{ services.metamcp.domain }}

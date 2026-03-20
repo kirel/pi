@@ -107,7 +107,6 @@
             - 21027:21027/udp
           restart: unless-stopped
           labels:
-            - wud.tag.include=^\d+\.\d+\.\d+$$
             - homepage.group={{ services['syncthing-homelab'].group }}
             - homepage.name={{ services['syncthing-homelab'].name }}
             - homepage.href=https://{{ services['syncthing-homelab'].domain }}
