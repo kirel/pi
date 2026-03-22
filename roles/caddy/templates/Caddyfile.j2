@@ -44,6 +44,12 @@ danishkirel.asuscomm.com {
                 flush_interval -1
                 {% endif %}
         }
+        {% if props.basic_auth is defined %}
+        @external_{{ service }} not remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.1 ::1
+        basic_auth @external_{{ service }} {
+                {{ props.basic_auth.user }} {{ props.basic_auth.password_hash }}
+        }
+        {% endif %}
         {% set domain = props.domain | default(service ~ ".lan") %}
         {% if not props.public | default(false) %}
         import internal_only
