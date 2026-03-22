@@ -249,6 +249,17 @@ services:
     nodocker: true
     group: NAS
     icon: syncthing.png
+  brumm:
+    name: Brumm
+    target: clawd.lan
+    http_port: 3333
+    domain: brumm.kirelabs.org
+    group: Games
+    icon: mdi-car-sports
+    public: true
+    basic_auth:
+      user: brumm
+      password_hash: "$2y$05$E7.emRlW0JVHweO08JKGu.1gOwnmqIplqI2S97vu269VeRoEs0puS"
   google-workspace-mcp:
     name: Google Workspace MCP
     target: homelab-nuc.lan
