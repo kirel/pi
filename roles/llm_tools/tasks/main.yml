@@ -80,6 +80,7 @@
         litellm-proxy:
           image: "{{ litellm_proxy_image }}"
           pull_policy: always
+          init: true
           container_name: "{{ litellm_proxy_container_name }}"
           ports:
             - "{{ litellm_proxy_port_host }}:{{ litellm_proxy_port_container }}"
