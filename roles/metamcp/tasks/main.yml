@@ -26,6 +26,21 @@
     metamcp_final_env: "{{ metamcp_final_env | combine({'REDIS_URL': metamcp_redis_url}) }}"
   when: metamcp_redis_enabled | bool
 
+- name: Create MetaMCP build directory
+  ansible.builtin.file:
+    path: "{{ metamcp_build_dir }}"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Template MetaMCP Dockerfile
+  ansible.builtin.template:
+    src: Dockerfile.j2
+    dest: "{{ metamcp_build_dir }}/Dockerfile"
+    mode: '0644'
+  become: true
+  register: metamcp_dockerfile
+
 - name: Create PostgreSQL volume
   community.docker.docker_volume:
     name: "{{ metamcp_postgres_volume_name }}"
@@ -69,8 +84,9 @@
           networks:
             - default
         metamcp:
-          image: "{{ metamcp_image }}"
-          pull_policy: always
+          build:
+            context: "{{ metamcp_build_dir }}"
+            dockerfile: Dockerfile
           container_name: "{{ metamcp_container_name }}"
           restart: unless-stopped
           environment: "{{ metamcp_final_env | combine({'NODE_EXTRA_CA_CERTS': '/certs/caddy_local_root.crt'}) }}"

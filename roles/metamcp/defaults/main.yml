@@ -5,6 +5,7 @@
 metamcp_network_name: "llm-network"  # Reuse the same network as llm_tools
 metamcp_image: "ghcr.io/metatool-ai/metamcp:latest"
 metamcp_container_name: "metamcp"
+metamcp_build_dir: "/opt/metamcp-build"
 
 # Port configuration
 metamcp_port_host: 8015  # Host port for MetaMCP

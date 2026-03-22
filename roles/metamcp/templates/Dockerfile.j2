@@ -1,0 +1,17 @@
+# Use the base MetaMCP image
+FROM {{ metamcp_image }}
+
+# Use multi-stage copy to install uv and uvx binaries
+# Copy from the official uv image which is distroless/binary-only
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Set environment variables for uv integration
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_TOOL_BIN_DIR=/usr/local/bin \
+    PATH="/usr/local/bin:$PATH"
+
+# We skip apt-get update to avoid GPG errors from the base image's repositories.
+# uv is a standalone binary and can manage its own python versions if needed.
+# However, many MCP servers expect 'python3' to be available.
+# We'll check if it's already there or if we can manage without it.
