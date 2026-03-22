@@ -163,7 +163,7 @@
         #   restart: unless-stopped
         mosquitto:
           container_name: mosquitto
-          image: eclipse-mosquitto:latest
+          image: eclipse-mosquitto:2.1.2
           user: "{{ uid }}:{{ uid }}"
           ports:
             - "{{ mosquitto_port }}:1883"
