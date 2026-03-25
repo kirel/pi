@@ -22,7 +22,7 @@ litellm_redis_data_dir: "{{ llm_base_config_path }}/litellm/redis"
 
 
 # --- LiteLLM Proxy Settings ---
-litellm_proxy_image: "ghcr.io/berriai/litellm:main-stable"
+litellm_proxy_image: "ghcr.io/berriai/litellm:main-stable@sha256:3b3f99817e8708fc5cb440ab3c020e710bf3f69ef603645322fd47995d4b3835"
 litellm_proxy_container_name: "litellm-proxy-container"
 litellm_proxy_config_dir_host: "{{ llm_base_config_path }}/litellm"
 litellm_proxy_config_filename: "config.yaml"
