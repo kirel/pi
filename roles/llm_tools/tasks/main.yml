@@ -102,6 +102,12 @@
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
           command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"]
+          healthcheck:
+            test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:{{ litellm_proxy_port_container }}/health/readiness')\""]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 60s
           deploy:
             resources:
               limits:
@@ -167,6 +173,23 @@
             litellm-proxy:
               condition: service_started
             # mcp-proxy removed - using MetaMCP instead
+
+        autoheal:
+          image: willfarrell/autoheal
+          pull_policy: always
+          container_name: litellm-autoheal
+          restart: unless-stopped
+          environment:
+            AUTOHEAL_CONTAINER_LABEL: all
+            AUTOHEAL_INTERVAL: 30
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+          deploy:
+            resources:
+              limits:
+                memory: 64m
+          networks:
+            - llm-network
 
         google-workspace-mcp:
           image: "{{ google_workspace_mcp_image }}"
