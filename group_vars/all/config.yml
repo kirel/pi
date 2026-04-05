@@ -28,7 +28,6 @@ uptime_kuma_http_port: 3001
 nodered_http_port: 1880
 mosquitto_address: "{{ ansible_default_ipv4.address }}"
 mosquitto_port: 1883
-mosquitto_websockets_port: 9001
 z2m_http_port: 8080
 frigate_http_port: 5000
 jellyfin_http_port: 8096

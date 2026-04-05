@@ -163,11 +163,10 @@
         #   restart: unless-stopped
         mosquitto:
           container_name: mosquitto
-          image: eclipse-mosquitto:2.1.2
+          image: eclipse-mosquitto:latest
           user: "{{ uid }}:{{ uid }}"
           ports:
             - "{{ mosquitto_port }}:1883"
-            - "{{ mosquitto_websockets_port }}:9001"
           volumes:
             - "{{ mosquitto_config_folder }}/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro"
             - "{{ mosquitto_data_folder }}:/mosquitto/data"
