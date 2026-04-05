@@ -3,6 +3,7 @@ version: '3.8'
 services:
   changedetection:
     image: {{ changedetection_image }}
+    pull_policy: always
     container_name: {{ changedetection_service_name }}
     restart: unless-stopped
     environment:
