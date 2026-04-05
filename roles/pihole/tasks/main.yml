@@ -74,6 +74,12 @@
     owner: "{{ username }}"
   notify: Reload pihole dns
 
+- name: Remove legacy wildcard DNS config
+  ansible.builtin.file:
+    path: "{{ dnsmasq_config_folder }}/05-wildcard-dns.conf"
+    state: absent
+  notify: Reload pihole dns
+
 - name: Construct static DHCP entries list
   ansible.builtin.set_fact:
     static_dhcp_list: >-
