@@ -23,7 +23,6 @@
     - { role: homepage, become: true, tags: [homepage] }
     - { role: llm_tools, become: true, tags: [llm, llm-tools] }
     - { role: llm_observability, become: true, tags: [llm, llm-observability] }
-    - { role: metamcp, become: true, tags: [metamcp] }
     - { role: readeck, become: true, tags: [readeck] }
     - { role: linkding, become: true, tags: [linkding] }
     - { role: changedetection, become: true, tags: [changedetection] }

@@ -12,6 +12,13 @@
   ansible.builtin.set_fact:
     litellm_proxy_config_full_host_path: "{{ litellm_proxy_config_dir_host }}/{{ litellm_proxy_config_filename }}"
 
+- name: Template LiteLLM Dockerfile
+  ansible.builtin.template:
+    src: Dockerfile.litellm.j2
+    dest: "{{ litellm_proxy_config_dir_host }}/Dockerfile"
+    mode: "0644"
+  become: true
+
 - name: Template LiteLLM Proxy config.yaml
   ansible.builtin.template:
     src: litellm_config.yaml.j2
@@ -78,8 +85,9 @@
             - llm-network
 
         litellm-proxy:
-          image: "{{ litellm_proxy_image }}"
-          pull_policy: always
+          build:
+            context: "{{ litellm_proxy_config_dir_host }}"
+            dockerfile: Dockerfile
           init: true
           container_name: "{{ litellm_proxy_container_name }}"
           ports:

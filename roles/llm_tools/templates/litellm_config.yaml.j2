@@ -85,6 +85,62 @@ litellm_settings:
   callbacks: ["arize_phoenix"]
   drop_params: true
 
+mcp_servers:
+  fetch:
+    transport: "stdio"
+    command: "uvx"
+    args: ["mcp-server-fetch", "--ignore-robots-txt"]
+    access_groups: ["coding_agents", "hausfee", "shrimp"]
+  tavily:
+    transport: "stdio"
+    command: "npx"
+    args: ["-y", "tavily-mcp"]
+    env:
+      TAVILY_API_KEY: "{{ tavily_api_key }}"
+    access_groups: ["coding_agents", "hausfee", "shrimp"]
+  hamcp:
+    transport: "stdio"
+    command: "uvx"
+    args: ["ha-mcp@latest"]
+    env:
+      HOMEASSISTANT_URL: "https://homeassistant.kirelabs.org"
+      HOMEASSISTANT_TOKEN: "{{ ha_access_token }}"
+      ENABLE_SKILLS: "true"
+      ENABLE_SKILLS_AS_TOOLS: "true"
+    access_groups: ["hausfee", "shrimp"]
+  n8n:
+    transport: "stdio"
+    command: "npx"
+    args: ["n8n-mcp"]
+    env:
+      MCP_MODE: "stdio"
+      LOG_LEVEL: "error"
+      N8N_API_KEY: "{{ n8n_mcp_api_key }}"
+      N8N_API_URL: "https://n8n.kirelabs.org"
+      DISABLE_CONSOLE_OUTPUT: "true"
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    access_groups: ["shrimp"]
+  todoist:
+    url: "https://ai.todoist.net/mcp"
+    auth_type: "bearer_token"
+    auth_value: "{{ todoist_api_token }}"
+    access_groups: ["hausfee", "shrimp"]
+  github:
+    url: "https://api.githubcopilot.com/mcp/"
+    auth_type: "bearer_token"
+    auth_value: "{{ github_mcp_token }}"
+    access_groups: ["coding_agents"]
+  notion:
+    transport: "stdio"
+    command: "npx"
+    args: ["-y", "@notionhq/notion-mcp-server"]
+    env:
+      OPENAPI_MCP_HEADERS: '{"Authorization": "Bearer {{ notion_api_token }}", "Notion-Version": "2022-06-28"}'
+    access_groups: ["coding_agents", "hausfee", "shrimp"]
+  craft:
+    url: "https://mcp.craft.do/links/EORHGAfauY2/mcp"
+    access_groups: ["hausfee", "shrimp"]
+
 general_settings:
   store_model_in_db: true
   store_prompts_in_spend_logs: false

@@ -155,13 +155,6 @@ services:
     domain: litellm-ui.kirelabs.org
     group: AI
     icon: litellm.png
-  metamcp:
-    name: MetaMCP
-    target: homelab-nuc.lan
-    http_port: "{{ metamcp_port_host }}"
-    domain: metamcp.kirelabs.org
-    group: AI
-    icon: gateway.png
   speaches:
     name: SPEACHES
     target: ailab-ubuntu.lan

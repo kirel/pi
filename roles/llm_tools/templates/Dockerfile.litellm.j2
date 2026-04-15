@@ -1,0 +1,9 @@
+FROM ghcr.io/berriai/litellm:main-v1.82.0-stable
+
+# Install uv/uvx for Python-based MCP stdio servers (ha-mcp, fetch)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_TOOL_BIN_DIR=/usr/local/bin \
+    PATH="/usr/local/bin:$PATH"

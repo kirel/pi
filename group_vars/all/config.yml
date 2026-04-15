@@ -47,7 +47,6 @@ linkding_http_port: 8012
 n8n_http_port: 5678
 teddycloud_http_port: 8013
 teddycloud_box_port: 4443
-metamcp_port_host: 8015
 changedetection_http_port: 8016
 dockhand_http_port: 8017
 immich_http_port: 2283
