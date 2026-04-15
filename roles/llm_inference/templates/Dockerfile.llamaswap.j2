@@ -1,0 +1,59 @@
+FROM ghcr.io/mostlygeek/llama-swap:cuda
+
+USER root
+
+# uv for fast, deterministic Python installs (matches Dockerfile.litellm.j2 pattern)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+# Python runtime + minimal build deps for vllm wheel install.
+# gcc is required at runtime by Triton — it JIT-compiles a small CudaUtils
+# C helper on first use; without a C compiler in PATH the engine dies on
+# the first sampler kernel call.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      python3 \
+      python3-venv \
+      python3-dev \
+      ca-certificates \
+      gcc \
+      libc6-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
+
+# Install vllm into a dedicated venv (Ubuntu's system Python is PEP 668 managed).
+# Upgrade transformers separately — vllm pins an older transformers that doesn't
+# know gemma4 and some other newer architectures.
+RUN uv venv /opt/vllm \
+ && uv pip install --python /opt/vllm/bin/python vllm \
+ && uv pip install --python /opt/vllm/bin/python -U 'transformers>=5.5.0'
+
+# The upstream image doesn't persist UID 10001 in /etc/passwd, which breaks
+# anything in vllm/torch that calls getpass.getuser() (e.g. torch._dynamo
+# cache dir init). Add an entry and ensure a writable home.
+RUN getent passwd 10001 >/dev/null || echo 'app:x:10001:10001::/app:/bin/bash' >> /etc/passwd \
+ && getent group 10001 >/dev/null || echo 'app:x:10001:' >> /etc/group \
+ && mkdir -p /app/.cache \
+ && chown -R 10001:10001 /app
+
+# Wrapper script: sleep N seconds, then exec vllm with the remaining args.
+# Lets llama-swap config delay vLLM startup after a previous model unload so
+# CUDA can release VRAM before vLLM probes the device. llama-swap parses cmd
+# as argv (no shell), so we can't chain `sleep && vllm` directly in YAML.
+RUN printf '%s\n' \
+      '#!/bin/sh' \
+      'set -eu' \
+      'DELAY="${1:-15}"' \
+      'shift' \
+      'sleep "$DELAY"' \
+      'exec vllm "$@"' \
+    > /usr/local/bin/vllm-delayed \
+ && chmod +x /usr/local/bin/vllm-delayed
+
+# Put the venv on PATH so `vllm` resolves for the unprivileged `app` user
+ENV PATH="/opt/vllm/bin:${PATH}" \
+    HOME=/app
+
+# Drop back to the upstream image's non-root user
+USER 10001:10001

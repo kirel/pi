@@ -157,6 +157,113 @@ llamaswap_models:
         chat_template_kwargs:
           reasoning_effort: "low"
 
+  - alias: gemma-4-31B-it-AWQ
+    cmd: >-
+      vllm-delayed 15 serve QuantTrio/gemma-4-31B-it-AWQ
+      --host 0.0.0.0
+      --port ${PORT}
+      --served-model-name gemma-4-31B-it-AWQ
+      --quantization awq_marlin
+      --gpu-memory-utilization 0.95
+      --max-model-len 2048
+      --max-num-seqs 4
+      --enforce-eager
+      --enable-auto-tool-choice
+      --tool-call-parser gemma4
+      --reasoning-parser gemma4
+      --trust-remote-code
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    group: "3090"
+    # vLLM can't parse GPU UUIDs in CUDA_VISIBLE_DEVICES (breaks at import
+    # time in w8a8_utils.py). Use index 0 instead — the container's
+    # device_requests already pins it to the Ampere GPU.
+    env:
+      - "CUDA_VISIBLE_DEVICES=0"
+      - "OMP_NUM_THREADS=4"
+
+  - alias: gemma-4-26B-A4B-it-AWQ
+    # sleep 15: give the previous model's GPU memory time to be released by
+    # the CUDA driver before vLLM probes the device. Without it, fast swaps
+    # from a llama.cpp model see stale "in-use" VRAM and OOM at startup.
+    cmd: >-
+      vllm-delayed 15 serve cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit
+      --host 0.0.0.0
+      --port ${PORT}
+      --served-model-name gemma-4-26B-A4B-it-AWQ
+      --gpu-memory-utilization 0.95
+      --max-model-len 16384
+      --max-num-seqs 8
+      --enforce-eager
+      --enable-auto-tool-choice
+      --tool-call-parser gemma4
+      --reasoning-parser gemma4
+      --trust-remote-code
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES=0"
+      - "OMP_NUM_THREADS=4"
+
+  - alias: Qwen3.5-35B-A3B-GPTQ-Int4
+    # 24 GB Ampere can't fit this model with vision (weights + vision encoder
+    # + mamba state ≈ 21 GiB before KV cache). Vision is disabled here so it
+    # fits with a useful context. Use the 27B variant for vision.
+    cmd: >-
+      vllm-delayed 15 serve Qwen/Qwen3.5-35B-A3B-GPTQ-Int4
+      --host 0.0.0.0
+      --port ${PORT}
+      --served-model-name Qwen3.5-35B-A3B-GPTQ-Int4
+      --quantization moe_wna16
+      --gpu-memory-utilization 0.88
+      --max-model-len 16384
+      --max-num-seqs 4
+      --language-model-only
+      --enforce-eager
+      --enable-auto-tool-choice
+      --tool-call-parser qwen3_coder
+      --reasoning-parser qwen3
+      --trust-remote-code
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES=0"
+      - "OMP_NUM_THREADS=4"
+
+  - alias: Qwen3.5-27B-AWQ
+    # cyankiwi AWQ variant — same base model as Qwen/Qwen3.5-27B-GPTQ-Int4
+    # but uses compressed-tensors quantization which vLLM auto-detects.
+    # Model alone is ~18.65 GiB on GPU. Combined with qwen3-embedding (2.5 GiB,
+    # forever group), there's no room for the vision encoder. --language-model-only
+    # frees ~1-2 GiB which lets it fit with KV cache headroom. Use the
+    # 26B-A4B AWQ entry for a vision-capable model.
+    cmd: >-
+      vllm-delayed 15 serve cyankiwi/Qwen3.5-27B-AWQ-4bit
+      --host 0.0.0.0
+      --port ${PORT}
+      --served-model-name Qwen3.5-27B-AWQ
+      --gpu-memory-utilization 0.85
+      --max-model-len 16384
+      --max-num-seqs 2
+      --language-model-only
+      --enforce-eager
+      --enable-auto-tool-choice
+      --tool-call-parser qwen3_coder
+      --reasoning-parser qwen3
+      --trust-remote-code
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES=0"
+      - "OMP_NUM_THREADS=4"
+
   - alias: embeddinggemma
     cmd: >-
       /app/llama-server

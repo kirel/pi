@@ -8,6 +8,30 @@
     mode: "0755"
   become: true
 
+- name: Ensure llama-swap cache directory is owned by container user
+  ansible.builtin.file:
+    path: "{{ llamaswap_config_path }}/cache"
+    state: directory
+    owner: "10001"
+    group: "10001"
+    recurse: true
+  become: true
+
+- name: Ensure llama-swap build context exists
+  ansible.builtin.file:
+    path: "{{ llamaswap_build_context }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Template llama-swap+vllm Dockerfile
+  ansible.builtin.template:
+    src: Dockerfile.llamaswap.j2
+    dest: "{{ llamaswap_build_context }}/Dockerfile"
+    mode: "0644"
+  become: true
+  notify: Restart llama-swap
+
 - name: Create llama-swap config file
   ansible.builtin.template:
     src: llamaswap_config.yaml.j2
@@ -16,19 +40,38 @@
   become: true
   notify: Restart llama-swap
 
+- name: Build llama-swap+vllm image
+  community.docker.docker_image:
+    name: "{{ llamaswap_image }}"
+    source: build
+    force_source: true
+    build:
+      path: "{{ llamaswap_build_context }}"
+      pull: true
+      nocache: false
+    state: present
+  become: true
+  notify: Restart llama-swap
+
 - name: Start the llama-swap container
   community.docker.docker_container:
     name: "{{ llamaswap_container_name }}"
     image: "{{ llamaswap_image }}"
     image_name_mismatch: recreate
-    pull: true
+    pull: false
     state: started
     restart_policy: unless-stopped
+    # init: true → Docker injects tini as PID 1 to reap zombie children.
+    # vLLM spawns EngineCore worker subprocesses that become defunct on
+    # failure; without an init reaper they hold CUDA contexts (leaking
+    # ~23 GB of GPU memory) until the container restarts. llama-swap is
+    # PID 1 by default and does not reap.
+    init: true
     ports:
       - "{{ llamaswap_port }}:8080"
     volumes:
       - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
-      - "{{ llamaswap_config_path }}/cache:/root/.cache"
+      - "{{ llamaswap_config_path }}/cache:/app/.cache"
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/usr/bin/docker:/usr/bin/docker"
     device_requests:

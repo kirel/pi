@@ -3,7 +3,11 @@
 
 # --- llama-swap Settings ---
 llamaswap_container_name: "llama-swap"
-llamaswap_image: "ghcr.io/mostlygeek/llama-swap:cuda"
+llamaswap_image: "llama-swap-vllm:local"
 llamaswap_port: "8080"
 llamaswap_config_path: "{{ llamaswap_host_path }}"
+llamaswap_build_context: "{{ llamaswap_config_path }}/build"
+# seconds llama-swap waits for a subprocess to become healthy before killing it.
+# Generous default to allow first-time HF downloads (vLLM AWQ weights ~20GB).
+llamaswap_health_check_timeout: 1800
 llamaswap_preload: []
