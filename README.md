@@ -76,6 +76,31 @@ LlamaSwap runs on `ailab-ubuntu` with GPU acceleration (RTX 3090 24GB).
 - **Context Size:** 92,375 tokens max (92,500+ causes OOM)
 - **WebUI:** https://llama-swap.kirelabs.org/ui
 
+### Embedding Presets
+
+Embedding models use a simple fixed default in `group_vars/all/llms.yml`:
+
+- `ctx-size 4096`
+- `batch-size 1024`
+- `ubatch-size 1024`
+
+This fits typical memory-search chunks around a few hundred tokens without
+reserving long-document KV/cache by default.
+
+Why these defaults:
+
+- For memory-search style chunks around 400 tokens, embedding quality does not improve from oversized context or batch settings as long as the chunk fits.
+- `--ctx-size` mainly controls how much input can fit before truncation and how much KV cache is reserved.
+- `--batch-size` affects prompt-processing throughput and workspace allocation, not embedding quality.
+- In this `llama.cpp` build, embeddings clamp `n_batch` down to `n_ubatch` if `n_batch > n_ubatch`, so setting only a huge `--batch-size` does not provide the expected benefit.
+
+If you need variants, the practical fallbacks are:
+
+- lower memory: `2048 / 512 / 512`
+- longer documents: `8192 / 2048 / 2048`
+
+After changing the values, redeploy `llm-inference`.
+
 ### Benchmarking
 
 Compare end-to-end latency (TTFT) and throughput (TPS) across models:

@@ -42,6 +42,13 @@ This section contains technical constraints not found in the YAML configs.
 ### LLM Inference (ailab-ubuntu)
 *   **Ollama:** `http://ailab-ubuntu.lan:11434`
 *   **LlamaSwap:** `http://ailab-ubuntu.lan:8080` (managed by LiteLLM)
+*   **Monitoring:** Use LlamaSwap's built-in log endpoints to inspect upstream model servers:
+    *   `curl http://ailab-ubuntu.lan:9292/logs` for recent buffered logs
+    *   `curl -Ns http://ailab-ubuntu.lan:9292/logs/stream` for combined live logs
+    *   `curl -Ns http://ailab-ubuntu.lan:9292/logs/stream/proxy` for llama-swap proxy logs
+    *   `curl -Ns http://ailab-ubuntu.lan:9292/logs/stream/upstream` for logs from loaded upstream model processes
+    *   `curl -Ns http://ailab-ubuntu.lan:9292/logs/stream/<model_id>` for one specific model
+    *   `curl http://ailab-ubuntu.lan:9292/running` to list currently running models
 *   **Context Limits (RTX 3090 24GB):**
     *   **LlamaSwap:** Success up to 92,375 tokens (~22.4GB VRAM).
     *   **Ollama (Qwen3-VL):** 128,256 tokens (100% GPU optimized, ~25GB VRAM).

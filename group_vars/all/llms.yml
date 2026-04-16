@@ -6,6 +6,11 @@ model_group_alias:
   home-tiny: "Qwen3.5-35B-A3B-Instruct-nothink"
   home-embed: "qwen3-embedding"
 
+# Shared memory reservation knobs for the 24 GiB RTX 3090.
+# Keep ~2 GiB out of vLLM's hands and let llama.cpp fit against ~2 GiB free.
+vllm_gpu_memory_utilization_3090: 0.92
+llama_fit_target_3090_mb: 2000
+
 litellm_fallbacks:
   - home: ["home-tiny", "home-remote"]
   - home-fast: ["home-tiny", "home-remote"]
@@ -36,7 +41,7 @@ llamaswap_models:
       --repeat-penalty 1.05
       --jinja
       --fit on
-      --fit-target 2500
+      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: false
     supports_reasoning: false
@@ -58,7 +63,7 @@ llamaswap_models:
       --min-p 0.01
       --jinja
       --fit on
-      --fit-target 2500
+      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: false
@@ -83,7 +88,7 @@ llamaswap_models:
       --presence-penalty 1.5
       --jinja
       --fit on
-      --fit-target 2500
+      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -114,7 +119,7 @@ llamaswap_models:
       --presence-penalty 1.5
       --jinja
       --fit on
-      --fit-target 2500
+      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -143,7 +148,7 @@ llamaswap_models:
       --top-k 0
       --jinja
       --fit on
-      --fit-target 2500
+      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: false
     group: "3090"
@@ -164,7 +169,7 @@ llamaswap_models:
       --port ${PORT}
       --served-model-name gemma-4-31B-it-AWQ
       --quantization awq_marlin
-      --gpu-memory-utilization 0.95
+      --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
       --max-model-len 2048
       --max-num-seqs 4
       --enforce-eager
@@ -198,7 +203,7 @@ llamaswap_models:
       --top-k 64
       --jinja
       --fit on
-      --fit-target 2500
+      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -221,7 +226,7 @@ llamaswap_models:
       --host 0.0.0.0
       --port ${PORT}
       --served-model-name gemma-4-26B-A4B-vllm
-      --gpu-memory-utilization 0.95
+      --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
       --max-model-len 16384
       --max-num-seqs 8
       --enforce-eager
@@ -247,7 +252,7 @@ llamaswap_models:
       --port ${PORT}
       --served-model-name Qwen3.5-35B-A3B-GPTQ-Int4
       --quantization moe_wna16
-      --gpu-memory-utilization 0.88
+      --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
       --max-model-len 16384
       --max-num-seqs 4
       --language-model-only
@@ -279,7 +284,7 @@ llamaswap_models:
       --host 0.0.0.0
       --port ${PORT}
       --served-model-name Qwen3.5-27B-AWQ
-      --gpu-memory-utilization 0.85
+      --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
       --max-model-len 4096
       --max-num-seqs 1
       --kv-cache-dtype fp8_e4m3
@@ -309,13 +314,19 @@ llamaswap_models:
           enable_thinking: false
 
   - alias: embeddinggemma
+    # Default embedding runtime: enough headroom for ~400 token chunks plus
+    # wrappers/metadata without reserving long-document KV by default.
+    # Lower-memory fallback: 2048/512/512. Long-document case: 8192/2048/2048.
     cmd: >-
       /app/llama-server
       -hf ggml-org/embeddinggemma-300m-qat-q8_0-GGUF
       --port ${PORT}
       --embeddings
-      --ctx-size 8192
-      --batch-size 8192
+      --ctx-size 4096
+      --batch-size 1024
+      --ubatch-size 1024
+      --cache-type-k q8_0
+      --cache-type-v q8_0
       --n-gpu-layers 99
       --fit off
     supports_function_calling: false
@@ -327,13 +338,19 @@ llamaswap_models:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
 
   - alias: qwen3-embedding
+    # Default embedding runtime: enough headroom for ~400 token chunks plus
+    # wrappers/metadata without reserving long-document KV by default.
+    # Lower-memory fallback: 2048/512/512. Long-document case: 8192/2048/2048.
     cmd: >-
       /app/llama-server
-      -hf Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0
+      -hf PeterAM4/Qwen3-Embedding-0.6B-GGUF:Q4_K_M-imat
       --port ${PORT}
       --embeddings
-      --ctx-size 8192
-      --batch-size 8192
+      --ctx-size 4096
+      --batch-size 1024
+      --ubatch-size 1024
+      --cache-type-k q8_0
+      --cache-type-v q8_0
       --n-gpu-layers 99
     supports_function_calling: false
     supports_vision: false
