@@ -298,10 +298,11 @@ llamaswap_models:
   - alias: Qwen3.5-27B-AWQ
     # cyankiwi AWQ variant — same base model as Qwen/Qwen3.5-27B-GPTQ-Int4
     # but uses compressed-tensors quantization which vLLM auto-detects.
-    # Start conservatively on the 24 GB 3090: language-only, 16k context,
-    # 2 concurrent seqs, and FP8 KV cache to reduce KV memory pressure.
-    # --calculate-kv-scales avoids falling back to 1.0 KV scales when the
-    # checkpoint does not provide them.
+    # Vision can fit alongside qwen3-embedding on the 24 GB 3090, but only
+    # with a tight config: 4k context, 1 concurrent seq, FP8 KV cache, and
+    # --skip-mm-profiling. Without skip-mm-profiling, vLLM OOMs during the
+    # multimodal encoder profile pass before startup. This leaves very little
+    # headroom, so large image batches may still OOM.
     # Allow request-level chat_template_kwargs through LiteLLM so callers can
     # dynamically set {"enable_thinking": false} per request.
     cmd: >-
@@ -310,11 +311,11 @@ llamaswap_models:
       --port ${PORT}
       --served-model-name Qwen3.5-27B-AWQ
       --gpu-memory-utilization 0.85
-      --max-model-len 16384
-      --max-num-seqs 2
+      --max-model-len 4096
+      --max-num-seqs 1
       --kv-cache-dtype fp8_e4m3
       --calculate-kv-scales
-      --language-model-only
+      --skip-mm-profiling
       --enforce-eager
       --enable-auto-tool-choice
       --tool-call-parser qwen3_coder
@@ -325,12 +326,18 @@ llamaswap_models:
       - chat_template_kwargs
       - extra_body
     supports_function_calling: true
-    supports_vision: false
+    supports_vision: true
     supports_reasoning: true
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES=0"
       - "OMP_NUM_THREADS=4"
+    variants:
+      nothink:
+        temperature: 0.7
+        top_p: 0.8
+        chat_template_kwargs:
+          enable_thinking: false
 
   - alias: embeddinggemma
     cmd: >-
