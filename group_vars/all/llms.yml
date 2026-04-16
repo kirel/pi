@@ -237,37 +237,6 @@ llamaswap_models:
       - "CUDA_VISIBLE_DEVICES=0"
       - "OMP_NUM_THREADS=4"
 
-  # SGLang experiment paused for now. QuantTrio/Qwen3.5-27B-AWQ loads, but
-  # generation fails in SGLang's Triton Mamba kernel on RTX 3090 with a
-  # bf16/fp16 type mismatch. Keep vLLM as the active backend for 27B AWQ.
-  #
-  # - alias: Qwen3.5-27B-sglang
-  #   cmd: >-
-  #     sglang-delayed 15
-  #     --model-path QuantTrio/Qwen3.5-27B-AWQ
-  #     --host 0.0.0.0
-  #     --port ${PORT}
-  #     --served-model-name Qwen3.5-27B-sglang
-  #     --mem-fraction-static 0.94
-  #     --context-length 4096
-  #     --max-running-requests 1
-  #     --max-total-tokens 4096
-  #     --kv-cache-dtype fp8_e4m3
-  #     --attention-backend flashinfer
-  #     --enable-hierarchical-cache
-  #     --hicache-ratio 2.0
-  #     --enable-multimodal
-  #     --tool-call-parser qwen3_coder
-  #     --reasoning-parser qwen3
-  #     --trust-remote-code
-  #   supports_function_calling: true
-  #   supports_vision: true
-  #   supports_reasoning: true
-  #   group: "3090"
-  #   env:
-  #     - "CUDA_VISIBLE_DEVICES=0"
-  #     - "OMP_NUM_THREADS=4"
-
   - alias: Qwen3.5-35B-A3B-GPTQ-Int4
     # 24 GB Ampere can't fit this model with vision (weights + vision encoder
     # + mamba state ≈ 21 GiB before KV cache). Vision is disabled here so it
