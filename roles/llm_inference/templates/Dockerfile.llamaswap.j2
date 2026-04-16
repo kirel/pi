@@ -16,8 +16,22 @@ RUN apt-get update \
       python3-dev \
       ca-certificates \
       gcc \
+      g++ \
       libc6-dev \
+      libnuma1 \
+      ninja-build \
  && rm -rf /var/lib/apt/lists/*
+
+# nvcc + dev headers needed at runtime by SGLang's tvm_ffi JIT compiler
+# (GPTQ/AWQ marlin repack kernels). The base image ships CUDA runtime only
+# at /usr/local/cuda-12.8/ (no bin/ or nvvm/). Copy from the devel image.
+COPY --from=nvidia/cuda:12.8.1-devel-ubuntu24.04 /usr/local/cuda/bin /usr/local/cuda-12.8/bin
+COPY --from=nvidia/cuda:12.8.1-devel-ubuntu24.04 /usr/local/cuda/nvvm /usr/local/cuda-12.8/nvvm
+COPY --from=nvidia/cuda:12.8.1-devel-ubuntu24.04 /usr/local/cuda/include/ /usr/local/cuda-12.8/include-dev/
+RUN cp -rn /usr/local/cuda-12.8/include-dev/* /usr/local/cuda-12.8/include/ \
+ && rm -rf /usr/local/cuda-12.8/include-dev \
+ && ln -sf /usr/local/cuda-12.8/targets/x86_64-linux/lib/libcudart.so.12 /usr/local/cuda-12.8/lib64/libcudart.so.12 \
+ && ln -sf /usr/local/cuda-12.8/targets/x86_64-linux/lib/libcudart.so.12 /usr/local/cuda-12.8/lib64/libcudart.so
 
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy
@@ -29,6 +43,11 @@ RUN uv venv /opt/vllm \
  && uv pip install --python /opt/vllm/bin/python vllm \
  && uv pip install --python /opt/vllm/bin/python -U 'transformers>=5.5.0'
 
+# Install SGLang into a dedicated venv alongside vllm.
+# SGLang provides an OpenAI-compatible server via `python -m sglang.launch_server`.
+RUN uv venv /opt/sglang \
+ && uv pip install --python /opt/sglang/bin/python --prerelease=allow "sglang[all]>=0.5.10"
+
 # The upstream image doesn't persist UID 10001 in /etc/passwd, which breaks
 # anything in vllm/torch that calls getpass.getuser() (e.g. torch._dynamo
 # cache dir init). Add an entry and ensure a writable home.
@@ -37,10 +56,10 @@ RUN getent passwd 10001 >/dev/null || echo 'app:x:10001:10001::/app:/bin/bash' >
  && mkdir -p /app/.cache \
  && chown -R 10001:10001 /app
 
-# Wrapper script: sleep N seconds, then exec vllm with the remaining args.
-# Lets llama-swap config delay vLLM startup after a previous model unload so
-# CUDA can release VRAM before vLLM probes the device. llama-swap parses cmd
-# as argv (no shell), so we can't chain `sleep && vllm` directly in YAML.
+# Wrapper scripts: sleep N seconds, then exec the backend with the remaining
+# args. Lets llama-swap config delay startup after a previous model unload so
+# CUDA can release VRAM before the engine probes the device. llama-swap parses
+# cmd as argv (no shell), so we can't chain `sleep && vllm` directly in YAML.
 RUN printf '%s\n' \
       '#!/bin/sh' \
       'set -eu' \
@@ -51,8 +70,19 @@ RUN printf '%s\n' \
     > /usr/local/bin/vllm-delayed \
  && chmod +x /usr/local/bin/vllm-delayed
 
-# Put the venv on PATH so `vllm` resolves for the unprivileged `app` user
-ENV PATH="/opt/vllm/bin:${PATH}" \
+RUN printf '%s\n' \
+      '#!/bin/sh' \
+      'set -eu' \
+      'DELAY="${1:-15}"' \
+      'shift' \
+      'sleep "$DELAY"' \
+      'exec /opt/sglang/bin/sglang serve "$@"' \
+    > /usr/local/bin/sglang-delayed \
+ && chmod +x /usr/local/bin/sglang-delayed
+
+# Put both venvs on PATH so `vllm` and `python -m sglang.launch_server`
+# resolve for the unprivileged `app` user.
+ENV PATH="/opt/vllm/bin:/opt/sglang/bin:/usr/local/cuda-12.8/bin:${PATH}" \
     HOME=/app
 
 # Drop back to the upstream image's non-root user

@@ -4,7 +4,7 @@ model_list:
   # Base model
   - model_name: {{ model.alias }}
     litellm_params:
-      model: "openai/{{ model.alias }}"
+      model: "{{ model.litellm_provider | default('openai') }}/{{ model.alias }}"
       api_base: "http://{{ llm_inference_host }}:{{ llamaswap_port }}/v1"
       api_key: "llama-swap"
 {% if model.allowed_openai_params is defined %}
@@ -22,7 +22,7 @@ model_list:
   {% for variant_name, variant_params in model.variants.items() -%}
   - model_name: {{ model.alias }}-{{ variant_name }}
     litellm_params:
-      model: "openai/{{ model.alias }}"
+      model: "{{ model.litellm_provider | default('openai') }}/{{ model.alias }}"
       api_base: "http://{{ llm_inference_host }}:{{ llamaswap_port }}/v1"
       api_key: "llama-swap"
       {% if model.allowed_openai_params is defined -%}
