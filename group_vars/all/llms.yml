@@ -9,6 +9,7 @@ model_group_alias:
 # Shared memory reservation knobs for the 24 GiB RTX 3090.
 # Keep ~2 GiB out of vLLM's hands and let llama.cpp fit against ~2 GiB free.
 vllm_gpu_memory_utilization_3090: 0.92
+vllm_startup_delay_seconds: 5
 llama_fit_target_3090_mb: 2000
 
 litellm_fallbacks:
@@ -24,6 +25,10 @@ openrouter_models:
   - minimax/minimax-m2.5
 
 llamaswap_models:
+  # Keep public model IDs stable once exposed via LiteLLM/LlamaSwap.
+  # Existing aliases are mixed-case because clients may already depend on them.
+  # For new entries, prefer the upstream model family name plus a backend suffix
+  # only when we expose multiple runtimes of the same base model.
   - alias: Qwen3-Coder-30B-A3B-Instruct
     cmd: >-
       /app/llama-server
@@ -162,16 +167,18 @@ llamaswap_models:
         chat_template_kwargs:
           reasoning_effort: "low"
 
-  - alias: gemma-4-31B-it-AWQ
+  - alias: gemma-4-31B-it-AWQ-vllm
     cmd: >-
-      vllm-delayed 15 serve QuantTrio/gemma-4-31B-it-AWQ
+      vllm-delayed {{ vllm_startup_delay_seconds }} serve QuantTrio/gemma-4-31B-it-AWQ
       --host 0.0.0.0
       --port ${PORT}
-      --served-model-name gemma-4-31B-it-AWQ
+      --served-model-name gemma-4-31B-it-AWQ-vllm
       --quantization awq_marlin
       --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
-      --max-model-len 2048
+      --max-model-len auto
       --max-num-seqs 4
+      --enable-prefix-caching
+      --kv-cache-dtype fp8_e4m3
       --enforce-eager
       --enable-auto-tool-choice
       --tool-call-parser gemma4
@@ -217,18 +224,20 @@ llamaswap_models:
         chat_template_kwargs:
           enable_thinking: false
 
-  - alias: gemma-4-26B-A4B-vllm
-    # sleep 15: give the previous model's GPU memory time to be released by
-    # the CUDA driver before vLLM probes the device. Without it, fast swaps
-    # from a llama.cpp model see stale "in-use" VRAM and OOM at startup.
+  - alias: gemma-4-26B-A4B-AWQ-vllm
+    # Delay startup briefly so the CUDA driver can release VRAM before vLLM
+    # probes the device. Fast swaps from a llama.cpp model otherwise see stale
+    # "in-use" VRAM and can OOM at startup.
     cmd: >-
-      vllm-delayed 15 serve cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit
+      vllm-delayed {{ vllm_startup_delay_seconds }} serve cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit
       --host 0.0.0.0
       --port ${PORT}
-      --served-model-name gemma-4-26B-A4B-vllm
+      --served-model-name gemma-4-26B-A4B-AWQ-vllm
       --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
-      --max-model-len 16384
+      --max-model-len auto
       --max-num-seqs 8
+      --enable-prefix-caching
+      --kv-cache-dtype fp8_e4m3
       --enforce-eager
       --enable-auto-tool-choice
       --tool-call-parser gemma4
@@ -242,54 +251,24 @@ llamaswap_models:
       - "CUDA_VISIBLE_DEVICES=0"
       - "OMP_NUM_THREADS=4"
 
-  - alias: Qwen3.5-35B-A3B-GPTQ-Int4
-    # 24 GB Ampere can't fit this model with vision (weights + vision encoder
-    # + mamba state ≈ 21 GiB before KV cache). Vision is disabled here so it
-    # fits with a useful context. Use the 27B variant for vision.
-    cmd: >-
-      vllm-delayed 15 serve Qwen/Qwen3.5-35B-A3B-GPTQ-Int4
-      --host 0.0.0.0
-      --port ${PORT}
-      --served-model-name Qwen3.5-35B-A3B-GPTQ-Int4
-      --quantization moe_wna16
-      --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
-      --max-model-len 16384
-      --max-num-seqs 4
-      --language-model-only
-      --enforce-eager
-      --enable-auto-tool-choice
-      --tool-call-parser qwen3_coder
-      --reasoning-parser qwen3
-      --trust-remote-code
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: true
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES=0"
-      - "OMP_NUM_THREADS=4"
-
-  - alias: Qwen3.5-27B-AWQ
+  - alias: Qwen3.5-27B-AWQ-vllm
     # cyankiwi AWQ variant — same base model as Qwen/Qwen3.5-27B-GPTQ-Int4
     # but uses compressed-tensors quantization which vLLM auto-detects.
-    # Vision can fit alongside qwen3-embedding on the 24 GB 3090, but only
-    # with a tight config: 4k context, 1 concurrent seq, FP8 KV cache, and
-    # --skip-mm-profiling. Without skip-mm-profiling, vLLM OOMs during the
-    # multimodal encoder profile pass before startup. This leaves very little
-    # headroom, so large image batches may still OOM.
+    # Vision can fit alongside qwen3-embedding on the 24 GB 3090, but this is
+    # still a tight config: 1 concurrent seq, FP8 KV cache, and a fixed VRAM
+    # budget via gpu-memory-utilization. Large image batches may still OOM.
     # Allow request-level chat_template_kwargs through LiteLLM so callers can
     # dynamically set {"enable_thinking": false} per request.
     cmd: >-
-      vllm-delayed 15 serve cyankiwi/Qwen3.5-27B-AWQ-4bit
+      vllm-delayed {{ vllm_startup_delay_seconds }} serve cyankiwi/Qwen3.5-27B-AWQ-4bit
       --host 0.0.0.0
       --port ${PORT}
-      --served-model-name Qwen3.5-27B-AWQ
+      --served-model-name Qwen3.5-27B-AWQ-vllm
       --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
-      --max-model-len 4096
+      --max-model-len auto
       --max-num-seqs 1
+      --enable-prefix-caching
       --kv-cache-dtype fp8_e4m3
-      --calculate-kv-scales
-      --skip-mm-profiling
       --enforce-eager
       --enable-auto-tool-choice
       --tool-call-parser qwen3_coder
