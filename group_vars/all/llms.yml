@@ -1,9 +1,11 @@
 model_group_alias:
-  home: "Qwen3.5-35B-A3B-Instruct-nothink"
-  home-fast: "Qwen3.5-35B-A3B-Instruct-nothink"
-  home-smart: "Qwen3.5-35B-A3B-Instruct"
-  home-vision: "Qwen3.5-35B-A3B-Instruct"
-  home-tiny: "Qwen3.5-35B-A3B-Instruct-nothink"
+  home: "Qwen3.6-35B-A3B-Instruct-nothink"
+  home-fast: "Qwen3.6-35B-A3B-Instruct-nothink"
+  home-smart: "Qwen3.6-35B-A3B-Instruct-misc"
+  home-vision: "Qwen3.6-35B-A3B-Instruct-misc"
+  home-tiny: "Qwen3.6-35B-A3B-Instruct-nothink"
+  home-ha: "Qwen3.6-35B-A3B-Instruct-ha"
+  home-claw: "Qwen3.6-35B-A3B-Instruct-openclaw"
   home-embed: "qwen3-embedding"
 
 # Shared memory reservation knobs for the 24 GiB RTX 3090.
@@ -11,6 +13,7 @@ model_group_alias:
 vllm_gpu_memory_utilization_3090: 0.92
 vllm_startup_delay_seconds: 5
 llama_fit_target_3090_mb: 2000
+llama_prompt_cache_parallel_slots: 3
 
 litellm_fallbacks:
   - home: ["home-tiny", "home-remote"]
@@ -76,11 +79,18 @@ llamaswap_models:
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
 
-  - alias: Qwen3.5-35B-A3B-Instruct
+  - alias: Qwen3.6-35B-A3B-Instruct
+    # Use three explicit llama-server slots so Home Assistant and OpenClaw can
+    # keep stable prompt caches on dedicated slots while miscellaneous traffic
+    # is routed to a third slot. Leave ctx-size at 0 so llama.cpp takes the
+    # model default.
     cmd: >-
       /app/llama-server
-      -hf unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q3_K_XL
+      -hf unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q3_K_XL
       --port ${PORT}
+      --ctx-size 0
+      --parallel {{ llama_prompt_cache_parallel_slots }}
+      --slot-save-path /app/.cache/qwen3.6-slots
       --n-predict 32768
       --n-gpu-layers 99
       -fa on
@@ -97,6 +107,9 @@ llamaswap_models:
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
+    allowed_openai_params:
+      - chat_template_kwargs
+      - extra_body
     group: "3090"
     env:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
@@ -106,6 +119,21 @@ llamaswap_models:
         top_p: 0.8
         chat_template_kwargs:
           enable_thinking: false
+        extra_body:
+          id_slot: 2
+          cache_prompt: true
+      ha:
+        extra_body:
+          id_slot: 0
+          cache_prompt: true
+      openclaw:
+        extra_body:
+          id_slot: 1
+          cache_prompt: true
+      misc:
+        extra_body:
+          id_slot: 2
+          cache_prompt: true
 
   - alias: Qwen3.5-27B-Instruct
     cmd: >-
