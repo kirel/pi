@@ -108,7 +108,6 @@ llamaswap_models:
     supports_vision: true
     supports_reasoning: true
     allowed_openai_params:
-      - chat_template_kwargs
       - extra_body
     group: "3090"
     env:
@@ -117,11 +116,11 @@ llamaswap_models:
       nothink:
         temperature: 0.7
         top_p: 0.8
-        chat_template_kwargs:
-          enable_thinking: false
         extra_body:
           id_slot: 2
           cache_prompt: true
+          chat_template_kwargs:
+            enable_thinking: false
       ha:
         extra_body:
           id_slot: 0
@@ -163,8 +162,9 @@ llamaswap_models:
       nothink:
         temperature: 0.7
         top_p: 0.8
-        chat_template_kwargs:
-          enable_thinking: false
+        extra_body:
+          chat_template_kwargs:
+            enable_thinking: false
 
   - alias: GPT-OSS-20B-F16
     cmd: >-
@@ -189,11 +189,13 @@ llamaswap_models:
       - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
     variants:
       high:
-        chat_template_kwargs:
-          reasoning_effort: "high"
+        extra_body:
+          chat_template_kwargs:
+            reasoning_effort: "high"
       low:
-        chat_template_kwargs:
-          reasoning_effort: "low"
+        extra_body:
+          chat_template_kwargs:
+            reasoning_effort: "low"
 
   - alias: gemma-4-31B-it-AWQ-vllm
     cmd: >-
@@ -249,8 +251,9 @@ llamaswap_models:
       nothink:
         temperature: 0.7
         top_p: 0.8
-        chat_template_kwargs:
-          enable_thinking: false
+        extra_body:
+          chat_template_kwargs:
+            enable_thinking: false
 
   - alias: gemma-4-26B-A4B-AWQ-vllm
     # Delay startup briefly so the CUDA driver can release VRAM before vLLM
@@ -285,8 +288,8 @@ llamaswap_models:
     # Vision can fit alongside qwen3-embedding on the 24 GB 3090, but this is
     # still a tight config: 1 concurrent seq, FP8 KV cache, and a fixed VRAM
     # budget via gpu-memory-utilization. Large image batches may still OOM.
-    # Allow request-level chat_template_kwargs through LiteLLM so callers can
-    # dynamically set {"enable_thinking": false} per request.
+    # Allow request-level extra_body through LiteLLM so callers can pass
+    # llama.cpp/vLLM-specific request fields such as chat_template_kwargs.
     cmd: >-
       vllm-delayed {{ vllm_startup_delay_seconds }} serve cyankiwi/Qwen3.5-27B-AWQ-4bit
       --host 0.0.0.0
@@ -304,7 +307,6 @@ llamaswap_models:
       --trust-remote-code
     litellm_provider: hosted_vllm
     allowed_openai_params:
-      - chat_template_kwargs
       - extra_body
     supports_function_calling: true
     supports_vision: true
@@ -317,8 +319,9 @@ llamaswap_models:
       nothink:
         temperature: 0.7
         top_p: 0.8
-        chat_template_kwargs:
-          enable_thinking: false
+        extra_body:
+          chat_template_kwargs:
+            enable_thinking: false
 
   - alias: embeddinggemma
     # Default embedding runtime: enough headroom for ~400 token chunks plus
