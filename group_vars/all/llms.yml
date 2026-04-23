@@ -115,6 +115,11 @@ llamaswap_models:
       --top-k 20
       --min-p 0.0
       --presence-penalty 1.5
+      --spec-type ngram-mod
+      --spec-ngram-size-n 24
+      --draft-min 12
+      --draft-max 48
+      --chat-template-kwargs '{"preserve_thinking": true}'
       --jinja
       --fit on
       --fit-target {{ llama_fit_target_3090_mb }}
