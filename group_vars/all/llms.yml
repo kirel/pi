@@ -14,6 +14,11 @@ vllm_gpu_memory_utilization_3090: 0.92
 vllm_startup_delay_seconds: 5
 llama_fit_target_3090_mb: 2000
 llama_prompt_cache_parallel_slots: 3
+# Fixed total ctx for the 3 dedicated llama.cpp slots on the 3090.
+# Sized so qwen3-embedding can stay resident while leaving about ~1 GiB free
+# on the GPU for llama.cpp compute buffers and transient pressure.
+llama_ctx_size_qwen35_3090: 430080
+llama_ctx_size_qwen27_3090: 198144
 
 litellm_fallbacks:
   - home: ["home-tiny", "home-remote"]
@@ -36,13 +41,13 @@ llamaswap_models:
   - alias: Qwen3.6-35B-A3B-Instruct
     # Use three explicit llama-server slots so Home Assistant and OpenClaw can
     # keep stable prompt caches on dedicated slots while miscellaneous traffic
-    # is routed to a third slot. Leave ctx-size at 0 so llama.cpp takes the
-    # model default.
+    # is routed to a third slot. Fix ctx-size explicitly so the slot budget is
+    # stable even when qwen3-embedding is already resident on the 3090.
     cmd: >-
       /app/llama-server
       -hf unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q3_K_XL
       --port ${PORT}
-      --ctx-size 0
+      --ctx-size {{ llama_ctx_size_qwen35_3090 }}
       --parallel {{ llama_prompt_cache_parallel_slots }}
       --slot-save-path /app/.cache/qwen3.6-slots
       --n-predict 32768
@@ -90,12 +95,13 @@ llamaswap_models:
 
   - alias: Qwen3.6-27B-Instruct
     # Keep the same dedicated prompt-cache slot layout as the 35B entry so the
-    # Home Assistant and OpenClaw routes can retain stable caches.
+    # Home Assistant and OpenClaw routes can retain stable caches. Cap ctx-size
+    # lower than the 35B entry so qwen3-embedding can stay loaded on the 3090.
     cmd: >-
       /app/llama-server
       -hf unsloth/Qwen3.6-27B-GGUF:UD-Q3_K_XL
       --port ${PORT}
-      --ctx-size 0
+      --ctx-size {{ llama_ctx_size_qwen27_3090 }}
       --parallel {{ llama_prompt_cache_parallel_slots }}
       --slot-save-path /app/.cache/qwen3.6-27b-slots
       --n-predict 32768
