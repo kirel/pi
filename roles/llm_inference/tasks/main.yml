@@ -17,6 +17,18 @@
     recurse: true
   become: true
 
+- name: Ensure llama.cpp slot cache directories exist
+  ansible.builtin.file:
+    path: "{{ llamaswap_config_path }}/cache/{{ item }}"
+    state: directory
+    owner: "10001"
+    group: "10001"
+    mode: "0755"
+  loop:
+    - qwen3.6-slots
+    - qwen3.6-27b-slots
+  become: true
+
 - name: Ensure llama-swap build context exists
   ansible.builtin.file:
     path: "{{ llamaswap_build_context }}"

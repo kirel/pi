@@ -78,6 +78,7 @@
     - "{{ nodered_config_folder }}"
     - "{{ mosquitto_config_folder }}"
     - "{{ mosquitto_data_folder }}"
+    - "{{ zigbee2mqtt_data_folder }}"
     - "{{ matter_server_data_folder }}"
     - "{{ openwakeword_data_folder }}"
     - "{{ piper_data_folder }}"
@@ -189,6 +190,7 @@
             - "{{ z2m_http_port }}:8080"
           environment:
             - TZ=Europe/Berlin
+            - Z2M_WATCHDOG=default
           restart: always
           labels:
             - homepage.group={{ services.z2m.group }}

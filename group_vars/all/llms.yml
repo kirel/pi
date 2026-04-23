@@ -134,6 +134,59 @@ llamaswap_models:
           id_slot: 2
           cache_prompt: true
 
+  - alias: Qwen3.6-27B-Instruct
+    # Keep the same dedicated prompt-cache slot layout as the 35B entry so the
+    # Home Assistant and OpenClaw routes can retain stable caches.
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/Qwen3.6-27B-GGUF:UD-Q3_K_XL
+      --port ${PORT}
+      --ctx-size 0
+      --parallel {{ llama_prompt_cache_parallel_slots }}
+      --slot-save-path /app/.cache/qwen3.6-27b-slots
+      --n-predict 32768
+      --n-gpu-layers 99
+      -fa on
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --temp 1.0
+      --top-p 0.95
+      --top-k 20
+      --min-p 0.0
+      --presence-penalty 1.5
+      --jinja
+      --fit on
+      --fit-target {{ llama_fit_target_3090_mb }}
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    allowed_openai_params:
+      - extra_body
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+    variants:
+      nothink:
+        temperature: 0.7
+        top_p: 0.8
+        extra_body:
+          id_slot: 2
+          cache_prompt: true
+          chat_template_kwargs:
+            enable_thinking: false
+      ha:
+        extra_body:
+          id_slot: 0
+          cache_prompt: true
+      openclaw:
+        extra_body:
+          id_slot: 1
+          cache_prompt: true
+      misc:
+        extra_body:
+          id_slot: 2
+          cache_prompt: true
+
   - alias: Qwen3.5-27B-Instruct
     cmd: >-
       /app/llama-server
