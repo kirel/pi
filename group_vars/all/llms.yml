@@ -3,10 +3,10 @@ model_group_alias:
   home-fast: "Qwen3.6-35B-A3B-Instruct-nothink"
   home-smart: "Qwen3.6-35B-A3B-Instruct-misc"
   home-vision: "Qwen3.6-35B-A3B-Instruct-misc"
-  home-tiny: "Qwen3.6-35B-A3B-Instruct-nothink"
   home-ha: "Qwen3.6-35B-A3B-Instruct-ha"
   home-claw: "Qwen3.6-35B-A3B-Instruct-openclaw"
   home-embed: "qwen3-embedding"
+  home-remote: "google/gemini-3-flash-preview"
 
 # Shared memory reservation knobs for the 24 GiB RTX 3090.
 # Keep ~2 GiB out of vLLM's hands and let llama.cpp fit against ~2 GiB free.
@@ -21,8 +21,8 @@ llama_ctx_size_qwen35_3090: 430080
 llama_ctx_size_qwen27_3090: 198144
 
 litellm_fallbacks:
-  - home: ["home-tiny", "home-remote"]
-  - home-fast: ["home-tiny", "home-remote"]
+  - home: ["home-remote"]
+  - home-fast: ["home-remote"]
   - home-smart: ["home-remote"]
 
 openrouter_models:
@@ -30,7 +30,8 @@ openrouter_models:
   - anthropic/claude-haiku-4.5
   - anthropic/claude-sonnet-4.6
   - anthropic/claude-opus-4.6
-  - minimax/minimax-m2.5
+  - minimax/minimax-m2.7
+  - google/gemini-3-flash-preview
 
 llamaswap_models:
   # Keep public model IDs stable once exposed via LiteLLM/LlamaSwap.
@@ -223,5 +224,4 @@ llamaswap_model_groups:
     exclusive: false
 
 llamaswap_preload:
-  - "{{ model_group_alias['home-tiny'] }}"
   - "{{ model_group_alias['home-fast'] }}"
