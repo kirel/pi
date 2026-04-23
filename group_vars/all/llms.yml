@@ -32,52 +32,6 @@ llamaswap_models:
   # Existing aliases are mixed-case because clients may already depend on them.
   # For new entries, prefer the upstream model family name plus a backend suffix
   # only when we expose multiple runtimes of the same base model.
-  - alias: Qwen3-Coder-30B-A3B-Instruct
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:Q4_K_XL
-      --port ${PORT}
-      --n-predict 32768
-      --n-gpu-layers 99
-      -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --temp 0.7
-      --min-p 0.0
-      --top-p 0.80
-      --top-k 20
-      --repeat-penalty 1.05
-      --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-
-  - alias: Devstral-Small-2-24B-Instruct
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF:Q5_K_XL
-      --port ${PORT}
-      --n-predict 32768
-      --n-gpu-layers 99
-      -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --temp 0.15
-      --min-p 0.01
-      --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
 
   - alias: Qwen3.6-35B-A3B-Instruct
     # Use three explicit llama-server slots so Home Assistant and OpenClaw can
@@ -187,155 +141,8 @@ llamaswap_models:
           id_slot: 2
           cache_prompt: true
 
-  - alias: Qwen3.5-27B-Instruct
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3.5-27B-GGUF:UD-Q4_K_XL
-      --port ${PORT}
-      --n-predict 32768
-      --n-gpu-layers 99
-      -fa on
-      --cache-type-k q8_0
-      --cache-type-v q8_0
-      --temp 1.0
-      --top-p 0.95
-      --top-k 20
-      --min-p 0.0
-      --presence-penalty 1.5
-      --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: true
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-    variants:
-      nothink:
-        temperature: 0.7
-        top_p: 0.8
-        extra_body:
-          chat_template_kwargs:
-            enable_thinking: false
 
-  - alias: GPT-OSS-20B-F16
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/gpt-oss-20b-GGUF:F16
-      --port ${PORT}
-      --n-predict 16384
-      --n-gpu-layers 99
-      --cache-type-k q8_0
-      --cache-type-v q8_0
-      -fa on
-      --temp 1.0
-      --top-p 1.0
-      --top-k 0
-      --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
-    supports_function_calling: true
-    supports_vision: false
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-    variants:
-      high:
-        extra_body:
-          chat_template_kwargs:
-            reasoning_effort: "high"
-      low:
-        extra_body:
-          chat_template_kwargs:
-            reasoning_effort: "low"
-
-  - alias: gemma-4-31B-it-AWQ-vllm
-    cmd: >-
-      vllm-delayed {{ vllm_startup_delay_seconds }} serve QuantTrio/gemma-4-31B-it-AWQ
-      --host 0.0.0.0
-      --port ${PORT}
-      --served-model-name gemma-4-31B-it-AWQ-vllm
-      --quantization awq_marlin
-      --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
-      --max-model-len auto
-      --max-num-seqs 4
-      --enable-prefix-caching
-      --kv-cache-dtype fp8_e4m3
-      --enforce-eager
-      --enable-auto-tool-choice
-      --tool-call-parser gemma4
-      --reasoning-parser gemma4
-      --trust-remote-code
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: true
-    group: "3090"
-    # vLLM can't parse GPU UUIDs in CUDA_VISIBLE_DEVICES (breaks at import
-    # time in w8a8_utils.py). Use index 0 instead — the container's
-    # device_requests already pins it to the Ampere GPU.
-    env:
-      - "CUDA_VISIBLE_DEVICES=0"
-      - "OMP_NUM_THREADS=4"
-
-  - alias: gemma-4-26B-A4B-gguf
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_XL
-      --port ${PORT}
-      --n-predict 32768
-      --n-gpu-layers 99
-      -fa on
-      --cache-type-k q8_0
-      --cache-type-v q8_0
-      --temp 1.0
-      --top-p 0.95
-      --top-k 64
-      --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: true
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-    variants:
-      nothink:
-        temperature: 0.7
-        top_p: 0.8
-        extra_body:
-          chat_template_kwargs:
-            enable_thinking: false
-
-  - alias: gemma-4-26B-A4B-AWQ-vllm
-    # Delay startup briefly so the CUDA driver can release VRAM before vLLM
-    # probes the device. Fast swaps from a llama.cpp model otherwise see stale
-    # "in-use" VRAM and can OOM at startup.
-    cmd: >-
-      vllm-delayed {{ vllm_startup_delay_seconds }} serve cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit
-      --host 0.0.0.0
-      --port ${PORT}
-      --served-model-name gemma-4-26B-A4B-AWQ-vllm
-      --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
-      --max-model-len auto
-      --max-num-seqs 8
-      --enable-prefix-caching
-      --kv-cache-dtype fp8_e4m3
-      --enforce-eager
-      --enable-auto-tool-choice
-      --tool-call-parser gemma4
-      --reasoning-parser gemma4
-      --trust-remote-code
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: true
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES=0"
-      - "OMP_NUM_THREADS=4"
-
-  - alias: Qwen3.5-27B-AWQ-vllm
+  - alias: Qwen3.6-27B-AWQ-vllm
     # cyankiwi AWQ variant — same base model as Qwen/Qwen3.5-27B-GPTQ-Int4
     # but uses compressed-tensors quantization which vLLM auto-detects.
     # Vision can fit alongside qwen3-embedding on the 24 GB 3090, but this is
@@ -344,10 +151,10 @@ llamaswap_models:
     # Allow request-level extra_body through LiteLLM so callers can pass
     # llama.cpp/vLLM-specific request fields such as chat_template_kwargs.
     cmd: >-
-      vllm-delayed {{ vllm_startup_delay_seconds }} serve cyankiwi/Qwen3.5-27B-AWQ-4bit
+      vllm-delayed {{ vllm_startup_delay_seconds }} serve cyankiwi/Qwen3.6-27B-AWQ-INT4
       --host 0.0.0.0
       --port ${PORT}
-      --served-model-name Qwen3.5-27B-AWQ-vllm
+      --served-model-name Qwen3.6-27B-AWQ-vllm
       --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
       --max-model-len auto
       --max-num-seqs 1
@@ -376,29 +183,6 @@ llamaswap_models:
           chat_template_kwargs:
             enable_thinking: false
 
-  - alias: embeddinggemma
-    # Default embedding runtime: enough headroom for ~400 token chunks plus
-    # wrappers/metadata without reserving long-document KV by default.
-    # Lower-memory fallback: 2048/512/512. Long-document case: 8192/2048/2048.
-    cmd: >-
-      /app/llama-server
-      -hf ggml-org/embeddinggemma-300m-qat-q8_0-GGUF
-      --port ${PORT}
-      --embeddings
-      --ctx-size 4096
-      --batch-size 1024
-      --ubatch-size 1024
-      --cache-type-k q8_0
-      --cache-type-v q8_0
-      --n-gpu-layers 99
-      --fit off
-    supports_function_calling: false
-    supports_vision: false
-    supports_reasoning: false
-    encoding_format: "float"
-    group: "forever"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
 
   - alias: qwen3-embedding
     # Default embedding runtime: enough headroom for ~400 token chunks plus
