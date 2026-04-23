@@ -10,3 +10,4 @@ tmp/root.crt
 .uv_cache/
 .gemini
 .env
+config/mcporter.json
