@@ -7,6 +7,7 @@
     state: present
     update_cache: true
     cache_valid_time: 3600
+  tags: [homebrew, mise]
 
 - name: Ensure daniel user exists with zsh shell
   ansible.builtin.user:
@@ -16,6 +17,7 @@
     groups: sudo
     append: true
     state: present
+  tags: [homebrew, mise]
 
 - name: Add authorized SSH keys for daniel
   ansible.posix.authorized_key:
@@ -34,3 +36,64 @@
     group: root
     mode: '0440'
     validate: /usr/sbin/visudo -cf %s
+  tags: [homebrew, mise]
+
+- name: Install Linuxbrew prerequisites
+  ansible.builtin.apt:
+    name:
+      - build-essential
+      - ca-certificates
+      - curl
+      - file
+      - git
+      - procps
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  tags: [homebrew, mise]
+
+- name: Install Homebrew using the official non-interactive installer
+  ansible.builtin.shell: |
+    set -o pipefail
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    executable: /bin/bash
+    creates: "{{ hetzner_homebrew_prefix }}/bin/brew"
+  become: true
+  become_user: "{{ hetzner_homebrew_user }}"
+  environment:
+    HOME: "/home/{{ hetzner_homebrew_user }}"
+  tags: [homebrew, mise]
+
+- name: Add Homebrew shell environment to zprofile
+  ansible.builtin.lineinfile:
+    path: "/home/{{ hetzner_homebrew_user }}/.zprofile"
+    line: 'eval "$({{ hetzner_homebrew_prefix }}/bin/brew shellenv)"'
+    create: true
+    owner: "{{ hetzner_homebrew_user }}"
+    group: "{{ hetzner_homebrew_user }}"
+    mode: '0644'
+  tags: [homebrew, mise]
+
+- name: Install Homebrew formulae
+  community.general.homebrew:
+    name: "{{ hetzner_homebrew_formulae }}"
+    state: present
+    update_homebrew: true
+    path: "{{ hetzner_homebrew_prefix }}/bin"
+  become: true
+  become_user: "{{ hetzner_homebrew_user }}"
+  environment:
+    HOME: "/home/{{ hetzner_homebrew_user }}"
+    PATH: "{{ hetzner_homebrew_prefix }}/bin:{{ ansible_env.PATH }}"
+  tags: [homebrew, mise]
+
+- name: Enable mise in zsh
+  ansible.builtin.lineinfile:
+    path: "/home/{{ hetzner_homebrew_user }}/.zshrc"
+    line: 'eval "$(mise activate zsh)"'
+    create: true
+    owner: "{{ hetzner_homebrew_user }}"
+    group: "{{ hetzner_homebrew_user }}"
+    mode: '0644'
+  tags: [mise]

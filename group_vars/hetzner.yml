@@ -3,6 +3,11 @@
 # but do not advertise any routes of its own.
 tailscale_args: "--accept-dns=true --accept-routes=true --operator=daniel"
 
+hetzner_homebrew_user: daniel
+hetzner_homebrew_prefix: /home/linuxbrew/.linuxbrew
+hetzner_homebrew_formulae:
+  - mise
+
 hetzner_daniel_authorized_keys:
   # Local public key from the Ansible control machine.
   - "{{ lookup('ansible.builtin.file', lookup('ansible.builtin.env', 'HOME') + '/.ssh/id_rsa.pub') }}"
