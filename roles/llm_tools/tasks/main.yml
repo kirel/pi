@@ -40,7 +40,6 @@
     project_name: litellm
     state: present
     definition:
-      version: '3.8'
       services:
         postgres:
           image: "{{ litellm_db_image }}"
