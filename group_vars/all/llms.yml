@@ -15,10 +15,10 @@ vllm_startup_delay_seconds: 5
 llama_fit_target_3090_mb: 2000
 llama_prompt_cache_parallel_slots: 3
 # Fixed total ctx for the 3 dedicated llama.cpp slots on the 3090.
-# Sized so qwen3-embedding can stay resident while leaving about ~1 GiB free
-# on the GPU for llama.cpp compute buffers and transient pressure.
-llama_ctx_size_qwen35_3090: 430080
-llama_ctx_size_qwen27_3090: 198144
+# Sized for q4_0 KV cache so qwen3-embedding can stay resident while keeping
+# roughly the same VRAM envelope as the prior q8_0 KV cache settings.
+llama_ctx_size_qwen35_3090: 737280
+llama_ctx_size_qwen27_3090: 294912
 
 litellm_fallbacks:
   - home: ["home-remote"]
@@ -54,8 +54,8 @@ llamaswap_models:
       --n-predict 32768
       --n-gpu-layers 99
       -fa on
-      --cache-type-k q8_0
-      --cache-type-v q8_0
+      --cache-type-k q4_0
+      --cache-type-v q4_0
       --temp 1.0
       --top-p 0.95
       --top-k 20
@@ -108,8 +108,8 @@ llamaswap_models:
       --n-predict 32768
       --n-gpu-layers 99
       -fa on
-      --cache-type-k q8_0
-      --cache-type-v q8_0
+      --cache-type-k q4_0
+      --cache-type-v q4_0
       --temp 1.0
       --top-p 0.95
       --top-k 20
