@@ -1,0 +1,13 @@
+---
+# Common Tailscale settings. Host/group-specific tailscale_args decide whether
+# a machine is a subnet router or a Tailnet client.
+# The OAuth client secret is stored in group_vars/all/secrets.yml as
+# vault_tailscale_oauth_client_secret.
+tailscale_lan_cidr: "192.168.50.0/24"
+tailscale_tags:
+  - homelab
+
+tailscale_oauth_ephemeral: false
+tailscale_oauth_preauthorized: true
+
+tailscale_authkey: "{{ vault_tailscale_oauth_client_secret }}"

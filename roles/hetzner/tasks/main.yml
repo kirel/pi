@@ -1,0 +1,36 @@
+---
+- name: Install base CLI packages
+  ansible.builtin.apt:
+    name:
+      - zsh
+      - tmux
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Ensure daniel user exists with zsh shell
+  ansible.builtin.user:
+    name: daniel
+    shell: /usr/bin/zsh
+    create_home: true
+    groups: sudo
+    append: true
+    state: present
+
+- name: Add authorized SSH keys for daniel
+  ansible.posix.authorized_key:
+    user: daniel
+    key: "{{ item }}"
+    state: present
+    exclusive: false
+    manage_dir: true
+  loop: "{{ hetzner_daniel_authorized_keys | default([]) }}"
+
+- name: Allow daniel passwordless sudo
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/daniel
+    content: "daniel ALL=(ALL) NOPASSWD: ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s

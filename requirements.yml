@@ -5,3 +5,6 @@ roles:
 
 collections:
   - name: community.docker
+  - name: community.general
+  - name: ansible.posix
+  - name: artis3n.tailscale

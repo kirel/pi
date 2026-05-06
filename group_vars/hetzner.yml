@@ -1,0 +1,10 @@
+---
+# Hetzner VPS is a Tailnet client: consume homelab split DNS and subnet routes,
+# but do not advertise any routes of its own.
+tailscale_args: "--accept-dns=true --accept-routes=true --operator=daniel"
+
+hetzner_daniel_authorized_keys:
+  # Local public key from the Ansible control machine.
+  - "{{ lookup('ansible.builtin.file', lookup('ansible.builtin.env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+  # OpenClaw public key.
+  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGOtmOfi47EnpdA/9ciKYhLI2b9+aGCWby3aRWgRb5D7 shrimp-openclaw@github.com"

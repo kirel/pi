@@ -3,3 +3,6 @@ username: daniel
 dhcp_start: 192.168.50.100
 dhcp_end: 192.168.50.174
 pihole_virtual_host: pihole-nameserver.lan
+
+# Advertise the homelab LAN to Tailnet clients, while keeping local DNS on the server.
+tailscale_args: "--accept-dns=false --advertise-routes={{ tailscale_lan_cidr }}"

@@ -4,6 +4,9 @@
   roles:
     - { role: nuc, become: true, tags: [nuc] }
     - { role: basic, become: true, tags: [basic] }
+    - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
+    - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
+    - { role: tailscale_router, become: true, tags: [tailscale] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
@@ -31,11 +34,21 @@
     - { role: n8n, become: true, tags: [n8n] }
     - { role: prunemate, become: true, tags: [prunemate] }
 
+- name: Setup Hetzner VPS
+  hosts: hetzner
+  roles:
+    - { role: hetzner, become: true, tags: [hetzner] }
+    - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
+    - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
+
 - name: Setup nameserver
   hosts: nameserver
   roles:
     - { role: pi, become: true, tags: [pi] }
     - { role: basic, become: true, tags: [basic] }
+    - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
+    - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
+    - { role: tailscale_router, become: true, tags: [tailscale] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
@@ -73,8 +86,8 @@
     - { role: glances, become: true, tags: [glances], vars: { glances_nvidia_support: true } }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
 
-    #- { role: autosuspend, become: true, tags: [autosuspend] }
-    #- { role: intel_gpu_driver, become: true, tags: [intel-gpu, gpu-driver] }
+    # - { role: autosuspend, become: true, tags: [autosuspend] }
+    # - { role: intel_gpu_driver, become: true, tags: [intel-gpu, gpu-driver] }
     - { role: llm_inference, become: true, tags: [llm, llm-inference] }
     - { role: wolf, become: true, tags: [wolf] }
     - { role: draw_things, become: true, tags: [draw-things] }

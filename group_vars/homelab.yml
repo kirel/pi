@@ -18,3 +18,6 @@ backup_retention:
 
 # Monitoring
 uptime_kuma_push_url: "https://uptime.kirelabs.org/api/push/xvea108uQa"
+
+# Advertise the homelab LAN to Tailnet clients, while keeping local DNS on the server.
+tailscale_args: "--accept-dns=false --advertise-routes={{ tailscale_lan_cidr }}"

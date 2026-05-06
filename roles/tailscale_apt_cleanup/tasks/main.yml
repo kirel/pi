@@ -1,0 +1,6 @@
+---
+- name: Remove legacy Tailscale apt source that conflicts with artis3n.tailscale
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/tailscale.list
+    state: absent
+  when: ansible_os_family == "Debian"
