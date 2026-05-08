@@ -8,6 +8,10 @@ hetzner_homebrew_prefix: /home/linuxbrew/.linuxbrew
 hetzner_homebrew_formulae:
   - mise
 
+# System Node.js for OpenClaw. Keep this outside mise so non-interactive
+# sessions and service accounts get a stable, predictable node binary.
+hetzner_nodejs_major_version: 22
+
 hetzner_daniel_authorized_keys:
   # Local public key from the Ansible control machine.
   - "{{ lookup('ansible.builtin.file', lookup('ansible.builtin.env', 'HOME') + '/.ssh/id_rsa.pub') }}"
