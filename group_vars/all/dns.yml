@@ -3,7 +3,8 @@
 additional_dns_entries:
   router.lan: "{{ router_ip }}"
   proxmox.lan: "{{ ailab_proxmox_ip }}"
-  ha-hausfee.lan: "100.82.91.51"
+  clawd.lan: "{{ tailscale_hetzner_ip }}"
+  ha-hausfee.lan: "{{ tailscale_hetzner_ip }}"
   pihole-nameserver.lan: "{{ nameserver_pi_ip }}"
   pihole-homelab.lan: "{{ homelab_nuc_ip }}"
-  openai.clawd.lan: "{{ ip_prefix }}12"
+  openai.clawd.lan: "{{ tailscale_hetzner_ip }}"
