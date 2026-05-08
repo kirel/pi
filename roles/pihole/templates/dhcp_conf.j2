@@ -1,5 +1,12 @@
 dhcp-option=option:dns-server,{{ nameserver_pi_ip }},{{ homelab_nuc_ip }}
 dhcp-option=tag:nopihole,option:dns-server,{{ google_dns_servers | join(',') }},{{ nameserver_pi_ip }},{{ homelab_nuc_ip }}
 dhcp-option=54,{{ homelab_nuc_ip }}
-dhcp-option=121,0.0.0.0/0,{{ router_ip }},192.168.8.0/24,{{ router_ip }}
-dhcp-option=249,0.0.0.0/0,{{ router_ip }},192.168.8.0/24,{{ router_ip }}
+
+# Push a route from LAN DHCP clients to the Tailnet via homelab-nuc.
+# Option 121 is RFC 3442 classless static routes; option 249 is the Windows equivalent.
+dhcp-option=121,0.0.0.0/0,{{ router_ip }},{{ tailscale_cgnat_cidr }},{{ tailscale_lan_route_gateway }}
+dhcp-option=249,0.0.0.0/0,{{ router_ip }},{{ tailscale_cgnat_cidr }},{{ tailscale_lan_route_gateway }}
+
+# Forward Tailnet DNS lookups to Tailscale's in-Tailnet resolver.
+server=/{{ tailscale_tailnet_domain }}/{{ tailscale_dns_ip }}
+rev-server={{ tailscale_cgnat_cidr }},{{ tailscale_dns_ip }}

@@ -4,6 +4,12 @@
 # The OAuth client secret is stored in group_vars/all/secrets.yml as
 # vault_tailscale_oauth_client_secret.
 tailscale_lan_cidr: "192.168.50.0/24"
+tailscale_cgnat_cidr: "100.64.0.0/10"
+tailscale_dns_ip: "100.100.100.100"
+tailscale_tailnet_domain: "halfmoon-platy.ts.net"
+# DHCP clients use homelab-nuc as the LAN -> Tailnet router. Both Pi-hole
+# instances advertise this route for consistent behavior across DHCP leases.
+tailscale_lan_route_gateway: "{{ homelab_nuc_ip }}"
 tailscale_tags:
   - homelab
 

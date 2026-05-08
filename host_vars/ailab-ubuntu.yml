@@ -7,6 +7,9 @@ netplan_gateway: "192.168.50.1"
 netplan_dns_servers:
   - "192.168.50.4"
   - "192.168.50.5"
+netplan_extra_routes:
+  - to: "{{ tailscale_cgnat_cidr }}"
+    via: "{{ tailscale_lan_route_gateway }}"
 # netplan_config_filename: "40-static-ip.yaml" # Optional: only if you want to override the default filename
 netplan_wake_on_lan: true
 

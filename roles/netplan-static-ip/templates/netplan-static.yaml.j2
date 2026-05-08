@@ -12,6 +12,10 @@ network:
       routes:
         - to: default
           via: {{ netplan_gateway }}
+{% for route in netplan_extra_routes %}
+        - to: {{ route.to }}
+          via: {{ route.via }}
+{% endfor %}
       nameservers:
         addresses: {{ netplan_dns_servers | to_yaml | trim }}
       {% if netplan_wake_on_lan %}wakeonlan: true{% endif -%}
