@@ -16,7 +16,7 @@ llama_prompt_cache_parallel_slots: 3
 # Fixed total ctx for the 3 dedicated llama.cpp slots on the 3090.
 # MTP GGUFs are slightly larger than the base GGUFs, so keep a little more
 # headroom while qwen3-embedding and speech services can stay resident.
-llama_ctx_size_qwen35_3090: 655360
+llama_ctx_size_qwen35_3090: 458752
 llama_ctx_size_qwen27_3090: 262144
 
 litellm_fallbacks:
