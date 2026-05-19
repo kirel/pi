@@ -9,16 +9,15 @@ model_group_alias:
   home-remote: "google/gemini-3-flash-preview"
 
 # Shared memory reservation knobs for the 24 GiB RTX 3090.
-# Keep ~2 GiB out of vLLM's hands and let llama.cpp fit against ~2 GiB free.
-vllm_gpu_memory_utilization_3090: 0.92
-vllm_startup_delay_seconds: 5
+# Keep enough headroom for persistent embeddings and speech services while
+# llama.cpp auto-fits the context budget.
 llama_fit_target_3090_mb: 2000
 llama_prompt_cache_parallel_slots: 3
 # Fixed total ctx for the 3 dedicated llama.cpp slots on the 3090.
-# Sized for q4_0 KV cache so qwen3-embedding can stay resident while keeping
-# roughly the same VRAM envelope as the prior q8_0 KV cache settings.
-llama_ctx_size_qwen35_3090: 737280
-llama_ctx_size_qwen27_3090: 294912
+# MTP GGUFs are slightly larger than the base GGUFs, so keep a little more
+# headroom while qwen3-embedding and speech services can stay resident.
+llama_ctx_size_qwen35_3090: 655360
+llama_ctx_size_qwen27_3090: 262144
 
 litellm_fallbacks:
   - home: ["home-remote"]
@@ -46,11 +45,11 @@ llamaswap_models:
     # stable even when qwen3-embedding is already resident on the 3090.
     cmd: >-
       /app/llama-server
-      -hf unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q3_K_XL
+      -hf unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q3_K_XL
       --port ${PORT}
       --ctx-size {{ llama_ctx_size_qwen35_3090 }}
       --parallel {{ llama_prompt_cache_parallel_slots }}
-      --slot-save-path /app/.cache/qwen3.6-slots
+      --slot-save-path /app/.cache/qwen3.6-mtp-slots
       --n-predict 32768
       --n-gpu-layers 99
       -fa on
@@ -61,64 +60,8 @@ llamaswap_models:
       --top-k 20
       --min-p 0.0
       --presence-penalty 1.5
-      --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
-    supports_function_calling: true
-    supports_vision: true
-    supports_reasoning: true
-    allowed_openai_params:
-      - extra_body
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
-    variants:
-      nothink:
-        temperature: 0.7
-        top_p: 0.8
-        extra_body:
-          id_slot: 2
-          cache_prompt: true
-          chat_template_kwargs:
-            enable_thinking: false
-      ha:
-        extra_body:
-          id_slot: 0
-          cache_prompt: true
-      openclaw:
-        extra_body:
-          id_slot: 1
-          cache_prompt: true
-      misc:
-        extra_body:
-          id_slot: 2
-          cache_prompt: true
-
-  - alias: Qwen3.6-27B-Instruct
-    # Keep the same dedicated prompt-cache slot layout as the 35B entry so the
-    # Home Assistant and OpenClaw routes can retain stable caches. Cap ctx-size
-    # lower than the 35B entry so qwen3-embedding can stay loaded on the 3090.
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Qwen3.6-27B-GGUF:UD-Q3_K_XL
-      --port ${PORT}
-      --ctx-size {{ llama_ctx_size_qwen27_3090 }}
-      --parallel {{ llama_prompt_cache_parallel_slots }}
-      --slot-save-path /app/.cache/qwen3.6-27b-slots
-      --n-predict 32768
-      --n-gpu-layers 99
-      -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --temp 1.0
-      --top-p 0.95
-      --top-k 20
-      --min-p 0.0
-      --presence-penalty 1.5
-      --spec-type ngram-mod
-      --spec-ngram-size-n 24
-      --draft-min 12
-      --draft-max 48
+      --spec-type draft-mtp
+      --spec-draft-n-max 2
       --chat-template-kwargs '{"preserve_thinking": true}'
       --jinja
       --fit on
@@ -145,6 +88,9 @@ llamaswap_models:
           id_slot: 0
           cache_prompt: true
       openclaw:
+        temperature: 0.6
+        top_p: 0.95
+        presence_penalty: 0.0
         extra_body:
           id_slot: 1
           cache_prompt: true
@@ -153,47 +99,65 @@ llamaswap_models:
           id_slot: 2
           cache_prompt: true
 
-
-  - alias: Qwen3.6-27B-AWQ-vllm
-    # cyankiwi AWQ variant — same base model as Qwen/Qwen3.5-27B-GPTQ-Int4
-    # but uses compressed-tensors quantization which vLLM auto-detects.
-    # Vision can fit alongside qwen3-embedding on the 24 GB 3090, but this is
-    # still a tight config: 1 concurrent seq, FP8 KV cache, and a fixed VRAM
-    # budget via gpu-memory-utilization. Large image batches may still OOM.
-    # Allow request-level extra_body through LiteLLM so callers can pass
-    # llama.cpp/vLLM-specific request fields such as chat_template_kwargs.
+  - alias: Qwen3.6-27B-Instruct
+    # Keep the same dedicated prompt-cache slot layout as the 35B entry so the
+    # Home Assistant and OpenClaw routes can retain stable caches. Cap ctx-size
+    # lower than the 35B entry so qwen3-embedding can stay loaded on the 3090.
     cmd: >-
-      vllm-delayed {{ vllm_startup_delay_seconds }} serve cyankiwi/Qwen3.6-27B-AWQ-INT4
-      --host 0.0.0.0
+      /app/llama-server
+      -hf unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q3_K_XL
       --port ${PORT}
-      --served-model-name Qwen3.6-27B-AWQ-vllm
-      --gpu-memory-utilization {{ vllm_gpu_memory_utilization_3090 }}
-      --max-model-len auto
-      --max-num-seqs 1
-      --enable-prefix-caching
-      --kv-cache-dtype fp8_e4m3
-      --enforce-eager
-      --enable-auto-tool-choice
-      --tool-call-parser qwen3_coder
-      --reasoning-parser qwen3
-      --trust-remote-code
-    litellm_provider: hosted_vllm
-    allowed_openai_params:
-      - extra_body
+      --ctx-size {{ llama_ctx_size_qwen27_3090 }}
+      --parallel {{ llama_prompt_cache_parallel_slots }}
+      --slot-save-path /app/.cache/qwen3.6-27b-mtp-slots
+      --n-predict 32768
+      --n-gpu-layers 99
+      -fa on
+      --cache-type-k q4_0
+      --cache-type-v q4_0
+      --temp 1.0
+      --top-p 0.95
+      --top-k 20
+      --min-p 0.0
+      --presence-penalty 1.5
+      --spec-type draft-mtp
+      --spec-draft-n-max 2
+      --chat-template-kwargs '{"preserve_thinking": true}'
+      --jinja
+      --fit on
+      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
+    allowed_openai_params:
+      - extra_body
     group: "3090"
     env:
-      - "CUDA_VISIBLE_DEVICES=0"
-      - "OMP_NUM_THREADS=4"
+      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
     variants:
       nothink:
         temperature: 0.7
         top_p: 0.8
         extra_body:
+          id_slot: 2
+          cache_prompt: true
           chat_template_kwargs:
             enable_thinking: false
+      ha:
+        extra_body:
+          id_slot: 0
+          cache_prompt: true
+      openclaw:
+        temperature: 0.6
+        top_p: 0.95
+        presence_penalty: 0.0
+        extra_body:
+          id_slot: 1
+          cache_prompt: true
+      misc:
+        extra_body:
+          id_slot: 2
+          cache_prompt: true
 
 
   - alias: qwen3-embedding

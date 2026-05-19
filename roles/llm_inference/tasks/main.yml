@@ -27,6 +27,8 @@
   loop:
     - qwen3.6-slots
     - qwen3.6-27b-slots
+    - qwen3.6-mtp-slots
+    - qwen3.6-27b-mtp-slots
   become: true
 
 - name: Ensure llama-swap build context exists
@@ -36,7 +38,7 @@
     mode: "0755"
   become: true
 
-- name: Template llama-swap+vllm Dockerfile
+- name: Template llama-swap Dockerfile
   ansible.builtin.template:
     src: Dockerfile.llamaswap.j2
     dest: "{{ llamaswap_build_context }}/Dockerfile"
@@ -52,7 +54,7 @@
   become: true
   notify: Restart llama-swap
 
-- name: Build llama-swap+vllm image
+- name: Build llama-swap image
   community.docker.docker_image:
     name: "{{ llamaswap_image }}"
     source: build
