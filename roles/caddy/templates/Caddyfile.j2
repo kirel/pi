@@ -7,7 +7,7 @@
 }
 
 (internal_only) {
-        @denied not remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.1 ::1
+        @denied not remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 100.64.0.0/10 127.0.0.1 ::1
         abort @denied
 }
 
@@ -45,7 +45,7 @@ danishkirel.asuscomm.com {
                 {% endif %}
         }
         {% if props.basic_auth is defined %}
-        @external_{{ service }} not remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.1 ::1
+        @external_{{ service }} not remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 100.64.0.0/10 127.0.0.1 ::1
         basic_auth @external_{{ service }} {
                 {{ props.basic_auth.user }} {{ props.basic_auth.password_hash }}
         }
