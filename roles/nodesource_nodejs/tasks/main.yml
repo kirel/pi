@@ -1,0 +1,133 @@
+---
+- name: Assert NodeSource supports this host
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] == 'Debian'
+    fail_msg: NodeSource packages are only supported on Debian-family systems.
+
+- name: Install NodeSource repository prerequisites
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Ensure NodeSource keyring directory exists
+  ansible.builtin.file:
+    path: /usr/share/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install NodeSource apt signing key
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+      | gpg --dearmor -o /usr/share/keyrings/nodesource.gpg
+  args:
+    executable: /bin/bash
+    creates: /usr/share/keyrings/nodesource.gpg
+  register: nodesource_nodejs_signing_key
+
+- name: Ensure NodeSource apt signing key permissions
+  ansible.builtin.file:
+    path: /usr/share/keyrings/nodesource.gpg
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Get dpkg architecture
+  ansible.builtin.command: dpkg --print-architecture
+  register: nodesource_nodejs_dpkg_architecture
+  changed_when: false
+
+- name: Assert NodeSource-supported architecture
+  ansible.builtin.assert:
+    that:
+      - nodesource_nodejs_dpkg_architecture.stdout in ['amd64', 'arm64']
+    fail_msg: >-
+      Unsupported architecture: {{ nodesource_nodejs_dpkg_architecture.stdout }}.
+      NodeSource supports amd64 and arm64.
+
+- name: Configure NodeSource deb822 repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/nodesource.sources
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      Types: deb
+      URIs: https://deb.nodesource.com/node_{{ nodesource_nodejs_major_version }}.x
+      Suites: nodistro
+      Components: main
+      Architectures: {{ nodesource_nodejs_dpkg_architecture.stdout }}
+      Signed-By: /usr/share/keyrings/nodesource.gpg
+  register: nodesource_nodejs_repository
+
+- name: Pin nodejs package to NodeSource
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/nodejs
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      Package: nodejs
+      Pin: origin deb.nodesource.com
+      Pin-Priority: 600
+  register: nodesource_nodejs_pin
+
+- name: Update apt cache after NodeSource repository changes
+  ansible.builtin.apt:
+    update_cache: true
+  when: nodesource_nodejs_signing_key.changed or nodesource_nodejs_repository.changed or nodesource_nodejs_pin.changed
+
+- name: Install Node.js from NodeSource
+  ansible.builtin.apt:
+    name: nodejs
+    state: "{{ nodesource_nodejs_package_state }}"
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Configure npm user global prefix
+  when:
+    - nodesource_nodejs_npm_prefix_user | length > 0
+    - nodesource_nodejs_npm_prefix | length > 0
+  block:
+    - name: Ensure npm user global directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ nodesource_nodejs_npm_prefix_user }}"
+        group: "{{ nodesource_nodejs_npm_prefix_user }}"
+        mode: '0755'
+      loop:
+        - "{{ nodesource_nodejs_npm_prefix }}"
+        - "{{ nodesource_nodejs_npm_prefix }}/bin"
+        - "{{ nodesource_nodejs_npm_prefix }}/lib"
+        - "{{ nodesource_nodejs_npm_prefix }}/lib/node_modules"
+
+    - name: Configure npm prefix
+      ansible.builtin.lineinfile:
+        path: "/home/{{ nodesource_nodejs_npm_prefix_user }}/.npmrc"
+        regexp: '^prefix='
+        line: "prefix={{ nodesource_nodejs_npm_prefix }}"
+        create: true
+        owner: "{{ nodesource_nodejs_npm_prefix_user }}"
+        group: "{{ nodesource_nodejs_npm_prefix_user }}"
+        mode: '0644'
+
+    - name: Ensure npm global bin directory is in zsh PATH
+      ansible.builtin.lineinfile:
+        path: "/home/{{ nodesource_nodejs_npm_prefix_user }}/.zshrc"
+        line: >-
+          {% if nodesource_nodejs_npm_prefix == '/home/' ~ nodesource_nodejs_npm_prefix_user ~ '/.local' %}export PATH="$HOME/.local/bin:$PATH"{% else %}export PATH="{{ nodesource_nodejs_npm_prefix }}/bin:$PATH"{% endif %}
+        create: true
+        owner: "{{ nodesource_nodejs_npm_prefix_user }}"
+        group: "{{ nodesource_nodejs_npm_prefix_user }}"
+        mode: '0644'
+      when: nodesource_nodejs_manage_npm_prefix_path | bool

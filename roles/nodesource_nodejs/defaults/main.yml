@@ -1,0 +1,11 @@
+---
+# Node.js major version from NodeSource, e.g. 20, 22.
+nodesource_nodejs_major_version: 22
+nodesource_nodejs_package_state: present
+
+# Optional per-user npm global prefix.
+# When set, npm -g installs for this user go into nodesource_nodejs_npm_prefix
+# instead of /usr.
+nodesource_nodejs_npm_prefix_user: ""
+nodesource_nodejs_npm_prefix: ""
+nodesource_nodejs_manage_npm_prefix_path: true

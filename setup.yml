@@ -38,6 +38,7 @@
   hosts: hetzner
   roles:
     - { role: hetzner, become: true, tags: [hetzner] }
+    - { role: nodesource_nodejs, become: true, tags: [hetzner, node, openclaw] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true, docker_users: [daniel] } }
     - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
