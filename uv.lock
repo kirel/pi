@@ -3,7 +3,7 @@ revision = 3
 requires-python = "==3.12.*"
 
 [[package]]
-name = ""
+name = "pi-homelab"
 version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
