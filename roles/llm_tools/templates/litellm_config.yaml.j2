@@ -92,6 +92,17 @@ mcp_servers:
       ENABLE_SKILLS: "true"
       ENABLE_SKILLS_AS_TOOLS: "true"
     access_groups: ["hausfee", "shrimp"]
+  immich:
+    transport: "stdio"
+    command: "uvx"
+    args:
+      - "--from"
+      - "git+https://github.com/kirel/immich-photo-manager.git@codex-uvx-mcp-server"
+      - "immich-photo-manager"
+    env:
+      IMMICH_BASE_URL: "https://{{ services['immich'].domain }}"
+      IMMICH_API_KEY: "{{ immich_mcp_api_key }}"
+    access_groups: ["hausfee", "shrimp"]
   n8n:
     transport: "stdio"
     command: "npx"
