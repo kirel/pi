@@ -1,4 +1,10 @@
 ---
+- name: Remove legacy NodeSource deb822 repository with conflicting signed-by
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/nodesource.sources
+    state: absent
+  tags: [node, openclaw]
+
 - name: Install base CLI packages
   ansible.builtin.apt:
     name:
@@ -9,33 +15,57 @@
     cache_valid_time: 3600
   tags: [homebrew, mise]
 
-- name: Ensure daniel user exists with zsh shell
+- name: Ensure Hetzner users exist with configured shell
   ansible.builtin.user:
-    name: daniel
-    shell: /usr/bin/zsh
+    name: "{{ item.name }}"
+    shell: "{{ item.shell | default('/usr/bin/zsh') }}"
     create_home: true
-    groups: sudo
-    append: true
+    groups: "{{ 'sudo' if item.sudo | default(false) else '' }}"
+    append: "{{ item.sudo | default(false) }}"
     state: present
-  tags: [homebrew, mise]
+  loop: "{{ hetzner_users }}"
+  tags: [homebrew, mise, users, hermes]
 
-- name: Add authorized SSH keys for daniel
+- name: Add authorized SSH keys for Hetzner users
   ansible.posix.authorized_key:
-    user: daniel
-    key: "{{ item }}"
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
     state: present
     exclusive: false
     manage_dir: true
-  loop: "{{ hetzner_daniel_authorized_keys | default([]) }}"
+  loop: "{{ hetzner_users | subelements('authorized_keys', skip_missing=True) }}"
+  tags: [users]
 
-- name: Allow daniel passwordless sudo
+- name: Allow configured Hetzner users passwordless sudo
   ansible.builtin.copy:
-    dest: /etc/sudoers.d/daniel
-    content: "daniel ALL=(ALL) NOPASSWD: ALL\n"
+    dest: "/etc/sudoers.d/{{ item.name }}"
+    content: "{{ item.name }} ALL=(ALL) NOPASSWD: ALL\n"
     owner: root
     group: root
     mode: '0440'
     validate: /usr/sbin/visudo -cf %s
+  loop: "{{ hetzner_users | selectattr('passwordless_sudo', 'defined') | selectattr('passwordless_sudo') | list }}"
+  tags: [homebrew, mise, users]
+
+- name: Remove passwordless sudo for users without it
+  ansible.builtin.file:
+    path: "/etc/sudoers.d/{{ item.name }}"
+    state: absent
+  loop: "{{ hetzner_users | rejectattr('passwordless_sudo', 'defined') | list + (hetzner_users | selectattr('passwordless_sudo', 'defined') | rejectattr('passwordless_sudo') | list) }}"
+  tags: [users]
+
+- name: Ensure Homebrew admin group exists
+  ansible.builtin.group:
+    name: "{{ hetzner_homebrew_group }}"
+    state: present
+  tags: [homebrew, mise]
+
+- name: Add configured users to Homebrew admin group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ hetzner_homebrew_group }}"
+    append: true
+  loop: "{{ hetzner_homebrew_users }}"
   tags: [homebrew, mise]
 
 - name: Install Linuxbrew prerequisites
@@ -47,6 +77,7 @@
       - file
       - git
       - procps
+      - acl
     state: present
     update_cache: true
     cache_valid_time: 3600
@@ -65,14 +96,46 @@
     HOME: "/home/{{ hetzner_homebrew_user }}"
   tags: [homebrew, mise]
 
-- name: Add Homebrew shell environment to zprofile
+- name: Allow Homebrew admin group to manage Homebrew prefix
+  ansible.builtin.file:
+    path: "{{ hetzner_homebrew_prefix }}"
+    owner: "{{ hetzner_homebrew_user }}"
+    group: "{{ hetzner_homebrew_group }}"
+    mode: '0775'
+    recurse: true
+  tags: [homebrew, mise]
+
+- name: Remove setgid bits from Homebrew prefix to keep Ruby happy
+  ansible.builtin.command: "find {{ hetzner_homebrew_prefix }} -perm /2000 -exec chmod g-s {} +"
+  changed_when: false
+  tags: [homebrew, mise]
+
+- name: Set default ACLs so Homebrew admin group can write new files
+  ansible.builtin.command: "setfacl -R -m g:{{ hetzner_homebrew_group }}:rwX,d:g:{{ hetzner_homebrew_group }}:rwX {{ hetzner_homebrew_prefix }}"
+  changed_when: false
+  tags: [homebrew, mise]
+
+- name: Add Homebrew shell environment system-wide for POSIX login shells
+  ansible.builtin.copy:
+    dest: /etc/profile.d/homebrew.sh
+    content: |
+      if [ -x {{ hetzner_homebrew_prefix }}/bin/brew ]; then
+        eval "$({{ hetzner_homebrew_prefix }}/bin/brew shellenv)"
+      fi
+    owner: root
+    group: root
+    mode: '0644'
+  tags: [homebrew, mise]
+
+- name: Add Homebrew shell environment to Hetzner user zsh startup files
   ansible.builtin.lineinfile:
-    path: "/home/{{ hetzner_homebrew_user }}/.zprofile"
+    path: "/home/{{ item.0.name }}/{{ item.1 }}"
     line: 'eval "$({{ hetzner_homebrew_prefix }}/bin/brew shellenv)"'
     create: true
-    owner: "{{ hetzner_homebrew_user }}"
-    group: "{{ hetzner_homebrew_user }}"
+    owner: "{{ item.0.name }}"
+    group: "{{ item.0.name }}"
     mode: '0644'
+  loop: "{{ hetzner_users | product(['.zprofile', '.zshrc']) | list }}"
   tags: [homebrew, mise]
 
 - name: Install Homebrew formulae
@@ -143,3 +206,50 @@
     name: nodejs
     state: present
   tags: [node, openclaw]
+
+- name: Ensure user-local bin is on PATH for Hermes users
+  ansible.builtin.lineinfile:
+    path: "/home/{{ item }}/.zshrc"
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
+    create: true
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0644'
+  loop: "{{ hetzner_hermes_users }}"
+  tags: [hermes]
+
+- name: Install Hermes Agent for configured users
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL {{ hetzner_hermes_install_url }} | bash -s -- --skip-setup --skip-browser
+  args:
+    executable: /bin/bash
+    creates: "/home/{{ item }}/.local/bin/hermes"
+  become: true
+  become_user: "{{ item }}"
+  environment:
+    HOME: "/home/{{ item }}"
+    PATH: "/home/{{ item }}/.local/bin:{{ ansible_env.PATH }}"
+  loop: "{{ hetzner_hermes_users }}"
+  tags: [hermes]
+
+- name: Update Hermes Agent for configured users
+  ansible.builtin.command: "/home/{{ item }}/.local/bin/hermes update --yes --no-backup"
+  become: true
+  become_user: "{{ item }}"
+  environment:
+    HOME: "/home/{{ item }}"
+  loop: "{{ hetzner_hermes_users }}"
+  register: hetzner_hermes_update_result
+  changed_when: "'Update complete' in hetzner_hermes_update_result.stdout"
+  tags: [hermes]
+
+- name: Check Hermes Agent installation
+  ansible.builtin.command: "/home/{{ item }}/.local/bin/hermes --version"
+  become: true
+  become_user: "{{ item }}"
+  environment:
+    HOME: "/home/{{ item }}"
+  loop: "{{ hetzner_hermes_users }}"
+  changed_when: false
+  tags: [hermes]
