@@ -12,22 +12,15 @@ hetzner_users:
     sudo: true
     passwordless_sudo: true
     authorized_keys: "{{ hetzner_daniel_authorized_keys }}"
-  - name: marian
-    shell: /usr/bin/zsh
-    sudo: false
-    passwordless_sudo: false
-    authorized_keys: "{{ hetzner_marian_authorized_keys | default([]) }}"
 
 hetzner_hermes_users:
   - daniel
-  - marian
 hetzner_hermes_install_url: https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh
 
 hetzner_homebrew_user: daniel
 hetzner_homebrew_group: linuxbrew
 hetzner_homebrew_users:
   - daniel
-  - marian
 hetzner_homebrew_prefix: /home/linuxbrew/.linuxbrew
 hetzner_homebrew_formulae:
   - mise
@@ -43,5 +36,3 @@ hetzner_daniel_authorized_keys:
   - "{{ lookup('ansible.builtin.file', lookup('ansible.builtin.env', 'HOME') + '/.ssh/id_rsa.pub') }}"
   # OpenClaw public key.
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGOtmOfi47EnpdA/9ciKYhLI2b9+aGCWby3aRWgRb5D7 shrimp-openclaw@github.com"
-
-hetzner_marian_authorized_keys: []
