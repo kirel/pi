@@ -1,0 +1,26 @@
+---
+services:
+{% for agent in hermes_docker_agents | dict2items %}
+  hermes-{{ agent.key }}:
+    image: {{ hermes_docker_image }}
+    pull_policy: {{ hermes_docker_pull_policy }}
+    container_name: hermes-{{ agent.key }}
+    restart: {{ hermes_docker_restart_policy }}
+    command: {{ hermes_docker_command }}
+    shm_size: {{ hermes_docker_shm_size }}
+    env_file:
+      - {{ hermes_docker_base_dir }}/{{ agent.key }}/data/.env
+    ports:
+      - "{{ hermes_dashboard_base_port | int + loop.index0 }}:{{ hermes_dashboard_container_port }}"
+{% if hermes_publish_gateway_api | bool %}
+      - "{{ hermes_gateway_base_port | int + loop.index0 }}:{{ hermes_gateway_container_port }}"
+{% endif %}
+    volumes:
+      - {{ hermes_docker_base_dir }}/{{ agent.key }}/data:{{ hermes_container_data_dir }}
+    networks:
+      - {{ hermes_docker_network_name }}
+{% endfor %}
+
+networks:
+  {{ hermes_docker_network_name }}:
+    driver: bridge

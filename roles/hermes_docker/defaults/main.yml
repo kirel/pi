@@ -1,0 +1,56 @@
+---
+# Host directory where one isolated Hermes data directory per agent is stored.
+hermes_docker_base_dir: /opt/hermes-agents
+
+# First host port for dashboards. Agent N gets hermes_dashboard_base_port + N.
+hermes_dashboard_base_port: 18080
+
+# Ports inside the official Hermes image.
+hermes_dashboard_container_port: 9119
+hermes_gateway_container_port: 8642
+
+# Official Hermes Agent image.
+hermes_docker_image: nousresearch/hermes-agent:latest
+hermes_docker_project_name: hermes-agents
+hermes_docker_command: gateway run
+hermes_docker_pull_policy: always
+hermes_docker_compose_pull: policy
+hermes_docker_ensure_running: true
+hermes_docker_restart_policy: unless-stopped
+hermes_docker_network_name: hermes-agents
+hermes_docker_shm_size: 1g
+
+# Hermes Docker docs use /opt/data as the persistent data directory.
+# Override only if the image entrypoint changes or you intentionally manage that mapping.
+hermes_container_data_dir: /opt/data
+
+# Container process/data ownership. The official image defaults to the hermes user (UID/GID 10000).
+hermes_docker_data_uid: 10000
+hermes_docker_data_gid: 10000
+
+# Set to true to publish the gateway API port in addition to the dashboard port.
+# Gateway API host ports start at hermes_gateway_base_port and increment by agent order.
+hermes_publish_gateway_api: false
+hermes_gateway_base_port: 18642
+
+# One entry per agent. Put real values in Ansible Vault, for example:
+# hermes_docker_agents:
+#   multipurpose:
+#     TELEGRAM_BOT_TOKEN: "..."
+#     TELEGRAM_ALLOWED_USERS: "166344393"
+hermes_docker_agents: {}
+
+# Global environment injected into every agent's /opt/data/.env.
+# MINIMAX_API_KEY can be supplied here or as a top-level Vault variable named MINIMAX_API_KEY.
+hermes_docker_global_env: {}
+hermes_docker_require_minimax_api_key: true
+
+# Non-secret runtime defaults needed for the built-in dashboard side-process.
+hermes_docker_runtime_env:
+  HERMES_DASHBOARD: "1"
+  HERMES_DASHBOARD_HOST: "0.0.0.0"
+  HERMES_DASHBOARD_PORT: "{{ hermes_dashboard_container_port }}"
+  HERMES_DASHBOARD_TUI: "1"
+
+# Validate that Docker and the Compose v2 plugin are available on the target.
+hermes_docker_validate_prerequisites: true

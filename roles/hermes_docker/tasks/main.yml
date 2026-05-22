@@ -1,0 +1,108 @@
+---
+- name: Validate Hermes Docker prerequisites
+  when: hermes_docker_validate_prerequisites | bool
+  block:
+    - name: Check Docker CLI is available
+      ansible.builtin.command: docker --version
+      changed_when: false
+
+    - name: Check Docker Compose v2 plugin is available
+      ansible.builtin.command: docker compose version
+      changed_when: false
+
+- name: Build effective Hermes global environment
+  ansible.builtin.set_fact:
+    hermes_docker_effective_global_env: >-
+      {{
+        ({'MINIMAX_API_KEY': MINIMAX_API_KEY} if MINIMAX_API_KEY is defined else {}) |
+        combine(({'MINIMAX_API_KEY': minimax_api_key} if minimax_api_key is defined else {}), recursive=True) |
+        combine(({'TAVILY_API_KEY': TAVILY_API_KEY} if TAVILY_API_KEY is defined else {}), recursive=True) |
+        combine(({'TAVILY_API_KEY': tavily_api_key} if tavily_api_key is defined else {}), recursive=True) |
+        combine(hermes_docker_global_env, recursive=True)
+      }}
+  no_log: true
+
+- name: Validate Hermes Docker agent configuration
+  ansible.builtin.assert:
+    that:
+      - hermes_docker_agents is mapping
+      - hermes_docker_agents | length > 0
+      - >-
+        hermes_docker_agents.keys() | list |
+        select('match', '^[A-Za-z0-9][A-Za-z0-9_.-]*$') | list | length == hermes_docker_agents | length
+      - >-
+        not (hermes_docker_require_minimax_api_key | bool) or
+        (hermes_docker_effective_global_env.MINIMAX_API_KEY is defined and
+        hermes_docker_effective_global_env.MINIMAX_API_KEY | string | length > 0)
+    fail_msg: >-
+      Define hermes_docker_agents with valid Docker-safe agent names and provide
+      MINIMAX_API_KEY either as a top-level Vault variable or in hermes_docker_global_env.
+
+- name: Create Hermes Docker base directory
+  ansible.builtin.file:
+    path: "{{ hermes_docker_base_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create per-agent parent directories
+  ansible.builtin.file:
+    path: "{{ hermes_docker_base_dir }}/{{ agent.key }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop: "{{ hermes_docker_agents | dict2items }}"
+  loop_control:
+    loop_var: agent
+    label: "{{ agent.key }}"
+
+- name: Create isolated per-agent data directories
+  ansible.builtin.file:
+    path: "{{ hermes_docker_base_dir }}/{{ agent.key }}/data"
+    state: directory
+    owner: "{{ hermes_docker_data_uid }}"
+    group: "{{ hermes_docker_data_gid }}"
+    mode: '0750'
+  loop: "{{ hermes_docker_agents | dict2items }}"
+  loop_control:
+    loop_var: agent
+    label: "{{ agent.key }}"
+
+- name: Render per-agent Hermes env files
+  ansible.builtin.template:
+    src: agent.env.j2
+    dest: "{{ hermes_docker_base_dir }}/{{ agent.key }}/data/.env"
+    owner: "{{ hermes_docker_data_uid }}"
+    group: "{{ hermes_docker_data_gid }}"
+    mode: '0600'
+  loop: "{{ hermes_docker_agents | dict2items }}"
+  loop_control:
+    loop_var: agent
+    label: "{{ agent.key }}"
+  no_log: true
+  notify: Recreate Hermes Docker agents
+
+- name: Render Hermes Docker Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ hermes_docker_base_dir }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Recreate Hermes Docker agents
+
+- name: Apply pending Hermes Docker Compose changes
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure Hermes Docker Compose stack is running
+  community.docker.docker_compose_v2:
+    project_src: "{{ hermes_docker_base_dir }}"
+    files:
+      - docker-compose.yml
+    project_name: "{{ hermes_docker_project_name }}"
+    state: present
+    pull: "{{ hermes_docker_compose_pull }}"
+    remove_orphans: true
+  when: hermes_docker_ensure_running | bool

@@ -17,3 +17,7 @@ nameserver-pi:
 ailab:
   host: {{ ailab_ubuntu_ip }}
   port: 2375
+
+hetzner:
+  host: "{{ hostvars[groups.hetzner | first].ansible_host }}"
+  port: 2375

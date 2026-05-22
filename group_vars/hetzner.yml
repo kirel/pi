@@ -3,6 +3,9 @@
 # but do not advertise any routes of its own.
 tailscale_args: "--accept-dns=true --accept-routes=true --operator=daniel"
 
+# Expose the Docker socket proxy only on the Hetzner Tailnet IP, never on the public VPS interface.
+dockerproxy_bind_address: "{{ ansible_host }}"
+
 hetzner_users:
   - name: daniel
     shell: /usr/bin/zsh

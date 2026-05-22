@@ -29,7 +29,9 @@
             VOLUMES: "1"
             DISABLE_IPV6: "0"
           ports:
-            - 2375:2375
+            - >-
+              {{ (dockerproxy_bind_address | default('')) ~ ':'
+                 if dockerproxy_bind_address | default('') | length > 0 else '' }}{{ dockerproxy_port | default(2375) }}:2375
           networks:
             - dockerproxy
           volumes:

@@ -1,0 +1,13 @@
+---
+- name: Recreate Hermes Docker agents
+  community.docker.docker_compose_v2:
+    project_src: "{{ hermes_docker_base_dir }}"
+    files:
+      - docker-compose.yml
+    project_name: "{{ hermes_docker_project_name }}"
+    state: present
+    pull: "{{ hermes_docker_compose_pull }}"
+    recreate: auto
+    remove_orphans: true
+  become: true
+  when: not ansible_check_mode
