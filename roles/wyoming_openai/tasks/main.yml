@@ -28,6 +28,7 @@
   community.docker.docker_compose_v2:
     project_name: wyoming-openai
     state: present
+    pull: "{{ wyoming_openai_pull_policy }}"
     remove_orphans: true
     definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
   become: true

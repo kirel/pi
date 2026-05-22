@@ -17,6 +17,7 @@ services:
 {% endif %}
     volumes:
       - {{ hermes_docker_base_dir }}/{{ agent.key }}/data:{{ hermes_container_data_dir }}
+      - {{ hermes_external_skills_host_dir }}:{{ hermes_external_skills_container_dir }}:ro
     networks:
       - {{ hermes_docker_network_name }}
 {% endfor %}

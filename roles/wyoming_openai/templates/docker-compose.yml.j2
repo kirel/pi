@@ -1,7 +1,8 @@
 services:
   init-speaches:
     container_name: init-speaches
-    image: ghcr.io/speaches-ai/speaches:latest-cuda
+    image: "{{ speaches_image }}"
+    pull_policy: {{ wyoming_openai_pull_policy }}
     environment:
       - SPEACHES_BASE_URL=http://speaches:8000
     command: >
@@ -28,6 +29,7 @@ services:
   speaches:
     container_name: "{{ speaches_container_name }}"
     image: "{{ speaches_image }}"
+    pull_policy: {{ wyoming_openai_pull_policy }}
     restart: unless-stopped
     ports:
       - "{{ speaches_external_port }}:{{ speaches_internal_port }}"
@@ -129,6 +131,7 @@ services:
   wyoming_openai:
     container_name: "{{ wyoming_openai_container_name }}"
     image: "{{ wyoming_openai_image }}"
+    pull_policy: {{ wyoming_openai_pull_policy }}
     restart: unless-stopped
     ports:
       - "{{ wyoming_openai_external_port }}:{{ wyoming_openai_internal_port }}"
@@ -162,6 +165,7 @@ services:
   wyoming_openai_chatterbox:
     container_name: "{{ wyoming_openai_chatterbox_container_name }}"
     image: "{{ wyoming_openai_image }}"
+    pull_policy: {{ wyoming_openai_pull_policy }}
     restart: unless-stopped
     ports:
       - "{{ wyoming_openai_chatterbox_external_port }}:{{ wyoming_openai_chatterbox_internal_port }}"

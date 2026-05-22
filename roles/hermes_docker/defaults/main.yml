@@ -24,6 +24,13 @@ hermes_docker_shm_size: 1g
 # Override only if the image entrypoint changes or you intentionally manage that mapping.
 hermes_container_data_dir: /opt/data
 
+# Shared external skills directory mounted into every Hermes Docker agent.
+hermes_external_skills_host_dir: /home/daniel/.agents/skills
+hermes_external_skills_host_owner: daniel
+hermes_external_skills_host_group: daniel
+hermes_external_skills_container_dir: /opt/data/home/.agents/skills
+hermes_external_skills_config_path: ~/.agents/skills
+
 # Container process/data ownership. The official image defaults to the hermes user (UID/GID 10000).
 hermes_docker_data_uid: 10000
 hermes_docker_data_gid: 10000
@@ -42,6 +49,8 @@ hermes_docker_agents: {}
 
 # Global environment injected into every agent's /opt/data/.env.
 # MINIMAX_API_KEY can be supplied here or as a top-level Vault variable named MINIMAX_API_KEY.
+hermes_docker_openai_api_key: sk-speaches-no-key-required
+hermes_docker_voice_tools_openai_key: sk-speaches-no-key-required
 hermes_docker_global_env: {}
 hermes_docker_require_minimax_api_key: true
 

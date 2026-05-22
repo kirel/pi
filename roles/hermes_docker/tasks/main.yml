@@ -46,6 +46,31 @@
     group: root
     mode: '0755'
 
+- name: Ensure shared external Hermes skills directory exists
+  ansible.builtin.file:
+    path: "{{ hermes_external_skills_host_dir }}"
+    state: directory
+    owner: "{{ hermes_external_skills_host_owner }}"
+    group: "{{ hermes_external_skills_host_group }}"
+    mode: '0755'
+
+- name: Ensure shared external Hermes skills ownership is readable by containers
+  ansible.builtin.command:
+    argv:
+      - chown
+      - -R
+      - "{{ hermes_external_skills_host_owner }}:{{ hermes_external_skills_host_group }}"
+      - "{{ hermes_external_skills_host_dir }}"
+  changed_when: false
+
+- name: Ensure shared external Hermes skill directories are traversable
+  ansible.builtin.command: "find {{ hermes_external_skills_host_dir | quote }} -type d -exec chmod 755 {} +"
+  changed_when: false
+
+- name: Ensure shared external Hermes skill files are world-readable
+  ansible.builtin.command: "find {{ hermes_external_skills_host_dir | quote }} -type f -exec chmod 644 {} +"
+  changed_when: false
+
 - name: Create per-agent parent directories
   ansible.builtin.file:
     path: "{{ hermes_docker_base_dir }}/{{ agent.key }}"
@@ -105,4 +130,53 @@
     state: present
     pull: "{{ hermes_docker_compose_pull }}"
     remove_orphans: true
+  when: hermes_docker_ensure_running | bool
+
+- name: Configure shared external skills path in Hermes agents
+  ansible.builtin.shell: |
+    set -o pipefail
+    docker exec --user hermes --env HERMES_HOME={{ hermes_container_data_dir }} hermes-{{ agent.key }} sh -lc '
+      grep -q "^[[:space:]]*- {{ hermes_external_skills_config_path | regex_escape }}$" {{ hermes_container_data_dir }}/config.yaml \
+        || /opt/hermes/.venv/bin/hermes config set skills.external_dirs "{{ hermes_external_skills_config_path }}"
+    '
+  args:
+    executable: /bin/bash
+  loop: "{{ hermes_docker_agents | dict2items }}"
+  loop_control:
+    loop_var: agent
+    label: "{{ agent.key }}"
+  register: hermes_external_skills_config_set
+  changed_when: "'Set skills.external_dirs' in hermes_external_skills_config_set.stdout"
+  when: hermes_docker_ensure_running | bool
+
+- name: Normalize Hermes external skills config to a YAML list
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - --user
+      - hermes
+      - --env
+      - HERMES_HOME={{ hermes_container_data_dir }}
+      - hermes-{{ agent.key }}
+      - /opt/hermes/.venv/bin/python
+      - -c
+      - |
+        import os
+        from pathlib import Path
+        import yaml
+
+        path = Path(os.environ.get('HERMES_HOME', '{{ hermes_container_data_dir }}')) / 'config.yaml'
+        config = yaml.safe_load(path.read_text()) if path.exists() else {}
+        if not isinstance(config, dict):
+            config = {}
+        skills = config.setdefault('skills', {})
+        target = '{{ hermes_external_skills_config_path }}'
+        skills['external_dirs'] = [target]
+        path.write_text(yaml.safe_dump(config, sort_keys=False))
+  loop: "{{ hermes_docker_agents | dict2items }}"
+  loop_control:
+    loop_var: agent
+    label: "{{ agent.key }}"
+  changed_when: false
   when: hermes_docker_ensure_running | bool
