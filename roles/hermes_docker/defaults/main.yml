@@ -31,6 +31,40 @@ hermes_external_skills_host_group: daniel
 hermes_external_skills_container_dir: /opt/data/home/.agents/skills
 hermes_external_skills_config_path: ~/.agents/skills
 
+# Config merged into every Hermes Docker agent's config.yaml after first start.
+# Agent-specific config remains intact; these values intentionally override matching keys.
+hermes_docker_config_overrides:
+  approvals:
+    mode: "off"
+  security:
+    tirith_enabled: false
+  compression:
+    threshold: 0.85
+  skills:
+    external_dirs:
+      - "{{ hermes_external_skills_config_path }}"
+  stt:
+    enabled: true
+    provider: openai
+    openai:
+      model: Systran/faster-whisper-large-v3
+      base_url: https://speaches.kirelabs.org/v1
+      api_key: bogus
+  tts:
+    enabled: true
+    provider: edge
+    edge:
+      voice: de-DE-KatjaNeural
+    openai:
+      model: speaches-ai/piper-de_DE-eva_k-x_low
+      voice: eva_k
+      base_url: https://speaches.kirelabs.org/v1
+      api_key: bogus
+      speed: 1.0
+  group_sessions_per_user: true
+  streaming:
+    enabled: true
+
 # Container process/data ownership. The official image defaults to the hermes user (UID/GID 10000).
 hermes_docker_data_uid: 10000
 hermes_docker_data_gid: 10000

@@ -89,7 +89,7 @@
     state: directory
     owner: "{{ hermes_docker_data_uid }}"
     group: "{{ hermes_docker_data_gid }}"
-    mode: '0750'
+    mode: '0700'
   loop: "{{ hermes_docker_agents | dict2items }}"
   loop_control:
     loop_var: agent
@@ -132,24 +132,7 @@
     remove_orphans: true
   when: hermes_docker_ensure_running | bool
 
-- name: Configure shared external skills path in Hermes agents
-  ansible.builtin.shell: |
-    set -o pipefail
-    docker exec --user hermes --env HERMES_HOME={{ hermes_container_data_dir }} hermes-{{ agent.key }} sh -lc '
-      grep -q "^[[:space:]]*- {{ hermes_external_skills_config_path | regex_escape }}$" {{ hermes_container_data_dir }}/config.yaml \
-        || /opt/hermes/.venv/bin/hermes config set skills.external_dirs "{{ hermes_external_skills_config_path }}"
-    '
-  args:
-    executable: /bin/bash
-  loop: "{{ hermes_docker_agents | dict2items }}"
-  loop_control:
-    loop_var: agent
-    label: "{{ agent.key }}"
-  register: hermes_external_skills_config_set
-  changed_when: "'Set skills.external_dirs' in hermes_external_skills_config_set.stdout"
-  when: hermes_docker_ensure_running | bool
-
-- name: Normalize Hermes external skills config to a YAML list
+- name: Apply Hermes config overrides
   ansible.builtin.command:
     argv:
       - docker
@@ -162,21 +145,40 @@
       - /opt/hermes/.venv/bin/python
       - -c
       - |
+        import copy
+        import json
         import os
+        import sys
         from pathlib import Path
+
         import yaml
+
+        def merge(base, override):
+            for key, value in override.items():
+                if isinstance(value, dict) and isinstance(base.get(key), dict):
+                    merge(base[key], value)
+                else:
+                    base[key] = value
+            return base
 
         path = Path(os.environ.get('HERMES_HOME', '{{ hermes_container_data_dir }}')) / 'config.yaml'
         config = yaml.safe_load(path.read_text()) if path.exists() else {}
         if not isinstance(config, dict):
             config = {}
-        skills = config.setdefault('skills', {})
-        target = '{{ hermes_external_skills_config_path }}'
-        skills['external_dirs'] = [target]
-        path.write_text(yaml.safe_dump(config, sort_keys=False))
+        updated = merge(copy.deepcopy(config), json.loads(sys.argv[1]))
+        if updated != config:
+            path.write_text(yaml.safe_dump(updated, sort_keys=False))
+            print('changed')
+        else:
+            print('ok')
+      - "{{ hermes_docker_config_overrides | to_json }}"
   loop: "{{ hermes_docker_agents | dict2items }}"
   loop_control:
     loop_var: agent
     label: "{{ agent.key }}"
-  changed_when: false
-  when: hermes_docker_ensure_running | bool
+  register: hermes_docker_config_apply
+  changed_when: "'changed' in hermes_docker_config_apply.stdout"
+  no_log: true
+  when:
+    - hermes_docker_ensure_running | bool
+    - hermes_docker_config_overrides | length > 0
