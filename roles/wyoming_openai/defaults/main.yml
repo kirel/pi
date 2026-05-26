@@ -24,6 +24,14 @@ wyoming_languages: en es fr de it pt ru ja ko ar da el fi he hi ms nl no pl sv s
 stt_backend: "SPEACHES"
 stt_openai_url: "http://speaches:{{ speaches_internal_port }}/v1"
 stt_model: "Systran/faster-whisper-medium"
+speaches_whisper_inference_device: cuda
+speaches_whisper_compute_type: float16
+speaches_stt_model_ttl: 300
+# Keep ONNX Runtime models (Silero VAD/Piper TTS) off CUDA on RTX 50xx to avoid
+# poisoning the CUDA context before faster-whisper loads. Whisper itself still uses CUDA.
+speaches_ort_exclude_providers:
+  - TensorrtExecutionProvider
+  - CUDAExecutionProvider
 tts_backend: "SPEACHES"
 tts_openai_url: "http://speaches:{{ speaches_internal_port }}/v1"
 # stt_openai_url: "http://chatterbox-tts:{{ chatterbox_tts_internal_port }}/v1"
