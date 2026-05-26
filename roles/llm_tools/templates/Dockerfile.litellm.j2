@@ -1,4 +1,4 @@
-FROM ghcr.io/berriai/litellm:main-v1.82.0-stable
+FROM {{ litellm_proxy_image }}
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git \

@@ -39,6 +39,7 @@
   community.docker.docker_compose_v2:
     project_name: litellm
     state: present
+    build: always
     definition:
       services:
         postgres:
