@@ -25,6 +25,11 @@ hetzner_users:
 hetzner_hermes_users:
   - daniel
 hetzner_hermes_install_url: https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh
+hetzner_hermes_env:
+  HERMES_DASHBOARD: "1"
+  HERMES_DASHBOARD_HOST: "{{ ansible_host }}"
+  HERMES_DASHBOARD_PORT: "9119"
+  HERMES_DASHBOARD_TUI: "1"
 
 hetzner_homebrew_user: daniel
 hetzner_homebrew_group: linuxbrew

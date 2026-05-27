@@ -199,6 +199,128 @@
   changed_when: "'Update complete' in hetzner_hermes_update_result.stdout"
   tags: [hermes]
 
+- name: Ensure Hermes config directories exist for configured users
+  ansible.builtin.file:
+    path: "/home/{{ item }}/.hermes"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0700'
+  loop: "{{ hetzner_hermes_users }}"
+  tags: [hermes]
+
+- name: Configure bare-metal Hermes environment for configured users
+  ansible.builtin.blockinfile:
+    path: "/home/{{ item }}/.hermes/.env"
+    create: true
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0600'
+    marker: "# {mark} ANSIBLE MANAGED HERMES ENV"
+    block: |
+      {% for key, value in (hetzner_hermes_env | default({}) | dictsort) %}
+      {{ key }}={{ value }}
+      {% endfor %}
+  loop: "{{ hetzner_hermes_users }}"
+  register: hetzner_hermes_env_file
+  when: (hetzner_hermes_env | default({})) | length > 0
+  tags: [hermes]
+
+- name: Ensure Hermes user service drop-in directories exist
+  ansible.builtin.file:
+    path: "/home/{{ item }}/.config/systemd/user/hermes-gateway.service.d"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0755'
+  loop: "{{ hetzner_hermes_users }}"
+  when: (hetzner_hermes_env | default({})) | length > 0
+  tags: [hermes]
+
+- name: Configure Hermes user service to load managed environment file
+  ansible.builtin.copy:
+    dest: "/home/{{ item }}/.config/systemd/user/hermes-gateway.service.d/10-ansible-env.conf"
+    content: |
+      [Service]
+      EnvironmentFile=%h/.hermes/.env
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0644'
+  loop: "{{ hetzner_hermes_users }}"
+  register: hetzner_hermes_service_env_dropin
+  when: (hetzner_hermes_env | default({})) | length > 0
+  tags: [hermes]
+
+- name: Configure Hermes dashboard user service
+  ansible.builtin.copy:
+    dest: "/home/{{ item }}/.config/systemd/user/hermes-dashboard.service"
+    content: |
+      [Unit]
+      Description=Hermes Agent Dashboard
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=simple
+      EnvironmentFile=%h/.hermes/.env
+      ExecStart=/home/{{ item }}/.local/bin/hermes dashboard --host ${HERMES_DASHBOARD_HOST} --port ${HERMES_DASHBOARD_PORT} --no-open --insecure --tui
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=default.target
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0644'
+  loop: "{{ hetzner_hermes_users }}"
+  register: hetzner_hermes_dashboard_service
+  when: (hetzner_hermes_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
+  tags: [hermes]
+
+- name: Reload Hermes user systemd manager when environment changed
+  ansible.builtin.shell: >-
+    XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user daemon-reload
+  become: true
+  become_user: "{{ item }}"
+  loop: "{{ hetzner_hermes_users }}"
+  changed_when: false
+  when:
+    - (hetzner_hermes_env | default({})) | length > 0
+    - hetzner_hermes_env_file is changed or hetzner_hermes_service_env_dropin is changed or hetzner_hermes_dashboard_service is changed
+  tags: [hermes]
+
+- name: Restart Hermes gateway when environment changed
+  ansible.builtin.shell: >-
+    XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user restart hermes-gateway.service
+  become: true
+  become_user: "{{ item }}"
+  loop: "{{ hetzner_hermes_users }}"
+  when:
+    - (hetzner_hermes_env | default({})) | length > 0
+    - hetzner_hermes_env_file is changed or hetzner_hermes_service_env_dropin is changed
+  tags: [hermes]
+
+- name: Enable and start Hermes dashboard user service
+  ansible.builtin.shell: >-
+    XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user enable --now hermes-dashboard.service
+  become: true
+  become_user: "{{ item }}"
+  loop: "{{ hetzner_hermes_users }}"
+  changed_when: false
+  when: (hetzner_hermes_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
+  tags: [hermes]
+
+- name: Restart Hermes dashboard when service environment changed
+  ansible.builtin.shell: >-
+    XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user restart hermes-dashboard.service
+  become: true
+  become_user: "{{ item }}"
+  loop: "{{ hetzner_hermes_users }}"
+  when:
+    - (hetzner_hermes_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
+    - hetzner_hermes_env_file is changed or hetzner_hermes_dashboard_service is changed
+  tags: [hermes]
+
 - name: Check Hermes Agent installation
   ansible.builtin.command: "/home/{{ item }}/.local/bin/hermes --version"
   become: true
