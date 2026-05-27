@@ -8,6 +8,9 @@
         {%- set merged = {'service': service}|combine(props) -%}
         {%- set _ = services_list.append(merged) -%}
     {%- endif -%}
+{%- endfor -%}
+{%- for props in homepage_static_services | default([]) -%}
+    {%- set _ = services_list.append(props) -%}
 {%- endfor %}
 
 {% for group_name, services_in_group_iterable in services_list|groupby('group') %}
@@ -32,9 +35,15 @@
 {% endif %}
 {% endif %}
         href: "{{ final_url }}"
-        {% if service_item.icon is defined %}icon: {{ service_item.icon }}{% endif %}
-        {% if service_item.description is defined %}description: "{{ service_item.description }}"{% endif %}
-        {% if service_item.ping is defined %}ping: "{{ service_item.ping }}"{% endif %}
+{% if service_item.icon is defined %}
+        icon: {{ service_item.icon }}
+{% endif %}
+{% if service_item.description is defined %}
+        description: "{{ service_item.description }}"
+{% endif %}
+{% if service_item.ping is defined %}
+        ping: "{{ service_item.ping }}"
+{% endif %}
 {% endfor %}
 {% endif %}
 {% endfor %}

@@ -23,6 +23,31 @@ pihole_http_port: 81
 glances_http_port: 61208
 homeassistant_http_port: 8123
 homepage_http_port: 3002
+homepage_static_services:
+  - service: hermes-baremetal-daniel
+    name: Hermes Daniel Bare Metal
+    group: AI
+    icon: mdi-robot-outline
+    href: "http://{{ hostvars['ubuntu-8gb-fsn1-1'].ansible_host }}:9119"
+    description: Daniel bare metal Hermes dashboard
+  - service: hermes-multipurpose
+    name: Hermes Multipurpose
+    group: AI
+    icon: mdi-robot
+    href: "http://{{ hostvars['ubuntu-8gb-fsn1-1'].ansible_host }}:18080"
+    description: Multipurpose Hermes dashboard
+  - service: hermes-marian
+    name: Hermes Marian
+    group: AI
+    icon: mdi-robot
+    href: "http://{{ hostvars['ubuntu-8gb-fsn1-1'].ansible_host }}:18081"
+    description: Marian Hermes dashboard
+  - service: hermes-anna
+    name: Hermes Anna
+    group: AI
+    icon: mdi-robot
+    href: "http://{{ hostvars['ubuntu-8gb-fsn1-1'].ansible_host }}:18082"
+    description: Anna Hermes dashboard
 music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
 nodered_http_port: 1880

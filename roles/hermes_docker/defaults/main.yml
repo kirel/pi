@@ -10,7 +10,7 @@ hermes_dashboard_container_port: 9119
 hermes_gateway_container_port: 8642
 
 # Official Hermes Agent image.
-hermes_docker_image: nousresearch/hermes-agent:latest
+hermes_docker_image: nousresearch/hermes-agent:main
 hermes_docker_project_name: hermes-agents
 hermes_docker_command: gateway run
 hermes_docker_pull_policy: always
