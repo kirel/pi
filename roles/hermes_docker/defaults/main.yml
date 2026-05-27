@@ -3,6 +3,9 @@
 hermes_docker_base_dir: /opt/hermes-agents
 
 # First host port for dashboards. Agent N gets hermes_dashboard_base_port + N.
+# Leave bind address empty to publish on all interfaces, or set it to a specific
+# address such as the host's Tailscale IP.
+hermes_dashboard_bind_address: ""
 hermes_dashboard_base_port: 18080
 
 # Ports inside the official Hermes image.
@@ -12,7 +15,13 @@ hermes_gateway_container_port: 8642
 # Official Hermes Agent image.
 hermes_docker_image: nousresearch/hermes-agent:main
 hermes_docker_project_name: hermes-agents
-hermes_docker_command: gateway run
+# The current s6-based Hermes image must start the gateway through with-contenv;
+# plain `gateway run` can miss env_file variables and leave gateway-default down.
+hermes_docker_command:
+  - /command/with-contenv
+  - sh
+  - -lc
+  - rm -f /run/service/gateway-default/down; /opt/hermes/.venv/bin/hermes gateway start; exec sleep infinity
 hermes_docker_pull_policy: always
 hermes_docker_compose_pull: policy
 hermes_docker_ensure_running: true
@@ -34,8 +43,6 @@ hermes_external_skills_config_path: ~/.agents/skills
 # Config merged into every Hermes Docker agent's config.yaml after first start.
 # Agent-specific config remains intact; these values intentionally override matching keys.
 hermes_docker_config_overrides:
-  approvals:
-    mode: "off"
   security:
     tirith_enabled: false
   compression:
@@ -46,10 +53,6 @@ hermes_docker_config_overrides:
   stt:
     enabled: true
     provider: openai
-    openai:
-      model: Systran/faster-whisper-large-v3
-      base_url: https://speaches.kirelabs.org/v1
-      api_key: bogus
   tts:
     enabled: true
     provider: edge
@@ -71,29 +74,38 @@ hermes_docker_data_gid: 10000
 
 # Set to true to publish the gateway API port in addition to the dashboard port.
 # Gateway API host ports start at hermes_gateway_base_port and increment by agent order.
+# Leave bind address empty to publish on all interfaces.
 hermes_publish_gateway_api: false
+hermes_gateway_bind_address: ""
 hermes_gateway_base_port: 18642
 
-# One entry per agent. Put real values in Ansible Vault, for example:
-# hermes_docker_agents:
-#   multipurpose:
-#     TELEGRAM_BOT_TOKEN: "..."
-#     TELEGRAM_ALLOWED_USERS: "166344393"
-hermes_docker_agents: {}
+# Environment injected into every agent's /opt/data/.env. Non-secret values go in
+# hermes_docker_global_env; secrets go in hermes_docker_global_env_secret.
+hermes_docker_global_env:
+  OPENAI_API_KEY: sk-speaches-no-key-required
+  VOICE_TOOLS_OPENAI_KEY: sk-speaches-no-key-required
+hermes_docker_global_env_secret: {}
 
-# Global environment injected into every agent's /opt/data/.env.
-# MINIMAX_API_KEY can be supplied here or as a top-level Vault variable named MINIMAX_API_KEY.
-hermes_docker_openai_api_key: sk-speaches-no-key-required
-hermes_docker_voice_tools_openai_key: sk-speaches-no-key-required
-hermes_docker_global_env: {}
+# Per-agent environment. Non-secret values go in hermes_docker_agents_env;
+# secrets go in hermes_docker_agents_env_secret. Agent names are discovered from
+# the union of hermes_docker_agents_env and hermes_docker_agents_env_secret.
+hermes_docker_agents_env: {}
+hermes_docker_agents_env_secret: {}
+
 hermes_docker_require_minimax_api_key: true
 
 # Non-secret runtime defaults needed for the built-in dashboard side-process.
 hermes_docker_runtime_env:
+  HOME: "{{ hermes_container_data_dir }}"
+  XDG_STATE_HOME: "{{ hermes_container_data_dir }}/.local/state"
   HERMES_DASHBOARD: "1"
   HERMES_DASHBOARD_HOST: "0.0.0.0"
   HERMES_DASHBOARD_PORT: "{{ hermes_dashboard_container_port }}"
   HERMES_DASHBOARD_TUI: "1"
+  HERMES_YOLO_MODE: "1"
+  HERMES_EXEC_ASK: "false"
+  STT_OPENAI_MODEL: Systran/faster-whisper-large-v3
+  STT_OPENAI_BASE_URL: https://speaches.kirelabs.org/v1
 
 # Validate that Docker and the Compose v2 plugin are available on the target.
 hermes_docker_validate_prerequisites: true

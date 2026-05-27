@@ -10,33 +10,38 @@
       ansible.builtin.command: docker compose version
       changed_when: false
 
-- name: Build effective Hermes global environment
+- name: Build effective Hermes environment and agent maps
   ansible.builtin.set_fact:
     hermes_docker_effective_global_env: >-
       {{
-        ({'MINIMAX_API_KEY': MINIMAX_API_KEY} if MINIMAX_API_KEY is defined else {}) |
-        combine(({'MINIMAX_API_KEY': minimax_api_key} if minimax_api_key is defined else {}), recursive=True) |
-        combine(({'TAVILY_API_KEY': TAVILY_API_KEY} if TAVILY_API_KEY is defined else {}), recursive=True) |
-        combine(({'TAVILY_API_KEY': tavily_api_key} if tavily_api_key is defined else {}), recursive=True) |
-        combine(hermes_docker_global_env, recursive=True)
+        hermes_docker_global_env |
+        combine(hermes_docker_global_env_secret, recursive=True)
+      }}
+    hermes_docker_effective_agent_names: >-
+      {{
+        (
+          (hermes_docker_agents_env.keys() | list) +
+          (hermes_docker_agents_env_secret.keys() | list)
+        ) | unique
       }}
   no_log: true
 
 - name: Validate Hermes Docker agent configuration
   ansible.builtin.assert:
     that:
-      - hermes_docker_agents is mapping
-      - hermes_docker_agents | length > 0
+      - hermes_docker_agents_env is mapping
+      - hermes_docker_agents_env_secret is mapping
+      - hermes_docker_effective_agent_names | length > 0
       - >-
-        hermes_docker_agents.keys() | list |
-        select('match', '^[A-Za-z0-9][A-Za-z0-9_.-]*$') | list | length == hermes_docker_agents | length
+        hermes_docker_effective_agent_names |
+        select('match', '^[A-Za-z0-9][A-Za-z0-9_.-]*$') | list | length == hermes_docker_effective_agent_names | length
       - >-
         not (hermes_docker_require_minimax_api_key | bool) or
         (hermes_docker_effective_global_env.MINIMAX_API_KEY is defined and
         hermes_docker_effective_global_env.MINIMAX_API_KEY | string | length > 0)
     fail_msg: >-
-      Define hermes_docker_agents with valid Docker-safe agent names and provide
-      MINIMAX_API_KEY either as a top-level Vault variable or in hermes_docker_global_env.
+      Define Hermes Docker agents with valid Docker-safe agent names and provide
+      MINIMAX_API_KEY in hermes_docker_global_env or hermes_docker_global_env_secret.
 
 - name: Create Hermes Docker base directory
   ansible.builtin.file:
@@ -73,39 +78,39 @@
 
 - name: Create per-agent parent directories
   ansible.builtin.file:
-    path: "{{ hermes_docker_base_dir }}/{{ agent.key }}"
+    path: "{{ hermes_docker_base_dir }}/{{ agent_name }}"
     state: directory
     owner: root
     group: root
     mode: '0755'
-  loop: "{{ hermes_docker_agents | dict2items }}"
+  loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
-    loop_var: agent
-    label: "{{ agent.key }}"
+    loop_var: agent_name
+    label: "{{ agent_name }}"
 
 - name: Create isolated per-agent data directories
   ansible.builtin.file:
-    path: "{{ hermes_docker_base_dir }}/{{ agent.key }}/data"
+    path: "{{ hermes_docker_base_dir }}/{{ agent_name }}/data"
     state: directory
     owner: "{{ hermes_docker_data_uid }}"
     group: "{{ hermes_docker_data_gid }}"
     mode: '0700'
-  loop: "{{ hermes_docker_agents | dict2items }}"
+  loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
-    loop_var: agent
-    label: "{{ agent.key }}"
+    loop_var: agent_name
+    label: "{{ agent_name }}"
 
 - name: Render per-agent Hermes env files
   ansible.builtin.template:
     src: agent.env.j2
-    dest: "{{ hermes_docker_base_dir }}/{{ agent.key }}/data/.env"
+    dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/data/.env"
     owner: "{{ hermes_docker_data_uid }}"
     group: "{{ hermes_docker_data_gid }}"
     mode: '0600'
-  loop: "{{ hermes_docker_agents | dict2items }}"
+  loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
-    loop_var: agent
-    label: "{{ agent.key }}"
+    loop_var: agent_name
+    label: "{{ agent_name }}"
   no_log: true
   notify: Recreate Hermes Docker agents
 
@@ -141,7 +146,7 @@
       - hermes
       - --env
       - HERMES_HOME={{ hermes_container_data_dir }}
-      - hermes-{{ agent.key }}
+      - hermes-{{ agent_name }}
       - /opt/hermes/.venv/bin/python
       - -c
       - |
@@ -172,10 +177,10 @@
         else:
             print('ok')
       - "{{ hermes_docker_config_overrides | to_json }}"
-  loop: "{{ hermes_docker_agents | dict2items }}"
+  loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
-    loop_var: agent
-    label: "{{ agent.key }}"
+    loop_var: agent_name
+    label: "{{ agent_name }}"
   register: hermes_docker_config_apply
   changed_when: "'changed' in hermes_docker_config_apply.stdout"
   no_log: true

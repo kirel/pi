@@ -1,22 +1,34 @@
 ---
 services:
-{% for agent in hermes_docker_agents | dict2items %}
-  hermes-{{ agent.key }}:
+{% for agent_name in hermes_docker_effective_agent_names %}
+{% set agent_env = hermes_docker_agents_env.get(agent_name, {}) | combine(hermes_docker_agents_env_secret.get(agent_name, {}), recursive=True) %}
+  hermes-{{ agent_name }}:
     image: {{ hermes_docker_image }}
     pull_policy: {{ hermes_docker_pull_policy }}
-    container_name: hermes-{{ agent.key }}
+    container_name: hermes-{{ agent_name }}
     restart: {{ hermes_docker_restart_policy }}
+{% if hermes_docker_command is string %}
     command: {{ hermes_docker_command }}
+{% else %}
+    command:
+{% for item in hermes_docker_command %}
+      - {{ item | string | to_json }}
+{% endfor %}
+{% endif %}
     shm_size: {{ hermes_docker_shm_size }}
     env_file:
-      - {{ hermes_docker_base_dir }}/{{ agent.key }}/data/.env
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/data/.env
     ports:
-      - "{{ hermes_dashboard_base_port | int + loop.index0 }}:{{ hermes_dashboard_container_port }}"
+      - "{{ (hermes_dashboard_bind_address | default('') | string | length > 0) | ternary((hermes_dashboard_bind_address | string) ~ ':', '') }}{{ hermes_dashboard_base_port | int + loop.index0 }}:{{ hermes_dashboard_container_port }}"
 {% if hermes_publish_gateway_api | bool %}
-      - "{{ hermes_gateway_base_port | int + loop.index0 }}:{{ hermes_gateway_container_port }}"
+      - "{{ (hermes_gateway_bind_address | default('') | string | length > 0) | ternary((hermes_gateway_bind_address | string) ~ ':', '') }}{{ hermes_gateway_base_port | int + loop.index0 }}:{{ hermes_gateway_container_port }}"
+{% endif %}
+{% if agent_env.API_SERVER_ENABLED | default(false) | bool %}
+{% set api_server_port = agent_env.API_SERVER_PORT | default(hermes_gateway_container_port) %}
+      - "{{ (hermes_gateway_bind_address | default('') | string | length > 0) | ternary((hermes_gateway_bind_address | string) ~ ':', '') }}{{ api_server_port }}:{{ api_server_port }}"
 {% endif %}
     volumes:
-      - {{ hermes_docker_base_dir }}/{{ agent.key }}/data:{{ hermes_container_data_dir }}
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_container_data_dir }}
       - {{ hermes_external_skills_host_dir }}:{{ hermes_external_skills_container_dir }}:ro
     networks:
       - {{ hermes_docker_network_name }}

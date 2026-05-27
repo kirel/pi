@@ -3,8 +3,17 @@
 # but do not advertise any routes of its own.
 tailscale_args: "--accept-dns=true --accept-routes=true --operator=daniel"
 
-# Expose the Docker socket proxy only on the Hetzner Tailnet IP, never on the public VPS interface.
+# Expose Docker/Hermes service ports only on the Hetzner Tailnet IP, never on the public VPS interface.
 dockerproxy_bind_address: "{{ ansible_host }}"
+hermes_dashboard_bind_address: "{{ ansible_host }}"
+hermes_gateway_bind_address: "{{ ansible_host }}"
+hermes_docker_image: nousresearch/hermes-agent:main
+hermes_docker_agents_env:
+  multipurpose:
+    API_SERVER_ENABLED: "true"
+    API_SERVER_HOST: "0.0.0.0"
+    API_SERVER_PORT: "8642"
+    API_SERVER_MODEL_NAME: hermes-multipurpose
 
 hetzner_users:
   - name: daniel
