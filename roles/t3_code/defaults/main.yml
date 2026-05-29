@@ -1,0 +1,17 @@
+---
+t3_code_version: "0.0.24"
+t3_code_node_image: "node:24-bookworm"
+t3_code_image: "local/t3-code:latest"
+t3_code_codex_package: "@openai/codex"
+t3_code_container_name: "t3-code"
+t3_code_project_name: "t3-code"
+t3_code_port: 8093
+t3_code_base_dir: "{{ config_root }}/t3-code"
+t3_code_data_dir: "{{ t3_code_base_dir }}/data"
+t3_code_workspace_host_path: "/home/{{ username_personal }}/code"
+t3_code_workspace_container_path: "/workspace"
+t3_code_codex_credentials_host_path: "/home/{{ username_personal }}/.codex"
+t3_code_codex_credentials_container_path: "/data/home/.codex"
+t3_code_ssh_host_path: "/home/{{ username_personal }}/.ssh"
+t3_code_ssh_container_path: "/data/home/.ssh"
+t3_code_user: "{{ uid }}:{{ uid }}"

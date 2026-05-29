@@ -1,0 +1,92 @@
+---
+- name: Create T3 Code directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    mode: "0755"
+  loop:
+    - "{{ t3_code_base_dir }}"
+    - "{{ t3_code_data_dir }}"
+    - "{{ t3_code_data_dir }}/home"
+    - "{{ t3_code_data_dir }}/npm-cache"
+
+- name: Ensure T3 Code workspace exists
+  ansible.builtin.file:
+    path: "{{ t3_code_workspace_host_path }}"
+    state: directory
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    mode: "0755"
+
+- name: Ensure Codex credentials directory exists
+  ansible.builtin.file:
+    path: "{{ t3_code_codex_credentials_host_path }}"
+    state: directory
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    mode: "0700"
+
+- name: Check Daniel SSH directory exists
+  ansible.builtin.stat:
+    path: "{{ t3_code_ssh_host_path }}"
+  register: t3_code_ssh_dir
+
+- name: Require Daniel SSH directory for T3 Code
+  ansible.builtin.fail:
+    msg: "{{ t3_code_ssh_host_path }} does not exist; create/copy Daniel's SSH keys before deploying T3 Code."
+  when: not t3_code_ssh_dir.stat.exists
+
+- name: Render T3 Code Dockerfile
+  ansible.builtin.template:
+    src: Dockerfile.j2
+    dest: "{{ t3_code_base_dir }}/Dockerfile"
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    mode: "0644"
+
+- name: Deploy T3 Code
+  community.docker.docker_compose_v2:
+    project_name: "{{ t3_code_project_name }}"
+    pull: never
+    build: always
+    state: present
+    definition:
+      services:
+        t3-code:
+          image: "{{ t3_code_image }}"
+          build:
+            context: "{{ t3_code_base_dir }}"
+            dockerfile: Dockerfile
+          container_name: "{{ t3_code_container_name }}"
+          user: "{{ t3_code_user }}"
+          working_dir: "{{ t3_code_workspace_container_path }}"
+          command: >-
+            t3 serve
+            --mode web
+            --host 0.0.0.0
+            --port {{ t3_code_port }}
+            --base-dir /data
+            {{ t3_code_workspace_container_path }}
+          restart: unless-stopped
+          ports:
+            - "{{ t3_code_port }}:{{ t3_code_port }}"
+          environment:
+            HOME: /data/home
+            T3CODE_HOME: /data
+            NPM_CONFIG_CACHE: /data/npm-cache
+            NODE_ENV: production
+            TZ: "{{ system_timezone | default('Europe/Berlin') }}"
+          volumes:
+            - "{{ t3_code_data_dir }}:/data"
+            - "{{ t3_code_workspace_host_path }}:{{ t3_code_workspace_container_path }}"
+            - "{{ t3_code_codex_credentials_host_path }}:{{ t3_code_codex_credentials_container_path }}:rw"
+            - "{{ t3_code_ssh_host_path }}:{{ t3_code_ssh_container_path }}:ro"
+          labels:
+            homepage.group: "{{ services['t3-code-ailab'].group }}"
+            homepage.name: "{{ services['t3-code-ailab'].name }}"
+            homepage.href: "https://{{ services['t3-code-ailab'].domain }}"
+            homepage.icon: "{{ services['t3-code-ailab'].icon }}"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: "{{ t3_code_container_name }}"

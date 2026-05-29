@@ -227,6 +227,15 @@ services:
     domain: chatterbox-ui.kirelabs.org
     group: AI
     icon: audio
+  t3-code-ailab:
+    name: T3 Code AI Lab
+    target: ailab-ubuntu.lan
+    http_port: 8093
+    domain: t3-ubuntu-ailab.kirelabs.org
+    group: AI
+    icon: mdi-code-braces
+    wol: "{{ ailab_mac_address }}"
+    try: 360s
   glances-ailab-ubuntu:
     name: Glances AI Lab
     target: ailab-ubuntu.lan

@@ -99,6 +99,7 @@
     - { role: comfyui, become: true, tags: [comfyui] }
     - { role: immich_ml, become: true, tags: [immich, immich-ml] }
     - { role: wyoming_openai, become: true, tags: [wyoming-openai] }
+    - { role: t3_code, become: true, tags: [t3-code] }
     - { role: syncthing, become: true, tags: [syncthing] }
 
 - name: Setup SSH key distribution

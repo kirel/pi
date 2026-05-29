@@ -1,0 +1,19 @@
+FROM ghcr.io/astral-sh/uv:latest AS uv
+
+FROM {{ t3_code_node_image }}
+
+COPY --from=uv /uv /uvx /usr/local/bin/
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        git \
+        openssh-client \
+        ripgrep \
+    && usermod --home /data/home node \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g \
+    t3@{{ t3_code_version }} \
+    {{ t3_code_codex_package }}
