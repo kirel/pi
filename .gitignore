@@ -9,5 +9,6 @@ tmp/root.crt
 .pre-commit-config.yaml.lock
 .uv_cache/
 .gemini
+.claude
 .env
 config/mcporter.json
