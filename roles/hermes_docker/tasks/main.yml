@@ -115,6 +115,7 @@
       - hermes_docker_agents_env is mapping
       - hermes_docker_agents_env_secret is mapping
       - hermes_docker_agents_config_overrides is mapping
+      - hermes_docker_managed_mcp_servers is mapping
       - hermes_docker_agents_external_skill_dirs is mapping
       - hermes_docker_effective_agent_names | length > 0
       - >-
@@ -128,6 +129,62 @@
       Define Hermes Docker agents with valid Docker-safe agent names, valid
       per-agent external skill directories, and provide MINIMAX_API_KEY in
       hermes_docker_global_env or hermes_docker_global_env_secret.
+
+- name: Validate Hermes Docker LiteLLM key configuration
+  ansible.builtin.assert:
+    that:
+      - hermes_docker_litellm_team is mapping
+      - hermes_docker_litellm_keys is mapping
+      - hermes_docker_litellm_team.team_id is defined
+      - hermes_docker_litellm_team.team_id | string | length > 0
+      - >-
+        (hermes_docker_litellm_keys.keys() | list |
+        difference(hermes_docker_effective_agent_names)) | length == 0
+      - >-
+        (hermes_docker_litellm_keys | dict2items |
+        map(attribute='value.key_alias') |
+        select('defined') |
+        list |
+        unique |
+        length) ==
+        (hermes_docker_litellm_keys | dict2items |
+        map(attribute='value.key_alias') |
+        select('defined') |
+        list |
+        length)
+      - litellm_master_key is defined
+      - litellm_master_key | string | length > 0
+    fail_msg: >-
+      hermes_docker_litellm_team must define team_id, hermes_docker_litellm_keys
+      must be a map of effective Hermes agent names with unique key_alias values,
+      and litellm_master_key must be available.
+  when: hermes_docker_litellm_manage_keys | bool
+
+- name: Validate per-agent Hermes Docker LiteLLM key entries
+  ansible.builtin.assert:
+    that:
+      - item.value is mapping
+      - item.value.models is defined
+      - item.value.models is sequence
+      - item.value.models is not string
+      - item.value.mcp_access_groups is defined
+      - item.value.mcp_access_groups is sequence
+      - item.value.mcp_access_groups is not string
+      - hermes_docker_agents_env_secret[item.key].LITELLM_API_KEY is defined
+      - hermes_docker_agents_env_secret[item.key].LITELLM_API_KEY | string is match('^sk-.+')
+    fail_msg: >-
+      Managed Hermes LiteLLM key '{{ item.key }}' must define list values for
+      models and mcp_access_groups and have LITELLM_API_KEY in
+      hermes_docker_agents_env_secret.
+  loop: "{{ hermes_docker_litellm_keys | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  no_log: true
+  when: hermes_docker_litellm_manage_keys | bool
+
+- name: Sync Hermes Docker LiteLLM keys
+  ansible.builtin.include_tasks: litellm_keys.yml
+  when: hermes_docker_litellm_manage_keys | bool
 
 - name: Create Hermes Docker base directory
   ansible.builtin.file:
@@ -337,3 +394,65 @@
     - >-
       (hermes_docker_config_overrides | length > 0) or
       (hermes_docker_agents_config_overrides.get(agent_name, {}) | length > 0)
+
+- name: Apply managed Hermes MCP servers
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - --user
+      - hermes
+      - --env
+      - HERMES_HOME={{ hermes_container_data_dir }}
+      - hermes-{{ agent_name }}
+      - /opt/hermes/.venv/bin/python
+      - -c
+      - |
+        import json
+        import os
+        import sys
+        from pathlib import Path
+
+        import yaml
+
+        path = Path(os.environ.get('HERMES_HOME', '{{ hermes_container_data_dir }}')) / 'config.yaml'
+        config = yaml.safe_load(path.read_text()) if path.exists() else {}
+        if not isinstance(config, dict):
+            config = {}
+
+        managed_servers = json.loads(sys.argv[1])
+        servers = config.setdefault('mcp_servers', {})
+        if not isinstance(servers, dict):
+            servers = {}
+            config['mcp_servers'] = servers
+
+        changed = False
+        for name, desired in managed_servers.items():
+            if servers.get(name) != desired:
+                servers[name] = desired
+                changed = True
+
+        if changed:
+            path.write_text(yaml.safe_dump(config, sort_keys=False))
+            print('changed')
+        else:
+            print('ok')
+      - "{{ hermes_docker_managed_mcp_servers | to_json }}"
+  loop: >-
+    {{
+      (
+        (hermes_docker_agent_order | default([])) +
+        (hermes_docker_agents_env.keys() | list) +
+        (hermes_docker_agents_env_secret.keys() | list)
+      ) | unique
+    }}
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  register: hermes_docker_managed_mcp_apply
+  changed_when: "'changed' in hermes_docker_managed_mcp_apply.stdout"
+  notify: Recreate Hermes Docker agents
+  no_log: true
+  when:
+    - hermes_docker_ensure_running | bool
+    - hermes_docker_managed_mcp_servers | length > 0

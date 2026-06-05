@@ -1,0 +1,118 @@
+---
+- name: Skip LiteLLM key sync in check mode
+  ansible.builtin.debug:
+    msg: "LiteLLM key sync is skipped in check mode."
+  when: ansible_check_mode
+
+- name: Manage LiteLLM keys
+  when: not ansible_check_mode
+  no_log: true
+  block:
+    - name: Look up Hermes LiteLLM team
+      ansible.builtin.uri:
+        url: "{{ hermes_docker_litellm_api_base_url }}/team/info?team_id={{ hermes_docker_litellm_team.team_id | urlencode }}"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ litellm_master_key }}"
+        return_content: true
+        status_code:
+          - 200
+          - 404
+      register: hermes_docker_litellm_team_lookup
+
+    - name: Create Hermes LiteLLM team
+      ansible.builtin.uri:
+        url: "{{ hermes_docker_litellm_api_base_url }}/team/new"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ litellm_master_key }}"
+        body_format: json
+        body: "{{ hermes_docker_litellm_team }}"
+        return_content: true
+        status_code: 200
+      when: hermes_docker_litellm_team_lookup.status == 404
+
+    - name: Update Hermes LiteLLM team
+      ansible.builtin.uri:
+        url: "{{ hermes_docker_litellm_api_base_url }}/team/update"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ litellm_master_key }}"
+        body_format: json
+        body: "{{ hermes_docker_litellm_team }}"
+        return_content: true
+        status_code: 200
+      when: hermes_docker_litellm_team_lookup.status == 200
+
+    - name: Look up Hermes LiteLLM keys by alias
+      ansible.builtin.uri:
+        url: "{{ hermes_docker_litellm_api_base_url }}/key/list?key_alias={{ key_alias | urlencode }}&return_full_object=true&size=100"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ litellm_master_key }}"
+        return_content: true
+        status_code: 200
+      vars:
+        key_alias: "{{ item.value.key_alias | default('hermes-' ~ item.key) }}"
+      loop: "{{ hermes_docker_litellm_keys | dict2items }}"
+      register: hermes_docker_litellm_key_lookups
+      loop_control:
+        label: "{{ item.value.key_alias | default('hermes-' ~ item.key) }}"
+
+    - name: Create missing Hermes LiteLLM keys
+      ansible.builtin.uri:
+        url: "{{ hermes_docker_litellm_api_base_url }}/key/generate"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ litellm_master_key }}"
+        body_format: json
+        body:
+          key: "{{ hermes_docker_agents_env_secret[agent_name].LITELLM_API_KEY }}"
+          key_alias: "{{ key_alias }}"
+          team_id: "{{ item.item.value.team_id | default(hermes_docker_litellm_team.team_id) }}"
+          models: "{{ item.item.value.models | default([]) }}"
+          object_permission:
+            mcp_access_groups: "{{ item.item.value.mcp_access_groups | default([]) }}"
+            mcp_servers: "{{ item.item.value.mcp_servers | default([]) }}"
+            mcp_tool_permissions: "{{ item.item.value.mcp_tool_permissions | default({}) }}"
+        return_content: true
+        status_code: 200
+      vars:
+        agent_name: "{{ item.item.key }}"
+        key_alias: "{{ item.item.value.key_alias | default('hermes-' ~ item.item.key) }}"
+        exact_alias_matches: >-
+          {{
+            item.json['keys'] | default([]) |
+            selectattr('key_alias', 'defined') |
+            selectattr('key_alias', 'equalto', key_alias) |
+            list
+          }}
+      loop: "{{ hermes_docker_litellm_key_lookups.results }}"
+      loop_control:
+        label: "{{ key_alias }}"
+      when: exact_alias_matches | length == 0
+
+    - name: Update Hermes LiteLLM keys
+      ansible.builtin.uri:
+        url: "{{ hermes_docker_litellm_api_base_url }}/key/update"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ litellm_master_key }}"
+        body_format: json
+        body:
+          key: "{{ hermes_docker_agents_env_secret[agent_name].LITELLM_API_KEY }}"
+          key_alias: "{{ key_alias }}"
+          team_id: "{{ item.value.team_id | default(hermes_docker_litellm_team.team_id) }}"
+          models: "{{ item.value.models | default([]) }}"
+          object_permission:
+            mcp_access_groups: "{{ item.value.mcp_access_groups | default([]) }}"
+            mcp_servers: "{{ item.value.mcp_servers | default([]) }}"
+            mcp_tool_permissions: "{{ item.value.mcp_tool_permissions | default({}) }}"
+        return_content: true
+        status_code: 200
+      vars:
+        agent_name: "{{ item.key }}"
+        key_alias: "{{ item.value.key_alias | default('hermes-' ~ item.key) }}"
+      loop: "{{ hermes_docker_litellm_keys | dict2items }}"
+      loop_control:
+        label: "{{ key_alias }}"

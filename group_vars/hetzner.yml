@@ -21,6 +21,40 @@ hermes_docker_agents_env:
     API_SERVER_HOST: "0.0.0.0"
     API_SERVER_PORT: "8642"
     API_SERVER_MODEL_NAME: hermes-multipurpose
+hermes_docker_litellm_manage_keys: true
+hermes_docker_litellm_team:
+  team_id: hermes-docker
+  team_alias: Hermes Docker
+  models:
+    - home-fast
+    - home-smart
+  object_permission:
+    mcp_access_groups:
+      - family
+      - global
+hermes_docker_litellm_keys:
+  multipurpose:
+    key_alias: hermes-multipurpose
+    models:
+      - home-fast
+      - home-smart
+    mcp_access_groups:
+      - family
+      - global
+  marian:
+    key_alias: hermes-marian
+    models:
+      - home-fast
+      - home-smart
+    mcp_access_groups:
+      - global
+  anna:
+    key_alias: hermes-anna
+    models:
+      - home-fast
+      - home-smart
+    mcp_access_groups:
+      - global
 hermes_docker_agents_external_skill_dirs:
   multipurpose:
     - host_dir: /home/daniel/projects/agent-skills/skills/global
