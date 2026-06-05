@@ -109,6 +109,39 @@ Compare end-to-end latency (TTFT) and throughput (TPS) across models:
 LITELLM_MASTER_KEY=<your-key> uv run --with openai python3 todo/scripts/llm_benchmark.py
 ```
 
+### STT for LLM Agents
+
+Default STT should stay on Speaches with `Systran/faster-whisper-large-v3`.
+
+Parakeet TDT 0.6B v3 GPU was tested as an OpenAI-compatible ad-hoc
+container on `ailab-ubuntu` against Speaches. The Parakeet GPU path is much
+faster, but less reliable for German agent input, especially technical terms,
+compound words, and service names. For agent transcription, those errors are
+more risky than raw WER suggests because they can change tool names, service
+names, or user intent.
+
+Benchmark notes from the 2026-06-04 test run:
+
+- English JFK smoke test: both Speaches and Parakeet v3 reached WER `0.000`.
+- German synthetic TTS smoke test: Speaches reached WER `0.000`; Parakeet v3
+  produced errors such as `Spracherkennungsdist` and `Hohenla`.
+- German multi-sample test: 7 Speaches-generated samples, 10.7s to 61.4s,
+  233.4s total audio.
+- German accuracy: Speaches `large-v3` WER macro `4.8%`, weighted WER `3.4%`,
+  CER macro `1.4%`.
+- German accuracy: Parakeet v3 GPU WER macro `7.3%`, weighted WER `6.2%`,
+  CER macro `1.8%`.
+- German speed: Speaches processed the sample set in `9.23s` (`25.3x`
+  realtime); Parakeet v3 GPU processed it in `1.35s` (`172.4x` realtime).
+- Parallel throughput on the 11s JFK sample: Speaches stayed around `18x`
+  realtime at concurrency 16; Parakeet v3 GPU reached about `157x` realtime at
+  concurrency 16.
+
+Recommendation: use Speaches `large-v3` as the default for agent-facing STT.
+Only consider Parakeet v3 GPU as a separate fast path for high-volume,
+low-risk transcription where occasional German technical-word mistakes are
+acceptable.
+
 ## LLM Service Architecture
 
 ```

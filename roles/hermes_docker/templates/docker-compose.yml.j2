@@ -29,7 +29,9 @@ services:
 {% endif %}
     volumes:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_container_data_dir }}
-      - {{ hermes_external_skills_host_dir }}:{{ hermes_external_skills_container_dir }}:ro
+{% for skill_dir in hermes_docker_agents_external_skill_dirs.get(agent_name, []) %}
+      - {{ skill_dir.host_dir }}:{{ skill_dir.container_dir }}:ro
+{% endfor %}
     networks:
       - {{ hermes_docker_network_name }}
 {% endfor %}

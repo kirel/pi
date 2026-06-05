@@ -14,6 +14,44 @@ hermes_docker_agents_env:
     API_SERVER_HOST: "0.0.0.0"
     API_SERVER_PORT: "8642"
     API_SERVER_MODEL_NAME: hermes-multipurpose
+hermes_docker_agents_external_skill_dirs:
+  multipurpose:
+    - host_dir: /home/daniel/projects/agent-skills/skills/global
+      container_dir: /skills/global
+    - host_dir: /home/daniel/projects/agent-skills/skills/family
+      container_dir: /skills/family
+  anna:
+    - host_dir: /home/daniel/projects/agent-skills/skills/global
+      container_dir: /skills/global
+    - host_dir: /home/daniel/projects/agent-skills/skills/friends
+      container_dir: /skills/friends
+  marian:
+    - host_dir: /home/daniel/projects/agent-skills/skills/global
+      container_dir: /skills/global
+    - host_dir: /home/daniel/projects/agent-skills/skills/friends
+      container_dir: /skills/friends
+hermes_docker_agents_config_overrides:
+  multipurpose:
+    model:
+      default: MiniMax-M3
+      provider: minimax
+    skills:
+      external_dirs:
+        - /skills/global
+        - /skills/family
+  anna:
+    model:
+      default: MiniMax-M3
+      provider: minimax
+    skills:
+      external_dirs:
+        - /skills/global
+        - /skills/friends
+  marian:
+    skills:
+      external_dirs:
+        - /skills/global
+        - /skills/friends
 
 hetzner_users:
   - name: daniel

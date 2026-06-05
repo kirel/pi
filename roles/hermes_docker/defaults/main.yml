@@ -33,12 +33,14 @@ hermes_docker_shm_size: 1g
 # Override only if the image entrypoint changes or you intentionally manage that mapping.
 hermes_container_data_dir: /opt/data
 
-# Shared external skills directory mounted into every Hermes Docker agent.
-hermes_external_skills_host_dir: /home/daniel/.agents/skills
+# External skill directories mounted into specific Hermes Docker agents.
+# Values are lists of {host_dir, container_dir}; mounts are always read-only.
 hermes_external_skills_host_owner: daniel
 hermes_external_skills_host_group: daniel
-hermes_external_skills_container_dir: /opt/data/home/.agents/skills
-hermes_external_skills_config_path: ~/.agents/skills
+hermes_external_skills_repo_url: https://github.com/kirel/agent-skills.git
+hermes_external_skills_repo_version: main
+hermes_external_skills_repo_dest: /home/daniel/projects/agent-skills
+hermes_docker_agents_external_skill_dirs: {}
 
 # Config merged into every Hermes Docker agent's config.yaml after first start.
 # Agent-specific config remains intact; these values intentionally override matching keys.
@@ -47,9 +49,6 @@ hermes_docker_config_overrides:
     tirith_enabled: false
   compression:
     threshold: 0.85
-  skills:
-    external_dirs:
-      - "{{ hermes_external_skills_config_path }}"
   stt:
     enabled: true
     provider: openai
@@ -67,6 +66,10 @@ hermes_docker_config_overrides:
   group_sessions_per_user: true
   streaming:
     enabled: true
+
+# Config merged only into specific Hermes Docker agents after first start.
+# Keys are agent names from hermes_docker_agents_env/hermes_docker_agents_env_secret.
+hermes_docker_agents_config_overrides: {}
 
 # Container process/data ownership. The official image defaults to the hermes user (UID/GID 10000).
 hermes_docker_data_uid: 10000
@@ -100,6 +103,7 @@ hermes_docker_runtime_env:
   XDG_STATE_HOME: "{{ hermes_container_data_dir }}/.local/state"
   HERMES_DASHBOARD: "1"
   HERMES_DASHBOARD_HOST: "0.0.0.0"
+  HERMES_DASHBOARD_INSECURE: "1"
   HERMES_DASHBOARD_PORT: "{{ hermes_dashboard_container_port }}"
   HERMES_DASHBOARD_TUI: "1"
   HERMES_YOLO_MODE: "1"

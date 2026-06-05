@@ -8,10 +8,19 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
+        dnsutils \
+        fd-find \
         git \
+        jq \
+        less \
+        lsof \
+        netcat-openbsd \
         openssh-client \
         ripgrep \
-    && usermod --home /data/home node \
+        rsync \
+        tree \
+    && usermod --home {{ t3_code_home_container_path }} node \
+    && ln -s /usr/bin/fdfind /usr/local/bin/fd \
     && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g \

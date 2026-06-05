@@ -1,0 +1,167 @@
+---
+- name: Ensure Wan2GP directories exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+  loop:
+    - { path: "{{ wan2gp_base_dir }}", mode: "0755" }
+    - { path: "{{ wan2gp_cache_root }}", mode: "0700" }
+    - { path: "{{ wan2gp_cache_root }}/numba", mode: "0700" }
+    - { path: "{{ wan2gp_cache_root }}/matplotlib", mode: "0700" }
+    - { path: "{{ wan2gp_cache_root }}/huggingface", mode: "0700" }
+    - { path: "{{ wan2gp_cache_root }}/torch", mode: "0700" }
+
+- name: Checkout Wan2GP
+  ansible.builtin.git:
+    repo: "{{ wan2gp_repo_url }}"
+    dest: "{{ wan2gp_app_path }}"
+    version: "{{ wan2gp_repo_version }}"
+    update: true
+  become_user: "{{ username_personal }}"
+
+- name: Ensure Wan2GP Docker helper directory exists
+  ansible.builtin.file:
+    path: "{{ wan2gp_app_path }}/docker"
+    state: directory
+    mode: "0755"
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+
+- name: Write Wan2GP SageAttention setup patch helper
+  ansible.builtin.copy:
+    dest: "{{ wan2gp_app_path }}/docker/patch_setup.py"
+    mode: "0644"
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    content: |
+      import os
+      with open('setup.py', 'r') as f:
+          content = f.read()
+
+      arch_list = os.environ.get('TORCH_CUDA_ARCH_LIST')
+      arch_set = '{' + ', '.join([f'"{arch}"' for arch in arch_list.split(';')]) + '}'
+
+      old_section = '''compute_capabilities = set()
+      device_count = torch.cuda.device_count()
+      for i in range(device_count):
+          major, minor = torch.cuda.get_device_capability(i)
+          if major < 8:
+              warnings.warn(f"skipping GPU {i} with compute capability {major}.{minor}")
+              continue
+          compute_capabilities.add(f"{major}.{minor}")'''
+
+      new_section = 'compute_capabilities = ' + arch_set + '''
+      print(f"Manually set compute capabilities: {compute_capabilities}")'''
+
+      content = content.replace(old_section, new_section)
+
+      with open('setup.py', 'w') as f:
+          f.write(content)
+
+- name: Make Wan2GP Dockerfile compatible with classic Docker builder
+  ansible.builtin.replace:
+    path: "{{ wan2gp_app_path }}/Dockerfile"
+    regexp: 'COPY <<EOF /tmp/patch_setup\.py[\s\S]*?^EOF$'
+    replace: 'COPY docker/patch_setup.py /tmp/patch_setup.py'
+
+- name: Detect Wan2GP GPU name
+  ansible.builtin.command:
+    cmd: "nvidia-smi -i {{ blackwell_gpu_uuid }} --query-gpu=name --format=csv,noheader,nounits"
+  register: wan2gp_gpu_name_result
+  changed_when: false
+
+- name: Detect Wan2GP GPU VRAM
+  ansible.builtin.command:
+    cmd: "nvidia-smi -i {{ blackwell_gpu_uuid }} --query-gpu=memory.total --format=csv,noheader,nounits"
+  register: wan2gp_gpu_vram_result
+  changed_when: false
+
+- name: Configure Wan2GP GPU build settings
+  ansible.builtin.set_fact:
+    wan2gp_gpu_name: "{{ wan2gp_gpu_name_result.stdout | trim }}"
+    wan2gp_gpu_vram_gb: "{{ ((wan2gp_gpu_vram_result.stdout | trim | int) / 1024) | round(0, 'floor') | int }}"
+    wan2gp_effective_cuda_architectures: >-
+      {% if wan2gp_cuda_architectures != 'auto' %}{{ wan2gp_cuda_architectures }}
+      {% elif 'RTX 50' in wan2gp_gpu_name_result.stdout or '5090' in wan2gp_gpu_name_result.stdout or '5080' in wan2gp_gpu_name_result.stdout or '5070' in wan2gp_gpu_name_result.stdout or '5060' in wan2gp_gpu_name_result.stdout %}12.0
+      {% elif 'H100' in wan2gp_gpu_name_result.stdout or 'H800' in wan2gp_gpu_name_result.stdout %}9.0
+      {% elif 'RTX 40' in wan2gp_gpu_name_result.stdout or '4090' in wan2gp_gpu_name_result.stdout or '4080' in wan2gp_gpu_name_result.stdout or '4070' in wan2gp_gpu_name_result.stdout or '4060' in wan2gp_gpu_name_result.stdout %}8.9
+      {% elif 'RTX 30' in wan2gp_gpu_name_result.stdout or '3090' in wan2gp_gpu_name_result.stdout or '3080' in wan2gp_gpu_name_result.stdout or '3070' in wan2gp_gpu_name_result.stdout or '3060' in wan2gp_gpu_name_result.stdout %}8.6
+      {% elif 'A100' in wan2gp_gpu_name_result.stdout or 'A800' in wan2gp_gpu_name_result.stdout or 'A40' in wan2gp_gpu_name_result.stdout %}8.0
+      {% elif 'Tesla V100' in wan2gp_gpu_name_result.stdout %}7.0
+      {% elif 'RTX 20' in wan2gp_gpu_name_result.stdout or '2080' in wan2gp_gpu_name_result.stdout or '2070' in wan2gp_gpu_name_result.stdout or '2060' in wan2gp_gpu_name_result.stdout or 'Titan RTX' in wan2gp_gpu_name_result.stdout %}7.5
+      {% elif 'GTX 16' in wan2gp_gpu_name_result.stdout or '1660' in wan2gp_gpu_name_result.stdout or '1650' in wan2gp_gpu_name_result.stdout %}7.5
+      {% elif 'GTX 10' in wan2gp_gpu_name_result.stdout or '1080' in wan2gp_gpu_name_result.stdout or '1070' in wan2gp_gpu_name_result.stdout or '1060' in wan2gp_gpu_name_result.stdout or 'Tesla P100' in wan2gp_gpu_name_result.stdout %}6.1
+      {% else %}12.0{% endif %}
+    wan2gp_effective_profile: >-
+      {% if wan2gp_profile != 'auto' %}{{ wan2gp_profile }}
+      {% elif ('RTX 50' in wan2gp_gpu_name_result.stdout or '5090' in wan2gp_gpu_name_result.stdout or '5080' in wan2gp_gpu_name_result.stdout or '5070' in wan2gp_gpu_name_result.stdout or '5060' in wan2gp_gpu_name_result.stdout or 'A100' in wan2gp_gpu_name_result.stdout or 'A800' in wan2gp_gpu_name_result.stdout or 'H100' in wan2gp_gpu_name_result.stdout or 'H800' in wan2gp_gpu_name_result.stdout) and ((wan2gp_gpu_vram_result.stdout | trim | int) >= 24576) %}1
+      {% elif 'RTX 50' in wan2gp_gpu_name_result.stdout or '5090' in wan2gp_gpu_name_result.stdout or '5080' in wan2gp_gpu_name_result.stdout or '5070' in wan2gp_gpu_name_result.stdout or '5060' in wan2gp_gpu_name_result.stdout or 'A100' in wan2gp_gpu_name_result.stdout or 'A800' in wan2gp_gpu_name_result.stdout or 'H100' in wan2gp_gpu_name_result.stdout or 'H800' in wan2gp_gpu_name_result.stdout %}2
+      {% elif ('RTX 40' in wan2gp_gpu_name_result.stdout or '4090' in wan2gp_gpu_name_result.stdout or 'RTX 30' in wan2gp_gpu_name_result.stdout or '3090' in wan2gp_gpu_name_result.stdout) and ((wan2gp_gpu_vram_result.stdout | trim | int) >= 24576) %}3
+      {% elif 'RTX 40' in wan2gp_gpu_name_result.stdout or '4090' in wan2gp_gpu_name_result.stdout or 'RTX 30' in wan2gp_gpu_name_result.stdout or '3090' in wan2gp_gpu_name_result.stdout %}2
+      {% elif ('4080' in wan2gp_gpu_name_result.stdout or '4070' in wan2gp_gpu_name_result.stdout or '3080' in wan2gp_gpu_name_result.stdout or '3070' in wan2gp_gpu_name_result.stdout or 'RTX 20' in wan2gp_gpu_name_result.stdout or '2080' in wan2gp_gpu_name_result.stdout or '2070' in wan2gp_gpu_name_result.stdout) and ((wan2gp_gpu_vram_result.stdout | trim | int) >= 12288) %}2
+      {% elif '4060' in wan2gp_gpu_name_result.stdout or '3060' in wan2gp_gpu_name_result.stdout or '2060' in wan2gp_gpu_name_result.stdout or 'GTX 16' in wan2gp_gpu_name_result.stdout or '1660' in wan2gp_gpu_name_result.stdout or '1650' in wan2gp_gpu_name_result.stdout %}4
+      {% else %}4{% endif %}
+
+- name: Build Wan2GP image
+  community.docker.docker_image:
+    name: "{{ wan2gp_image }}"
+    source: build
+    force_source: "{{ wan2gp_rebuild_image }}"
+    build:
+      path: "{{ wan2gp_app_path }}"
+      args:
+        CUDA_ARCHITECTURES: "{{ wan2gp_effective_cuda_architectures | trim }}"
+
+- name: Ensure Wan2GP container is running
+  community.docker.docker_container:
+    name: "{{ wan2gp_container_name }}"
+    image: "{{ wan2gp_image }}"
+    image_name_mismatch: recreate
+    state: started
+    restart_policy: unless-stopped
+    device_requests:
+      - driver: nvidia
+        device_ids: ["{{ blackwell_gpu_uuid }}"]
+        capabilities:
+          - ["gpu"]
+    ports:
+      - "{{ wan2gp_port }}:7860"
+    volumes:
+      - "{{ wan2gp_app_path }}:/workspace"
+      - "{{ wan2gp_cache_root }}/numba:/home/user/.cache/numba"
+      - "{{ wan2gp_cache_root }}/matplotlib:/home/user/.cache/matplotlib"
+      - "{{ wan2gp_cache_root }}/huggingface:/home/user/.cache/huggingface"
+      - "{{ wan2gp_cache_root }}/torch:/home/user/.cache/torch"
+    env:
+      NVIDIA_VISIBLE_DEVICES: "{{ blackwell_gpu_uuid }}"
+      NVIDIA_DRIVER_CAPABILITIES: all
+    command:
+      - "--profile"
+      - "{{ wan2gp_effective_profile | trim }}"
+      - "--attention"
+      - "{{ wan2gp_attention }}"
+      - "--compile"
+      - "--perc-reserved-mem-max"
+      - "{{ wan2gp_perc_reserved_mem_max }}"
+    labels:
+      homepage.group: "{{ services.wan2gp.group }}"
+      homepage.name: "{{ services.wan2gp.name }}"
+      homepage.href: "https://{{ services.wan2gp.domain }}"
+      homepage.icon: "{{ services.wan2gp.icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: "{{ wan2gp_container_name }}"
+    security_opts:
+      - "label=type:nvidia_container_t"
+
+- name: Configure restricted SSH key for Wan2GP
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    key: "{{ wan2gp_openclaw_ssh_key }}"
+    key_options: 'command="docker exec {{ wan2gp_container_name }} sh -c \"$SSH_ORIGINAL_COMMAND\"",restrict'
+    state: present
+    exclusive: false
+    manage_dir: true
+  when: wan2gp_openclaw_ssh_enabled | default(true)

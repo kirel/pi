@@ -2,7 +2,19 @@
 # defaults file for gpu
 gpu_power_limit_watts: 250
 gpu_persistence_mode: true
-nvidia_container_toolkit_version: 1.18.1-1
+
+# CUDA repo package versions for Ubuntu 24.04.
+nvidia_driver_version: 610.43.02-1ubuntu1
+nvidia_driver_packages:
+  - "nvidia-open={{ nvidia_driver_version }}"
+  - "nvidia-driver-open={{ nvidia_driver_version }}"
+
+nvidia_container_toolkit_version: 1.19.1-1
+nvidia_container_toolkit_packages:
+  - "nvidia-container-toolkit={{ nvidia_container_toolkit_version }}"
+  - "nvidia-container-toolkit-base={{ nvidia_container_toolkit_version }}"
+  - "libnvidia-container-tools={{ nvidia_container_toolkit_version }}"
+  - "libnvidia-container1={{ nvidia_container_toolkit_version }}"
 
 # Per-GPU specific settings (optional)
 # gpu_configs:

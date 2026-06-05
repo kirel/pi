@@ -1,0 +1,16 @@
+---
+wan2gp_repo_url: https://github.com/deepbeepmeep/Wan2GP.git
+wan2gp_repo_version: main
+wan2gp_base_dir: /opt/wan2gp
+wan2gp_app_path: "{{ wan2gp_base_dir }}/app"
+wan2gp_cache_root: "{{ wan2gp_base_dir }}/cache"
+wan2gp_image: local/wan2gp:latest
+wan2gp_container_name: wan2gp
+wan2gp_port: 7860
+wan2gp_cuda_architectures: auto
+wan2gp_profile: auto
+wan2gp_attention: sage
+wan2gp_perc_reserved_mem_max: "1"
+wan2gp_rebuild_image: false
+wan2gp_openclaw_ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPDUljPF2X+7jVxeXfEMO6DN4kNXQfovYzMGcpCxZKhU hermes-wangp-ssh-key"
+wan2gp_openclaw_ssh_enabled: true

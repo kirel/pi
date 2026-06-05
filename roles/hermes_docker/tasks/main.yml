@@ -10,6 +10,10 @@
       ansible.builtin.command: docker compose version
       changed_when: false
 
+    - name: Check Git CLI is available
+      ansible.builtin.command: git --version
+      changed_when: false
+
 - name: Build effective Hermes environment and agent maps
   ansible.builtin.set_fact:
     hermes_docker_effective_global_env: >-
@@ -24,6 +28,15 @@
           (hermes_docker_agents_env_secret.keys() | list)
         ) | unique
       }}
+    hermes_docker_external_skill_host_dirs: >-
+      {{
+        hermes_docker_agents_external_skill_dirs |
+        dict2items |
+        map(attribute='value') |
+        flatten |
+        map(attribute='host_dir') |
+        unique
+      }}
   no_log: true
 
 - name: Validate Hermes Docker agent configuration
@@ -31,6 +44,8 @@
     that:
       - hermes_docker_agents_env is mapping
       - hermes_docker_agents_env_secret is mapping
+      - hermes_docker_agents_config_overrides is mapping
+      - hermes_docker_agents_external_skill_dirs is mapping
       - hermes_docker_effective_agent_names | length > 0
       - >-
         hermes_docker_effective_agent_names |
@@ -40,8 +55,9 @@
         (hermes_docker_effective_global_env.MINIMAX_API_KEY is defined and
         hermes_docker_effective_global_env.MINIMAX_API_KEY | string | length > 0)
     fail_msg: >-
-      Define Hermes Docker agents with valid Docker-safe agent names and provide
-      MINIMAX_API_KEY in hermes_docker_global_env or hermes_docker_global_env_secret.
+      Define Hermes Docker agents with valid Docker-safe agent names, valid
+      per-agent external skill directories, and provide MINIMAX_API_KEY in
+      hermes_docker_global_env or hermes_docker_global_env_secret.
 
 - name: Create Hermes Docker base directory
   ansible.builtin.file:
@@ -51,30 +67,58 @@
     group: root
     mode: '0755'
 
-- name: Ensure shared external Hermes skills directory exists
+- name: Ensure external Hermes skills repository parent directory exists
   ansible.builtin.file:
-    path: "{{ hermes_external_skills_host_dir }}"
+    path: "{{ hermes_external_skills_repo_dest | dirname }}"
     state: directory
     owner: "{{ hermes_external_skills_host_owner }}"
     group: "{{ hermes_external_skills_host_group }}"
     mode: '0755'
 
-- name: Ensure shared external Hermes skills ownership is readable by containers
+- name: Clone external Hermes skills repository
+  ansible.builtin.git:
+    repo: "{{ hermes_external_skills_repo_url }}"
+    dest: "{{ hermes_external_skills_repo_dest }}"
+    version: "{{ hermes_external_skills_repo_version }}"
+    update: true
+  become: true
+  become_user: "{{ hermes_external_skills_host_owner }}"
+
+- name: Check external Hermes skill directories
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop: "{{ hermes_docker_external_skill_host_dirs }}"
+  register: hermes_docker_external_skill_dir_stats
+
+- name: Validate external Hermes skill directories exist
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+      - item.stat.isdir
+    fail_msg: "External Hermes skill directory is missing or not a directory: {{ item.item }}"
+  loop: "{{ hermes_docker_external_skill_dir_stats.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Ensure external Hermes skills ownership is readable by containers
   ansible.builtin.command:
     argv:
       - chown
       - -R
       - "{{ hermes_external_skills_host_owner }}:{{ hermes_external_skills_host_group }}"
-      - "{{ hermes_external_skills_host_dir }}"
+      - "{{ item }}"
   changed_when: false
+  loop: "{{ hermes_docker_external_skill_host_dirs }}"
 
-- name: Ensure shared external Hermes skill directories are traversable
-  ansible.builtin.command: "find {{ hermes_external_skills_host_dir | quote }} -type d -exec chmod 755 {} +"
+- name: Ensure external Hermes skill directories are traversable
+  ansible.builtin.command: "find {{ item | quote }} -type d -exec chmod 755 {} +"
   changed_when: false
+  loop: "{{ hermes_docker_external_skill_host_dirs }}"
 
-- name: Ensure shared external Hermes skill files are world-readable
-  ansible.builtin.command: "find {{ hermes_external_skills_host_dir | quote }} -type f -exec chmod 644 {} +"
+- name: Ensure external Hermes skill files are world-readable
+  ansible.builtin.command: "find {{ item | quote }} -type f -exec chmod 644 {} +"
   changed_when: false
+  loop: "{{ hermes_docker_external_skill_host_dirs }}"
 
 - name: Create per-agent parent directories
   ansible.builtin.file:
@@ -176,14 +220,17 @@
             print('changed')
         else:
             print('ok')
-      - "{{ hermes_docker_config_overrides | to_json }}"
+      - "{{ (hermes_docker_config_overrides | combine(hermes_docker_agents_config_overrides.get(agent_name, {}), recursive=True)) | to_json }}"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
     label: "{{ agent_name }}"
   register: hermes_docker_config_apply
   changed_when: "'changed' in hermes_docker_config_apply.stdout"
+  notify: Recreate Hermes Docker agents
   no_log: true
   when:
     - hermes_docker_ensure_running | bool
-    - hermes_docker_config_overrides | length > 0
+    - >-
+      (hermes_docker_config_overrides | length > 0) or
+      (hermes_docker_agents_config_overrides.get(agent_name, {}) | length > 0)

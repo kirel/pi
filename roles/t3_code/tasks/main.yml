@@ -12,6 +12,14 @@
     - "{{ t3_code_data_dir }}/home"
     - "{{ t3_code_data_dir }}/npm-cache"
 
+- name: Ensure Daniel home is available for T3 Code
+  ansible.builtin.file:
+    path: "{{ t3_code_home_host_path }}"
+    state: directory
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    mode: "0750"
+
 - name: Ensure T3 Code workspace exists
   ansible.builtin.file:
     path: "{{ t3_code_workspace_host_path }}"
@@ -68,21 +76,20 @@
             --host 0.0.0.0
             --port {{ t3_code_port }}
             --base-dir /data
+            --auto-bootstrap-project-from-cwd
             {{ t3_code_workspace_container_path }}
           restart: unless-stopped
           ports:
             - "{{ t3_code_port }}:{{ t3_code_port }}"
           environment:
-            HOME: /data/home
+            HOME: "{{ t3_code_home_container_path }}"
             T3CODE_HOME: /data
             NPM_CONFIG_CACHE: /data/npm-cache
             NODE_ENV: production
             TZ: "{{ system_timezone | default('Europe/Berlin') }}"
           volumes:
             - "{{ t3_code_data_dir }}:/data"
-            - "{{ t3_code_workspace_host_path }}:{{ t3_code_workspace_container_path }}"
-            - "{{ t3_code_codex_credentials_host_path }}:{{ t3_code_codex_credentials_container_path }}:rw"
-            - "{{ t3_code_ssh_host_path }}:{{ t3_code_ssh_container_path }}:ro"
+            - "{{ t3_code_home_host_path }}:{{ t3_code_home_container_path }}:rw"
           labels:
             homepage.group: "{{ services['t3-code-ailab'].group }}"
             homepage.name: "{{ services['t3-code-ailab'].name }}"
