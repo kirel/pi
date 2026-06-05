@@ -29,6 +29,43 @@ hermes_docker_restart_policy: unless-stopped
 hermes_docker_network_name: hermes-agents
 hermes_docker_shm_size: 1g
 
+# Network isolation for Hermes Docker agents. Each agent gets a dedicated bridge
+# network and egress is restricted by a managed iptables chain.
+hermes_docker_isolate_agents: true
+hermes_docker_network_prefix: "172.30"
+hermes_docker_network_base_octet: 50
+hermes_docker_network_cidr_suffix: 24
+
+# Keep skills using the familiar service domains, but resolve them through
+# /etc/hosts instead of allowing container DNS egress. These domains point to
+# Caddy, matching the Pi-hole CNAME behavior for service domains.
+hermes_docker_extra_host_services:
+  - litellm
+  - comfyui
+  - speaches
+hermes_docker_agent_extra_host_services: {}
+hermes_docker_extra_hosts_target_ip: "{{ homelab_nuc_ip }}"
+hermes_docker_dns_servers:
+  - 1.1.1.1
+  - 8.8.8.8
+
+# Hermes agents may use the public internet, but access to private/internal
+# ranges is blocked except for explicitly allowed proxy targets.
+hermes_docker_allowed_proxy_ip: "{{ homelab_nuc_ip }}"
+hermes_docker_allowed_proxy_ports:
+  - 443
+hermes_docker_blocked_private_cidrs:
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+  - 100.64.0.0/10
+
+# Block connections from Hermes containers to services bound directly on the
+# Docker host itself, including other agents' published dashboard ports.
+hermes_docker_block_host_access: true
+hermes_docker_firewall_script_path: /usr/local/sbin/hermes-docker-firewall
+hermes_docker_firewall_service_name: hermes-docker-firewall.service
+
 # Hermes Docker docs use /opt/data as the persistent data directory.
 # Override only if the image entrypoint changes or you intentionally manage that mapping.
 hermes_container_data_dir: /opt/data
@@ -92,6 +129,7 @@ hermes_docker_global_env_secret: {}
 # Per-agent environment. Non-secret values go in hermes_docker_agents_env;
 # secrets go in hermes_docker_agents_env_secret. Agent names are discovered from
 # the union of hermes_docker_agents_env and hermes_docker_agents_env_secret.
+hermes_docker_agent_order: []
 hermes_docker_agents_env: {}
 hermes_docker_agents_env_secret: {}
 

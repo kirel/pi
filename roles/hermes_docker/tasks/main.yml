@@ -24,6 +24,7 @@
     hermes_docker_effective_agent_names: >-
       {{
         (
+          (hermes_docker_agent_order | default([])) +
           (hermes_docker_agents_env.keys() | list) +
           (hermes_docker_agents_env_secret.keys() | list)
         ) | unique
@@ -38,6 +39,75 @@
         unique
       }}
   no_log: true
+
+- name: Validate Hermes extra_hosts service names
+  ansible.builtin.assert:
+    that:
+      - item in services
+      - services[item].domain is defined
+    fail_msg: "Hermes extra_hosts service '{{ item }}' must exist in services and define a domain."
+  loop: "{{ hermes_docker_extra_host_services }}"
+  when: hermes_docker_isolate_agents | bool
+
+- name: Validate per-agent Hermes extra_hosts configuration
+  ansible.builtin.assert:
+    that:
+      - agent_name in hermes_docker_effective_agent_names
+      - service_name in services
+      - services[service_name].domain is defined
+    fail_msg: >-
+      Hermes per-agent extra_hosts entry '{{ agent_name }}:{{ service_name }}'
+      must reference an existing Hermes agent and a service with a domain.
+  vars:
+    agent_name: "{{ item.0.key }}"
+    service_name: "{{ item.1 }}"
+  loop: "{{ hermes_docker_agent_extra_host_services | dict2items | subelements('value') }}"
+  when: hermes_docker_isolate_agents | bool
+
+- name: Build per-agent Hermes Docker network map
+  ansible.builtin.set_fact:
+    hermes_docker_agent_networks: >-
+      {%- set networks = {} -%}
+      {%- for agent_name in hermes_docker_effective_agent_names -%}
+        {%- set octet = hermes_docker_network_base_octet | int + loop.index0 -%}
+        {%- set _ = networks.update({
+          agent_name: {
+            'name': hermes_docker_network_name ~ '-' ~ agent_name,
+            'subnet': hermes_docker_network_prefix ~ '.' ~ octet ~ '.0/' ~ hermes_docker_network_cidr_suffix
+          }
+        }) -%}
+      {%- endfor -%}
+      {{ networks }}
+  when: hermes_docker_isolate_agents | bool
+
+- name: Reset Hermes Docker extra_hosts list
+  ansible.builtin.set_fact:
+    hermes_docker_extra_hosts: []
+  when: hermes_docker_isolate_agents | bool
+
+- name: Build Hermes Docker extra_hosts entries
+  ansible.builtin.set_fact:
+    hermes_docker_extra_hosts: >-
+      {{
+        hermes_docker_extra_hosts +
+        [services[item].domain ~ ':' ~ hermes_docker_extra_hosts_target_ip]
+      }}
+  loop: "{{ hermes_docker_extra_host_services }}"
+  when: hermes_docker_isolate_agents | bool
+
+- name: Build per-agent Hermes Docker extra_hosts map
+  ansible.builtin.set_fact:
+    hermes_docker_agent_extra_hosts: >-
+      {%- set agent_hosts = {} -%}
+      {%- for agent_name in hermes_docker_effective_agent_names -%}
+        {%- set entries = hermes_docker_extra_hosts | list -%}
+        {%- for service_name in hermes_docker_agent_extra_host_services.get(agent_name, []) -%}
+          {%- set _ = entries.append(services[service_name].domain ~ ':' ~ hermes_docker_extra_hosts_target_ip) -%}
+        {%- endfor -%}
+        {%- set _ = agent_hosts.update({agent_name: entries | unique}) -%}
+      {%- endfor -%}
+      {{ agent_hosts }}
+  when: hermes_docker_isolate_agents | bool
 
 - name: Validate Hermes Docker agent configuration
   ansible.builtin.assert:
@@ -157,6 +227,39 @@
     label: "{{ agent_name }}"
   no_log: true
   notify: Recreate Hermes Docker agents
+
+- name: Render Hermes Docker firewall script
+  ansible.builtin.template:
+    src: hermes-docker-firewall.sh.j2
+    dest: "{{ hermes_docker_firewall_script_path }}"
+    owner: root
+    group: root
+    mode: '0755'
+  when: hermes_docker_isolate_agents | bool
+
+- name: Render Hermes Docker firewall systemd service
+  ansible.builtin.template:
+    src: hermes-docker-firewall.service.j2
+    dest: "/etc/systemd/system/{{ hermes_docker_firewall_service_name }}"
+    owner: root
+    group: root
+    mode: '0644'
+  when: hermes_docker_isolate_agents | bool
+  register: hermes_docker_firewall_service
+
+- name: Reload systemd when Hermes Docker firewall service changes
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when:
+    - hermes_docker_isolate_agents | bool
+    - hermes_docker_firewall_service is changed
+
+- name: Enable and apply Hermes Docker firewall
+  ansible.builtin.systemd:
+    name: "{{ hermes_docker_firewall_service_name }}"
+    enabled: true
+    state: restarted
+  when: hermes_docker_isolate_agents | bool
 
 - name: Render Hermes Docker Compose file
   ansible.builtin.template:

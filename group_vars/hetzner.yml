@@ -8,6 +8,13 @@ dockerproxy_bind_address: "{{ ansible_host }}"
 hermes_dashboard_bind_address: "{{ ansible_host }}"
 hermes_gateway_bind_address: "{{ ansible_host }}"
 hermes_docker_image: nousresearch/hermes-agent:main
+hermes_docker_agent_order:
+  - multipurpose
+  - marian
+  - anna
+hermes_docker_agent_extra_host_services:
+  multipurpose:
+    - homeassistant
 hermes_docker_agents_env:
   multipurpose:
     API_SERVER_ENABLED: "true"

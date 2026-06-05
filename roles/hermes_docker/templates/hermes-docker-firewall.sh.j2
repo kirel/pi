@@ -1,0 +1,45 @@
+#!/bin/sh
+set -eu
+
+ensure_chain() {
+  chain="$1"
+  iptables -N "$chain" 2>/dev/null || true
+  iptables -F "$chain"
+}
+
+ensure_jump() {
+  chain="$1"
+  target="$2"
+  iptables -C "$chain" -j "$target" 2>/dev/null || iptables -I "$chain" 1 -j "$target"
+}
+
+ensure_chain HERMES-EGRESS
+ensure_chain HERMES-HOST-IN
+
+ensure_jump DOCKER-USER HERMES-EGRESS
+{% if hermes_docker_block_host_access | bool %}
+ensure_jump INPUT HERMES-HOST-IN
+{% endif %}
+
+iptables -A HERMES-EGRESS -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+{% if hermes_docker_block_host_access | bool %}
+iptables -A HERMES-HOST-IN -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+{% endif %}
+
+{% for agent_name in hermes_docker_effective_agent_names %}
+{% set subnet = hermes_docker_agent_networks[agent_name].subnet %}
+{% for port in hermes_docker_allowed_proxy_ports %}
+iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ hermes_docker_allowed_proxy_ip }} -p tcp --dport {{ port }} -j ACCEPT
+{% endfor %}
+{% for blocked_cidr in hermes_docker_blocked_private_cidrs %}
+iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ blocked_cidr }} -j REJECT
+{% endfor %}
+{% if hermes_docker_block_host_access | bool %}
+iptables -A HERMES-HOST-IN -s {{ subnet }} -j REJECT
+{% endif %}
+{% endfor %}
+
+iptables -A HERMES-EGRESS -j RETURN
+{% if hermes_docker_block_host_access | bool %}
+iptables -A HERMES-HOST-IN -j RETURN
+{% endif %}

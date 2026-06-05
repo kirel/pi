@@ -1,0 +1,12 @@
+[Unit]
+Description=Hermes Docker egress firewall
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart={{ hermes_docker_firewall_script_path }}
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

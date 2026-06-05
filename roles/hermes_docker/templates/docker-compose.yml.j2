@@ -32,10 +32,34 @@ services:
 {% for skill_dir in hermes_docker_agents_external_skill_dirs.get(agent_name, []) %}
       - {{ skill_dir.host_dir }}:{{ skill_dir.container_dir }}:ro
 {% endfor %}
+{% if hermes_docker_isolate_agents | bool %}
+    extra_hosts:
+{% for host_entry in hermes_docker_agent_extra_hosts[agent_name] %}
+      - {{ host_entry | to_json }}
+{% endfor %}
+    dns:
+{% for dns_server in hermes_docker_dns_servers %}
+      - {{ dns_server | to_json }}
+{% endfor %}
+{% endif %}
     networks:
+{% if hermes_docker_isolate_agents | bool %}
+      - {{ hermes_docker_agent_networks[agent_name].name }}
+{% else %}
       - {{ hermes_docker_network_name }}
+{% endif %}
 {% endfor %}
 
 networks:
+{% if hermes_docker_isolate_agents | bool %}
+{% for agent_name in hermes_docker_effective_agent_names %}
+  {{ hermes_docker_agent_networks[agent_name].name }}:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: {{ hermes_docker_agent_networks[agent_name].subnet }}
+{% endfor %}
+{% else %}
   {{ hermes_docker_network_name }}:
     driver: bridge
+{% endif %}
