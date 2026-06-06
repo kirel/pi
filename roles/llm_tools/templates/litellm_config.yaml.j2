@@ -128,7 +128,7 @@ mcp_servers:
   google_maps:
     url: "https://mapstools.googleapis.com/mcp"
     static_headers:
-      X-Goog-Api-Key: "AIzaSyB3JUYwQ6yvp0-HgeC1gLNqDY4O-7ACgck"
+      X-Goog-Api-Key: "{{ google_maps_api_key }}"
     access_groups: ["global"]
   notion:
     transport: "stdio"
