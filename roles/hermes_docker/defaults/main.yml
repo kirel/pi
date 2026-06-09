@@ -2,9 +2,9 @@
 # Host directory where one isolated Hermes data directory per agent is stored.
 hermes_docker_base_dir: /opt/hermes-agents
 
-# First host port for dashboards. Agent N gets hermes_dashboard_base_port + N.
-# Leave bind address empty to publish on all interfaces, or set it to a specific
-# address such as the host's Tailscale IP.
+# Host port publishing for dashboards when hermes_docker_tailscale_enabled is false.
+# Agent N gets hermes_dashboard_base_port + N. Leave bind address empty to publish
+# on all interfaces, or set it to a specific address such as the host's Tailscale IP.
 hermes_dashboard_bind_address: ""
 hermes_dashboard_base_port: 18080
 
@@ -41,6 +41,20 @@ hermes_docker_tailscale_tag_prefix: hermes
 hermes_docker_tailscale_hostname_prefix: hermes
 hermes_docker_tailscale_state_dir: /var/lib/tailscale
 hermes_docker_tailscale_extra_args: ""
+
+# Optional per-agent Caddy reverse proxy running in the same Tailscale network
+# namespace as the Hermes agent. This lets users publish local agent services as
+# https://<service>.<agent>.<suffix> by editing an include directory from inside
+# the Hermes container.
+hermes_docker_agent_caddy_enabled: true
+hermes_docker_agent_domain_suffix: kirelabs.org
+hermes_docker_agent_caddy_email: danishkirel@gmail.com
+hermes_docker_agent_caddy_image: hermes-agent-caddy:latest
+hermes_docker_agent_caddy_admin: 127.0.0.1:2019
+hermes_docker_agent_caddy_dashboard_subdomain: dashboard
+hermes_docker_agent_caddy_sites_dir: /etc/caddy/sites
+hermes_docker_agent_caddy_static_dir: /srv/caddy-static
+hermes_docker_agent_caddy_skill_dir: /skills/caddy-proxy
 
 # Network isolation for Hermes Docker agents. Each agent gets a dedicated bridge
 # network and egress is restricted by a managed iptables chain.
@@ -135,6 +149,7 @@ hermes_docker_managed_mcp_servers:
 hermes_docker_data_uid: 10000
 hermes_docker_data_gid: 10000
 
+# Host port publishing for the gateway API when hermes_docker_tailscale_enabled is false.
 # Set to true to publish the gateway API port in addition to the dashboard port.
 # Gateway API host ports start at hermes_gateway_base_port and increment by agent order.
 # Leave bind address empty to publish on all interfaces.

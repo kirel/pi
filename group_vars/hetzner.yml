@@ -3,10 +3,8 @@
 # but do not advertise any routes of its own.
 tailscale_args: "--accept-dns=true --accept-routes=true --operator=daniel"
 
-# Expose Docker/Hermes service ports only on the Hetzner Tailnet IP, never on the public VPS interface.
+# Expose dockerproxy only on the Hetzner Tailnet IP, never on the public VPS interface.
 dockerproxy_bind_address: "{{ ansible_host }}"
-hermes_dashboard_bind_address: "{{ ansible_host }}"
-hermes_gateway_bind_address: "{{ ansible_host }}"
 hermes_docker_image: nousresearch/hermes-agent:main
 hermes_docker_agent_order:
   - multipurpose
@@ -80,6 +78,7 @@ hermes_docker_agents_config_overrides:
       external_dirs:
         - /skills/global
         - /skills/family
+        - /skills/caddy-proxy
   anna:
     model:
       default: MiniMax-M3
@@ -88,11 +87,13 @@ hermes_docker_agents_config_overrides:
       external_dirs:
         - /skills/global
         - /skills/friends
+        - /skills/caddy-proxy
   marian:
     skills:
       external_dirs:
         - /skills/global
         - /skills/friends
+        - /skills/caddy-proxy
 
 hetzner_users:
   - name: daniel

@@ -129,11 +129,18 @@
         not (hermes_docker_tailscale_enabled | bool) or
         (hermes_docker_tailscale_authkey is defined and
         hermes_docker_tailscale_authkey | string | length > 0)
+      - >-
+        not (hermes_docker_agent_caddy_enabled | bool) or
+        (hermes_docker_tailscale_enabled | bool)
+      - >-
+        not (hermes_docker_agent_caddy_enabled | bool) or
+        (regfish_token is defined and regfish_token | string | length > 0)
     fail_msg: >-
       Define Hermes Docker agents with valid Docker-safe agent names, valid
       per-agent external skill directories, provide MINIMAX_API_KEY in
-      hermes_docker_global_env or hermes_docker_global_env_secret, and provide
-      hermes_docker_tailscale_authkey when Tailscale sidecars are enabled.
+      hermes_docker_global_env or hermes_docker_global_env_secret, provide
+      hermes_docker_tailscale_authkey when Tailscale sidecars are enabled, and
+      provide regfish_token when per-agent Caddy is enabled.
 
 - name: Validate Hermes Docker LiteLLM key configuration
   ansible.builtin.assert:
@@ -312,6 +319,108 @@
   loop_control:
     loop_var: agent_name
     label: "{{ agent_name }}"
+
+- name: Create Hermes Caddy image build directory
+  ansible.builtin.file:
+    path: "{{ hermes_docker_base_dir }}/caddy-image"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  when: hermes_docker_agent_caddy_enabled | bool
+
+- name: Render Hermes Caddy image Dockerfile
+  ansible.builtin.template:
+    src: caddy-Dockerfile.j2
+    dest: "{{ hermes_docker_base_dir }}/caddy-image/Dockerfile"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Recreate Hermes Docker agents
+  when: hermes_docker_agent_caddy_enabled | bool
+
+- name: Create per-agent Caddy directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  loop: >-
+    {%- set dirs = [] -%}
+    {%- for agent_name in hermes_docker_effective_agent_names -%}
+      {%- set base = hermes_docker_base_dir ~ '/' ~ agent_name -%}
+      {%- set _ = dirs.extend([
+        {'path': base ~ '/caddy', 'owner': 'root', 'group': 'root', 'mode': '0755'},
+        {'path': base ~ '/caddy/sites', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
+        {'path': base ~ '/caddy/static', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
+        {'path': base ~ '/caddy/logs', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
+        {'path': base ~ '/caddy/data', 'owner': 'root', 'group': 'root', 'mode': '0700'},
+        {'path': base ~ '/caddy/config', 'owner': 'root', 'group': 'root', 'mode': '0700'},
+        {'path': base ~ '/skills', 'owner': 'root', 'group': 'root', 'mode': '0755'},
+        {'path': base ~ '/skills/caddy-proxy', 'owner': 'root', 'group': 'root', 'mode': '0755'}
+      ]) -%}
+    {%- endfor -%}
+    {{ dirs }}
+  loop_control:
+    label: "{{ item.path }}"
+  when: hermes_docker_agent_caddy_enabled | bool
+
+- name: Render per-agent Caddyfile
+  ansible.builtin.template:
+    src: agent-Caddyfile.j2
+    dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/Caddyfile"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ hermes_docker_effective_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  notify: Recreate Hermes Docker agents
+  when: hermes_docker_agent_caddy_enabled | bool
+
+- name: Ensure per-agent Caddy include placeholder exists
+  ansible.builtin.copy:
+    dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/sites/00-placeholder.caddy"
+    content: "# Placeholder so the managed Caddy import glob always matches.\n"
+    owner: "{{ hermes_docker_data_uid }}"
+    group: "{{ hermes_docker_data_gid }}"
+    mode: '0644'
+    force: false
+  loop: "{{ hermes_docker_effective_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  when: hermes_docker_agent_caddy_enabled | bool
+
+- name: Render per-agent Caddy environment files
+  ansible.builtin.template:
+    src: agent-caddy.env.j2
+    dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/caddy.env"
+    owner: root
+    group: root
+    mode: '0600'
+  loop: "{{ hermes_docker_effective_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  no_log: true
+  notify: Recreate Hermes Docker agents
+  when: hermes_docker_agent_caddy_enabled | bool
+
+- name: Render per-agent Caddy proxy skill
+  ansible.builtin.template:
+    src: caddy-proxy-skill.md.j2
+    dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/skills/caddy-proxy/SKILL.md"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ hermes_docker_effective_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  when: hermes_docker_agent_caddy_enabled | bool
 
 - name: Create per-agent Tailscale state directories
   ansible.builtin.file:

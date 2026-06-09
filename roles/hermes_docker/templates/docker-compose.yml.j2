@@ -69,6 +69,13 @@ services:
 {% endif %}
     volumes:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_container_data_dir }}
+{% if hermes_docker_agent_caddy_enabled | bool %}
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/sites:{{ hermes_docker_agent_caddy_sites_dir }}
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/static:{{ hermes_docker_agent_caddy_static_dir }}
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/logs:/var/log/caddy:ro
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/skills/caddy-proxy:{{ hermes_docker_agent_caddy_skill_dir }}:ro
+{% endif %}
 {% for skill_dir in hermes_docker_agents_external_skill_dirs.get(agent_name, []) %}
       - {{ skill_dir.host_dir }}:{{ skill_dir.container_dir }}:ro
 {% endfor %}
@@ -89,6 +96,36 @@ services:
 {% else %}
       - {{ hermes_docker_network_name }}
 {% endif %}
+{% endif %}
+{% if hermes_docker_agent_caddy_enabled | bool %}
+  caddy-hermes-{{ agent_name }}:
+    image: {{ hermes_docker_agent_caddy_image }}
+    pull_policy: build
+    build:
+      context: {{ hermes_docker_base_dir }}/caddy-image
+    container_name: caddy-hermes-{{ agent_name }}
+    restart: {{ hermes_docker_restart_policy }}
+    network_mode: service:ts-hermes-{{ agent_name }}
+    depends_on:
+      - ts-hermes-{{ agent_name }}
+      - hermes-{{ agent_name }}
+    env_file:
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/caddy.env
+    command:
+      - caddy
+      - run
+      - --watch
+      - --config
+      - /etc/caddy/Caddyfile
+      - --adapter
+      - caddyfile
+    volumes:
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/sites:{{ hermes_docker_agent_caddy_sites_dir }}:ro
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/static:{{ hermes_docker_agent_caddy_static_dir }}:ro
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/logs:/var/log/caddy
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/data:/data
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/config:/config
 {% endif %}
 {% endfor %}
 

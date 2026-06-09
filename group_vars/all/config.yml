@@ -34,19 +34,19 @@ homepage_static_services:
     name: Hermes Multipurpose
     group: AI
     icon: mdi-robot
-    href: "http://{{ hostvars['ubuntu-8gb-fsn1-1'].ansible_host }}:18080"
+    href: "https://dashboard.multipurpose.kirelabs.org"
     description: Multipurpose Hermes dashboard
   - service: hermes-marian
     name: Hermes Marian
     group: AI
     icon: mdi-robot
-    href: "http://{{ hostvars['ubuntu-8gb-fsn1-1'].ansible_host }}:18081"
+    href: "https://dashboard.marian.kirelabs.org"
     description: Marian Hermes dashboard
   - service: hermes-anna
     name: Hermes Anna
     group: AI
     icon: mdi-robot
-    href: "http://{{ hostvars['ubuntu-8gb-fsn1-1'].ansible_host }}:18082"
+    href: "https://dashboard.anna.kirelabs.org"
     description: Anna Hermes dashboard
 music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
