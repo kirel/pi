@@ -2,36 +2,22 @@
 services:
 {% for agent_name in hermes_docker_effective_agent_names %}
 {% set agent_env = hermes_docker_agents_env.get(agent_name, {}) | combine(hermes_docker_agents_env_secret.get(agent_name, {}), recursive=True) %}
-  hermes-{{ agent_name }}:
-    image: {{ hermes_docker_image }}
-    pull_policy: {{ hermes_docker_pull_policy }}
-    container_name: hermes-{{ agent_name }}
+{% set agent_index = loop.index0 %}
+{% if hermes_docker_tailscale_enabled | bool %}
+  ts-hermes-{{ agent_name }}:
+    image: {{ hermes_docker_tailscale_image }}
+    container_name: ts-hermes-{{ agent_name }}
+    hostname: {{ hermes_docker_tailscale_hostname_prefix }}-{{ agent_name }}
     restart: {{ hermes_docker_restart_policy }}
-{% if hermes_docker_command is string %}
-    command: {{ hermes_docker_command }}
-{% else %}
-    command:
-{% for item in hermes_docker_command %}
-      - {{ item | string | to_json }}
-{% endfor %}
-{% endif %}
-    shm_size: {{ hermes_docker_shm_size }}
     env_file:
-      - {{ hermes_docker_base_dir }}/{{ agent_name }}/data/.env
-    ports:
-      - "{{ (hermes_dashboard_bind_address | default('') | string | length > 0) | ternary((hermes_dashboard_bind_address | string) ~ ':', '') }}{{ hermes_dashboard_base_port | int + loop.index0 }}:{{ hermes_dashboard_container_port }}"
-{% if hermes_publish_gateway_api | bool %}
-      - "{{ (hermes_gateway_bind_address | default('') | string | length > 0) | ternary((hermes_gateway_bind_address | string) ~ ':', '') }}{{ hermes_gateway_base_port | int + loop.index0 }}:{{ hermes_gateway_container_port }}"
-{% endif %}
-{% if agent_env.API_SERVER_ENABLED | default(false) | bool %}
-{% set api_server_port = agent_env.API_SERVER_PORT | default(hermes_gateway_container_port) %}
-      - "{{ (hermes_gateway_bind_address | default('') | string | length > 0) | ternary((hermes_gateway_bind_address | string) ~ ':', '') }}{{ api_server_port }}:{{ api_server_port }}"
-{% endif %}
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/tailscale.env
     volumes:
-      - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_container_data_dir }}
-{% for skill_dir in hermes_docker_agents_external_skill_dirs.get(agent_name, []) %}
-      - {{ skill_dir.host_dir }}:{{ skill_dir.container_dir }}:ro
-{% endfor %}
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/tailscale:{{ hermes_docker_tailscale_state_dir }}
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+      - sys_module
 {% if hermes_docker_isolate_agents | bool %}
     extra_hosts:
 {% for host_entry in hermes_docker_agent_extra_hosts[agent_name] %}
@@ -47,6 +33,62 @@ services:
       - {{ hermes_docker_agent_networks[agent_name].name }}
 {% else %}
       - {{ hermes_docker_network_name }}
+{% endif %}
+{% endif %}
+  hermes-{{ agent_name }}:
+    image: {{ hermes_docker_image }}
+    pull_policy: {{ hermes_docker_pull_policy }}
+    container_name: hermes-{{ agent_name }}
+    restart: {{ hermes_docker_restart_policy }}
+{% if hermes_docker_tailscale_enabled | bool %}
+    network_mode: service:ts-hermes-{{ agent_name }}
+    depends_on:
+      - ts-hermes-{{ agent_name }}
+{% endif %}
+{% if hermes_docker_command is string %}
+    command: {{ hermes_docker_command }}
+{% else %}
+    command:
+{% for item in hermes_docker_command %}
+      - {{ item | string | to_json }}
+{% endfor %}
+{% endif %}
+    shm_size: {{ hermes_docker_shm_size }}
+    env_file:
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/data/.env
+{% if not (hermes_docker_tailscale_enabled | bool) %}
+    ports:
+      - "{{ (hermes_dashboard_bind_address | default('') | string | length > 0) | ternary((hermes_dashboard_bind_address | string) ~ ':', '') }}{{ hermes_dashboard_base_port | int + agent_index }}:{{ hermes_dashboard_container_port }}"
+{% if hermes_publish_gateway_api | bool %}
+      - "{{ (hermes_gateway_bind_address | default('') | string | length > 0) | ternary((hermes_gateway_bind_address | string) ~ ':', '') }}{{ hermes_gateway_base_port | int + agent_index }}:{{ hermes_gateway_container_port }}"
+{% endif %}
+{% if agent_env.API_SERVER_ENABLED | default(false) | bool %}
+{% set api_server_port = agent_env.API_SERVER_PORT | default(hermes_gateway_container_port) %}
+      - "{{ (hermes_gateway_bind_address | default('') | string | length > 0) | ternary((hermes_gateway_bind_address | string) ~ ':', '') }}{{ api_server_port }}:{{ api_server_port }}"
+{% endif %}
+{% endif %}
+    volumes:
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_container_data_dir }}
+{% for skill_dir in hermes_docker_agents_external_skill_dirs.get(agent_name, []) %}
+      - {{ skill_dir.host_dir }}:{{ skill_dir.container_dir }}:ro
+{% endfor %}
+{% if not (hermes_docker_tailscale_enabled | bool) %}
+{% if hermes_docker_isolate_agents | bool %}
+    extra_hosts:
+{% for host_entry in hermes_docker_agent_extra_hosts[agent_name] %}
+      - {{ host_entry | to_json }}
+{% endfor %}
+    dns:
+{% for dns_server in hermes_docker_dns_servers %}
+      - {{ dns_server | to_json }}
+{% endfor %}
+{% endif %}
+    networks:
+{% if hermes_docker_isolate_agents | bool %}
+      - {{ hermes_docker_agent_networks[agent_name].name }}
+{% else %}
+      - {{ hermes_docker_network_name }}
+{% endif %}
 {% endif %}
 {% endfor %}
 

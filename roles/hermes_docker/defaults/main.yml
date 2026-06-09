@@ -29,6 +29,19 @@ hermes_docker_restart_policy: unless-stopped
 hermes_docker_network_name: hermes-agents
 hermes_docker_shm_size: 1g
 
+# Put each Hermes agent on the Tailnet through an official Tailscale sidecar.
+# The Hermes container shares the sidecar's network namespace, so Tailnet users
+# reach the agent by its MagicDNS name (for example hermes-marian.<tailnet>) and
+# the container's internal ports, not by host-published ports.
+hermes_docker_tailscale_enabled: true
+hermes_docker_tailscale_image: tailscale/tailscale:latest
+hermes_docker_tailscale_authkey: "{{ vault_tailscale_hermes_oauth_client_secret | default(tailscale_authkey | default('')) }}"
+hermes_docker_tailscale_authkey_suffix: "?ephemeral=false&preauthorized=true"
+hermes_docker_tailscale_tag_prefix: hermes
+hermes_docker_tailscale_hostname_prefix: hermes
+hermes_docker_tailscale_state_dir: /var/lib/tailscale
+hermes_docker_tailscale_extra_args: ""
+
 # Network isolation for Hermes Docker agents. Each agent gets a dedicated bridge
 # network and egress is restricted by a managed iptables chain.
 hermes_docker_isolate_agents: true
@@ -46,8 +59,8 @@ hermes_docker_extra_host_services:
 hermes_docker_agent_extra_host_services: {}
 hermes_docker_extra_hosts_target_ip: "{{ homelab_nuc_ip }}"
 hermes_docker_dns_servers:
-  - 1.1.1.1
-  - 8.8.8.8
+  - "{{ tailscale_dns_ip }}"
+  - "{{ nameserver_pi_ip }}"
 
 # Hermes agents may use the public internet, but access to private/internal
 # ranges is blocked except for explicitly allowed proxy targets.
