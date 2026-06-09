@@ -202,6 +202,21 @@
     group: "{{ hermes_external_skills_host_group }}"
     mode: '0755'
 
+- name: Check external Hermes skills repository exists
+  ansible.builtin.stat:
+    path: "{{ hermes_external_skills_repo_dest }}/.git"
+  register: hermes_external_skills_repo_git
+
+- name: Check external Hermes skills repository status
+  ansible.builtin.command: git status --porcelain
+  args:
+    chdir: "{{ hermes_external_skills_repo_dest }}"
+  become: true
+  become_user: "{{ hermes_external_skills_host_owner }}"
+  register: hermes_external_skills_repo_status
+  changed_when: false
+  when: hermes_external_skills_repo_git.stat.exists
+
 - name: Clone external Hermes skills repository
   ansible.builtin.git:
     repo: "{{ hermes_external_skills_repo_url }}"
@@ -210,6 +225,28 @@
     update: true
   become: true
   become_user: "{{ hermes_external_skills_host_owner }}"
+  when: not hermes_external_skills_repo_git.stat.exists
+
+- name: Update external Hermes skills repository when clean
+  ansible.builtin.git:
+    repo: "{{ hermes_external_skills_repo_url }}"
+    dest: "{{ hermes_external_skills_repo_dest }}"
+    version: "{{ hermes_external_skills_repo_version }}"
+    update: true
+  become: true
+  become_user: "{{ hermes_external_skills_host_owner }}"
+  when:
+    - hermes_external_skills_repo_git.stat.exists
+    - hermes_external_skills_repo_status.stdout | length == 0
+
+- name: Warn when external Hermes skills repository has local changes
+  ansible.builtin.debug:
+    msg: >-
+      Skipping Hermes skills repo update because local modifications exist in
+      {{ hermes_external_skills_repo_dest }}.
+  when:
+    - hermes_external_skills_repo_git.stat.exists
+    - hermes_external_skills_repo_status.stdout | length > 0
 
 - name: Check external Hermes skill directories
   ansible.builtin.stat:
