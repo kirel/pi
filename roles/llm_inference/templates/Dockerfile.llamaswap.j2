@@ -1,6 +1,13 @@
+FROM ghcr.io/ggml-org/llama.cpp:server-cuda AS llama_cpp
+
 FROM ghcr.io/mostlygeek/llama-swap:cuda
 
 USER root
+
+# Keep llama-swap from upstream, but refresh llama.cpp from the official CUDA
+# server image so OpenAI-compatible /v1/audio/transcriptions is available.
+COPY --from=llama_cpp /app/llama-server /app/llama-server
+COPY --from=llama_cpp /app/lib* /app/
 
 # The upstream image doesn't persist UID 10001 in /etc/passwd, which breaks
 # some tooling that calls getpass.getuser(). Add an entry and ensure a writable
