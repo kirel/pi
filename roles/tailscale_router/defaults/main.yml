@@ -1,0 +1,8 @@
+---
+# Let LAN clients that use this host as gateway reach Tailnet IPs. SNAT keeps
+# return traffic simple: Tailnet peers reply to this router's Tailscale IP.
+tailscale_router_masquerade_lan_to_tailnet: true
+tailscale_router_lan_cidr: "{{ tailscale_lan_cidr }}"
+tailscale_router_tailnet_cidr: "{{ tailscale_cgnat_cidr }}"
+tailscale_router_interface: tailscale0
+tailscale_router_nat_service_name: tailscale-lan-to-tailnet-nat.service

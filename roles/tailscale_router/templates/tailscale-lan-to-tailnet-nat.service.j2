@@ -1,0 +1,13 @@
+[Unit]
+Description=SNAT LAN clients to Tailnet through {{ tailscale_router_interface }}
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'iptables -t nat -C POSTROUTING -s {{ tailscale_router_lan_cidr }} -d {{ tailscale_router_tailnet_cidr }} -o {{ tailscale_router_interface }} -j MASQUERADE 2>/dev/null || iptables -t nat -A POSTROUTING -s {{ tailscale_router_lan_cidr }} -d {{ tailscale_router_tailnet_cidr }} -o {{ tailscale_router_interface }} -j MASQUERADE'
+ExecStop=/bin/sh -c 'while iptables -t nat -C POSTROUTING -s {{ tailscale_router_lan_cidr }} -d {{ tailscale_router_tailnet_cidr }} -o {{ tailscale_router_interface }} -j MASQUERADE 2>/dev/null; do iptables -t nat -D POSTROUTING -s {{ tailscale_router_lan_cidr }} -d {{ tailscale_router_tailnet_cidr }} -o {{ tailscale_router_interface }} -j MASQUERADE; done'
+
+[Install]
+WantedBy=multi-user.target

@@ -12,3 +12,35 @@
     value: "1"
     state: present
     reload: true
+
+- name: Install LAN to Tailnet SNAT service
+  ansible.builtin.template:
+    src: tailscale-lan-to-tailnet-nat.service.j2
+    dest: "/etc/systemd/system/{{ tailscale_router_nat_service_name }}"
+    owner: root
+    group: root
+    mode: '0644'
+  register: tailscale_router_nat_service
+  when: tailscale_router_masquerade_lan_to_tailnet | bool
+
+- name: Reload systemd for LAN to Tailnet SNAT service
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when:
+    - tailscale_router_masquerade_lan_to_tailnet | bool
+    - tailscale_router_nat_service is changed
+
+- name: Enable and apply LAN to Tailnet SNAT
+  ansible.builtin.systemd:
+    name: "{{ tailscale_router_nat_service_name }}"
+    enabled: true
+    state: restarted
+  when: tailscale_router_masquerade_lan_to_tailnet | bool
+
+- name: Disable LAN to Tailnet SNAT when not configured
+  ansible.builtin.systemd:
+    name: "{{ tailscale_router_nat_service_name }}"
+    enabled: false
+    state: stopped
+  failed_when: false
+  when: not (tailscale_router_masquerade_lan_to_tailnet | bool)
