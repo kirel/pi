@@ -1,4 +1,17 @@
+{% set local_llms_enabled = llamaswap_enabled | default(true) | bool %}
+{% set remote_alias = model_group_alias['home-remote'] %}
+{% set disabled_model_group_alias = {
+  'home': remote_alias,
+  'home-fast': remote_alias,
+  'home-smart': remote_alias,
+  'home-vision': remote_alias,
+  'home-ha': remote_alias,
+  'home-claw': remote_alias,
+  'home-embed': remote_alias,
+  'home-remote': remote_alias
+} %}
 model_list:
+{% if local_llms_enabled %}
   # Local models via llama-swap - base models and their variants
   {% for model in llamaswap_models -%}
   # Base model
@@ -35,6 +48,7 @@ model_list:
   {% endfor %}
   {% endif %}
   {% endfor %}
+{% endif %}
 
   # OpenRouter models
 {% if openrouter_models is defined %}
@@ -52,9 +66,10 @@ model_list:
       model: "*"
 
 router_settings:
-  model_group_alias: {{ model_group_alias }}
+  model_group_alias:
+{{ (model_group_alias if local_llms_enabled else disabled_model_group_alias) | to_nice_yaml(indent=2) | indent(4, true) }}
   # Fallback from home to home-remote when local model fails
-  fallbacks: {{ litellm_fallbacks }}
+  fallbacks: {{ litellm_fallbacks if local_llms_enabled else [] }}
   redis_host: "{{ litellm_redis_container_name }}"
   redis_port: "{{ litellm_redis_port_container }}"
 

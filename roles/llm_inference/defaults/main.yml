@@ -2,6 +2,7 @@
 # defaults file for llm_inference
 
 # --- llama-swap Settings ---
+llamaswap_enabled: true
 llamaswap_container_name: "llama-swap"
 llamaswap_image: "llama-swap:local"
 llamaswap_port: "8080"

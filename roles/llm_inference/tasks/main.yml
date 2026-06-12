@@ -1,12 +1,20 @@
 ---
 # tasks file for llm_inference
 
+- name: Stop llama-swap container when disabled
+  community.docker.docker_container:
+    name: "{{ llamaswap_container_name }}"
+    state: absent
+  become: true
+  when: not (llamaswap_enabled | bool)
+
 - name: Ensure llama-swap config directory exists
   ansible.builtin.file:
     path: "{{ llamaswap_config_path }}"
     state: directory
     mode: "0755"
   become: true
+  when: llamaswap_enabled | bool
 
 - name: Ensure llama-swap cache directory is owned by container user
   ansible.builtin.file:
@@ -16,6 +24,7 @@
     group: "10001"
     recurse: true
   become: true
+  when: llamaswap_enabled | bool
 
 - name: Ensure llama.cpp slot cache directories exist
   ansible.builtin.file:
@@ -30,6 +39,7 @@
     - qwen3.6-mtp-slots
     - qwen3.6-27b-mtp-slots
   become: true
+  when: llamaswap_enabled | bool
 
 - name: Ensure llama-swap build context exists
   ansible.builtin.file:
@@ -37,6 +47,7 @@
     state: directory
     mode: "0755"
   become: true
+  when: llamaswap_enabled | bool
 
 - name: Template llama-swap Dockerfile
   ansible.builtin.template:
@@ -45,6 +56,7 @@
     mode: "0644"
   become: true
   notify: Restart llama-swap
+  when: llamaswap_enabled | bool
 
 - name: Create llama-swap config file
   ansible.builtin.template:
@@ -53,6 +65,7 @@
     mode: "0644"
   become: true
   notify: Restart llama-swap
+  when: llamaswap_enabled | bool
 
 - name: Build llama-swap image
   community.docker.docker_image:
@@ -66,6 +79,7 @@
     state: present
   become: true
   notify: Restart llama-swap
+  when: llamaswap_enabled | bool
 
 - name: Start the llama-swap container
   community.docker.docker_container:
@@ -105,3 +119,4 @@
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: "{{ llamaswap_container_name }}"
   become: true
+  when: llamaswap_enabled | bool
