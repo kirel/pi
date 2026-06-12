@@ -103,3 +103,16 @@
       networks:
         teslamate:
           driver: bridge
+
+- name: Configure TeslaMate public URLs
+  ansible.builtin.command: >-
+    docker exec teslamate-db psql -U {{ teslamate_db_user }} -d {{ teslamate_db_name }}
+    -c "UPDATE settings
+        SET base_url = 'https://{{ services.teslamate.domain }}',
+            grafana_url = 'https://{{ services['teslamate-grafana'].domain }}',
+            updated_at = now()::timestamp(0)
+        WHERE id = 1
+          AND (base_url IS DISTINCT FROM 'https://{{ services.teslamate.domain }}'
+               OR grafana_url IS DISTINCT FROM 'https://{{ services['teslamate-grafana'].domain }}')"
+  register: teslamate_public_urls
+  changed_when: "'UPDATE 1' in teslamate_public_urls.stdout"
