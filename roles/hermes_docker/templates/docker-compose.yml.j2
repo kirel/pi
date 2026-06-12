@@ -37,6 +37,12 @@ services:
 {% endif %}
   hermes-{{ agent_name }}:
     image: {{ hermes_docker_image }}
+{% if hermes_docker_build_enabled | bool %}
+    build:
+      context: {{ hermes_docker_base_dir }}/hermes-image
+      args:
+        HERMES_BASE_IMAGE: {{ hermes_docker_base_image }}
+{% endif %}
     pull_policy: {{ hermes_docker_pull_policy }}
     container_name: hermes-{{ agent_name }}
     restart: {{ hermes_docker_restart_policy }}
@@ -69,6 +75,8 @@ services:
 {% endif %}
     volumes:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_container_data_dir }}
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf:ro
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/conf.d:{{ hermes_container_data_dir }}/supervisor/conf.d
 {% if hermes_docker_agent_caddy_enabled | bool %}
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/sites:{{ hermes_docker_agent_caddy_sites_dir }}

@@ -1,0 +1,22 @@
+[unix_http_server]
+file=/tmp/supervisor.sock
+chmod=0700
+chown=hermes:hermes
+
+[supervisord]
+logfile={{ hermes_container_data_dir }}/logs/supervisord.log
+logfile_maxbytes=10MB
+logfile_backups=5
+pidfile=/tmp/supervisord.pid
+childlogdir={{ hermes_container_data_dir }}/logs/services
+nodaemon=false
+user=hermes
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisorctl]
+serverurl=unix:///tmp/supervisor.sock
+
+[include]
+files={{ hermes_container_data_dir }}/supervisor/conf.d/*.conf

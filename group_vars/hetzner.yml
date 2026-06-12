@@ -5,11 +5,15 @@ tailscale_args: "--accept-dns=true --accept-routes=true --operator=daniel"
 
 # Expose dockerproxy only on the Hetzner Tailnet IP, never on the public VPS interface.
 dockerproxy_bind_address: "{{ ansible_host }}"
-hermes_docker_image: nousresearch/hermes-agent:main
+hermes_docker_base_image: nousresearch/hermes-agent:main
 hermes_docker_agent_order:
   - multipurpose
   - marian
   - anna
+hermes_docker_agent_tailnet_ips:
+  multipurpose: 100.88.41.45
+  marian: 100.86.181.83
+  anna: 100.115.175.58
 hermes_docker_agent_extra_host_services:
   multipurpose:
     - homeassistant

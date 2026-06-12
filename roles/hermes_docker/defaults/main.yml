@@ -12,17 +12,22 @@ hermes_dashboard_base_port: 18080
 hermes_dashboard_container_port: 9119
 hermes_gateway_container_port: 8642
 
-# Official Hermes Agent image.
-hermes_docker_image: nousresearch/hermes-agent:main
+# Hermes Agent image. We build a thin local image from the official upstream image
+# to add supervisord for agent-managed persistent services.
+hermes_docker_base_image: nousresearch/hermes-agent:main
+hermes_docker_image: hermes-agent-supervisor:latest
+hermes_docker_build_enabled: true
 hermes_docker_project_name: hermes-agents
 # The current s6-based Hermes image must start the gateway through with-contenv;
 # plain `gateway run` can miss env_file variables and leave gateway-default down.
+# Start supervisord first so agent-managed services in /opt/data/supervisor/conf.d
+# survive container restarts.
 hermes_docker_command:
   - /command/with-contenv
   - sh
   - -lc
-  - rm -f /run/service/gateway-default/down; /opt/hermes/.venv/bin/hermes gateway start; exec sleep infinity
-hermes_docker_pull_policy: always
+  - mkdir -p /opt/data/logs/services; /opt/hermes/.venv/bin/supervisord -c /etc/supervisor/supervisord.conf; rm -f /run/service/gateway-default/down; /opt/hermes/.venv/bin/hermes gateway start; exec sleep infinity
+hermes_docker_pull_policy: build
 hermes_docker_compose_pull: policy
 hermes_docker_ensure_running: true
 hermes_docker_restart_policy: unless-stopped
@@ -52,8 +57,8 @@ hermes_docker_agent_caddy_email: danishkirel@gmail.com
 hermes_docker_agent_caddy_image: hermes-agent-caddy:latest
 hermes_docker_agent_caddy_admin: 127.0.0.1:2019
 hermes_docker_agent_caddy_dashboard_subdomain: dashboard
-hermes_docker_agent_caddy_sites_dir: /etc/caddy/sites
-hermes_docker_agent_caddy_static_dir: /srv/caddy-static
+hermes_docker_agent_caddy_sites_dir: "{{ hermes_container_data_dir }}/caddy/sites"
+hermes_docker_agent_caddy_static_dir: "{{ hermes_container_data_dir }}/caddy/static"
 hermes_docker_agent_caddy_skill_dir: /skills/caddy-proxy
 
 # Network isolation for Hermes Docker agents. Each agent gets a dedicated bridge
@@ -80,6 +85,13 @@ hermes_docker_dns_servers:
 # ranges is blocked except for explicitly allowed proxy targets.
 hermes_docker_allowed_proxy_ip: "{{ homelab_nuc_ip }}"
 hermes_docker_allowed_proxy_ports:
+  - 443
+# Allow HTTPS/HTTP only to explicitly listed per-agent Tailnet IPs while still
+# blocking other private ranges by default. This lets agents use their own normal
+# *.agent.kirelabs.org URLs without opening arbitrary Tailnet web access.
+hermes_docker_agent_tailnet_ips: {}
+hermes_docker_allowed_tailnet_ports:
+  - 80
   - 443
 hermes_docker_blocked_private_cidrs:
   - 10.0.0.0/8

@@ -35,6 +35,12 @@ iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ hermes_docker_allowed_proxy_ip }
 iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ dns_server }} -p udp --dport 53 -j ACCEPT
 iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ dns_server }} -p tcp --dport 53 -j ACCEPT
 {% endfor %}
+{% set agent_tailnet_ip = hermes_docker_agent_tailnet_ips.get(agent_name, '') %}
+{% if agent_tailnet_ip | string | length > 0 %}
+{% for port in hermes_docker_allowed_tailnet_ports %}
+iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ agent_tailnet_ip }}/32 -p tcp --dport {{ port }} -j ACCEPT
+{% endfor %}
+{% endif %}
 {% for blocked_cidr in hermes_docker_blocked_private_cidrs %}
 iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ blocked_cidr }} -j REJECT
 {% endfor %}

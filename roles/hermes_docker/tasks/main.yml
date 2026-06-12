@@ -320,6 +320,25 @@
     loop_var: agent_name
     label: "{{ agent_name }}"
 
+- name: Create Hermes image build directory
+  ansible.builtin.file:
+    path: "{{ hermes_docker_base_dir }}/hermes-image"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  when: hermes_docker_build_enabled | bool
+
+- name: Render Hermes image Dockerfile
+  ansible.builtin.template:
+    src: hermes-Dockerfile.j2
+    dest: "{{ hermes_docker_base_dir }}/hermes-image/Dockerfile"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Recreate Hermes Docker agents
+  when: hermes_docker_build_enabled | bool
+
 - name: Create Hermes Caddy image build directory
   ansible.builtin.file:
     path: "{{ hermes_docker_base_dir }}/caddy-image"
@@ -355,6 +374,8 @@
         {'path': base ~ '/caddy/sites', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
         {'path': base ~ '/caddy/static', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
         {'path': base ~ '/caddy/logs', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
+        {'path': base ~ '/supervisor', 'owner': 'root', 'group': 'root', 'mode': '0755'},
+        {'path': base ~ '/supervisor/conf.d', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
         {'path': base ~ '/caddy/data', 'owner': 'root', 'group': 'root', 'mode': '0700'},
         {'path': base ~ '/caddy/config', 'owner': 'root', 'group': 'root', 'mode': '0700'},
         {'path': base ~ '/skills', 'owner': 'root', 'group': 'root', 'mode': '0755'},
@@ -365,6 +386,28 @@
   loop_control:
     label: "{{ item.path }}"
   when: hermes_docker_agent_caddy_enabled | bool
+
+- name: Allow Hermes user to read per-agent Caddy logs
+  ansible.builtin.command: "setfacl -R -m u:{{ hermes_docker_data_uid }}:rX -m d:u:{{ hermes_docker_data_uid }}:rX {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/logs"
+  changed_when: false
+  loop: "{{ hermes_docker_effective_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  when: hermes_docker_agent_caddy_enabled | bool
+
+- name: Render per-agent supervisord config
+  ansible.builtin.template:
+    src: supervisord.conf.j2
+    dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/supervisord.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ hermes_docker_effective_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  notify: Recreate Hermes Docker agents
 
 - name: Render per-agent Caddyfile
   ansible.builtin.template:

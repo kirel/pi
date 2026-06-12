@@ -24,15 +24,50 @@ The Hermes dashboard is already configured and reserved:
 
 `https://{{ hermes_docker_agent_caddy_dashboard_subdomain }}.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }}` -> `127.0.0.1:{{ hermes_dashboard_container_port }}`
 
+## What You Can Offer Users
+
+You can offer to publish:
+
+- static HTML/CSS/JS pages, dashboards, reports, checklists, and previews
+- small web apps, forms, internal tools, calculators, and prototypes
+- APIs and webhooks backed by local FastAPI, Flask, Node, or similar services
+- temporary live previews for demos
+- persistent services managed by Supervisor that survive container restarts
+
+When explaining this to a user, keep it simple:
+
+- Start with what they can do with it, not the implementation details.
+- Offer examples like reports, dashboards, small tools, APIs, webhooks, and temporary previews.
+- Say that you can publish it under a URL like `https://report.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }}`.
+- Only explain Caddy, Supervisor, ports, mounts, and reload commands if the user asks for technical details or you are implementing the service.
+
+Do not dump this whole skill into the conversation. This skill is complete so you can implement/debug the setup, but normal users usually only need the capability, the chosen URL, and security caveats.
+
+## HTTPS, Reachability, and Security
+
+Use this wording when users ask whether the URL is secure or public:
+
+- The URL uses real HTTPS certificates, issued automatically by Caddy via DNS-01.
+- HTTPS means browser traffic to the service is encrypted and certificate-valid.
+- These services are **not public internet services**.
+- They are reachable only inside the Tailnet.
+- Tailscale ACLs restrict access to the primary user of this agent and Daniel for debugging/admin support.
+- Auth is not automatic. For sensitive data, personal data, webhooks, or write-capable APIs, discuss app-level auth, password/token protection, or another explicit access-control mechanism before exposing the service.
+
+Short user-facing summary:
+
+> I can put this behind a real HTTPS URL like `https://demo.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }}`. It has a valid certificate, but it is not public on the internet. It is only reachable in the Tailnet, and ACLs allow access only for you and Daniel for debugging. If it contains sensitive data or accepts writes/webhooks, we should add auth.
+
 ## Choose the Right Pattern
 
-Use one of these supported patterns:
+Use one of these patterns:
 
-1. **Dynamic app/API**: start a local HTTP service on `127.0.0.1:<port>` and use `reverse_proxy`.
-2. **Static files via Caddy `file_server`**: put files under `{{ hermes_docker_agent_caddy_static_dir }}/<name>/` and let Caddy serve them directly.
-3. **Static files via your own local HTTP server**: serve any local directory with something like `python -m http.server --bind 127.0.0.1 <port>` and use `reverse_proxy`.
+1. **Dynamic app/API**: local service on `127.0.0.1:<port>` + Caddy `reverse_proxy`.
+2. **Static via Caddy `file_server`**: files under `{{ hermes_docker_agent_caddy_static_dir }}/<name>/` + Caddy `file_server`.
+3. **Static via local HTTP server**: any local directory + `python -m http.server --bind 127.0.0.1 <port>` + Caddy `reverse_proxy`.
+4. **Persistent service**: Supervisor config in `/opt/data/supervisor/conf.d/` + Caddy `reverse_proxy`.
 
-Prefer Caddy `file_server` for simple static pages that can live in the dedicated static directory. Prefer your own local HTTP server when files are generated elsewhere, need custom behavior, or should not be copied into the dedicated static directory.
+Prefer Caddy `file_server` for simple static pages in the dedicated static directory. Prefer a local HTTP server when files live elsewhere or need custom behavior. Prefer Supervisor for anything that should survive restarts.
 
 Do **not** point Caddy `file_server` at arbitrary Hermes paths such as `/opt/data/...`; Caddy runs in a separate container and only sees the dedicated static directory.
 
@@ -131,7 +166,72 @@ curl -fsS -X POST \
 curl -k -I --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN"
 ```
 
-For durable static services, do not rely on a bare background process forever. Add process supervision or recreate the server after container restarts.
+For durable static services, do not rely on a bare background process forever. Use Supervisor instead.
+
+## Pattern D: Persistent Services with Supervisor
+
+Use Supervisor for web services that should survive process failures and container restarts. Supervisor reads persistent configs from `/opt/data/supervisor/conf.d/*.conf`.
+
+Example persistent static HTTP service:
+
+```bash
+SERVICE=jobmatcher
+PORT=8765
+DOMAIN="$SERVICE.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }}"
+STATIC_SOURCE=/opt/data/path/to/static-files
+
+mkdir -p /opt/data/logs/services
+mkdir -p /opt/data/supervisor/conf.d
+cat > "/opt/data/supervisor/conf.d/$SERVICE.conf" <<EOF
+[program:$SERVICE]
+directory=$STATIC_SOURCE
+command=python -m http.server $PORT --bind 127.0.0.1
+autostart=true
+autorestart=true
+startsecs=3
+stdout_logfile=/opt/data/logs/services/$SERVICE.log
+stderr_logfile=/opt/data/logs/services/$SERVICE.err.log
+EOF
+
+/opt/hermes/.venv/bin/supervisorctl reread
+/opt/hermes/.venv/bin/supervisorctl update
+/opt/hermes/.venv/bin/supervisorctl status "$SERVICE"
+
+cat > "{{ hermes_docker_agent_caddy_sites_dir }}/$SERVICE.caddy" <<EOF
+@$SERVICE host $DOMAIN
+handle @$SERVICE {
+    reverse_proxy 127.0.0.1:$PORT
+}
+EOF
+
+curl -fsS -X POST \
+  -H 'Content-Type: text/caddyfile' \
+  --data-binary @/etc/caddy/Caddyfile \
+  'http://127.0.0.1:2019/load?adapter=caddyfile'
+
+curl -k -I --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN"
+```
+
+Useful Supervisor commands:
+
+```bash
+/opt/hermes/.venv/bin/supervisorctl status
+/opt/hermes/.venv/bin/supervisorctl status jobmatcher
+/opt/hermes/.venv/bin/supervisorctl restart jobmatcher
+/opt/hermes/.venv/bin/supervisorctl stop jobmatcher
+/opt/hermes/.venv/bin/supervisorctl tail -100 jobmatcher stdout
+/opt/hermes/.venv/bin/supervisorctl tail -100 jobmatcher stderr
+```
+
+Remove a persistent service:
+
+```bash
+/opt/hermes/.venv/bin/supervisorctl stop jobmatcher || true
+rm -f /opt/data/supervisor/conf.d/jobmatcher.conf
+/opt/hermes/.venv/bin/supervisorctl reread
+/opt/hermes/.venv/bin/supervisorctl update
+rm -f {{ hermes_docker_agent_caddy_sites_dir }}/jobmatcher.caddy
+```
 
 ## Rules
 
@@ -142,24 +242,21 @@ For durable static services, do not rely on a bare background process forever. A
 - Use one include file per service in `{{ hermes_docker_agent_caddy_sites_dir }}`.
 - Do not define full site blocks like `example.com { ... }`.
 - Do not edit `/etc/caddy/Caddyfile`; it is managed and mounted read-only.
-- Do not use `sudo`; the include and static directories are writable by this agent.
+- Do not use `sudo`; the include, static, and Supervisor config directories are under `/opt/data` and writable by this agent.
 - Use unique service/matcher names, for example `myapp`, `preview`, or `demo`.
-- Do not claim the service is reachable without Tailnet/DNS access. These URLs use real HTTPS certificates, but clients still need DNS/network access to the agent's Tailscale address.
-
-## TLS and DNS
-
-Caddy gets certificates automatically with DNS-01 via Regfish. The first request or reload for a new name may take a moment while Caddy obtains/renews certificates.
-
-If DNS is not set up for `*.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }}`, the HTTPS URL will not resolve even if the include file is correct.
+- Do not claim the service is public. It has real HTTPS, but it is Tailnet-only and ACL-restricted.
 
 ## Pitfalls
 
-- `502 Bad Gateway`: dynamic service or local static HTTP server is not running, is bound to the wrong interface, or the port is wrong.
+- `502 Bad Gateway`: dynamic service, local static HTTP server, or Supervisor-managed service is not running, is bound to the wrong interface, or the port is wrong.
 - `404 Not Found` with Caddy `file_server`: the `root` path is wrong, no `index.html` exists, or files are outside `{{ hermes_docker_agent_caddy_static_dir }}`.
-- DNS/certificate errors: wildcard DNS for this agent may be missing or Caddy is still obtaining the certificate.
+- DNS/certificate errors: Tailnet DNS/ACLs for this agent may be missing, or Caddy is still obtaining the DNS-01 certificate.
 - Caddy reload fails: the include file has invalid Caddyfile syntax. Fix or remove the newest include file and reload again.
 - Host conflicts: two include files handle the same hostname. Keep one subdomain per service.
 - Auth is not automatic. Add auth in the app itself or explicitly discuss the security model before exposing sensitive data.
+- `supervisorctl` may not be in `PATH`; use `/opt/hermes/.venv/bin/supervisorctl`.
+- Prefer writing config files with normal file tools under `/opt/data` paths. The writable Caddy include directory is `{{ hermes_docker_agent_caddy_sites_dir }}` and the writable Supervisor config directory is `/opt/data/supervisor/conf.d`.
+- If shell redirection or `cat > ...` blocks because the terminal wrapper mishandles EOF, prefer a Python `Path.write_text(...)` helper.
 
 ## Logs and Debugging
 
@@ -188,6 +285,15 @@ The access log shows HTTP status codes such as `200`, `404`, and `502`. Use it t
 
 ## Verification
 
+First verify the expected writable persistent directories exist. They should be under `/opt/data`, not `/etc`:
+
+```bash
+ls -ld /opt/data/caddy/sites /opt/data/caddy/static /opt/data/supervisor/conf.d
+mount | grep -E '/opt/data/(caddy|supervisor)' || true
+```
+
+If these directories are missing, stop and report that the Hermes Docker mounts are not available.
+
 Check Caddy admin API is reachable:
 
 ```bash
@@ -203,12 +309,20 @@ curl -fsS -X POST \
   'http://127.0.0.1:2019/load?adapter=caddyfile'
 ```
 
-Test from inside the agent without depending on Tailnet hairpin routing:
+Test from inside the agent without depending on Tailnet self-hairpin routing:
 
 ```bash
 curl -k -I --resolve "myapp.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }}:443:127.0.0.1" \
   "https://myapp.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }}"
 ```
+
+Prefer this `--resolve` check from inside the same agent container because it bypasses Tailnet self-hairpin behavior and directly tests local Caddy, TLS/SNI, and the backend.
+
+Interpretation:
+
+- `--resolve ...:127.0.0.1` works: Caddy route, TLS/SNI, and local backend are OK.
+- normal DNS URL fails inside the same container: likely self-Tailscale-IP hairpin behavior, not necessarily a Caddy failure.
+- normal DNS URL should also be tested from another Tailnet client.
 
 Test from a normal Tailnet client:
 
