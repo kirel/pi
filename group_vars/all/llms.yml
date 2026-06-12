@@ -19,7 +19,7 @@ llama_prompt_cache_parallel_slots: 3
 # MTP GGUFs are slightly larger than the base GGUFs, so keep a little more
 # headroom while qwen3-embedding and speech services can stay resident.
 llama_ctx_size_qwen35_3090: 458752
-llama_ctx_size_qwen27_3090: 262144
+llama_ctx_size_qwen27_3090: 222144
 
 litellm_fallbacks:
   - home: ["home-remote"]
@@ -27,11 +27,11 @@ litellm_fallbacks:
   - home-smart: ["home-remote"]
 
 openrouter_models:
-  - openai/gpt-5.4
+  - openai/gpt-5.5
   - anthropic/claude-haiku-4.5
   - anthropic/claude-sonnet-4.6
-  - anthropic/claude-opus-4.6
-  - minimax/minimax-m2.7
+  - anthropic/claude-opus-4.8
+  - minimax/minimax-m3
   - google/gemini-3-flash-preview
 
 llamaswap_models:
