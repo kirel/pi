@@ -3,6 +3,12 @@
 # but do not advertise any routes of its own.
 tailscale_args: "--accept-dns=true --accept-routes=true --operator=daniel"
 
+cloud_security_users: "{{ hetzner_users }}"
+cloud_security_ssh_permit_root_login: "no"
+cloud_security_ssh_password_authentication: "no"
+cloud_security_ssh_kbd_interactive_authentication: "no"
+cloud_security_docker_user_firewall_enabled: true
+
 # Expose dockerproxy only on the Hetzner Tailnet IP, never on the public VPS interface.
 dockerproxy_bind_address: "{{ ansible_host }}"
 hermes_docker_base_image: nousresearch/hermes-agent:main

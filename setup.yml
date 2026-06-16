@@ -45,6 +45,7 @@
     - { role: hermes_docker, become: true, tags: [hermes, hermes-docker] }
     - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
     - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
+    - { role: cloud_security, become: true, tags: [security, cloud-security] }
 
 - name: Setup nameserver
   hosts: nameserver
