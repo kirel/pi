@@ -1,0 +1,222 @@
+---
+- name: Install cloud security baseline packages
+  ansible.builtin.apt:
+    name: "{{ cloud_security_base_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  tags: [security, packages]
+
+- name: Ensure configured users exist
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    shell: "{{ item.shell | default(cloud_security_default_shell) }}"
+    create_home: true
+    groups: "{{ 'sudo' if item.sudo | default(false) else omit }}"
+    append: true
+    state: present
+  loop: "{{ cloud_security_users }}"
+  tags: [security, users]
+
+- name: Add authorized SSH keys for configured users
+  ansible.posix.authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
+    state: present
+    exclusive: false
+    manage_dir: true
+  loop: "{{ cloud_security_users | subelements('authorized_keys', skip_missing=True) }}"
+  tags: [security, users, ssh]
+
+- name: Allow configured users passwordless sudo when requested
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ item.name }}"
+    content: "{{ item.name }} ALL=(ALL) NOPASSWD: ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s
+  loop: "{{ cloud_security_users | selectattr('passwordless_sudo', 'defined') | selectattr('passwordless_sudo') | list }}"
+  tags: [security, users, sudo]
+
+- name: Remove broad sudo group passwordless rule from basic role on cloud hosts
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "%sudo ALL=(ALL) NOPASSWD: ALL"
+    state: absent
+    validate: /usr/sbin/visudo -cf %s
+  when: cloud_security_restrict_sudo_group_nopasswd | bool
+  tags: [security, sudo]
+
+- name: Ensure sshd_config.d exists
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  tags: [security, ssh]
+
+- name: Install SSH hardening drop-in
+  ansible.builtin.template:
+    src: sshd-cloud-security.conf.j2
+    dest: /etc/ssh/sshd_config.d/99-cloud-security.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Reload ssh
+  tags: [security, ssh]
+
+- name: Install sysctl hardening
+  ansible.builtin.template:
+    src: sysctl-cloud-security.conf.j2
+    dest: /etc/sysctl.d/99-cloud-security.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Apply sysctl
+  when: cloud_security_sysctl_enabled | bool
+  tags: [security, sysctl]
+
+- name: Configure fail2ban sshd jail
+  ansible.builtin.template:
+    src: fail2ban-sshd.local.j2
+    dest: /etc/fail2ban/jail.d/sshd.local
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart fail2ban
+  when: cloud_security_fail2ban_enabled | bool
+  tags: [security, fail2ban]
+
+- name: Enable and start fail2ban
+  ansible.builtin.service:
+    name: fail2ban
+    enabled: true
+    state: started
+  when: cloud_security_fail2ban_enabled | bool
+  tags: [security, fail2ban]
+
+- name: Configure unattended-upgrades
+  ansible.builtin.template:
+    src: 52-cloud-security-unattended-upgrades.j2
+    dest: /etc/apt/apt.conf.d/52-cloud-security-unattended-upgrades
+    owner: root
+    group: root
+    mode: '0644'
+  when: cloud_security_unattended_upgrades_enabled | bool
+  tags: [security, updates]
+
+- name: Enable unattended-upgrades service
+  ansible.builtin.service:
+    name: unattended-upgrades
+    enabled: true
+    state: started
+  when: cloud_security_unattended_upgrades_enabled | bool
+  tags: [security, updates]
+
+- name: Configure UFW default incoming policy
+  community.general.ufw:
+    direction: incoming
+    policy: "{{ cloud_security_ufw_default_incoming }}"
+  when: cloud_security_ufw_enabled | bool
+  tags: [security, firewall]
+
+- name: Configure UFW default outgoing policy
+  community.general.ufw:
+    direction: outgoing
+    policy: "{{ cloud_security_ufw_default_outgoing }}"
+  when: cloud_security_ufw_enabled | bool
+  tags: [security, firewall]
+
+- name: Allow SSH through UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ cloud_security_ssh_port }}"
+    proto: tcp
+    comment: SSH
+  when:
+    - cloud_security_ufw_enabled | bool
+    - cloud_security_ufw_allow_ssh | bool
+  tags: [security, firewall]
+
+- name: Allow all inbound traffic on Tailscale interface through UFW
+  community.general.ufw:
+    rule: allow
+    interface: "{{ cloud_security_tailscale_interface }}"
+    direction: in
+    comment: Tailscale interface
+  when:
+    - cloud_security_ufw_enabled | bool
+    - cloud_security_ufw_allow_tailscale | bool
+  tags: [security, firewall, tailscale]
+
+- name: Allow configured TCP ports through UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ cloud_security_ufw_allow_tcp_ports }}"
+  when: cloud_security_ufw_enabled | bool
+  tags: [security, firewall]
+
+- name: Allow configured UDP ports through UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: udp
+  loop: "{{ cloud_security_ufw_allow_udp_ports }}"
+  when: cloud_security_ufw_enabled | bool
+  tags: [security, firewall]
+
+- name: Apply custom UFW allow/deny rules
+  community.general.ufw:
+    rule: "{{ item.rule | default('allow') }}"
+    port: "{{ item.port | default(omit) }}"
+    proto: "{{ item.proto | default(omit) }}"
+    from_ip: "{{ item.src | default(omit) }}"
+    to_ip: "{{ item.dest | default(omit) }}"
+    interface: "{{ item.interface | default(omit) }}"
+    direction: "{{ item.direction | default(omit) }}"
+    comment: "{{ item.comment | default(omit) }}"
+  loop: "{{ cloud_security_ufw_allow_rules }}"
+  when: cloud_security_ufw_enabled | bool
+  tags: [security, firewall]
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+  when: cloud_security_ufw_enabled | bool
+  tags: [security, firewall]
+
+- name: Install Docker DOCKER-USER firewall script
+  ansible.builtin.template:
+    src: docker-user-firewall.sh.j2
+    dest: /usr/local/sbin/cloud-security-docker-user-firewall
+    owner: root
+    group: root
+    mode: '0755'
+  when: cloud_security_docker_user_firewall_enabled | bool
+  notify: Restart cloud security Docker firewall
+  tags: [security, firewall, docker]
+
+- name: Install Docker DOCKER-USER firewall service
+  ansible.builtin.template:
+    src: cloud-security-docker-user-firewall.service.j2
+    dest: /etc/systemd/system/cloud-security-docker-user-firewall.service
+    owner: root
+    group: root
+    mode: '0644'
+  when: cloud_security_docker_user_firewall_enabled | bool
+  notify: Restart cloud security Docker firewall
+  tags: [security, firewall, docker]
+
+- name: Enable and start Docker DOCKER-USER firewall service
+  ansible.builtin.systemd:
+    name: cloud-security-docker-user-firewall.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  when: cloud_security_docker_user_firewall_enabled | bool
+  tags: [security, firewall, docker]

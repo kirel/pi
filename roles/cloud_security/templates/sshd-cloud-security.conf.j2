@@ -1,0 +1,15 @@
+# Ansible managed by role cloud_security
+Port {{ cloud_security_ssh_port }}
+PasswordAuthentication {{ cloud_security_ssh_password_authentication }}
+KbdInteractiveAuthentication {{ cloud_security_ssh_kbd_interactive_authentication }}
+PermitRootLogin {{ cloud_security_ssh_permit_root_login }}
+X11Forwarding {{ cloud_security_ssh_x11_forwarding }}
+ClientAliveInterval {{ cloud_security_ssh_client_alive_interval }}
+ClientAliveCountMax {{ cloud_security_ssh_client_alive_count_max }}
+MaxAuthTries {{ cloud_security_ssh_max_auth_tries }}
+PubkeyAuthentication yes
+PermitEmptyPasswords no
+UsePAM yes
+{% if cloud_security_ssh_allow_users | length > 0 %}
+AllowUsers {{ cloud_security_ssh_allow_users | join(' ') }}
+{% endif %}

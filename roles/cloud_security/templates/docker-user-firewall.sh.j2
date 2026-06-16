@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# Ansible managed by role cloud_security
+set -euo pipefail
+
+IPTABLES="${IPTABLES:-iptables}"
+CHAIN="CLOUD-DOCKER-IN"
+
+ensure_chain() {
+  local chain="$1"
+  $IPTABLES -w -N "$chain" 2>/dev/null || true
+  $IPTABLES -w -F "$chain"
+}
+
+remove_jump() {
+  local chain="$1"
+  local target="$2"
+  while $IPTABLES -w -C "$chain" -j "$target" 2>/dev/null; do
+    $IPTABLES -w -D "$chain" -j "$target"
+  done
+}
+
+insert_jump_after_hermes_or_before_return() {
+  local chain="$1"
+  local target="$2"
+  local hermes_line
+  local return_line
+
+  $IPTABLES -w -N "$chain" 2>/dev/null || true
+  remove_jump "$chain" "$target"
+
+  # If hermes_docker is installed, it owns egress isolation through an existing
+  # DOCKER-USER -> HERMES-EGRESS jump. Keep that first so cloud ingress filtering
+  # does not bypass or weaken the per-agent Hermes restrictions.
+  hermes_line="$($IPTABLES -w -L "$chain" --line-numbers | awk '$2 == "HERMES-EGRESS" { line=$1 } END { print line }')"
+  if [[ -n "$hermes_line" ]]; then
+    $IPTABLES -w -I "$chain" "$((hermes_line + 1))" -j "$target"
+    return
+  fi
+
+  # Docker commonly leaves a final RETURN in DOCKER-USER. Insert before it;
+  # appending after RETURN would make this chain unreachable.
+  return_line="$($IPTABLES -w -L "$chain" --line-numbers | awk '$2 == "RETURN" { print $1; exit }')"
+  if [[ -n "$return_line" ]]; then
+    $IPTABLES -w -I "$chain" "$return_line" -j "$target"
+  else
+    $IPTABLES -w -A "$chain" -j "$target"
+  fi
+}
+
+ensure_chain "$CHAIN"
+insert_jump_after_hermes_or_before_return DOCKER-USER "$CHAIN"
+
+# Policy here:
+#   - keep established connections working
+#   - allow container egress/inter-container traffic from Docker bridges
+#   - allow ingress arriving via trusted interfaces such as tailscale0
+#   - allow configured trusted source CIDRs
+#   - drop other external forwarded traffic to Docker bridge interfaces
+#   - return for anything else, so we do not unexpectedly own all forwarding
+$IPTABLES -w -A "$CHAIN" -m conntrack --ctstate RELATED,ESTABLISHED -j RETURN
+$IPTABLES -w -A "$CHAIN" -i lo -j RETURN
+$IPTABLES -w -A "$CHAIN" -i docker0 -j RETURN
+$IPTABLES -w -A "$CHAIN" -i br+ -j RETURN
+
+{% for iface in cloud_security_docker_allowed_input_interfaces %}
+{% if iface | string | length > 0 %}
+$IPTABLES -w -A "$CHAIN" -i {{ iface | quote }} -j RETURN
+{% endif %}
+{% endfor %}
+{% for cidr in cloud_security_docker_allowed_source_cidrs %}
+$IPTABLES -w -A "$CHAIN" -s {{ cidr | quote }} -j RETURN
+{% endfor %}
+
+{% if cloud_security_docker_log_dropped | bool %}
+$IPTABLES -w -A "$CHAIN" -o docker0 -m limit --limit 6/min --limit-burst 10 -j LOG --log-prefix "CLOUD-DOCKER drop " --log-level 4
+$IPTABLES -w -A "$CHAIN" -o br+ -m limit --limit 6/min --limit-burst 10 -j LOG --log-prefix "CLOUD-DOCKER drop " --log-level 4
+{% endif %}
+$IPTABLES -w -A "$CHAIN" -o docker0 -j DROP
+$IPTABLES -w -A "$CHAIN" -o br+ -j DROP
+$IPTABLES -w -A "$CHAIN" -j RETURN

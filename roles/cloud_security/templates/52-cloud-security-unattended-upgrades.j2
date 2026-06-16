@@ -1,0 +1,16 @@
+// Ansible managed by role cloud_security
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+APT::Periodic::AutocleanInterval "7";
+
+Unattended-Upgrade::Origins-Pattern {
+        "origin=${distro_id},codename=${distro_codename}-security";
+        "origin=${distro_id}ESMApps,codename=${distro_codename}-apps-security";
+        "origin=${distro_id}ESM,codename=${distro_codename}-infra-security";
+};
+
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "false";
+Unattended-Upgrade::Automatic-Reboot "{{ 'true' if cloud_security_unattended_upgrades_auto_reboot | bool else 'false' }}";
+Unattended-Upgrade::Automatic-Reboot-Time "{{ cloud_security_unattended_upgrades_auto_reboot_time }}";

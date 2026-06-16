@@ -1,0 +1,78 @@
+---
+# Generic hardening for public/cloud Linux hosts. Defaults are intentionally
+# conservative enough for both root-managed fresh hosts and existing Tailnet VPSs.
+
+cloud_security_base_packages:
+  - ca-certificates
+  - curl
+  - git
+  - gnupg
+  - htop
+  - jq
+  - tmux
+  - vim
+  - zsh
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - apt-listchanges
+
+# Reuse existing hetzner_users when present; otherwise configure per group/host.
+cloud_security_users: "{{ hetzner_users | default([]) }}"
+cloud_security_default_shell: /usr/bin/bash
+cloud_security_restrict_sudo_group_nopasswd: true
+
+# SSH hardening. Keep root key login possible by default so freshly adopted hosts
+# are not locked out before inventory is migrated to a non-root user.
+cloud_security_ssh_port: 22
+cloud_security_ssh_password_authentication: "no"
+cloud_security_ssh_kbd_interactive_authentication: "no"
+cloud_security_ssh_permit_root_login: prohibit-password
+cloud_security_ssh_x11_forwarding: "no"
+cloud_security_ssh_client_alive_interval: 300
+cloud_security_ssh_client_alive_count_max: 2
+cloud_security_ssh_max_auth_tries: 3
+cloud_security_ssh_allow_users: []
+
+# UFW baseline. Tailscale interface is allowed so Tailnet management keeps working
+# even with default deny incoming.
+cloud_security_ufw_enabled: true
+cloud_security_ufw_default_incoming: deny
+cloud_security_ufw_default_outgoing: allow
+cloud_security_ufw_allow_ssh: true
+cloud_security_ufw_allow_tailscale: true
+cloud_security_tailscale_interface: tailscale0
+cloud_security_ufw_allow_tcp_ports: []
+cloud_security_ufw_allow_udp_ports: []
+cloud_security_ufw_allow_rules: []
+# Example allow rule item:
+# - rule: allow
+#   port: "443"
+#   proto: tcp
+#   src: 1.2.3.4/32
+#   comment: HTTPS from trusted IP
+
+# Docker publishes can bypass UFW. When enabled, manage DOCKER-USER to allow
+# established traffic, container egress, and Tailnet ingress, then drop other
+# forwarded external traffic to containers. Enable per public Docker host.
+cloud_security_docker_user_firewall_enabled: false
+cloud_security_docker_allow_tailscale: true
+cloud_security_docker_allowed_input_interfaces:
+  - "{{ cloud_security_tailscale_interface }}"
+cloud_security_docker_allowed_source_cidrs: []
+cloud_security_docker_log_dropped: false
+
+# fail2ban SSH protection.
+cloud_security_fail2ban_enabled: true
+cloud_security_fail2ban_sshd_enabled: true
+cloud_security_fail2ban_sshd_port: ssh
+cloud_security_fail2ban_bantime: 1h
+cloud_security_fail2ban_findtime: 10m
+cloud_security_fail2ban_maxretry: 5
+
+# Unattended security updates.
+cloud_security_unattended_upgrades_enabled: true
+cloud_security_unattended_upgrades_auto_reboot: false
+cloud_security_unattended_upgrades_auto_reboot_time: "04:00"
+
+cloud_security_sysctl_enabled: true

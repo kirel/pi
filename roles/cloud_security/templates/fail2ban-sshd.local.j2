@@ -1,0 +1,8 @@
+# Ansible managed by role cloud_security
+[sshd]
+enabled = {{ 'true' if cloud_security_fail2ban_sshd_enabled | bool else 'false' }}
+port = {{ cloud_security_fail2ban_sshd_port }}
+bantime = {{ cloud_security_fail2ban_bantime }}
+findtime = {{ cloud_security_fail2ban_findtime }}
+maxretry = {{ cloud_security_fail2ban_maxretry }}
+backend = systemd

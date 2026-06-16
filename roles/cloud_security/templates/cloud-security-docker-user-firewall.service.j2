@@ -1,0 +1,13 @@
+# Ansible managed by role cloud_security
+[Unit]
+Description=Cloud security DOCKER-USER firewall
+After=docker.service
+Wants=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/cloud-security-docker-user-firewall
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
