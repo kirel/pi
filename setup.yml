@@ -47,6 +47,16 @@
     - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
     - { role: cloud_security, become: true, tags: [security, cloud-security] }
 
+- name: Setup Dashserv baseline
+  hosts: dashserv
+  roles:
+    - { role: basic, become: true, tags: [basic] }
+    - { role: geerlingguy.pip, become: true, tags: [docker] }
+    - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
+    - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
+    - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
+    - { role: cloud_security, become: true, tags: [security, cloud-security] }
+
 - name: Setup nameserver
   hosts: nameserver
   roles:

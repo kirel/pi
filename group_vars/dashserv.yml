@@ -1,0 +1,22 @@
+---
+# Public VPS: join Tailnet as a client, consume homelab split DNS/routes,
+# but do not advertise routes from this host.
+tailscale_args: "--accept-dns=true --accept-routes=true"
+
+cloud_security_users:
+  - name: daniel
+    shell: /usr/bin/zsh
+    sudo: true
+    passwordless_sudo: true
+    authorized_keys:
+      - "{{ lookup('ansible.builtin.file', lookup('ansible.builtin.env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+
+# Keep root key login for initial adoption. Once inventory uses ansible_user=daniel,
+# this can be tightened to "no".
+cloud_security_ssh_permit_root_login: prohibit-password
+cloud_security_ssh_password_authentication: "no"
+cloud_security_ssh_kbd_interactive_authentication: "no"
+
+# Docker host on a public VPS: allow container ingress only via trusted paths
+# such as tailscale0 unless explicitly opened later.
+cloud_security_docker_user_firewall_enabled: true
