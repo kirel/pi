@@ -41,7 +41,7 @@ services:
       - WHISPER__compute_type={{ speaches_whisper_compute_type }}
       - STT_MODEL_TTL={{ speaches_stt_model_ttl }}
       - UNSTABLE_ORT_OPTS__EXCLUDE_PROVIDERS={{ speaches_ort_exclude_providers | to_json }}
-      - NVIDIA_VISIBLE_DEVICES={{ blackwell_gpu_uuid }}
+      - NVIDIA_VISIBLE_DEVICES={{ gpu_3090_0_uuid }}
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     volumes:
       - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
@@ -57,7 +57,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["{{ blackwell_gpu_uuid }}"]
+              device_ids: ["{{ gpu_3090_0_uuid }}"]
               capabilities: ["gpu"]
 
 {% if wyoming_openai_enable_chatterbox %}
@@ -118,7 +118,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["{{ blackwell_gpu_uuid }}"]
+              device_ids: ["{{ gpu_3090_0_uuid }}"]
               capabilities: [gpu]
 
   chatterbox-frontend:

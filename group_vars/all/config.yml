@@ -14,10 +14,9 @@ nameserver_pi_ip: "{{ hostvars['nameserver-pi'].ansible_host }}"
 # virtualhere_pi_ip: "{{ hostvars['virtualhere-pi'].ansible_host }}"
 homelab_nuc_ip: "{{ hostvars['homelab-nuc'].ansible_host }}"
 ailab_ip: "{{ hostvars['ailab'].ansible_host }}"
-ailab_mac_address: 50:eb:f6:82:3c:38 # MAC address for Wake-on-LAN
-ailab_ubuntu_ip: 192.168.50.10
+ailab_mac_address: 9c:6b:00:2e:9c:3d # MAC address for Wake-on-LAN
+ailab_ubuntu_ip: 192.168.50.9
 zigbee_dongle_ip: "{{ ip_prefix }}226"
-ailab_proxmox_ip: "{{ hostvars['ailab-proxmox'].ansible_host }}"
 cidr: 192.168.50.0/24
 pihole_http_port: 81
 glances_http_port: 61208
@@ -88,8 +87,9 @@ immich_redis_hostname: "192.168.50.5"  # homelab-nuc IP
 immich_redis_port: 6379
 immich_ml_gpu_enabled: true
 # GPU configuration
-blackwell_gpu_uuid: "GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f"
-ampere_gpu_uuid: "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc"
+gpu_3090_1_uuid: "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+gpu_3090_0_uuid: "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc"
+gpu_5060ti_uuid: "GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f"
 open_webui_config_folder: "{{ config_root }}/open-webui"
 sunshine_address: 192.168.50.33
 sunshine_http_port: 47990

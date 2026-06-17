@@ -20,6 +20,7 @@
     dest: "{{ wan2gp_app_path }}"
     version: "{{ wan2gp_repo_version }}"
     update: true
+    force: true
   become_user: "{{ username_personal }}"
 
 - name: Ensure Wan2GP Docker helper directory exists
@@ -69,13 +70,13 @@
 
 - name: Detect Wan2GP GPU name
   ansible.builtin.command:
-    cmd: "nvidia-smi -i {{ blackwell_gpu_uuid }} --query-gpu=name --format=csv,noheader,nounits"
+    cmd: "nvidia-smi -i {{ gpu_5060ti_uuid }} --query-gpu=name --format=csv,noheader,nounits"
   register: wan2gp_gpu_name_result
   changed_when: false
 
 - name: Detect Wan2GP GPU VRAM
   ansible.builtin.command:
-    cmd: "nvidia-smi -i {{ blackwell_gpu_uuid }} --query-gpu=memory.total --format=csv,noheader,nounits"
+    cmd: "nvidia-smi -i {{ gpu_5060ti_uuid }} --query-gpu=memory.total --format=csv,noheader,nounits"
   register: wan2gp_gpu_vram_result
   changed_when: false
 
@@ -124,7 +125,7 @@
     restart_policy: unless-stopped
     device_requests:
       - driver: nvidia
-        device_ids: ["{{ blackwell_gpu_uuid }}"]
+        device_ids: ["{{ gpu_5060ti_uuid }}"]
         capabilities:
           - ["gpu"]
     ports:
@@ -136,7 +137,7 @@
       - "{{ wan2gp_cache_root }}/huggingface:/home/user/.cache/huggingface"
       - "{{ wan2gp_cache_root }}/torch:/home/user/.cache/torch"
     env:
-      NVIDIA_VISIBLE_DEVICES: "{{ blackwell_gpu_uuid }}"
+      NVIDIA_VISIBLE_DEVICES: "{{ gpu_5060ti_uuid }}"
       NVIDIA_DRIVER_CAPABILITIES: all
     command:
       - "--profile"

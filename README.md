@@ -4,8 +4,7 @@ This is my homelab config. The repo is called `pi` because it started as a singl
 
 - `nameserver-pi` (192.168.50.4) — Pi-hole: DHCP, DNS, ad-blocking
 - `homelab-nuc` (192.168.50.5) — Intel NUC running Ubuntu as a Docker host (all services are containers, inc. a Pi-hole backup)
-- `ailab-proxmox` (192.168.50.9) — Proxmox hypervisor
-- `ailab-ubuntu` (192.168.50.10) — GPU server (RTX 3090) for LLM inference and image generation
+- `ailab-ubuntu` (192.168.50.9) — GPU server on Bare Metal: Dual RTX 3090 (2×24 GB) for LLM inference (Tensor Parallel), STT, Embeddings & Immich ML + RTX 5060 Ti eGPU (16 GB) for ComfyUI, Wan2GP, and Wolf
 
 ## Bootstrap the Pi
 
@@ -155,7 +154,7 @@ Open WebUI → LiteLLM Proxy → LlamaSwap (ailab-ubuntu)
 | Service | URL | Host |
 | :--- | :--- | :--- |
 | Open WebUI | https://open-webui.kirelabs.org | homelab-nuc |
-| LiteLLM Admin | https://litellm-ui.kirelabs.org | homelab-nuc |
+| LiteLLM Admin | https://litellm.kirelabs.org | homelab-nuc |
 | Langfuse | https://langfuse.kirelabs.org | homelab-nuc |
 | LlamaSwap | https://llama-swap.kirelabs.org | ailab-ubuntu |
 | ComfyUI | https://comfyui.kirelabs.org | ailab-ubuntu |

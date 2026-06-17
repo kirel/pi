@@ -23,21 +23,21 @@
             XDG_RUNTIME_DIR: /tmp/sockets
             HOST_APPS_STATE_FOLDER: /etc/wolf
             NVIDIA_DRIVER_CAPABILITIES: all
-            NVIDIA_VISIBLE_DEVICES: "{{ blackwell_gpu_uuid }}"
-            WOLF_RENDER_NODE: /dev/dri/renderD129
+            NVIDIA_VISIBLE_DEVICES: "{{ gpu_5060ti_uuid }}"
+            WOLF_RENDER_NODE: /dev/dri/renderD131
           volumes:
             - /etc/wolf/:/etc/wolf
             - /tmp/sockets:/tmp/sockets:rw
             - /var/run/docker.sock:/var/run/docker.sock:rw
             - /run/udev:/run/udev:rw
           devices:
-            - /dev/nvidia1:/dev/nvidia1
+            - /dev/nvidia2:/dev/nvidia2
             - /dev/nvidiactl:/dev/nvidiactl
             - /dev/nvidia-modeset:/dev/nvidia-modeset
             - /dev/nvidia-uvm:/dev/nvidia-uvm
             - /dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools
-            - /dev/dri/card2:/dev/dri/card2
-            - /dev/dri/renderD129:/dev/dri/renderD129
+            - /dev/dri/card3:/dev/dri/card3
+            - /dev/dri/renderD131:/dev/dri/renderD131
             - /dev/uinput
             - /dev/uhid
           device_cgroup_rules:
@@ -48,7 +48,7 @@
               reservations:
                 devices:
                   - driver: nvidia
-                    device_ids: ["{{ blackwell_gpu_uuid }}"]
+                    device_ids: ["{{ gpu_5060ti_uuid }}"]
                     capabilities: [gpu]
           network_mode: host
           restart: unless-stopped

@@ -15,7 +15,9 @@ wan2gp_base_dir: /home/{{ username_personal }}/wan2gp
 # GPU performance and stability
 gpu_persistence_mode: true
 gpu_configs:
-  - uuid: "{{ ampere_gpu_uuid }}"
+  - uuid: "{{ gpu_3090_0_uuid }}"
     power_limit: 250
-  - uuid: "{{ blackwell_gpu_uuid }}"
-    power_limit: 175
+  - uuid: "{{ gpu_3090_1_uuid }}"
+    power_limit: 250
+  - uuid: "{{ gpu_5060ti_uuid }}"
+    power_limit: 180
