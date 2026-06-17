@@ -25,13 +25,10 @@ static_dhcp:
   gl-mt3000-2:
     mac: 94:83:C4:86:D1:86
     ip_suffix: 7
-  ailab-proxmox:
-    mac: "{{ ailab_mac_address }}"
-    ip_suffix: 9
   # Media .10-.19
   ailab-ubuntu:
-    mac: BC:24:11:F2:87:3D
-    ip_suffix: 10
+    mac: "{{ ailab_mac_address }}"
+    ip_suffix: 9
   ailab-windows:
     mac: BC:24:11:3F:D5:78
     ip_suffix: 11

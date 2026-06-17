@@ -2,7 +2,6 @@
 # Additional DNS entries not derived from inventory
 additional_dns_entries:
   router.lan: "{{ router_ip }}"
-  proxmox.lan: "{{ ailab_proxmox_ip }}"
   clawd.lan: "{{ tailscale_hetzner_ip }}"
   ha-hausfee.lan: "{{ tailscale_hetzner_ip }}"
   pihole-nameserver.lan: "{{ nameserver_pi_ip }}"

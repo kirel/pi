@@ -37,6 +37,7 @@
 - name: Setup Hetzner VPS
   hosts: hetzner
   roles:
+    - { role: basic, become: true, tags: [basic] }
     - { role: hetzner, become: true, tags: [hetzner] }
     - { role: nodesource_nodejs, become: true, tags: [hetzner, node, openclaw] }
     - { role: geerlingguy.pip, become: true, tags: [docker] }
@@ -114,7 +115,7 @@
     - { role: syncthing, become: true, tags: [syncthing] }
 
 - name: Setup SSH key distribution
-  hosts: ailab_ubuntus,homelab,nameserver,proxmox,mic_satellites
+  hosts: ailab_ubuntus,homelab,nameserver,mic_satellites
   ignore_unreachable: true
   vars:
     source_host: ailab-ubuntu

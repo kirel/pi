@@ -18,21 +18,6 @@ danishkirel.asuscomm.com {
 
 {% for service, props in services.items() %}
 {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.domain|default(service ~ ".lan") }}{% if props.proxy_port is defined %}:{{ props.proxy_port }}{% endif %} {
-{% if service == "proxmox" %}
-        # Special Proxmox configuration with HTTPS proxying
-        import internal_only
-        reverse_proxy https://{{ props.target }}:{{ props.http_port }} {
-                transport http {
-                        tls_server_name {{ props.domain | default(service ~ ".lan") }}
-                        tls_insecure_skip_verify
-                }
-                header_up Host {host}
-                header_up X-Real-IP {remote}
-                header_up X-Forwarded-For {remote}
-                header_up X-Forwarded-Proto {scheme}
-        }
-        tls internal
-{% else %}
         # Use localhost if the target is the current host (homelab-nuc)
         {% set target_host = (props.target | regex_replace('\\.lan$', '')) if props.target.endswith('.lan') else props.target %}
         {% set backend_host = 'localhost' if target_host == 'homelab-nuc' else props.target %}
@@ -81,7 +66,6 @@ danishkirel.asuscomm.com {
                 }
         }
         {% endif %}
-{% endif %}
         log
 }
 {% endfor %}

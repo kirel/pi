@@ -142,17 +142,10 @@ services:
     group: AI
     icon: phoenix.png
   litellm:
-    name: LiteLLM API
+    name: LiteLLM
     target: homelab-nuc.lan
     http_port: "{{ litellm_proxy_port }}"
     domain: litellm.kirelabs.org
-    group: AI
-    icon: litellm.png
-  litellm-ui:
-    name: LiteLLM Admin
-    target: homelab-nuc.lan
-    http_port: "{{ litellm_proxy_port }}"
-    domain: litellm-ui.kirelabs.org
     group: AI
     icon: litellm.png
   speaches:
@@ -194,15 +187,6 @@ services:
     domain: glances-nameserver.kirelabs.org
     group: Monitoring
   # ailab
-  proxmox:
-    name: Proxmox VE
-    http_port: 8006
-    target: ailab-proxmox.lan
-    domain: proxmox.kirelabs.org
-    group: Network
-    icon: proxmox
-    nodocker: true
-    tls_skip: false
   llama-swap:
     name: LlamaSwap
     target: ailab-ubuntu.lan

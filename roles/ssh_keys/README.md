@@ -35,7 +35,7 @@ Add the role to your playbook:
 
 ```yaml
 - name: Setup SSH key distribution
-  hosts: ailab_ubuntus,homelab,nameserver,proxmox,mic_satellites
+  hosts: ailab_ubuntus,homelab,nameserver,mic_satellites
   ignore_unreachable: true
   vars:
     source_host: ailab-ubuntu
@@ -76,7 +76,7 @@ nameserver-pi ansible_host=192.168.50.4 ansible_user=pi
 homelab-nuc ansible_host=192.168.50.5 ansible_user=root
 
 [ailab_ubuntus]
-ailab-ubuntu ansible_host=192.168.50.10 ansible_user=daniel
+ailab-ubuntu ansible_host=192.168.50.9 ansible_user=daniel
 ```
 
 The role will:
