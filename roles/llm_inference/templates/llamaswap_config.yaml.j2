@@ -11,7 +11,7 @@ models:
     cmd: |
       {{ model.cmd }}
     env:
-{% if model.env is defined %}
+{% if model.env is defined and model.env %}
 {% for env_var in model.env %}
       - "{{ env_var }}"
 {% endfor %}

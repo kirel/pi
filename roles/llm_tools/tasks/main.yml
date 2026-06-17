@@ -131,10 +131,10 @@
           networks:
             - llm-network
           labels:
-            homepage.group: "{{ services['litellm-ui'].group }}"
-            homepage.name: "{{ services['litellm-ui'].name }}"
-            homepage.href: https://{{ services['litellm-ui'].domain }}
-            homepage.icon: "{{ services['litellm-ui'].icon | default('litellm.png') }}"
+            homepage.group: "{{ services['litellm'].group }}"
+            homepage.name: "{{ services['litellm'].name }}"
+            homepage.href: https://{{ services['litellm'].domain }}
+            homepage.icon: "{{ services['litellm'].icon | default('litellm.png') }}"
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: "{{ litellm_proxy_container_name }}"
 

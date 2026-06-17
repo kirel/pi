@@ -97,6 +97,7 @@
     init: true
     ports:
       - "{{ llamaswap_port }}:8080"
+    shm_size: "2g"
     volumes:
       - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
       - "{{ llamaswap_config_path }}/cache:/app/.cache"
@@ -104,7 +105,7 @@
       - "/usr/bin/docker:/usr/bin/docker"
     device_requests:
       - driver: nvidia
-        device_ids: ["{{ ampere_gpu_uuid }}"]
+        device_ids: ["{{ gpu_3090_0_uuid }}", "{{ gpu_3090_1_uuid }}"]
         capabilities:
           - [gpu]
     capabilities:

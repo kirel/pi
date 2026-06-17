@@ -1,4 +1,4 @@
-llamaswap_enabled: false
+llamaswap_enabled: true
 
 model_group_alias:
   home: "Qwen3.6-35B-A3B-Instruct-nothink"
@@ -13,13 +13,13 @@ model_group_alias:
 # Shared memory reservation knobs for the 24 GiB RTX 3090.
 # Keep enough headroom for persistent embeddings and speech services while
 # llama.cpp auto-fits the context budget.
-llama_fit_target_3090_mb: 2000
+llama_fit_target_3090_mb: "3000,4500"
 llama_prompt_cache_parallel_slots: 3
 # Fixed total ctx for the 3 dedicated llama.cpp slots on the 3090.
 # MTP GGUFs are slightly larger than the base GGUFs, so keep a little more
 # headroom while qwen3-embedding and speech services can stay resident.
-llama_ctx_size_qwen35_3090: 458752
-llama_ctx_size_qwen27_3090: 222144
+llama_ctx_size_qwen35_3090: 786432 # 458752
+llama_ctx_size_qwen27_3090: 600000 # 222144
 
 litellm_fallbacks:
   - home: ["home-remote"]
@@ -47,13 +47,14 @@ llamaswap_models:
     # stable even when qwen3-embedding is already resident on the 3090.
     cmd: >-
       /app/llama-server
-      -hf unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q3_K_XL
+      -hf unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q4_K_XL
       --port ${PORT}
       --ctx-size {{ llama_ctx_size_qwen35_3090 }}
       --parallel {{ llama_prompt_cache_parallel_slots }}
       --slot-save-path /app/.cache/qwen3.6-mtp-slots
       --n-predict 32768
       --n-gpu-layers 99
+      -sm tensor
       -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
@@ -75,7 +76,7 @@ llamaswap_models:
       - extra_body
     group: "3090"
     env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+      - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}},{{gpu_3090_1_uuid}}"
     variants:
       nothink:
         temperature: 0.7
@@ -114,6 +115,7 @@ llamaswap_models:
       --slot-save-path /app/.cache/qwen3.6-27b-mtp-slots
       --n-predict 32768
       --n-gpu-layers 99
+      -sm tensor
       -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
@@ -135,7 +137,7 @@ llamaswap_models:
       - extra_body
     group: "3090"
     env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+      - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}},{{gpu_3090_1_uuid}}"
     variants:
       nothink:
         temperature: 0.7
@@ -183,7 +185,7 @@ llamaswap_models:
     encoding_format: "float"
     group: "forever"
     env:
-      - "CUDA_VISIBLE_DEVICES={{ampere_gpu_uuid}}"
+      - "CUDA_VISIBLE_DEVICES={{gpu_3090_1_uuid}}"
 
 llamaswap_model_groups:
   forever:
