@@ -13,6 +13,9 @@ comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage # Specific p
 wan2gp_base_dir: /home/{{ username_personal }}/wan2gp
 
 # GPU performance and stability
+# Clear stale prebuilt NVIDIA kernel-module packages (leftover 580 branches
+# for removed kernels); the live driver is DKMS-built from the pinned 610.
+nvidia_cleanup_legacy_kernel_modules: true
 gpu_persistence_mode: true
 gpu_configs:
   - uuid: "{{ gpu_3090_0_uuid }}"

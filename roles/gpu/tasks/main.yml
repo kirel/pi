@@ -22,8 +22,43 @@
     name: "{{ ['cuda-toolkit'] + nvidia_driver_packages }}"
     state: present
     allow_downgrades: true
+    allow_change_held_packages: true
   become: true
   notify: reboot system
+
+- name: Hold pinned NVIDIA driver packages against unattended upgrades
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  become: true
+  loop: "{{ nvidia_driver_hold_packages }}"
+  when: nvidia_hold_driver_packages | bool
+
+- name: Cleanup legacy NVIDIA kernel-module packages
+  when: nvidia_cleanup_legacy_kernel_modules | bool
+  block:
+    - name: Detect all installed packages
+      ansible.builtin.command: dpkg-query -W -f='${binary:Package}\n'
+      register: _nvidia_all_pkgs
+      changed_when: false
+
+    - name: Compute stale legacy NVIDIA kernel-module packages
+      ansible.builtin.set_fact:
+        _nvidia_stale_module_pkgs: >-
+          {{
+            _nvidia_all_pkgs.stdout_lines
+            | select('match', 'linux-modules-nvidia-[0-9]+-open-')
+            | reject('match', 'linux-modules-nvidia-' ~ nvidia_driver_version.split('.')[0] ~ '-open-')
+            | list
+          }}
+
+    - name: Purge stale NVIDIA legacy kernel-module packages
+      ansible.builtin.apt:
+        name: "{{ _nvidia_stale_module_pkgs }}"
+        state: absent
+        purge: true
+      become: true
+      when: _nvidia_stale_module_pkgs | length > 0
 
 - name: Setup NVIDIA container toolkit repository
   block:
