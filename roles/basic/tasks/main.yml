@@ -1,4 +1,13 @@
 ---
+- name: Install baseline server packages
+  ansible.builtin.apt:
+    name:
+      - mosh
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  tags: [basic, packages, mosh]
+
 - name: Allow sudo without password prompt
   ansible.builtin.lineinfile:
     path: /etc/sudoers

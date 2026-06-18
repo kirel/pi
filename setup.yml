@@ -113,7 +113,7 @@
     - { role: syncthing, become: true, tags: [syncthing] }
 
 - name: Setup SSH key distribution
-  hosts: ailab_ubuntus,homelab,nameserver,mic_satellites
+  hosts: ailab_ubuntus,homelab,nameserver,hetzner,mic_satellites
   ignore_unreachable: true
   vars:
     source_host: ailab-ubuntu
