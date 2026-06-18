@@ -94,4 +94,4 @@ curl -I https://<service>.kirelabs.org/health
 ## Inventory Reference
 *   `nameserver-pi` (192.168.50.4): SSH `daniel`
 *   `homelab-nuc` (192.168.50.5): SSH `root`
-*   `ailab-ubuntu` (192.168.50.9): SSH `daniel` (Bare Metal, migrated from Proxmox VM)
+*   `ailab-ubuntu` (192.168.50.10): SSH `daniel` (Bare Metal, migrated from Proxmox VM)

@@ -28,7 +28,7 @@ static_dhcp:
   # Media .10-.19
   ailab-ubuntu:
     mac: "{{ ailab_mac_address }}"
-    ip_suffix: 9
+    ip_suffix: 10
   ailab-windows:
     mac: BC:24:11:3F:D5:78
     ip_suffix: 11

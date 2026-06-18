@@ -15,7 +15,7 @@ nameserver_pi_ip: "{{ hostvars['nameserver-pi'].ansible_host }}"
 homelab_nuc_ip: "{{ hostvars['homelab-nuc'].ansible_host }}"
 ailab_ip: "{{ hostvars['ailab'].ansible_host }}"
 ailab_mac_address: 9c:6b:00:2e:9c:3d # MAC address for Wake-on-LAN
-ailab_ubuntu_ip: 192.168.50.9
+ailab_ubuntu_ip: 192.168.50.10
 zigbee_dongle_ip: "{{ ip_prefix }}226"
 cidr: 192.168.50.0/24
 pihole_http_port: 81

@@ -4,7 +4,7 @@ This is my homelab config. The repo is called `pi` because it started as a singl
 
 - `nameserver-pi` (192.168.50.4) — Pi-hole: DHCP, DNS, ad-blocking
 - `homelab-nuc` (192.168.50.5) — Intel NUC running Ubuntu as a Docker host (all services are containers, inc. a Pi-hole backup)
-- `ailab-ubuntu` (192.168.50.9) — GPU server on Bare Metal: Dual RTX 3090 (2×24 GB) for LLM inference (Tensor Parallel), STT, Embeddings & Immich ML + RTX 5060 Ti eGPU (16 GB) for ComfyUI, Wan2GP, and Wolf
+- `ailab-ubuntu` (192.168.50.10) — GPU server on Bare Metal: Dual RTX 3090 (2×24 GB) for LLM inference (Tensor Parallel), STT, Embeddings & Immich ML + RTX 5060 Ti eGPU (16 GB) for ComfyUI, Wan2GP, and Wolf
 
 ## Bootstrap the Pi
 
