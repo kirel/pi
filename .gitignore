@@ -11,4 +11,5 @@ tmp/root.crt
 .gemini
 .claude
 .env
+.pi
 config/mcporter.json
