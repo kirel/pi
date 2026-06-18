@@ -103,8 +103,6 @@
     - { role: glances, become: true, tags: [glances], vars: { glances_nvidia_support: true } }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
 
-    # - { role: autosuspend, become: true, tags: [autosuspend] }
-    # - { role: intel_gpu_driver, become: true, tags: [intel-gpu, gpu-driver] }
     - { role: llm_inference, become: true, tags: [llm, llm-inference] }
     - { role: wolf, become: true, tags: [wolf] }
     - { role: comfyui, become: true, tags: [comfyui] }
