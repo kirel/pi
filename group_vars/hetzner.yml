@@ -139,6 +139,7 @@ hetzner_homebrew_users:
 hetzner_homebrew_prefix: /home/linuxbrew/.linuxbrew
 hetzner_homebrew_formulae:
   - mise
+  - agent-browser
 
 # System Node.js for OpenClaw. Keep this outside mise so non-interactive
 # sessions and service accounts get a stable, predictable node binary.
