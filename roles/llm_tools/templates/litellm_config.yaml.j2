@@ -152,6 +152,14 @@ mcp_servers:
     env:
       OPENAPI_MCP_HEADERS: '{"Authorization": "Bearer {{ notion_api_token }}", "Notion-Version": "2022-06-28"}'
     access_groups: ["family"]
+  bring:
+    transport: "stdio"
+    command: "npx"
+    args: ["-y", "bring-mcp@latest"]
+    env:
+      MAIL: "{{ bring_email }}"
+      PW: "{{ bring_password }}"
+    access_groups: ["family"]
   craft:
     url: "https://mcp.craft.do/links/EORHGAfauY2/mcp"
     access_groups: ["private"]
