@@ -152,6 +152,56 @@
     PATH: "{{ hetzner_homebrew_prefix }}/bin:{{ ansible_env.PATH }}"
   tags: [homebrew, mise]
 
+- name: Ensure GitHub CLI config directory exists for Homebrew user
+  ansible.builtin.file:
+    path: "/home/{{ hetzner_homebrew_user }}/.config/gh"
+    state: directory
+    owner: "{{ hetzner_homebrew_user }}"
+    group: "{{ hetzner_homebrew_user }}"
+    mode: '0700'
+  when:
+    - "'gh' in hetzner_homebrew_formulae"
+    - hetzner_github_cli_token | default('') | string | length > 0
+  tags: [homebrew]
+
+- name: Configure GitHub CLI authentication for Homebrew user
+  ansible.builtin.copy:
+    dest: "/home/{{ hetzner_homebrew_user }}/.config/gh/hosts.yml"
+    content: |
+      github.com:
+          users:
+              {{ hetzner_github_cli_user }}:
+                  oauth_token: {{ hetzner_github_cli_token }}
+          oauth_token: {{ hetzner_github_cli_token }}
+          user: {{ hetzner_github_cli_user }}
+    owner: "{{ hetzner_homebrew_user }}"
+    group: "{{ hetzner_homebrew_user }}"
+    mode: '0600'
+  no_log: true
+  when:
+    - "'gh' in hetzner_homebrew_formulae"
+    - hetzner_github_cli_token | default('') | string | length > 0
+  tags: [homebrew]
+
+- name: Configure Git to use GitHub CLI credentials
+  ansible.builtin.command:
+    argv:
+      - "{{ hetzner_homebrew_prefix }}/bin/gh"
+      - auth
+      - setup-git
+      - --hostname
+      - github.com
+  become: true
+  become_user: "{{ hetzner_homebrew_user }}"
+  environment:
+    HOME: "/home/{{ hetzner_homebrew_user }}"
+    PATH: "{{ hetzner_homebrew_prefix }}/bin:{{ ansible_env.PATH }}"
+  changed_when: false
+  when:
+    - "'gh' in hetzner_homebrew_formulae"
+    - hetzner_github_cli_token | default('') | string | length > 0
+  tags: [homebrew]
+
 - name: Enable mise in zsh
   ansible.builtin.lineinfile:
     path: "/home/{{ hetzner_homebrew_user }}/.zshrc"

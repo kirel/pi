@@ -140,6 +140,9 @@ hetzner_homebrew_prefix: /home/linuxbrew/.linuxbrew
 hetzner_homebrew_formulae:
   - mise
   - agent-browser
+  - gh
+hetzner_github_cli_token: "{{ hermes_github_token }}"
+hetzner_github_cli_user: kirel
 
 # System Node.js for OpenClaw. Keep this outside mise so non-interactive
 # sessions and service accounts get a stable, predictable node binary.
