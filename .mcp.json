@@ -1,8 +1,3 @@
 {
-  "mcpServers": {
-    "ha-control": {
-      "type": "http",
-      "url": "https://metamcp.kirelabs.org/metamcp/ha-control/mcp"
-    }
-  }
+  "mcpServers": {}
 }
