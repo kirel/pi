@@ -77,9 +77,14 @@ hermes_docker_extra_host_services:
   - speaches
 hermes_docker_agent_extra_host_services: {}
 hermes_docker_extra_hosts_target_ip: "{{ homelab_nuc_ip }}"
+# Resolver priority for Hermes containers:
+# 1. Local Pi-hole first for LAN records and ad-blocking.
+# 2. Tailscale DNS for MagicDNS/Tailnet names if local DNS is unavailable.
+# 3. Public DNS as last-resort internet fallback.
 hermes_docker_dns_servers:
-  - "{{ tailscale_dns_ip }}"
   - "{{ nameserver_pi_ip }}"
+  - "{{ tailscale_dns_ip }}"
+  - "1.1.1.1"
 
 # Hermes agents may use the public internet, but access to private/internal
 # ranges is blocked except for explicitly allowed proxy targets.
