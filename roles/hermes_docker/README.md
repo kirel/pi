@@ -39,6 +39,18 @@ tailscale status | grep hermes-
 
 Because Caddy uses DNS-01 via Regfish, these hostnames do not need to be publicly reachable. They only need to resolve for the users/devices that should access them.
 
+## Container DNS and egress firewall
+
+`hermes_docker_dns_servers` is the single resolver list for both Docker Compose `dns:` entries and DNS egress allow-rules in `hermes-docker-firewall.sh.j2`.
+
+Current default priority:
+
+1. `{{ nameserver_pi_ip }}` — local Pi-hole for LAN records and ad-blocking
+2. `{{ tailscale_dns_ip }}` — Tailscale/MagicDNS resolver
+3. `1.1.1.1` — public internet DNS fallback
+
+If the public fallback is used, local `.lan`/Tailnet-only names and Pi-hole ad-blocking are not available for that query, but normal internet DNS can still resolve.
+
 ## DNS-01 certificates
 
 Each `caddy-hermes-<agent>` container receives `REGFISH_TOKEN` via a root-only env file and uses:
