@@ -1,5 +1,7 @@
 # Tailscale + Pi-hole DNS Implementation Plan
 
+> Status: mostly implemented. Current variables live in `group_vars/all/tailscale.yml`, host-specific `tailscale_args` live in `group_vars/homelab.yml`, `group_vars/nameserver.yml`, `group_vars/hetzner.yml`, and `group_vars/dashserv.yml`, and `setup.yml` already runs `tailscale_apt_cleanup`, `artis3n.tailscale.machine`, and `tailscale_router` where needed. Keep the implementation notes below for context only; verify against current files before applying any step.
+
 Goal: use Tailscale in the homelab so Tailnet clients can resolve existing Pi-hole local DNS records while keeping MagicDNS enabled.
 
 ## Decisions

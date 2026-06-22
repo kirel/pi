@@ -1,37 +1,40 @@
 # TeslaMate Role
 
-TeslaMate is a self-hosted data logger for your Tesla. It requires:
-- PostgreSQL database
-- Grafana dashboard
-- MQTT broker (uses existing mosquitto from homeassistant role)
+This role deploys [TeslaMate](https://docs.teslamate.org/) on `homelab-nuc` as a Docker Compose stack with:
+
+- TeslaMate app container
+- PostgreSQL database container
+- TeslaMate Grafana container
+- a dedicated `teslamate` Docker network
+
+MQTT is expected to come from the existing Home Assistant/Mosquitto deployment.
 
 ## Configuration
 
-### Environment Variables to Set (in vault)
+Vault-managed values:
 
-1. **teslamate_encryption_key**: Generate with:
+1. `teslamate_encryption_key` — generate with:
    ```bash
    openssl rand -base64 32
    ```
+2. `teslamate_database_password` — database and Grafana admin password.
 
-2. **teslamate_database_password**: Secure database password
+Ports come from `group_vars/all/config.yml`:
+
+- TeslaMate host port: `{{ teslamate_http_port }}` (currently `8098`) → container port `4000`
+- Grafana host port: `{{ grafana_http_port }}` (currently `3004`) → container port `3000`
+
+Public HTTPS routes come from `group_vars/all/services.yml` and Caddy:
+
+- TeslaMate: `https://teslamate.kirelabs.org`
+- Grafana: `https://teslamate-grafana.kirelabs.org`
+
+The role also updates TeslaMate's DB settings so `base_url` and `grafana_url` point at those HTTPS domains.
 
 ## Deployment
 
-Deploy to a specific host:
 ```bash
 uv run ansible-playbook setup.yml --tags teslamate --limit homelab
 ```
 
-## Service Ports
-
-- TeslaMate Web: 4000
-- Grafana: 3000
-
-## Tesla API Setup
-
-After deployment:
-1. Visit TeslaMate at http://homelab.lan:4000
-2. Sign in with your Tesla account
-3. Grant permissions in Tesla app
-4. Access Grafana dashboards at http://homelab.lan:3000 (admin/your_db_password)
+If domains or ports in `services.yml` change, redeploy Caddy and Pi-hole as well so reverse proxy and DNS records are refreshed.

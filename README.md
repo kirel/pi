@@ -3,8 +3,11 @@
 This is my homelab config. The repo is called `pi` because it started as a single pi. It's now:
 
 - `nameserver-pi` (192.168.50.4) — Pi-hole: DHCP, DNS, ad-blocking
-- `homelab-nuc` (192.168.50.5) — Intel NUC running Ubuntu as a Docker host (all services are containers, inc. a Pi-hole backup)
-- `ailab-ubuntu` (192.168.50.10) — GPU server on Bare Metal: Dual RTX 3090 (2×24 GB) for LLM inference (Tensor Parallel), STT, Embeddings & Immich ML + RTX 5060 Ti eGPU (16 GB) for ComfyUI, Wan2GP, and Wolf
+- `homelab-nuc` (192.168.50.5) — Intel NUC running Ubuntu as the main Docker host (Caddy, Home Assistant, media, productivity, LLM tooling, backup Pi-hole)
+- `ailab-ubuntu` (192.168.50.10) — bare-metal GPU server: dual RTX 3090 (LLM inference, STT, embeddings, Immich ML) + RTX 5060 Ti eGPU (ComfyUI, Wan2GP, Wolf)
+- `ubuntu-8gb-fsn1-1` / Hetzner (Tailnet IP 100.82.91.51) — cloud Docker host for Hermes agents
+- `dashserv-m-1` (77.90.42.61) — public VPS baseline host
+- `clawd` (192.168.50.12) and `winhost1` (192.168.50.11) — additional managed/special-purpose hosts
 
 ## Bootstrap the Pi
 
@@ -46,10 +49,10 @@ uv run ansible-playbook setup.yml --tags caddy,pihole,homepage --limit homelab,n
 ### Home Assistant
 
 ```bash
-uv run ansible-playbook setup.yml --tags ha
-uv run ansible-playbook setup.yml --limit mic_satellites -t satellite-audio
-uv run ansible-playbook setup.yml --limit mic_satellites -t wyoming --start-at-task="Start wyoming stack"
+uv run ansible-playbook setup.yml --tags ha --limit homelab
 ```
+
+The old `mic_satellites` commands are not currently runnable from the checked-in inventory because that group is not defined.
 
 ### AI Lab
 
@@ -60,7 +63,7 @@ uv run ansible-playbook setup.yml --tags llm-tools --limit homelab
 # LLM inference (LlamaSwap) on ailab-ubuntu
 uv run ansible-playbook setup.yml --tags llm-inference --limit ailab_ubuntus
 
-# Observability (Langfuse)
+# Observability (Arize Phoenix)
 uv run ansible-playbook setup.yml --tags llm-observability --limit homelab
 
 # Everything LLM-related
@@ -69,10 +72,10 @@ uv run ansible-playbook setup.yml --tags llm --limit homelab,ailab_ubuntus
 
 ### LlamaSwap (llama.cpp)
 
-LlamaSwap runs on `ailab-ubuntu` with GPU acceleration (RTX 3090 24GB).
+LlamaSwap runs on `ailab-ubuntu` with GPU acceleration across the two RTX 3090s.
 
-- **Model:** Qwen3-VL-8B-Instruct-GGUF Q8_K_XL from Unsloth
-- **Context Size:** 92,375 tokens max (92,500+ causes OOM)
+- **Primary models:** configured in `group_vars/all/llms.yml` (currently Qwen3.6 35B/27B llama.cpp slots plus `qwen3-embedding`)
+- **Context sizing:** explicit per-model context sizes in `llama_ctx_size_qwen35_3090` and `llama_ctx_size_qwen27_3090`; do not rely on llama.cpp `--fit` under tensor parallelism
 - **WebUI:** https://llama-swap.kirelabs.org/ui
 
 ### Embedding Presets
@@ -146,16 +149,16 @@ acceptable.
 ```
 Open WebUI → LiteLLM Proxy → LlamaSwap (ailab-ubuntu)
                   ↓
-           MCP-Proxy + Google Workspace MCP
+           LiteLLM MCP servers + Google Workspace MCP
                   ↓
-           Langfuse [observability]
+           Arize Phoenix [observability]
 ```
 
 | Service | URL | Host |
 | :--- | :--- | :--- |
 | Open WebUI | https://open-webui.kirelabs.org | homelab-nuc |
 | LiteLLM Admin | https://litellm.kirelabs.org | homelab-nuc |
-| Langfuse | https://langfuse.kirelabs.org | homelab-nuc |
+| Arize Phoenix | https://phoenix.kirelabs.org | homelab-nuc |
 | LlamaSwap | https://llama-swap.kirelabs.org | ailab-ubuntu |
 | ComfyUI | https://comfyui.kirelabs.org | ailab-ubuntu |
 

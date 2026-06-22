@@ -1,5 +1,7 @@
 # Pi-hole DNS/DHCP Optimization Plan
 
+> Status: historical planning note. The current repo no longer matches parts of this proposal: both Pi-holes are managed, Pi-hole cache/rate-limit settings are already in `roles/pihole/tasks/main.yml`, host `/etc/resolv.conf` already includes public DNS fallback, and Hermes Docker has its own `Pi-hole → Tailscale → 1.1.1.1` resolver chain. Treat the detailed sections below as background, not current desired state.
+
 ## Executive Summary
 
 **Problem:** With nameserver-pi offline, homelab-nuc Pi-hole handles 100% of DNS/DHCP traffic for ~150 devices, creating bottlenecks and single points of failure.

@@ -1,5 +1,7 @@
 # Traefik Migration Guide
 
+> Status: obsolete/historical. The active reverse proxy is Caddy (`roles/caddy`) using `group_vars/all/services.yml` as source of truth. There is no active `roles/traefik` role in this repo, and some examples below reference removed/renamed services such as Ollama/Proxmox. Do not follow this as a current migration plan without revalidating from scratch.
+
 ## Overview
 
 Replace Caddy reverse proxy with Traefik for dynamic, Docker-native routing that automatically picks up configuration changes without restarts.

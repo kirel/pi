@@ -23,12 +23,12 @@ All proxied services are defined in:
 
 ### Service Groups
 Services are categorized by the `group` tag in `services.yml`, which is primarily used to organize the **Homepage dashboard UI**:
-*   **AI**: LLM tools, Inference, Vision, MCP Gateways
-*   **Smart Home**: Home Assistant, Zigbee2MQTT, Frigate
-*   **Media**: Jellyfin, Music Assistant, Immich
-*   **Monitoring**: Uptime Kuma, Glances, Portainer, Langfuse
-*   **Productivity**: n8n, Wallabag, Readeck, Linkding
-*   **Network**: Pi-hole, DHCP UI
+*   **AI**: Open WebUI, LiteLLM, Phoenix, LlamaSwap, ComfyUI, Wan2GP, Speaches, MCP services
+*   **Smart Home**: Home Assistant, Zigbee2MQTT, Node-RED, TeslaMate
+*   **Media**: Jellyfin, Music Assistant, Immich, Navidrome
+*   **Monitoring**: Uptime Kuma, Glances, Dockhand, ChangeDetection, PruneMate
+*   **Productivity**: n8n, Readeck, Linkding
+*   **Network**: Pi-hole, DHCP lease UI
 
 ## LLM Service Architecture
 
