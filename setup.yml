@@ -109,6 +109,7 @@
     - { role: wan2gp, become: true, tags: [wan2gp] }
     - { role: immich_ml, become: true, tags: [immich, immich-ml] }
     - { role: wyoming_openai, become: true, tags: [wyoming-openai] }
+    - { role: hermes_docker, become: true, tags: [hermes, hermes-docker] }
     - { role: t3_code, become: true, tags: [t3-code] }
     - { role: syncthing, become: true, tags: [syncthing] }
 

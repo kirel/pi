@@ -24,3 +24,65 @@ gpu_configs:
     power_limit: 250
   - uuid: "{{ gpu_5060ti_uuid }}"
     power_limit: 180
+
+# Local Hermes dashboard on ailab. This uses the host-published dashboard port
+# and the central homelab Caddy service, not per-agent Caddy/Tailscale sidecars.
+hermes_docker_tailscale_enabled: false
+hermes_docker_agent_caddy_enabled: false
+hermes_docker_require_minimax_api_key: false
+hermes_dashboard_base_port: 18080
+hermes_external_skills_repo_url: "https://x-access-token:{{ hermes_github_token }}@github.com/kirel/agent-skills.git"
+
+hermes_docker_agent_order:
+  - local
+
+hermes_docker_agents_env: {}
+hermes_docker_agents_env_secret:
+  local:
+    HERMES_DASHBOARD_BASIC_AUTH_USERNAME: daniel
+    HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: "{{ vault_hermes_ailab_dashboard_password }}"
+    LITELLM_API_KEY: "{{ vault_hermes_ailab_local_litellm_api_key }}"
+
+hermes_docker_litellm_manage_keys: true
+hermes_docker_litellm_team:
+  team_id: hermes-ailab
+  team_alias: Hermes Ailab
+  models:
+    - "*"
+  object_permission:
+    mcp_access_groups:
+      - global
+      - family
+      - private
+      - coding_agents
+
+hermes_docker_litellm_keys:
+  local:
+    key_alias: hermes-ailab-local
+    models:
+      - "*"
+    mcp_access_groups:
+      - global
+      - family
+      - private
+      - coding_agents
+
+hermes_docker_agents_external_skill_dirs:
+  local:
+    - host_dir: /home/daniel/projects/agent-skills/skills/global
+      container_dir: /skills/global
+    - host_dir: /home/daniel/projects/agent-skills/skills/family
+      container_dir: /skills/family
+
+hermes_docker_agents_config_overrides:
+  local:
+    model:
+      default: Qwen3.6-27B-Instruct-misc
+      provider: custom
+      base_url: https://litellm.kirelabs.org/v1
+      api_key: ${LITELLM_API_KEY}
+      context_length: 200000
+    skills:
+      external_dirs:
+        - /skills/global
+        - /skills/family
