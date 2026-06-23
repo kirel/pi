@@ -7,7 +7,6 @@ model_group_alias:
   home-vision: "Qwen3.6-35B-A3B-Instruct-misc"
   home-ha: "Qwen3.6-35B-A3B-Instruct-ha"
   home-hermes: "Qwen3.6-27B-Instruct-hermes"
-  home-claw: "Qwen3.6-35B-A3B-Instruct-openclaw"
   home-embed: "qwen3-embedding"
   home-remote: "google/gemini-3-flash-preview"
 
@@ -98,13 +97,6 @@ llamaswap_models:
         extra_body:
           id_slot: 1
           cache_prompt: true
-      openclaw:
-        temperature: 0.6
-        top_p: 0.95
-        presence_penalty: 0.0
-        extra_body:
-          id_slot: 1
-          cache_prompt: true
       misc:
         extra_body:
           id_slot: 2
@@ -160,13 +152,6 @@ llamaswap_models:
           id_slot: 0
           cache_prompt: true
       hermes:
-        temperature: 0.6
-        top_p: 0.95
-        presence_penalty: 0.0
-        extra_body:
-          id_slot: 1
-          cache_prompt: true
-      openclaw:
         temperature: 0.6
         top_p: 0.95
         presence_penalty: 0.0
