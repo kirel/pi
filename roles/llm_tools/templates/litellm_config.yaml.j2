@@ -106,7 +106,7 @@ mcp_servers:
       HOMEASSISTANT_TOKEN: "{{ ha_access_token }}"
       ENABLE_SKILLS: "true"
       ENABLE_SKILLS_AS_TOOLS: "true"
-    access_groups: [] # ["family"]
+    access_groups: ["family"]
   immich:
     transport: "stdio"
     command: "uvx"
