@@ -36,12 +36,18 @@ hermes_external_skills_repo_url: "https://x-access-token:{{ hermes_github_token 
 hermes_docker_agent_order:
   - local
 
-hermes_docker_agents_env: {}
+hermes_docker_agents_env:
+  local:
+    API_SERVER_ENABLED: "true"
+    API_SERVER_HOST: "0.0.0.0"
+    API_SERVER_PORT: "8642"
+    API_SERVER_MODEL_NAME: hermes-local
 hermes_docker_agents_env_secret:
   local:
     HERMES_DASHBOARD_BASIC_AUTH_USERNAME: daniel
     HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: "{{ vault_hermes_ailab_dashboard_password }}"
     LITELLM_API_KEY: "{{ vault_hermes_ailab_local_litellm_api_key }}"
+    API_SERVER_KEY: "{{ vault_hermes_ailab_local_litellm_api_key }}"
 
 hermes_docker_litellm_manage_keys: true
 hermes_docker_litellm_team:
