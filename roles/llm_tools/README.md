@@ -48,7 +48,7 @@ graph TD
 
 `templates/litellm_config.yaml.j2` renders:
 
-- local LlamaSwap models from `group_vars/all/llms.yml`, including variants such as `ha`, `openclaw`, `misc`, and `nothink`;
+- local LlamaSwap models from `group_vars/all/llms.yml`, including variants such as `ha`, `hermes`, `openclaw`, `misc`, and `nothink`;
 - cloud models using vaulted provider API keys;
 - fallbacks from `litellm_fallbacks`;
 - MCP server definitions for fetch, Tavily, Home Assistant, Immich, n8n, Todoist, GitHub Copilot, Google Maps, Notion, Bring, and Craft where configured.

@@ -83,7 +83,7 @@ hermes_docker_agents_external_skill_dirs:
 hermes_docker_agents_config_overrides:
   local:
     model:
-      default: Qwen3.6-27B-Instruct-misc
+      default: home-hermes
       provider: custom
       base_url: https://litellm.kirelabs.org/v1
       api_key: ${LITELLM_API_KEY}

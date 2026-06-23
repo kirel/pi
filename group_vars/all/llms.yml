@@ -6,6 +6,7 @@ model_group_alias:
   home-smart: "Qwen3.6-35B-A3B-Instruct-misc"
   home-vision: "Qwen3.6-35B-A3B-Instruct-misc"
   home-ha: "Qwen3.6-35B-A3B-Instruct-ha"
+  home-hermes: "Qwen3.6-27B-Instruct-hermes"
   home-claw: "Qwen3.6-35B-A3B-Instruct-openclaw"
   home-embed: "qwen3-embedding"
   home-remote: "google/gemini-3-flash-preview"
@@ -41,7 +42,7 @@ llamaswap_models:
   # only when we expose multiple runtimes of the same base model.
 
   - alias: Qwen3.6-35B-A3B-Instruct
-    # Use three explicit llama-server slots so Home Assistant and OpenClaw can
+    # Use three explicit llama-server slots so Home Assistant and Hermes can
     # keep stable prompt caches on dedicated slots while miscellaneous traffic
     # is routed to a third slot. Fix ctx-size explicitly so the slot budget is
     # stable even when qwen3-embedding is already resident on the 3090.
@@ -90,6 +91,13 @@ llamaswap_models:
         extra_body:
           id_slot: 0
           cache_prompt: true
+      hermes:
+        temperature: 0.6
+        top_p: 0.95
+        presence_penalty: 0.0
+        extra_body:
+          id_slot: 1
+          cache_prompt: true
       openclaw:
         temperature: 0.6
         top_p: 0.95
@@ -104,7 +112,7 @@ llamaswap_models:
 
   - alias: Qwen3.6-27B-Instruct
     # Keep the same dedicated prompt-cache slot layout as the 35B entry so the
-    # Home Assistant and OpenClaw routes can retain stable caches. Cap ctx-size
+    # Home Assistant and Hermes routes can retain stable caches. Cap ctx-size
     # lower than the 35B entry so qwen3-embedding can stay loaded on the 3090.
     cmd: >-
       /app/llama-server
@@ -150,6 +158,13 @@ llamaswap_models:
       ha:
         extra_body:
           id_slot: 0
+          cache_prompt: true
+      hermes:
+        temperature: 0.6
+        top_p: 0.95
+        presence_penalty: 0.0
+        extra_body:
+          id_slot: 1
           cache_prompt: true
       openclaw:
         temperature: 0.6
