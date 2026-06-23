@@ -2,5 +2,10 @@ ARG HERMES_BASE_IMAGE={{ hermes_docker_base_image }}
 FROM ${HERMES_BASE_IMAGE}
 
 USER root
+
+COPY patch-hermes-mcp-reconnect-38488.py /tmp/patch-hermes-mcp-reconnect-38488.py
+
 RUN mkdir -p /etc/supervisor \
-    && uv pip install --python /opt/hermes/.venv/bin/python --no-cache supervisor
+    && uv pip install --python /opt/hermes/.venv/bin/python --no-cache supervisor \
+    && /opt/hermes/.venv/bin/python /tmp/patch-hermes-mcp-reconnect-38488.py \
+    && rm /tmp/patch-hermes-mcp-reconnect-38488.py

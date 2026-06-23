@@ -89,6 +89,11 @@
     name: ha
     state: present
 
+- name: Create ha-mcp network
+  community.docker.docker_network:
+    name: ha-mcp
+    state: present
+
 - name: Start home assistant
   community.docker.docker_compose_v2:
     project_name: ha
@@ -96,6 +101,8 @@
     definition:
       networks:
         ha:
+          external: true
+        ha-mcp:
           external: true
       services:
         homeassistant:
@@ -126,6 +133,23 @@
             - homepage.icon=home-assistant.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=homeassistant
+        ha-mcp:
+          container_name: ha-mcp
+          image: ghcr.io/homeassistant-ai/ha-mcp:latest
+          command: ["ha-mcp-web"]
+          expose:
+            - "8086"
+          ports:
+            - "127.0.0.1:8086:8086"
+          environment:
+            HOMEASSISTANT_URL: "http://{{ homelab_nuc_ip }}:{{ homeassistant_http_port }}"
+            HOMEASSISTANT_TOKEN: "{{ ha_access_token }}"
+            BACKUP_HINT: "normal"
+            LOG_LEVEL: "INFO"
+          restart: unless-stopped
+          networks:
+            - ha-mcp
+
         music-assistant-server:
           image: ghcr.io/music-assistant/server:latest
           container_name: music-assistant-server

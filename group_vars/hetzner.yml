@@ -89,17 +89,6 @@ hermes_docker_agents_config_overrides:
         - /skills/global
         - /skills/family
         - /skills/caddy-proxy
-    mcp_servers:
-      hamcp:
-        transport: stdio
-        command: uvx
-        args:
-          - ha-mcp@latest
-        env:
-          HOMEASSISTANT_URL: ${HOMEASSISTANT_URL}
-          HOMEASSISTANT_TOKEN: ${HOMEASSISTANT_TOKEN}
-          ENABLE_SKILLS: "true"
-          ENABLE_SKILLS_AS_TOOLS: "true"
   anna:
     model:
       default: MiniMax-M3
@@ -115,7 +104,6 @@ hermes_docker_agents_config_overrides:
         - /skills/global
         - /skills/friends
         - /skills/caddy-proxy
-
 hetzner_users:
   - name: daniel
     shell: /usr/bin/zsh
