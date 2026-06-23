@@ -10,7 +10,7 @@ services:
         curl -LsSf https://astral.sh/uv/install.sh | sh
         export PATH="/home/ubuntu/.local/bin:$PATH"
         uvx speaches-cli model download {{ stt_model }}
-        uvx speaches-cli model download {{ tts_model }}
+        for model in {{ tts_models }}; do uvx speaches-cli model download "$model"; done
       '
     volumes:
       - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
@@ -148,7 +148,7 @@ services:
       STT_MODELS: "{{ stt_model }}"
       STT_BACKEND: "{{ stt_backend }}"
       TTS_OPENAI_URL: "{{ tts_openai_url }}"
-      TTS_MODELS: "{{ tts_model }}"
+      TTS_MODELS: "{{ tts_models }}"
       TTS_BACKEND: "{{ tts_backend }}"
       TTS_VOICES: "{{ tts_voices }}"
       TTS_SPEED: "{{ tts_speed }}"
@@ -157,7 +157,7 @@ services:
       TTS_STREAMING_MODELS: "{{ tts_streaming_models }}"
       TTS_STREAMING_MIN_WORDS: "{{ tts_streaming_min_words }}"
       TTS_STREAMING_MAX_CHARS: "{{ tts_streaming_max_chars }}"
-      INVALIDATE: "5"  # increment to force redeploy
+      INVALIDATE: "6"  # increment to force redeploy
     depends_on:
       speaches:
         condition: service_healthy

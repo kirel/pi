@@ -23,7 +23,7 @@ wyoming_languages: en es fr de it pt ru ja ko ar da el fi he hi ms nl no pl sv s
 
 stt_backend: "SPEACHES"
 stt_openai_url: "http://speaches:{{ speaches_internal_port }}/v1"
-stt_model: "Systran/faster-whisper-medium"
+stt_model: "Systran/faster-whisper-large-v3"
 speaches_whisper_inference_device: cuda
 speaches_whisper_compute_type: float16
 speaches_stt_model_ttl: 300
@@ -35,7 +35,7 @@ speaches_ort_exclude_providers:
 tts_backend: "SPEACHES"
 tts_openai_url: "http://speaches:{{ speaches_internal_port }}/v1"
 # stt_openai_url: "http://chatterbox-tts:{{ chatterbox_tts_internal_port }}/v1"
-tts_model: "systemofapwne/piper-de_DE-glados-high"
+tts_models: "systemofapwne/piper-de_DE-glados-high speaches-ai/piper-de_DE-thorsten-high ufozone/piper-de_DE-jarvis-high"
 
 # SPEACHES (Whisper STT)
 speaches_external_port: 8001
@@ -43,7 +43,7 @@ speaches_internal_port: 8000
 
 # TTS Configuration
 # tts_voices: "default Sabine Merkel"
-tts_voices: "glados"
+tts_voices: ""
 tts_speed: "1.0"
 
 # wyoming_chatterbox config
@@ -99,6 +99,6 @@ chatterbox_enable_memory_monitoring: true
 
 # Streaming Configuration for your models
 stt_streaming_models: "{{ stt_model }}"
-tts_streaming_models: "{{ tts_model }}"
+tts_streaming_models: "{{ tts_models }}"
 tts_streaming_min_words: 3
 tts_streaming_max_chars: 280
