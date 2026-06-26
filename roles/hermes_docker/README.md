@@ -28,6 +28,7 @@ Create wildcard DNS records pointing at the corresponding Tailscale node IPs:
 *.multipurpose.kirelabs.org  -> Tailscale IP of hermes-multipurpose
 *.marian.kirelabs.org        -> Tailscale IP of hermes-marian
 *.anna.kirelabs.org          -> Tailscale IP of hermes-anna
+*.sabine.kirelabs.org        -> Tailscale IP of hermes-sabine
 ```
 
 The target IPs are the Tailscale IPs of the per-agent sidecar nodes, not the Hetzner host IP. You can find them with one of:

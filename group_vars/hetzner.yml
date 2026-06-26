@@ -16,6 +16,7 @@ hermes_docker_agent_order:
   - multipurpose
   - marian
   - anna
+  - sabine
 hermes_docker_agent_tailnet_ips:
   multipurpose: 100.88.41.45
   marian: 100.86.181.83
@@ -29,6 +30,11 @@ hermes_docker_agents_env:
     API_SERVER_HOST: "0.0.0.0"
     API_SERVER_PORT: "8642"
     API_SERVER_MODEL_NAME: hermes-multipurpose
+  sabine:
+    API_SERVER_ENABLED: "true"
+    API_SERVER_HOST: "0.0.0.0"
+    API_SERVER_PORT: "8642"
+    API_SERVER_MODEL_NAME: hermes-sabine
 hermes_docker_litellm_manage_keys: true
 hermes_docker_litellm_team:
   team_id: hermes-docker
@@ -63,6 +69,14 @@ hermes_docker_litellm_keys:
       - home-smart
     mcp_access_groups:
       - global
+  sabine:
+    key_alias: hermes-sabine
+    models:
+      - home-fast
+      - home-smart
+    mcp_access_groups:
+      - family
+      - global
 hermes_docker_agents_external_skill_dirs:
   multipurpose:
     - host_dir: /home/daniel/projects/agent-skills/skills/global
@@ -79,6 +93,11 @@ hermes_docker_agents_external_skill_dirs:
       container_dir: /skills/global
     - host_dir: /home/daniel/projects/agent-skills/skills/friends
       container_dir: /skills/friends
+  sabine:
+    - host_dir: /home/daniel/projects/agent-skills/skills/global
+      container_dir: /skills/global
+    - host_dir: /home/daniel/projects/agent-skills/skills/family
+      container_dir: /skills/family
 hermes_docker_agents_config_overrides:
   multipurpose:
     model:
@@ -97,6 +116,15 @@ hermes_docker_agents_config_overrides:
       external_dirs:
         - /skills/global
         - /skills/friends
+        - /skills/caddy-proxy
+  sabine:
+    model:
+      default: MiniMax-M3
+      provider: minimax
+    skills:
+      external_dirs:
+        - /skills/global
+        - /skills/family
         - /skills/caddy-proxy
   marian:
     skills:

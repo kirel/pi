@@ -47,6 +47,12 @@ homepage_static_services:
     icon: mdi-robot
     href: "https://dashboard.anna.kirelabs.org"
     description: Anna Hermes dashboard
+  - service: hermes-sabine
+    name: Hermes Sabine
+    group: AI
+    icon: mdi-robot
+    href: "https://dashboard.sabine.kirelabs.org"
+    description: Sabine Hermes dashboard
 music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
 nodered_http_port: 1880
