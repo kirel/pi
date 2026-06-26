@@ -11,7 +11,22 @@
 {%- endfor -%}
 {%- for props in homepage_static_services | default([]) -%}
     {%- set _ = services_list.append(props) -%}
-{%- endfor %}
+{%- endfor -%}
+{%- set hermes_hosts = groups.get('hetzner', []) -%}
+{%- if hermes_hosts | length > 0 -%}
+    {%- set hermes_host = hostvars[hermes_hosts[0]] -%}
+    {%- for agent_name in hermes_host.hermes_docker_agent_order | default([]) -%}
+        {%- set agent_label = agent_name | replace('-', ' ') | title -%}
+        {%- set _ = services_list.append({
+            'service': 'hermes-' ~ agent_name,
+            'name': 'Hermes ' ~ agent_label,
+            'group': 'AI',
+            'icon': 'mdi-robot',
+            'href': 'https://dashboard.' ~ agent_name ~ '.' ~ (hermes_host.hermes_docker_agent_domain_suffix | default('kirelabs.org')),
+            'description': agent_label ~ ' Hermes dashboard'
+        }) -%}
+    {%- endfor -%}
+{%- endif %}
 
 {% for group_name, services_in_group_iterable in services_list|groupby('group') %}
 {% set services_in_group = services_in_group_iterable|list %}

@@ -29,30 +29,6 @@ homepage_static_services:
     icon: mdi-robot-outline
     href: "http://{{ hostvars['ubuntu-8gb-fsn1-1'].ansible_host }}:9119"
     description: Daniel bare metal Hermes dashboard
-  - service: hermes-multipurpose
-    name: Hermes Multipurpose
-    group: AI
-    icon: mdi-robot
-    href: "https://dashboard.multipurpose.kirelabs.org"
-    description: Multipurpose Hermes dashboard
-  - service: hermes-marian
-    name: Hermes Marian
-    group: AI
-    icon: mdi-robot
-    href: "https://dashboard.marian.kirelabs.org"
-    description: Marian Hermes dashboard
-  - service: hermes-anna
-    name: Hermes Anna
-    group: AI
-    icon: mdi-robot
-    href: "https://dashboard.anna.kirelabs.org"
-    description: Anna Hermes dashboard
-  - service: hermes-sabine
-    name: Hermes Sabine
-    group: AI
-    icon: mdi-robot
-    href: "https://dashboard.sabine.kirelabs.org"
-    description: Sabine Hermes dashboard
 music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
 nodered_http_port: 1880
