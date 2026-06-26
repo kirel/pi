@@ -21,6 +21,7 @@ hermes_docker_agent_tailnet_ips:
   multipurpose: 100.88.41.45
   marian: 100.86.181.83
   anna: 100.115.175.58
+  sabine: 100.83.173.54
 hermes_docker_agent_extra_host_services:
   multipurpose:
     - homeassistant
