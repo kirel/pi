@@ -19,7 +19,7 @@ llama_prompt_cache_parallel_slots: 3
 # MTP GGUFs are slightly larger than the base GGUFs, so keep a little more
 # headroom while qwen3-embedding and speech services can stay resident.
 llama_ctx_size_qwen35_3090: 786432 # 458752
-llama_ctx_size_qwen27_3090: 600000 # 222144
+llama_ctx_size_qwen27_3090: 655360
 
 litellm_fallbacks:
   - home: ["home-remote"]
@@ -185,7 +185,7 @@ llamaswap_models:
     encoding_format: "float"
     group: "forever"
     env:
-      - "CUDA_VISIBLE_DEVICES={{gpu_3090_1_uuid}}"
+      - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}}"
 
 llamaswap_model_groups:
   forever:
