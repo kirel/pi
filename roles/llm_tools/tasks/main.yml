@@ -111,6 +111,7 @@
             GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+            PROXY_BASE_URL: "https://{{ services['litellm'].domain }}"
             LITELLM_MCP_STDIO_EXTRA_COMMANDS: >-
               {{ litellm_mcp_servers
                  | dict2items

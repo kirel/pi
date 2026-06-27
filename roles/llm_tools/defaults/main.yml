@@ -151,3 +151,11 @@ litellm_mcp_servers:
   craft:
     url: "https://mcp.craft.do/links/EORHGAfauY2/mcp"
     access_groups: ["private"]
+  craft_oauth:
+    url: "https://mcp.craft.do/my/mcp"
+    auth_type: oauth2
+    delegate_auth_to_upstream: true
+    available_on_public_internet: true
+    # Keep this out of broad aggregate tool discovery: listing tools requires a
+    # per-user Craft OAuth token and otherwise returns upstream 401 by design.
+    access_groups: ["craft_oauth"]
