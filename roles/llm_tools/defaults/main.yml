@@ -148,6 +148,3 @@ litellm_mcp_servers:
     install:
       manager: npm
       package: bring-mcp
-  craft:
-    url: "https://mcp.craft.do/links/EORHGAfauY2/mcp"
-    access_groups: ["private"]
