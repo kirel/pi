@@ -38,3 +38,116 @@ google_workspace_mcp_image: "ghcr.io/astral-sh/uv:debian"
 google_workspace_mcp_container_name: "google-workspace-mcp"
 google_workspace_mcp_port_host: "{{ google_workspace_mcp_port_host | default(8014) }}"
 google_workspace_mcp_port_container: 8000
+
+# --- LiteLLM MCP server catalog ---
+# Single source of truth for LiteLLM's MCP config and stdio package preinstalls.
+# - roles/llm_tools/templates/litellm_config.yaml.j2 renders mcp_servers from this map.
+# - roles/llm_tools/templates/Dockerfile.litellm.j2 derives npm/uv preinstall commands
+#   from entries with install.manager set to npm or uv.
+# - roles/llm_tools/tasks/main.yml derives LiteLLM's stdio command allowlist from
+#   stdio entries whose command is not in litellm_mcp_stdio_default_commands.
+litellm_mcp_stdio_default_commands:
+  - deno
+  - docker
+  - node
+  - npx
+  - python
+  - python3
+  - uvx
+
+litellm_mcp_servers:
+  fetch:
+    transport: stdio
+    command: mcp-server-fetch
+    args: ["--ignore-robots-txt"]
+    access_groups: ["global", "coding_agents"]
+    install:
+      manager: uv
+      args: ["mcp-server-fetch"]
+  tavily:
+    transport: stdio
+    command: tavily-mcp
+    env:
+      TAVILY_API_KEY: "{{ TAVILY_API_KEY }}"
+    access_groups: ["global", "coding_agents"]
+    install:
+      manager: npm
+      package: tavily-mcp
+  hamcp:
+    transport: stdio
+    command: ha-mcp
+    env:
+      HOMEASSISTANT_URL: "https://homeassistant.kirelabs.org"
+      HOMEASSISTANT_TOKEN: "{{ ha_access_token }}"
+      ENABLE_SKILLS: "true"
+      ENABLE_SKILLS_AS_TOOLS: "true"
+    access_groups: ["family"]
+    install:
+      manager: uv
+      args: ["ha-mcp"]
+  immich:
+    transport: stdio
+    command: immich-photo-manager
+    env:
+      IMMICH_BASE_URL: "https://{{ services['immich'].domain }}"
+      IMMICH_API_KEY: "{{ immich_mcp_api_key }}"
+    access_groups: ["family"]
+    install:
+      manager: uv
+      args:
+        - "--from"
+        - "git+https://github.com/kirel/immich-photo-manager.git@codex-uvx-mcp-server"
+        - "immich-photo-manager"
+  n8n:
+    transport: stdio
+    command: n8n-mcp
+    env:
+      N8N_MODE: "true"
+      MCP_MODE: stdio
+      LOG_LEVEL: error
+      N8N_API_KEY: "{{ n8n_mcp_api_key }}"
+      N8N_API_URL: "https://n8n.kirelabs.org"
+      WEBHOOK_SECURITY_MODE: permissive
+      DISABLE_CONSOLE_OUTPUT: "true"
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    access_groups: ["private"]
+    install:
+      manager: npm
+      package: n8n-mcp
+  todoist:
+    url: "https://ai.todoist.net/mcp"
+    auth_type: bearer_token
+    auth_value: "{{ todoist_api_token }}"
+    access_groups: ["family"]
+  github:
+    url: "https://api.githubcopilot.com/mcp/"
+    auth_type: bearer_token
+    auth_value: "{{ github_mcp_token }}"
+    access_groups: ["private", "coding_agents"]
+  google_maps:
+    url: "https://mapstools.googleapis.com/mcp"
+    static_headers:
+      X-Goog-Api-Key: "{{ google_maps_api_key }}"
+    access_groups: ["global"]
+  notion:
+    transport: stdio
+    command: notion-mcp-server
+    env:
+      OPENAPI_MCP_HEADERS: '{"Authorization": "Bearer {{ notion_api_token }}", "Notion-Version": "2022-06-28"}'
+    access_groups: ["family"]
+    install:
+      manager: npm
+      package: "@notionhq/notion-mcp-server"
+  bring:
+    transport: stdio
+    command: bring-mcp
+    env:
+      MAIL: "{{ bring_email }}"
+      PW: "{{ bring_password }}"
+    access_groups: ["family"]
+    install:
+      manager: npm
+      package: bring-mcp
+  craft:
+    url: "https://mcp.craft.do/links/EORHGAfauY2/mcp"
+    access_groups: ["private"]

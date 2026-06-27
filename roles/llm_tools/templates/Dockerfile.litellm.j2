@@ -33,3 +33,21 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_TOOL_BIN_DIR=/usr/local/bin \
     PATH="/usr/local/bin:$PATH"
+
+# Preinstall stdio MCP server packages so LiteLLM does not time out while
+# package managers download tools during MCP discovery. The package lists are
+# derived from litellm_mcp_servers in roles/llm_tools/defaults/main.yml.
+{% set npm_packages = [] %}
+{% for _name, server in litellm_mcp_servers.items() %}
+{% if server.install is defined and server.install.manager == 'npm' %}
+{% set _ = npm_packages.append(server.install.package) %}
+{% endif %}
+{% endfor %}
+{% if npm_packages | length > 0 %}
+RUN npm install -g {{ npm_packages | join(' ') }}
+{% endif %}
+{% for _name, server in litellm_mcp_servers.items() %}
+{% if server.install is defined and server.install.manager == 'uv' %}
+RUN uv tool install {{ server.install.args | join(' ') }}
+{% endif %}
+{% endfor %}

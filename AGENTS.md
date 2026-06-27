@@ -39,6 +39,25 @@ This section contains technical constraints not found in the YAML configs.
 *   **Admin UI:** `https://litellm.kirelabs.org`
 *   **Troubleshooting:** If `/health/readiness` fails with "Not connected to the query engine", run `docker restart litellm-proxy-container` to trigger Prisma migrations.
 
+### MCP Server Setup
+
+**Default rule:** MCP servers used by agents/LiteLLM belong in **LiteLLM's MCP config**, not in `group_vars/all/services.yml` and not as new standalone containers.
+
+*   **Primary MCP catalog:** `litellm_mcp_servers` in `roles/llm_tools/defaults/main.yml`.
+    *   `roles/llm_tools/templates/litellm_config.yaml.j2` renders LiteLLM's `mcp_servers:` from this catalog.
+    *   `roles/llm_tools/templates/Dockerfile.litellm.j2` derives npm and uv preinstall commands from catalog entries with `install.manager: npm` or `install.manager: uv`.
+    *   `roles/llm_tools/tasks/main.yml` derives `LITELLM_MCP_STDIO_EXTRA_COMMANDS` from stdio entries whose direct `command` is not in LiteLLM's default allowlist.
+    *   Add stdio servers here with `transport`, direct `command`, optional `args`, `env`, `access_groups`, and optional `install` metadata. Prefer direct installed binaries over `npx`/`uvx` so package downloads do not happen during LiteLLM tool discovery.
+    *   Add remote HTTP/SSE MCP servers here with `url`, auth settings, and `access_groups`.
+    *   Example: `n8n` is intentionally configured here as a stdio server for LiteLLM. Do **not** create a separate `n8n-mcp` container/service just to make it available to agents.
+*   **Standalone HTTP MCP containers:** only add these when something outside LiteLLM must connect directly over the network/Tailnet (for example a specific app that requires its own HTTP MCP endpoint). In that case:
+    *   Deploy the container in the owning role or `roles/llm_tools/tasks/main.yml` as appropriate.
+    *   Add a `group_vars/all/services.yml` entry only if it needs Caddy/DNS exposure.
+    *   Then redeploy Caddy and Pi-hole per the deployment requirements above.
+    *   Existing example: `google-workspace-mcp` is a standalone streamable HTTP MCP service because clients connect to it directly.
+*   **Deployment after MCP changes:** run `uv run ansible-playbook setup.yml --tags llm-tools --limit homelab` for LiteLLM MCP config/image changes. Only run Caddy/Pi-hole deployment if `services.yml` changed.
+*   **Verification:** query `https://litellm.kirelabs.org/mcp/` with a valid LiteLLM bearer token and `Accept: application/json, text/event-stream`, or inspect `docker logs litellm-proxy-container` for MCP discovery errors such as stdio allowlist failures or tool-list timeouts.
+
 ### LLM Inference (ailab-ubuntu)
 *   **LlamaSwap:** `http://ailab-ubuntu.lan:9292` (managed by LiteLLM)
 *   **Monitoring:** Use LlamaSwap's built-in log endpoints to inspect upstream model servers:

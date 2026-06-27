@@ -111,6 +111,15 @@
             GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+            LITELLM_MCP_STDIO_EXTRA_COMMANDS: >-
+              {{ litellm_mcp_servers
+                 | dict2items
+                 | selectattr('value.transport', 'defined')
+                 | selectattr('value.transport', 'equalto', 'stdio')
+                 | map(attribute='value.command')
+                 | reject('in', litellm_mcp_stdio_default_commands)
+                 | unique
+                 | join(',') }}
           command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"]
           healthcheck:
             test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:{{ litellm_proxy_port_container }}/health/readiness')\""]
