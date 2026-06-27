@@ -151,9 +151,3 @@ litellm_mcp_servers:
   craft:
     url: "https://mcp.craft.do/links/EORHGAfauY2/mcp"
     access_groups: ["private"]
-  craft_oauth:
-    url: "https://mcp.craft.do/my/mcp"
-    auth_type: oauth2
-    delegate_auth_to_upstream: true
-    available_on_public_internet: true
-    access_groups: ["global"]

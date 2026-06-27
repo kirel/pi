@@ -128,6 +128,11 @@ hermes_docker_agents_config_overrides:
         - /skills/global
         - /skills/family
         - /skills/caddy-proxy
+    mcp_servers:
+      craft:
+        url: "https://mcp.craft.do/my/mcp"
+        timeout: 180
+        connect_timeout: 60
   marian:
     skills:
       external_dirs:
