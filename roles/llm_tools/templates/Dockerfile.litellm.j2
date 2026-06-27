@@ -14,6 +14,14 @@ RUN if command -v apt-get >/dev/null 2>&1; then \
 # Install uv/uvx for Python-based MCP stdio servers (ha-mcp, fetch)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
+# Install npm/npx for Node.js-based MCP stdio servers (tavily, n8n, notion, bring).
+# Some LiteLLM base images ship node without npm/npx.
+RUN if ! command -v npx >/dev/null 2>&1; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends npm \
+        && rm -rf /var/lib/apt/lists/*; \
+    fi
+
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_TOOL_BIN_DIR=/usr/local/bin \
