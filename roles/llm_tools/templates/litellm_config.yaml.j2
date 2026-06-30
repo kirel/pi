@@ -59,6 +59,17 @@ model_list:
 {% endfor %}
 {% endif %}
 
+  # Extra provider models
+{% for model in litellm_extra_models %}
+  - model_name: {{ model.model_name }}
+    litellm_params:
+{{ model.litellm_params | to_nice_yaml(indent=6, sort_keys=False, width=1000) | indent(6, true) }}
+{% if model.model_info is defined %}
+    model_info:
+{{ model.model_info | to_nice_yaml(indent=6, sort_keys=False, width=1000) | indent(6, true) }}
+{% endif %}
+{% endfor %}
+
   # Wildcard for other providers
   - model_name: "*"
     litellm_params:

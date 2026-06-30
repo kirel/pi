@@ -110,6 +110,8 @@
             REDIS_PORT: "{{ litellm_redis_port_container }}"
             GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
+            MINIMAX_API_KEY: "{{ MINIMAX_API_KEY | default('') }}"
+            ZAI_API_KEY: "{{ ZAI_API_KEY | default(GLM_API_KEY | default('')) }}"
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
             LITELLM_MCP_STDIO_EXTRA_COMMANDS: >-
               {{ litellm_mcp_servers

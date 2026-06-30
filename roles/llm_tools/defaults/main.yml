@@ -33,6 +33,9 @@ phoenix_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ phoenix_grpc_port }}"
 # Database connection string
 litellm_database_url: "postgresql://{{ litellm_db_user }}:{{ litellm_db_password }}@{{ litellm_db_container_name }}:{{ litellm_db_port_container }}/{{ litellm_db_name }}"
 
+# Additional provider-backed models rendered into LiteLLM model_list.
+litellm_extra_models: []
+
 # --- Google Workspace MCP Settings ---
 google_workspace_mcp_image: "ghcr.io/astral-sh/uv:debian"
 google_workspace_mcp_container_name: "google-workspace-mcp"
