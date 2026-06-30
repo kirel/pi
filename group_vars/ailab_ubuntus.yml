@@ -35,6 +35,8 @@ hermes_docker_webui_enabled: true
 hermes_docker_webui_agents_enabled:
   local: true
 hermes_docker_webui_password: "{{ hermes_webui.local.password }}"
+hermes_docker_webui_workspace_host_dirs:
+  local: "{{ config_root }}/hermes-local/workspace"
 hermes_external_skills_repo_url: "https://x-access-token:{{ hermes_github_token }}@github.com/kirel/agent-skills.git"
 
 hermes_docker_agent_order:

@@ -78,6 +78,10 @@ services:
 {% if agent_name in hermes_docker_webui_agent_names %}
       - hermes-agent-src-{{ agent_name }}:/opt/hermes
 {% endif %}
+{% set agent_workspace_host_dir = hermes_docker_webui_effective_workspace_host_dirs.get(agent_name, '') %}
+{% if agent_workspace_host_dir | string | length > 0 %}
+      - {{ agent_workspace_host_dir }}:{{ hermes_docker_webui_workspace_dir }}
+{% endif %}
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf:ro
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/conf.d:{{ hermes_container_data_dir }}/supervisor/conf.d
 {% if hermes_docker_agent_caddy_enabled | bool %}
@@ -174,9 +178,10 @@ services:
 {% endif %}
     volumes:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_docker_webui_home_dir }}
-      - hermes-agent-src-{{ agent_name }}:{{ hermes_docker_webui_home_dir }}/hermes-agent:ro
-{% if hermes_docker_webui_workspace_host_dir | string | length > 0 %}
-      - {{ hermes_docker_webui_workspace_host_dir }}:{{ hermes_docker_webui_workspace_dir }}
+      - hermes-agent-src-{{ agent_name }}:{{ hermes_docker_webui_agent_dir }}:ro
+{% set webui_workspace_host_dir = hermes_docker_webui_effective_workspace_host_dirs.get(agent_name, '') %}
+{% if webui_workspace_host_dir | string | length > 0 %}
+      - {{ webui_workspace_host_dir }}:{{ hermes_docker_webui_workspace_dir }}
 {% endif %}
 {% endif %}
 {% endfor %}

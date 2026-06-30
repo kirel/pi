@@ -53,6 +53,18 @@
       {%- endif -%}
       {{ agents }}
 
+- name: Build effective Hermes WebUI workspace directory map
+  ansible.builtin.set_fact:
+    hermes_docker_webui_effective_workspace_host_dirs: >-
+      {%- set dirs = {} -%}
+      {%- for agent_name in hermes_docker_webui_agent_names -%}
+        {%- set host_dir = hermes_docker_webui_workspace_host_dirs.get(agent_name, hermes_docker_webui_workspace_host_dir) -%}
+        {%- if host_dir | string | length > 0 -%}
+          {%- set _ = dirs.update({agent_name: host_dir}) -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {{ dirs }}
+
 - name: Validate Hermes extra_hosts service names
   ansible.builtin.assert:
     that:
@@ -131,6 +143,7 @@
       - hermes_docker_managed_mcp_servers is mapping
       - hermes_docker_agents_external_skill_dirs is mapping
       - hermes_docker_webui_agents_enabled is mapping
+      - hermes_docker_webui_workspace_host_dirs is mapping
       - hermes_docker_effective_agent_names | length > 0
       - >-
         hermes_docker_effective_agent_names |
@@ -355,6 +368,18 @@
   loop_control:
     loop_var: agent_name
     label: "{{ agent_name }}"
+
+- name: Create per-agent Hermes WebUI workspace directories
+  ansible.builtin.file:
+    path: "{{ item.value }}"
+    state: directory
+    owner: "{{ hermes_docker_data_uid }}"
+    group: "{{ hermes_docker_data_gid }}"
+    mode: '0755'
+  loop: "{{ hermes_docker_webui_effective_workspace_host_dirs | dict2items }}"
+  loop_control:
+    label: "{{ item.key }} -> {{ item.value }}"
+  when: hermes_docker_webui_effective_workspace_host_dirs | length > 0
 
 - name: Create per-agent supervisor directories
   ansible.builtin.file:
