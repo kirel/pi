@@ -40,6 +40,19 @@
       }}
   no_log: true
 
+- name: Build effective Hermes WebUI agent list
+  ansible.builtin.set_fact:
+    hermes_docker_webui_agent_names: >-
+      {%- set agents = [] -%}
+      {%- if hermes_docker_webui_enabled | bool -%}
+        {%- for agent_name in hermes_docker_effective_agent_names -%}
+          {%- if hermes_docker_webui_agents_enabled.get(agent_name, false) | bool -%}
+            {%- set _ = agents.append(agent_name) -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+      {{ agents }}
+
 - name: Validate Hermes extra_hosts service names
   ansible.builtin.assert:
     that:
@@ -117,6 +130,7 @@
       - hermes_docker_agents_config_overrides is mapping
       - hermes_docker_managed_mcp_servers is mapping
       - hermes_docker_agents_external_skill_dirs is mapping
+      - hermes_docker_webui_agents_enabled is mapping
       - hermes_docker_effective_agent_names | length > 0
       - >-
         hermes_docker_effective_agent_names |
@@ -135,12 +149,20 @@
       - >-
         not (hermes_docker_agent_caddy_enabled | bool) or
         (regfish_token is defined and regfish_token | string | length > 0)
+      - >-
+        (hermes_docker_webui_agents_enabled.keys() | list |
+        difference(hermes_docker_effective_agent_names)) | length == 0
+      - >-
+        not (hermes_docker_webui_agent_names | length > 0) or
+        (hermes_docker_webui_password is defined and
+        hermes_docker_webui_password | string | length > 0)
     fail_msg: >-
       Define Hermes Docker agents with valid Docker-safe agent names, valid
       per-agent external skill directories, provide MINIMAX_API_KEY in
       hermes_docker_global_env or hermes_docker_global_env_secret, provide
-      hermes_docker_tailscale_authkey when Tailscale sidecars are enabled, and
-      provide regfish_token when per-agent Caddy is enabled.
+      hermes_docker_tailscale_authkey when Tailscale sidecars are enabled,
+      provide regfish_token when per-agent Caddy is enabled, and set
+      hermes_docker_webui_password when any Hermes WebUI is enabled.
 
 - name: Validate Hermes Docker LiteLLM key configuration
   ansible.builtin.assert:
@@ -551,6 +573,21 @@
   no_log: true
   notify: Recreate Hermes Docker agents
 
+- name: Render per-agent Hermes WebUI env files
+  ansible.builtin.template:
+    src: agent-webui.env.j2
+    dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/webui.env"
+    owner: root
+    group: root
+    mode: '0600'
+  loop: "{{ hermes_docker_webui_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  no_log: true
+  notify: Recreate Hermes Docker agents
+  when: hermes_docker_webui_agent_names | length > 0
+
 - name: Render Hermes Docker firewall script
   ansible.builtin.template:
     src: hermes-docker-firewall.sh.j2
@@ -606,6 +643,45 @@
     pull: "{{ hermes_docker_compose_pull }}"
     remove_orphans: true
   when: hermes_docker_ensure_running | bool
+
+- name: Ensure Hermes WebUI agent source volumes are readable
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - hermes-{{ agent_name }}
+      - sh
+      - -lc
+      - >-
+        if find /opt/hermes \( -type d ! -perm -005 -o -type f ! -perm -004 \) -print -quit | grep -q .; then
+        find /opt/hermes -type d -exec chmod a+rx {} + &&
+        find /opt/hermes -type f -exec chmod a+r {} + &&
+        echo changed;
+        else echo ok;
+        fi
+  loop: "{{ hermes_docker_webui_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  register: hermes_docker_webui_source_permissions
+  changed_when: "'changed' in hermes_docker_webui_source_permissions.stdout"
+  when:
+    - hermes_docker_ensure_running | bool
+    - hermes_docker_webui_agent_names | length > 0
+
+- name: Restart Hermes WebUI containers after source permission repair
+  ansible.builtin.command:
+    argv:
+      - docker
+      - restart
+      - webui-hermes-{{ item.agent_name }}
+  loop: "{{ hermes_docker_webui_source_permissions.results | default([]) }}"
+  loop_control:
+    label: "{{ item.agent_name | default('unknown') }}"
+  changed_when: false
+  when:
+    - item is not skipped
+    - "'changed' in item.stdout"
 
 - name: Apply Hermes config overrides
   ansible.builtin.command:

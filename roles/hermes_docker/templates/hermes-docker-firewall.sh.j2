@@ -35,6 +35,10 @@ iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ hermes_docker_allowed_proxy_ip }
 iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ dns_server }} -p udp --dport 53 -j ACCEPT
 iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ dns_server }} -p tcp --dport 53 -j ACCEPT
 {% endfor %}
+# Allow containers that belong to the same per-agent network to talk to each
+# other (for example webui-hermes-<agent> -> hermes-<agent> gateway API) while
+# keeping other private ranges blocked below.
+iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ subnet }} -j ACCEPT
 {% set agent_tailnet_ip = hermes_docker_agent_tailnet_ips.get(agent_name, '') %}
 {% if agent_tailnet_ip | string | length > 0 %}
 {% for port in hermes_docker_allowed_tailnet_ports %}

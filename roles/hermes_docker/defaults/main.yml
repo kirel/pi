@@ -26,13 +26,29 @@ hermes_docker_command:
   - /command/with-contenv
   - sh
   - -lc
-  - mkdir -p /opt/data/logs/services; /opt/hermes/.venv/bin/supervisord -c /etc/supervisor/supervisord.conf; rm -f /run/service/gateway-default/down; /opt/hermes/.venv/bin/hermes gateway start; exec sleep infinity
+  - mkdir -p /opt/data/logs/services; find /opt/hermes -type d -exec chmod a+rx {} +; find /opt/hermes -type f -exec chmod a+r {} +; /opt/hermes/.venv/bin/supervisord -c /etc/supervisor/supervisord.conf; rm -f /run/service/gateway-default/down; /opt/hermes/.venv/bin/hermes gateway start; exec sleep infinity
 hermes_docker_pull_policy: build
 hermes_docker_compose_pull: policy
 hermes_docker_ensure_running: true
 hermes_docker_restart_policy: unless-stopped
 hermes_docker_network_name: hermes-agents
 hermes_docker_shm_size: 1g
+
+# Optional Hermes WebUI containers. Each enabled agent gets a WebUI sidecar
+# sharing the agent's Hermes home. Non-Tailscale agents publish host ports at
+# hermes_docker_webui_base_port + agent index; Tailscale agents share the
+# per-agent Tailscale namespace and can be routed by per-agent Caddy.
+hermes_docker_webui_enabled: false
+hermes_docker_webui_agents_enabled: {}
+hermes_docker_webui_image: ghcr.io/nesquena/hermes-webui:latest
+hermes_docker_webui_container_port: 8787
+hermes_docker_webui_base_port: 18787
+hermes_docker_webui_bind_address: ""
+hermes_docker_webui_password: ""
+hermes_docker_webui_state_dir: /home/hermeswebui/.hermes/webui
+hermes_docker_webui_home_dir: /home/hermeswebui/.hermes
+hermes_docker_webui_workspace_dir: /workspace
+hermes_docker_webui_workspace_host_dir: ""
 
 # Put each Hermes agent on the Tailnet through an official Tailscale sidecar.
 # The Hermes container shares the sidecar's network namespace, so Tailnet users
