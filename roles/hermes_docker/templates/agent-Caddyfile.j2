@@ -23,7 +23,9 @@
 
     @dashboard host {{ hermes_docker_agent_caddy_dashboard_subdomain }}.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }}
     handle @dashboard {
-        reverse_proxy 127.0.0.1:{{ hermes_dashboard_container_port }}
+        reverse_proxy 127.0.0.1:{{ hermes_dashboard_container_port }} {
+            header_up Host 127.0.0.1
+        }
     }
 
     import {{ hermes_docker_agent_caddy_sites_dir }}/*.caddy

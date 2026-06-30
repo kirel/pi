@@ -31,11 +31,6 @@ hermes_docker_agents_env:
     API_SERVER_HOST: "0.0.0.0"
     API_SERVER_PORT: "8642"
     API_SERVER_MODEL_NAME: hermes-multipurpose
-  sabine:
-    API_SERVER_ENABLED: "true"
-    API_SERVER_HOST: "0.0.0.0"
-    API_SERVER_PORT: "8642"
-    API_SERVER_MODEL_NAME: hermes-sabine
 hermes_docker_litellm_manage_keys: true
 hermes_docker_litellm_team:
   team_id: hermes-docker
