@@ -38,6 +38,8 @@
     - qwen3.6-27b-slots
     - qwen3.6-mtp-slots
     - qwen3.6-27b-mtp-slots
+    - gemma-4-26b-a4b-qat-slots
+    - gemma-4-31b-qat-slots
   become: true
   when: llamaswap_enabled | bool
 

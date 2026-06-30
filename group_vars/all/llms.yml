@@ -6,7 +6,7 @@ model_group_alias:
   home-smart: "Qwen3.6-35B-A3B-Instruct-misc"
   home-vision: "Qwen3.6-35B-A3B-Instruct-misc"
   home-ha: "Qwen3.6-35B-A3B-Instruct-ha"
-  home-hermes: "Qwen3.6-27B-Instruct-hermes"
+  home-hermes: "Qwen3.6-35B-A3B-Instruct-hermes"
   home-embed: "qwen3-embedding"
   home-remote: "google/gemini-3-flash-preview"
 
@@ -20,6 +20,8 @@ llama_prompt_cache_parallel_slots: 3
 # headroom while qwen3-embedding and speech services can stay resident.
 llama_ctx_size_qwen35_3090: 786432 # 458752
 llama_ctx_size_qwen27_3090: 655360
+llama_ctx_size_gemma4_26b_3090: 655360
+llama_ctx_size_gemma4_31b_3090: 655360
 
 litellm_fallbacks:
   - home: ["home-remote"]
@@ -153,6 +155,123 @@ llamaswap_models:
           cache_prompt: true
       hermes:
         temperature: 0.6
+        top_p: 0.95
+        presence_penalty: 0.0
+        extra_body:
+          id_slot: 1
+          cache_prompt: true
+      misc:
+        extra_body:
+          id_slot: 2
+          cache_prompt: true
+
+  - alias: Gemma-4-26B-A4B-it-qat
+    # Gemma 4 QAT uses one recommended GGUF quant (UD-Q4_K_XL). The same
+    # Hugging Face repo includes mtp-* GGUFs, and current llama.cpp enables
+    # Gemma MTP from -hf plus --spec-type draft-mtp without a separate draft HF.
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/gemma-4-26B-A4B-it-qat-GGUF:UD-Q4_K_XL
+      --port ${PORT}
+      --ctx-size {{ llama_ctx_size_gemma4_26b_3090 }}
+      --parallel {{ llama_prompt_cache_parallel_slots }}
+      --slot-save-path /app/.cache/gemma-4-26b-a4b-qat-slots
+      --n-predict 32768
+      --n-gpu-layers 99
+      -sm tensor
+      -fa on
+      --cache-type-k q4_0
+      --cache-type-v q4_0
+      --temp 1.0
+      --top-p 0.95
+      --top-k 64
+      --spec-type draft-mtp
+      --spec-draft-n-max 2
+      --chat-template-kwargs '{"enable_thinking": true}'
+      --jinja
+      --fit on
+      --fit-target {{ llama_fit_target_3090_mb }}
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    allowed_openai_params:
+      - extra_body
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}},{{gpu_3090_1_uuid}}"
+    variants:
+      nothink:
+        temperature: 1.0
+        top_p: 0.95
+        extra_body:
+          id_slot: 2
+          cache_prompt: true
+          chat_template_kwargs:
+            enable_thinking: false
+      ha:
+        extra_body:
+          id_slot: 0
+          cache_prompt: true
+      hermes:
+        temperature: 1.0
+        top_p: 0.95
+        presence_penalty: 0.0
+        extra_body:
+          id_slot: 1
+          cache_prompt: true
+      misc:
+        extra_body:
+          id_slot: 2
+          cache_prompt: true
+
+  - alias: Gemma-4-31B-it-qat
+    # Gemma 4 QAT 31B with same-repo mtp-* GGUF auto-loaded by llama.cpp
+    # from -hf plus --spec-type draft-mtp.
+    cmd: >-
+      /app/llama-server
+      -hf unsloth/gemma-4-31B-it-qat-GGUF:UD-Q4_K_XL
+      --port ${PORT}
+      --ctx-size {{ llama_ctx_size_gemma4_31b_3090 }}
+      --parallel {{ llama_prompt_cache_parallel_slots }}
+      --slot-save-path /app/.cache/gemma-4-31b-qat-slots
+      --n-predict 32768
+      --n-gpu-layers 99
+      -sm tensor
+      -fa on
+      --cache-type-k q4_0
+      --cache-type-v q4_0
+      --temp 1.0
+      --top-p 0.95
+      --top-k 64
+      --spec-type draft-mtp
+      --spec-draft-n-max 2
+      --chat-template-kwargs '{"enable_thinking": true}'
+      --jinja
+      --fit on
+      --fit-target {{ llama_fit_target_3090_mb }}
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    allowed_openai_params:
+      - extra_body
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}},{{gpu_3090_1_uuid}}"
+    variants:
+      nothink:
+        temperature: 1.0
+        top_p: 0.95
+        extra_body:
+          id_slot: 2
+          cache_prompt: true
+          chat_template_kwargs:
+            enable_thinking: false
+      ha:
+        extra_body:
+          id_slot: 0
+          cache_prompt: true
+      hermes:
+        temperature: 1.0
         top_p: 0.95
         presence_penalty: 0.0
         extra_body:
