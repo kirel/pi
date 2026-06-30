@@ -38,6 +38,18 @@ openrouter_models:
   - google/gemini-3.5-flash
   - google/gemini-3.1-flash-lite
 
+litellm_extra_models:
+  - model_name: minimax-m3
+    litellm_params:
+      model: minimax/MiniMax-M3
+      api_key: os.environ/MINIMAX_API_KEY
+      api_base: https://api.minimax.io/v1
+
+  - model_name: glm-5.2
+    litellm_params:
+      model: zai/glm-5.2
+      api_key: os.environ/ZAI_API_KEY
+
 llamaswap_models:
   # Keep public model IDs stable once exposed via LiteLLM/LlamaSwap.
   # Existing aliases are mixed-case because clients may already depend on them.
