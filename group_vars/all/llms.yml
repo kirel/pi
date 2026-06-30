@@ -33,8 +33,10 @@ openrouter_models:
   - anthropic/claude-haiku-4.5
   - anthropic/claude-sonnet-4.6
   - anthropic/claude-opus-4.8
-  - minimax/minimax-m3
-  - google/gemini-3-flash-preview
+  - deepseek/deepseek-v4-flash
+  - deepseek/deepseek-v4-pro
+  - google/gemini-3.5-flash
+  - google/gemini-3.1-flash-lite
 
 llamaswap_models:
   # Keep public model IDs stable once exposed via LiteLLM/LlamaSwap.
