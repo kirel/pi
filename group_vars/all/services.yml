@@ -249,6 +249,16 @@ services:
     icon: si-openai
     wol: "{{ ailab_mac_address }}"
     try: 360s
+  hermes-webui-local:
+    name: Hermes WebUI Local
+    target: ailab-ubuntu.lan
+    http_port: 18787
+    domain: webui.local.kirelabs.org
+    nodocker: true
+    group: AI
+    icon: si-openai
+    wol: "{{ ailab_mac_address }}"
+    try: 360s
   glances-ailab-ubuntu:
     name: Glances AI Lab
     target: ailab-ubuntu.lan

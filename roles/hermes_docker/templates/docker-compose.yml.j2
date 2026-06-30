@@ -75,6 +75,9 @@ services:
 {% endif %}
     volumes:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_container_data_dir }}
+{% if agent_name in hermes_docker_webui_agent_names %}
+      - hermes-agent-src-{{ agent_name }}:/opt/hermes
+{% endif %}
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf:ro
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/conf.d:{{ hermes_container_data_dir }}/supervisor/conf.d
 {% if hermes_docker_agent_caddy_enabled | bool %}
@@ -135,6 +138,47 @@ services:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/data:/data
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/config:/config
 {% endif %}
+{% if agent_name in hermes_docker_webui_agent_names %}
+  webui-hermes-{{ agent_name }}:
+    image: {{ hermes_docker_webui_image }}
+    container_name: webui-hermes-{{ agent_name }}
+    restart: {{ hermes_docker_restart_policy }}
+    env_file:
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/webui.env
+{% if hermes_docker_tailscale_enabled | bool %}
+    network_mode: service:ts-hermes-{{ agent_name }}
+    depends_on:
+      - ts-hermes-{{ agent_name }}
+      - hermes-{{ agent_name }}
+{% else %}
+    ports:
+      - "{{ (hermes_docker_webui_bind_address | default('') | string | length > 0) | ternary((hermes_docker_webui_bind_address | string) ~ ':', '') }}{{ hermes_docker_webui_base_port | int + agent_index }}:{{ hermes_docker_webui_container_port }}"
+    depends_on:
+      - hermes-{{ agent_name }}
+{% if hermes_docker_isolate_agents | bool %}
+    extra_hosts:
+{% for host_entry in hermes_docker_agent_extra_hosts[agent_name] %}
+      - {{ host_entry | to_json }}
+{% endfor %}
+    dns:
+{% for dns_server in hermes_docker_dns_servers %}
+      - {{ dns_server | to_json }}
+{% endfor %}
+{% endif %}
+    networks:
+{% if hermes_docker_isolate_agents | bool %}
+      - {{ hermes_docker_agent_networks[agent_name].name }}
+{% else %}
+      - {{ hermes_docker_network_name }}
+{% endif %}
+{% endif %}
+    volumes:
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_docker_webui_home_dir }}
+      - hermes-agent-src-{{ agent_name }}:{{ hermes_docker_webui_home_dir }}/hermes-agent:ro
+{% if hermes_docker_webui_workspace_host_dir | string | length > 0 %}
+      - {{ hermes_docker_webui_workspace_host_dir }}:{{ hermes_docker_webui_workspace_dir }}
+{% endif %}
+{% endif %}
 {% endfor %}
 
 networks:
@@ -149,4 +193,11 @@ networks:
 {% else %}
   {{ hermes_docker_network_name }}:
     driver: bridge
+{% endif %}
+{% if hermes_docker_webui_agent_names | length > 0 %}
+
+volumes:
+{% for agent_name in hermes_docker_webui_agent_names %}
+  hermes-agent-src-{{ agent_name }}:
+{% endfor %}
 {% endif %}

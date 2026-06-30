@@ -27,6 +27,13 @@
             header_up Host 127.0.0.1
         }
     }
+{% if agent_name in hermes_docker_webui_agent_names %}
+
+    @webui host webui.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }}
+    handle @webui {
+        reverse_proxy 127.0.0.1:{{ hermes_docker_webui_container_port }}
+    }
+{% endif %}
 
     import {{ hermes_docker_agent_caddy_sites_dir }}/*.caddy
 
