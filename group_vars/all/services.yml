@@ -230,25 +230,21 @@ services:
     wol: "{{ ailab_mac_address }}"
     try: 360s
   hermes-local:
-    name: Hermes Local
+    name: Hermes Local Dashboard
     target: ailab-ubuntu.lan
     http_port: 18080
     domain: hermes-local.kirelabs.org
     nodocker: true
     group: AI
-    icon: si-openai
-    wol: "{{ ailab_mac_address }}"
-    try: 360s
-  hermes-local-api:
-    name: Hermes Local API
+    icon: mdi-view-dashboard
+  hermes-local-webui:
+    name: Hermes Local WebUI
     target: ailab-ubuntu.lan
-    http_port: 8642
-    domain: hermes-local-api.kirelabs.org
+    http_port: 18787
+    domain: hermes-local-webui.kirelabs.org
     nodocker: true
     group: AI
     icon: si-openai
-    wol: "{{ ailab_mac_address }}"
-    try: 360s
   glances-ailab-ubuntu:
     name: Glances AI Lab
     target: ailab-ubuntu.lan
