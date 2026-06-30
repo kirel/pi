@@ -47,8 +47,9 @@ litellm_extra_models:
 
   - model_name: glm-5.2
     litellm_params:
-      model: zai/glm-5.2
+      model: openai/glm-5.2
       api_key: os.environ/ZAI_API_KEY
+      api_base: https://api.z.ai/api/coding/paas/v4
 
 llamaswap_models:
   # Keep public model IDs stable once exposed via LiteLLM/LlamaSwap.
