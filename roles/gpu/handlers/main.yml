@@ -1,5 +1,9 @@
 ---
 # handlers file for gpu
+- name: update initramfs
+  ansible.builtin.command: update-initramfs -u
+  become: true
+
 - name: reboot system
   ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible for nvidia driver installation"

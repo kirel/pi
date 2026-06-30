@@ -1,79 +1,109 @@
-# eGPU Handover Document: RTX 5060 Ti Integration
+# eGPU Stability Plan (RTX 5060 Ti on ASRock Z790 Taichi Lite)
 
-## Status: ✅ SUCCESS (June 2026)
+## Current diagnosis
 
-The eGPU is fully recognized and operational on the host system alongside both internal RTX 3090s.
-
-```text
-+-----------------------------------------------------------------------------------------+
-| NVIDIA-SMI 610.43.02              KMD Version: 610.43.02     CUDA UMD Version: 13.3     |
-|=========================================+========================+======================|
-|   0  NVIDIA GeForce RTX 3090        On  |   00000000:01:00.0 Off |                  N/A |
-|=========================================+========================+======================|
-|   1  NVIDIA GeForce RTX 3090        On  |   00000000:02:00.0 Off |                  N/A |
-|=========================================+========================+======================|
-|   2  NVIDIA GeForce RTX 5060 Ti     On  |   00000000:08:00.0 Off |                  N/A |
-+-----------------------------------------+------------------------+----------------------+
-```
-
----
-
-## 🛠️ The Final Working Configuration
-
-### 1. BIOS Settings (ASRock Z790 Taichi Lite)
-*   **Above 4G Decoding:** Enabled
-*   **VT-d / Intel Virtualization:** Disabled (Disables IOMMU/VF allocations system-wide)
-*   **SR-IOV Support:** Disabled
-*   **CSM:** Disabled
-*   **Resizable BAR / C.A.M.:** Disabled (for baseline stability - see ReBAR section below)
-
-### 2. Kernel boot parameters (`/etc/default/grub`)
-```text
-GRUB_CMDLINE_LINUX_DEFAULT="pci=realloc=off"
-```
-
-The currently booted command line may still contain `pci=realloc=off,nosriov` from testing. On kernel `6.8.0-124-generic`, `nosriov` is not a valid PCI option:
+The eGPU is the current stability risk, not Speaches or the 3090 VRAM layout.
+Kernel logs showed the RTX 5060 Ti at PCI `0000:08:00.0` / UUID
+`GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f` triggering:
 
 ```text
-PCI: Unknown option `nosriov'
+NVRM: Xid (PCI:0000:08:00): 31 ... MMU Fault ... ACCESS_TYPE_VIRT_READ
+nvGpuOpsReportFatalError: uvm encountered global fatal error 0x60, requiring os reboot to recover
+Xid ... 154 ... GPU recovery action ... OS Reboot
 ```
 
-It should be removed during cleanup. The working option is `pci=realloc=off`.
+Once this happens, NVIDIA UVM is poisoned globally: existing CUDA contexts may keep
+running for a while, but new large CUDA loads fail (llama-swap reloads, Speaches
+Whisper STT). A normal container restart is not enough; host reboot/power-cycle is
+required.
 
----
+Ghost VRAM on GPU2 is not itself evidence of a leak here; it can simply be ComfyUI
+models still resident.
 
-## 🧠 Diagnostic Explanation (How we solved it)
+## Immediate software mitigations
 
-1.  **BIOS vs Kernel Allocations:** In early boot, the BIOS successfully mapped the eGPU's non-prefetchable `BAR 0` (64 MB) and prefetchable `BAR 1` (256 MB) regions.
-2.  **The Trigger:** Later in the boot process, the kernel noticed legacy/unused device resources that weren't fully mapped (such as the GPU's legacy I/O port `BAR 5` or Virtual Function BARs from SR-IOV capability).
-3.  **The Fallacy:** Even without `pci=realloc` in GRUB, the kernel's default behavior was to trigger resource reallocation (`pci_bus No. 2 try to assign unassigned res`) to try and fit these unmapped virtual/legacy BARs.
-4.  **The Failure:** The reallocation discarded the working BIOS assignments, but then failed to fit the newly requested hotplug allocations (since Thunderbolt bridge windows are constrained to 737 MB by the ACPI map). This left the eGPU with `BAR0 is 0M @ 0x0`.
-5.  **The Fix:**
-    *   **VT-d disabled** in BIOS may reduce IOMMU-related pressure and should remain part of the known-good baseline unless retested separately.
-    *   **`pci=realloc=off`** explicitly commands the Linux kernel not to discard BIOS assignments. The kernel keeps the BIOS-allocated BAR0/BAR1/BAR3 regions and successfully initializes the eGPU.
+1. Keep Speaches Whisper resident:
 
-Confirmed working BAR assignment:
+```yaml
+speaches_stt_model_ttl: 0
+```
+
+This avoids repeated CTranslate2/Whisper CUDA load/unload cycles. If Speaches does
+not treat `0` as never-unload, use a very large value such as `86400`.
+
+2. Move off the bleeding-edge 610 driver branch. Pin NVIDIA through the `gpu` role
+to a packaged, less experimental branch first:
+
+```yaml
+nvidia_driver_version: 590.48.01-0ubuntu1
+```
+
+If 590 still Xids, try `580.167.08-1ubuntu1`. If 580 does not support the 5060 Ti
+well enough, go back to the newest non-610 branch available.
+
+3. Add conservative NVIDIA module options through the `gpu` role:
 
 ```text
-Region 0: Memory at 74000000 (32-bit, non-prefetchable) [size=64M]
-Region 1: Memory at 6000000000 (64-bit, prefetchable) [size=256M]
-Region 3: Memory at 6010000000 (64-bit, prefetchable) [size=32M]
-Region 5: I/O ports at 3000 [size=128]
+options nvidia NVreg_PreserveVideoMemoryAllocations=1 NVreg_DynamicPowerManagement=0x02
 ```
 
----
+The goal is to reduce aggressive power-state transitions on the Thunderbolt/eGPU
+path.
 
-## 🚀 Future Options: Testing Resizable BAR
+## BIOS settings to verify
 
-Currently, Resizable BAR (C.A.M.) is disabled, limiting the eGPU's prefetchable memory window to 256 MB. Since we have disabled kernel reallocation (`pci=realloc=off`), we can now attempt to re-enable ReBAR in the BIOS.
+Motherboard: ASRock Z790 Taichi Lite, BIOS 12.01.
 
-### Why it might work now:
-When ReBAR is enabled in the BIOS, the ASRock motherboard will allocate a 16 GB prefetchable window above 4 GB for the eGPU at boot time. Because `pci=realloc=off` is set, the kernel will NOT attempt to discard or resize this window.
+Recommended stability baseline:
 
-### How to test:
-1.  Reboot into BIOS.
-2.  Set **C.A.M. (Clever Access Memory) / Resizable BAR** to **Enabled**.
-3.  Boot to Linux.
-4.  Run `nvidia-smi` and check if all 3 GPUs load successfully.
-5.  If it succeeds, check the BAR sizes using `sudo lspci -vv -s 08:00.0`. `Region 1` should show `size=16G`.
-6.  *Fallback:* If the system hangs, gets stuck in a boot loop, or the driver fails again, reboot, enter BIOS, and set Resizable BAR back to **Disabled**.
+- Above 4G Decoding: Enabled
+- CSM: Disabled
+- VT-d / IOMMU: keep the known-good setting from the original eGPU bring-up
+- SR-IOV: Disabled
+- PCIe ASPM / Native ASPM / PCIe Native Power Management: Disabled
+- Thunderbolt PCIe tunneling: Enabled
+- Thunderbolt Security: No Security or User Authorization
+- Thunderbolt boot/preboot support: Disabled unless needed
+- Wake from Thunderbolt/USB: Disabled
+- ErP / deep sleep: Disabled
+- Re-Size BAR / C.A.M.: keep Disabled for baseline stability; test Enabled only
+  after the driver is stable
+
+Known-good Linux boot parameter from bring-up:
+
+```text
+pci=realloc=off
+```
+
+Keep this unless deliberately retesting PCI resource allocation.
+
+## Validation after reboot
+
+1. Confirm all GPUs:
+
+```bash
+nvidia-smi -L
+nvidia-smi --query-gpu=index,uuid,name,memory.used,memory.free --format=csv
+```
+
+2. Confirm no fresh kernel errors:
+
+```bash
+sudo dmesg -T | grep -Ei 'NVRM|Xid|thunderbolt|AER|pcie' | tail -100
+```
+
+3. Load stable baseline:
+
+- 27B or 35B via llama-swap
+- qwen3-embedding on GPU0
+- Speaches STT on GPU1
+
+4. Test Speaches once and keep it resident:
+
+```bash
+curl https://speaches.kirelabs.org/health
+# TTS + STT smoke tests
+```
+
+5. Only then start ComfyUI/Wan2GP workloads on GPU2. If Xid 31 returns, isolate the
+eGPU workload and test with ReBAR off, ASPM off, and driver branch 590 vs 580.

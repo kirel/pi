@@ -4,10 +4,28 @@ gpu_power_limit_watts: 250
 gpu_persistence_mode: true
 
 # CUDA repo package versions for Ubuntu 24.04.
-nvidia_driver_version: 610.43.02-1ubuntu1
+# Keep off the bleeding-edge 610 branch for eGPU stability unless required.
+nvidia_driver_version: 590.48.01-0ubuntu1
 nvidia_driver_packages:
   - "nvidia-open={{ nvidia_driver_version }}"
   - "nvidia-driver-open={{ nvidia_driver_version }}"
+  - "nvidia-dkms-open={{ nvidia_driver_version }}"
+  - "nvidia-kernel-common={{ nvidia_driver_version }}"
+  - "nvidia-kernel-source-open={{ nvidia_driver_version }}"
+  - "nvidia-firmware={{ nvidia_driver_version }}"
+  - "nvidia-modprobe={{ nvidia_driver_version }}"
+  - "nvidia-persistenced={{ nvidia_driver_version }}"
+  - "nvidia-settings={{ nvidia_driver_version }}"
+  - "xserver-xorg-video-nvidia={{ nvidia_driver_version }}"
+  - "libnvidia-cfg1={{ nvidia_driver_version }}"
+  - "libnvidia-common={{ nvidia_driver_version }}"
+  - "libnvidia-compute={{ nvidia_driver_version }}"
+  - "libnvidia-decode={{ nvidia_driver_version }}"
+  - "libnvidia-encode={{ nvidia_driver_version }}"
+  - "libnvidia-extra={{ nvidia_driver_version }}"
+  - "libnvidia-fbc1={{ nvidia_driver_version }}"
+  - "libnvidia-gl={{ nvidia_driver_version }}"
+  - "libnvidia-gpucomp={{ nvidia_driver_version }}"
 
 # Pin enforcement: hold the pinned driver packages so an unattended
 # `apt upgrade` cannot drift the NVIDIA version away from the pinned one.
@@ -20,6 +38,20 @@ nvidia_driver_hold_packages:
   - nvidia-dkms-open
   - nvidia-kernel-common
   - nvidia-kernel-source-open
+  - nvidia-firmware
+  - nvidia-modprobe
+  - nvidia-persistenced
+  - nvidia-settings
+  - xserver-xorg-video-nvidia
+  - libnvidia-cfg1
+  - libnvidia-common
+  - libnvidia-compute
+  - libnvidia-decode
+  - libnvidia-encode
+  - libnvidia-extra
+  - libnvidia-fbc1
+  - libnvidia-gl
+  - libnvidia-gpucomp
 
 # Purge prebuilt NVIDIA kernel-module packages whose major branch does not
 # match the pinned DKMS driver (e.g. leftover linux-modules-nvidia-580-open-*
@@ -27,6 +59,11 @@ nvidia_driver_hold_packages:
 # NOTE: this purges exact package names only, never `apt autoremove`, which on
 # this host would wrongly remove live userspace libs (libnvidia-extra etc.).
 nvidia_cleanup_legacy_kernel_modules: false
+
+# Conservative NVIDIA module options for Thunderbolt/eGPU stability.
+nvidia_modprobe_options:
+  - NVreg_PreserveVideoMemoryAllocations=1
+  - NVreg_DynamicPowerManagement=0x02
 
 nvidia_container_toolkit_version: 1.19.1-1
 nvidia_container_toolkit_packages:

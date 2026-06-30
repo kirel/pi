@@ -60,6 +60,21 @@
       become: true
       when: _nvidia_stale_module_pkgs | length > 0
 
+- name: Configure NVIDIA kernel module stability options
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/nvidia-stability.conf
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      # Managed by Ansible role gpu.
+      options nvidia {{ nvidia_modprobe_options | join(' ') }}
+  become: true
+  notify:
+    - update initramfs
+    - reboot system
+  when: nvidia_modprobe_options | length > 0
+
 - name: Setup NVIDIA container toolkit repository
   block:
     - name: Add NVIDIA container repository GPG key
