@@ -322,6 +322,18 @@
     loop_var: agent_name
     label: "{{ agent_name }}"
 
+- name: Ensure existing per-agent data files are owned by Hermes user
+  ansible.builtin.file:
+    path: "{{ hermes_docker_base_dir }}/{{ agent_name }}/data"
+    state: directory
+    owner: "{{ hermes_docker_data_uid }}"
+    group: "{{ hermes_docker_data_gid }}"
+    recurse: true
+  loop: "{{ hermes_docker_effective_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+
 - name: Create per-agent supervisor directories
   ansible.builtin.file:
     path: "{{ item.path }}"

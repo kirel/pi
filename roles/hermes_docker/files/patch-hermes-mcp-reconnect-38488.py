@@ -79,6 +79,10 @@ SLOW_LOOP_MARKERS = (
     "slow background retry",
     "slow re-probe attempt",
     "exhausted fast reconnect budget",
+    # Upstream fixed the permanent give-up by parking the task until an
+    # explicit reconnect event wakes it again.
+    "parking until a reconnect is requested",
+    "_wait_for_reconnect_or_shutdown",
 )
 
 RESET_MARKERS = (
