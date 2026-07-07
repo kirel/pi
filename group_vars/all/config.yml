@@ -56,6 +56,8 @@ teddycloud_http_port: 8013
 teddycloud_box_port: 4443
 changedetection_http_port: 8016
 dockhand_http_port: 8017
+dozzle_http_port: 8018
+dozzle_agent_port: 7007
 immich_http_port: 2283
 immich_ml_http_port: 3003
 immich_ml_hostname: "ailab-ubuntu.lan"
@@ -131,6 +133,7 @@ whisper_data_folder: "{{ config_root }}/whisper"
 readeck_data_folder: "{{ config_root }}/readeck"
 readeck_domain_name: readeck.kirelabs.org
 dockhand_data_folder: "{{ config_root }}/dockhand"
+dozzle_data_folder: "{{ config_root }}/dozzle"
 linkding_data_folder: "{{ config_root }}/linkding"
 linkding_domain_name: linkding.kirelabs.org
 n8n_config_folder: "{{ config_root }}/n8n"

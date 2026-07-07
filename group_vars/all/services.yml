@@ -59,6 +59,13 @@ services:
     domain: dockhand.kirelabs.org
     group: Monitoring
     icon: mdi-docker
+  dozzle:
+    name: Dozzle
+    target: homelab-nuc.lan
+    http_port: "{{ dozzle_http_port }}"
+    domain: dozzle.kirelabs.org
+    group: Monitoring
+    icon: dozzle
   prunemate:
     name: PruneMate
     target: homelab-nuc.lan

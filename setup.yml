@@ -11,6 +11,7 @@
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
+    - { role: dozzle, become: true, tags: [dozzle, monitoring] }
     - { role: glances, become: true, tags: [glances] }
     - { role: zfs, become: true, tags: [zfs, storage] }
     - { role: storage, become: true, tags: [storage] }
@@ -43,6 +44,7 @@
     - { role: geerlingguy.pip, become: true, tags: [docker] }
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true, docker_users: [daniel] } }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
+    - { role: dozzle, become: true, tags: [dozzle, monitoring] }
     - { role: hermes_docker, become: true, tags: [hermes, hermes-docker] }
     - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
     - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
@@ -56,6 +58,7 @@
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
     - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
+    - { role: dozzle, become: true, tags: [dozzle, monitoring] }
     - { role: cloud_security, become: true, tags: [security, cloud-security] }
 
 - name: Setup nameserver
@@ -70,6 +73,7 @@
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
+    - { role: dozzle, become: true, tags: [dozzle, monitoring] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
     - { role: glances, become: true, tags: [glances] }
     - { role: pihole, become: true, tags: [pihole] }
@@ -84,6 +88,7 @@
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
+    - { role: dozzle, become: true, tags: [dozzle, monitoring] }
     - { role: glances, become: true, tags: [glances] }
     - { role: virtualhere, become: true, tags: [virtualhere] }
 
@@ -99,6 +104,7 @@
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
+    - { role: dozzle, become: true, tags: [dozzle, monitoring] }
     - { role: gpu, become: true, tags: [gpu, gpu-driver] }
     - { role: glances, become: true, tags: [glances], vars: { glances_nvidia_support: true } }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
