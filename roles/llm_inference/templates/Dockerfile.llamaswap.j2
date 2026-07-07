@@ -4,6 +4,31 @@ FROM ghcr.io/mostlygeek/llama-swap:cuda
 
 USER root
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    ffmpeg \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/root/.local/bin:${PATH}"
+ENV UV_PYTHON_INSTALL_DIR=/opt/uv-python
+ENV UV_CACHE_DIR=/app/.uv-cache
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
+    && uv --version
+
+# Clone faster-qwen3-tts source and preinstall the python environment.
+# Use Python 3.10 (as upstream requires): the qwen-tts/librosa/numba/llvmlite
+# dependency chain does not support the base image's Python 3.12.
+# uv auto-downloads a managed CPython 3.10; make it world-readable so the
+# non-root runtime user (10001) can execute the venv.
+RUN git clone --depth 1 --branch {{ llamaswap_qwen3_tts_repo_ref }} {{ llamaswap_qwen3_tts_repo }} {{ llamaswap_qwen3_tts_repo_path }} \
+    && uv venv --python 3.10 {{ llamaswap_qwen3_tts_venv_path }} \
+    && uv pip install --python {{ llamaswap_qwen3_tts_venv_path }}/bin/python "-e {{ llamaswap_qwen3_tts_repo_path }}" fastapi "uvicorn[standard]" pydub \
+    && chmod -R a+rX /opt/uv-python
+
 # Keep llama-swap from upstream, but refresh llama.cpp from the official CUDA
 # server image so OpenAI-compatible /v1/audio/transcriptions is available.
 COPY --from=llama_cpp /app/llama-server /app/llama-server
@@ -14,7 +39,7 @@ COPY --from=llama_cpp /app/lib* /app/
 # home/cache for llama.cpp/Hugging Face downloads.
 RUN getent passwd 10001 >/dev/null || echo 'app:x:10001:10001::/app:/bin/bash' >> /etc/passwd \
  && getent group 10001 >/dev/null || echo 'app:x:10001:' >> /etc/group \
- && mkdir -p /app/.cache \
+ && mkdir -p /app/.cache /app/.uv-cache /app/qwen3-tts \
  && chown -R 10001:10001 /app
 
 ENV HOME=/app

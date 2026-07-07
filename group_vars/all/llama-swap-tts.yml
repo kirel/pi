@@ -1,0 +1,11 @@
+---
+llamaswap_qwen3_tts_presets:
+  de-host:
+    language: German
+    instruct: "tiefe, freundliche männliche Radiostimme mit sauberem Standarddeutsch, ruhig und souverän, warm, nahbar, natürliches Tempo, klare Betonung ohne Theatralik"
+  de-female:
+    language: German
+    instruct: "warme weibliche deutsche Stimme, klar und professionell, freundlich, leicht lächelnd, natürliches Sprechtempo, präzise Artikulation, modern und unaufgeregt"
+  de-explain:
+    language: German
+    instruct: "ruhige deutsche Erklärstimme für technische Inhalte, klar strukturiert, konzentriert, sachlich aber angenehm, mittlere Tonlage, kurze Pausen bei komplexen Begriffen"

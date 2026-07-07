@@ -1,0 +1,404 @@
+#!/usr/bin/env python3
+"""OpenAI-compatible TTS endpoint for stable Qwen3-TTS voice presets.
+
+Voices are configured in design-voices.json as {name: {language, instruct}}.
+At startup, missing voices are prepared once:
+
+1. VoiceDesign generates a persistent reference WAV from the prompt.
+2. The Base model extracts a small speaker embedding from that WAV.
+3. Runtime requests use voice cloning with the cached speaker embedding.
+"""
+
+import argparse
+import gc
+import hashlib
+import io
+import json
+import logging
+import os
+import struct
+import threading
+
+import numpy as np
+import torch
+import uvicorn
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import Response
+from pydantic import BaseModel
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(title="Qwen3-TTS Stable Voices")
+
+tts_model = None
+voice_presets: dict = {}
+voice_clone_prompts: dict[str, dict] = {}
+voice_cache_dir = "/app/qwen3-tts/voice-cache"
+voice_cache_probe_text = "Das ist eine kurze Referenzphrase zum Vorbereiten der Stimme."
+voice_runtime_model = ""
+voice_design_model = ""
+voice_ready_by_name: dict[str, bool] = {}
+voice_locks: dict[str, threading.Lock] = {}
+_sample_rate = 24000
+_model_lock = threading.Lock()
+_global_lock = threading.Lock()
+
+
+class SpeechRequest(BaseModel):
+    model: str = "qwen3-tts"
+    input: str
+    voice: str = "de-host"
+    response_format: str = "wav"
+    speed: float = 1.0
+
+
+@app.get("/")
+def root():
+    return {"status": "ok", "voices": sorted(voice_presets)}
+
+
+@app.exception_handler(Exception)
+async def _unhandled(request, exc):
+    logger.exception("unhandled in %s", request.url.path)
+    return Response(content='{"detail":"internal error; see subprocess logs"}', media_type="application/json", status_code=500)
+
+
+def _to_pcm16(pcm: np.ndarray) -> bytes:
+    return np.clip(pcm * 32768, -32768, 32767).astype(np.int16).tobytes()
+
+
+def _wav_bytes(pcm: np.ndarray, sample_rate: int) -> bytes:
+    raw = _to_pcm16(pcm)
+    header = struct.pack(
+        "<4sI4s4sIHHIIHH4sI",
+        b"RIFF", 36 + len(raw), b"WAVE", b"fmt ", 16,
+        1, 1, sample_rate, sample_rate * 2, 2, 16, b"data", len(raw),
+    )
+    return header + raw
+
+
+def _pydub_bytes(pcm: np.ndarray, sample_rate: int, fmt: str) -> bytes:
+    try:
+        from pydub import AudioSegment
+    except ImportError as exc:
+        raise HTTPException(status_code=500, detail=f"response_format={fmt!r} requires pydub") from exc
+
+    segment = AudioSegment(
+        _to_pcm16(pcm),
+        frame_rate=sample_rate,
+        sample_width=2,
+        channels=1,
+    )
+    buf = io.BytesIO()
+    if fmt == "opus":
+        segment.export(buf, format="ogg", codec="libopus")
+    else:
+        segment.export(buf, format=fmt)
+    return buf.getvalue()
+
+
+def _audio_response(pcm: np.ndarray, sample_rate: int, fmt: str) -> Response:
+    media_types = {
+        "wav": "audio/wav",
+        "mp3": "audio/mpeg",
+        "opus": "audio/ogg; codecs=opus",
+    }
+    if fmt == "wav":
+        content = _wav_bytes(pcm, sample_rate)
+    else:
+        content = _pydub_bytes(pcm, sample_rate, fmt)
+    return Response(content=content, media_type=media_types[fmt])
+
+
+def _safe_voice_key(name: str) -> str:
+    return "".join(ch for ch in name if ch.isalnum() or ch in {"_", "-", "."}).strip("._") or "voice"
+
+
+def _signature_for_voice(cfg: dict) -> str:
+    payload = json.dumps(
+        {
+            "design_model": voice_design_model,
+            "runtime_model": voice_runtime_model,
+            "language": cfg.get("language", "Auto"),
+            "instruct": cfg.get("instruct", ""),
+            "probe_text": cfg.get("reference_text", voice_cache_probe_text),
+        },
+        sort_keys=True,
+        ensure_ascii=False,
+    )
+    return hashlib.sha1(payload.encode("utf-8")).hexdigest()[:16]
+
+
+def _cache_paths(voice_name: str, cfg: dict) -> tuple[str, str, str]:
+    base_name = f"{_safe_voice_key(voice_name)}.{_signature_for_voice(cfg)}"
+    return (
+        os.path.join(voice_cache_dir, f"{base_name}.json"),
+        os.path.join(voice_cache_dir, f"{base_name}.wav"),
+        os.path.join(voice_cache_dir, f"{base_name}.speaker.pt"),
+    )
+
+
+def _load_metadata(path: str) -> dict | None:
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, encoding="utf-8") as handle:
+            return json.load(handle)
+    except Exception as exc:
+        logger.warning("ignoring invalid voice cache metadata %s: %s", path, exc)
+        return None
+
+
+def _write_metadata(path: str, voice_name: str, cfg: dict, ref_wav_path: str, speaker_path: str) -> None:
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(
+            {
+                "voice": voice_name,
+                "signature": _signature_for_voice(cfg),
+                "design_model": voice_design_model,
+                "runtime_model": voice_runtime_model,
+                "language": cfg.get("language", "Auto"),
+                "instruct": cfg.get("instruct", ""),
+                "reference_text": cfg.get("reference_text", voice_cache_probe_text),
+                "reference_wav": ref_wav_path,
+                "speaker_embedding": speaker_path,
+            },
+            handle,
+            indent=2,
+            ensure_ascii=False,
+        )
+        handle.write("\n")
+
+
+def _voice_lock(name: str) -> threading.Lock:
+    with _global_lock:
+        lock = voice_locks.get(name)
+        if lock is None:
+            lock = threading.Lock()
+            voice_locks[name] = lock
+        return lock
+
+
+def _voice_cache_ready(name: str, cfg: dict) -> bool:
+    metadata_path, ref_wav_path, speaker_path = _cache_paths(name, cfg)
+    metadata = _load_metadata(metadata_path)
+    return bool(
+        metadata
+        and metadata.get("signature") == _signature_for_voice(cfg)
+        and metadata.get("design_model") == voice_design_model
+        and metadata.get("runtime_model") == voice_runtime_model
+        and os.path.exists(ref_wav_path)
+        and os.path.exists(speaker_path)
+    )
+
+
+def _reference_ready(name: str, cfg: dict) -> bool:
+    metadata_path, ref_wav_path, _speaker_path = _cache_paths(name, cfg)
+    metadata = _load_metadata(metadata_path)
+    return bool(
+        metadata
+        and metadata.get("signature") == _signature_for_voice(cfg)
+        and metadata.get("design_model") == voice_design_model
+        and os.path.exists(ref_wav_path)
+    )
+
+
+def _ensure_reference_audio(name: str, cfg: dict, design_model) -> None:
+    if _reference_ready(name, cfg):
+        return
+
+    language = cfg.get("language", "Auto")
+    instruct = cfg.get("instruct", "")
+    reference_text = cfg.get("reference_text", voice_cache_probe_text)
+    logger.info("generating reference audio for voice %s", name)
+
+    audio_arrays, sample_rate = design_model.generate_voice_design(
+        text=reference_text,
+        language=language,
+        instruct=instruct,
+    )
+    if not audio_arrays:
+        raise RuntimeError(f"voice reference generation for {name} produced no audio")
+
+    os.makedirs(voice_cache_dir, exist_ok=True)
+    metadata_path, ref_wav_path, speaker_path = _cache_paths(name, cfg)
+    with open(ref_wav_path, "wb") as handle:
+        handle.write(_wav_bytes(audio_arrays[0], sample_rate or _sample_rate))
+    _write_metadata(metadata_path, name, cfg, ref_wav_path, speaker_path)
+
+
+def _ensure_speaker_embedding(name: str, cfg: dict) -> None:
+    metadata_path, ref_wav_path, speaker_path = _cache_paths(name, cfg)
+    if os.path.exists(speaker_path):
+        return
+
+    logger.info("extracting speaker embedding for voice %s", name)
+    prompt_items = tts_model.model.create_voice_clone_prompt(
+        ref_audio=ref_wav_path,
+        ref_text="",
+        x_vector_only_mode=True,
+    )
+    spk_emb = prompt_items[0].ref_spk_embedding.detach().cpu()
+    torch.save(spk_emb, speaker_path)
+    _write_metadata(metadata_path, name, cfg, ref_wav_path, speaker_path)
+
+
+def _load_voice_prompt(name: str, cfg: dict) -> None:
+    _metadata_path, _ref_wav_path, speaker_path = _cache_paths(name, cfg)
+    spk_emb = torch.load(speaker_path, weights_only=True).to(tts_model.device)
+    voice_clone_prompts[name] = {
+        "ref_code": [None],
+        "ref_spk_embedding": [spk_emb],
+        "x_vector_only_mode": [True],
+        "icl_mode": [False],
+    }
+    voice_ready_by_name[name] = True
+
+
+def _ensure_voice_ready(name: str, cfg: dict) -> None:
+    if voice_ready_by_name.get(name) and name in voice_clone_prompts:
+        return
+
+    with _voice_lock(name):
+        if voice_ready_by_name.get(name) and name in voice_clone_prompts:
+            return
+        if not _voice_cache_ready(name, cfg):
+            _ensure_speaker_embedding(name, cfg)
+        _load_voice_prompt(name, cfg)
+
+
+@app.get("/health")
+async def health():
+    return {
+        "status": "ok",
+        "model_loaded": tts_model is not None,
+        "runtime_model": voice_runtime_model,
+        "design_model": voice_design_model,
+        "voices": sorted(voice_presets),
+    }
+
+
+@app.get("/v1/audio/voices")
+async def list_voices():
+    return {
+        "object": "list",
+        "data": [
+            {
+                "voice_id": name,
+                "language": cfg.get("language", "Auto"),
+                "description": cfg.get("instruct", ""),
+                "ready": _voice_cache_ready(name, cfg),
+                "mode": "voice_clone_xvector",
+            }
+            for name, cfg in sorted(voice_presets.items())
+        ],
+    }
+
+
+@app.post("/v1/audio/speech")
+def create_speech(req: SpeechRequest):
+    if tts_model is None:
+        raise HTTPException(status_code=503, detail="model not loaded")
+    if not req.input.strip():
+        raise HTTPException(status_code=400, detail="'input' is empty")
+    cfg = voice_presets.get(req.voice)
+    if cfg is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"voice {req.voice!r} unknown; available: {sorted(voice_presets)}",
+        )
+    fmt = req.response_format.lower()
+    if fmt == "ogg":
+        fmt = "opus"
+    if fmt not in {"wav", "mp3", "opus"}:
+        raise HTTPException(status_code=400, detail="supported response_format values: wav, mp3, opus")
+
+    try:
+        _ensure_voice_ready(req.voice, cfg)
+        with _model_lock:
+            audio_arrays, sample_rate = tts_model.generate_voice_clone(
+                text=req.input,
+                language=cfg.get("language", "Auto"),
+                voice_clone_prompt=voice_clone_prompts[req.voice],
+            )
+    except Exception as exc:
+        logger.exception("generate_voice_clone failed")
+        raise HTTPException(status_code=500, detail=f"generation failed: {exc}") from exc
+
+    if not audio_arrays:
+        raise HTTPException(status_code=500, detail="generation produced no audio")
+    return _audio_response(audio_arrays[0], sample_rate or _sample_rate, fmt)
+
+
+def _parse_args():
+    p = argparse.ArgumentParser(description="OpenAI-compatible TTS API for stable Qwen3-TTS voices")
+    p.add_argument("--runtime-model", default=os.environ.get("QWEN_TTS_RUNTIME_MODEL", "Qwen/Qwen3-TTS-12Hz-1.7B-Base"))
+    p.add_argument("--design-model", default=os.environ.get("QWEN_TTS_DESIGN_MODEL", "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign"))
+    p.add_argument("--presets", default=os.environ.get("QWEN_TTS_PRESETS", "design-voices.json"))
+    p.add_argument("--voice-cache-dir", default=os.environ.get("QWEN_TTS_VOICE_CACHE_DIR", "/app/qwen3-tts/voice-cache"))
+    p.add_argument("--voice-cache-probe-text", default=os.environ.get("QWEN_TTS_VOICE_CACHE_PROBE_TEXT", "Das ist eine kurze Referenzphrase zum Vorbereiten der Stimme."))
+    p.add_argument("--host", default="0.0.0.0")
+    p.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8000")))
+    p.add_argument("--device", default="cuda")
+    p.add_argument("--cache-dir", default=os.environ.get("UV_CACHE_DIR", None))
+    return p.parse_args()
+
+
+def _prepare_references(FasterQwen3TTS, device: str) -> None:
+    missing = [(name, cfg) for name, cfg in sorted(voice_presets.items()) if not _reference_ready(name, cfg)]
+    if not missing:
+        logger.info("all voice reference wavs are already prepared")
+        return
+
+    logger.info("loading design model %s to prepare %d voice reference(s)", voice_design_model, len(missing))
+    design_model = FasterQwen3TTS.from_pretrained(voice_design_model, device=device, dtype=torch.bfloat16)
+    try:
+        for name, cfg in missing:
+            _ensure_reference_audio(name, cfg, design_model)
+    finally:
+        del design_model
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+
+def _prepare_speakers() -> None:
+    for name, cfg in sorted(voice_presets.items()):
+        _ensure_speaker_embedding(name, cfg)
+        _load_voice_prompt(name, cfg)
+
+
+def main():
+    global tts_model, voice_presets, _sample_rate, voice_cache_dir, voice_cache_probe_text, voice_runtime_model, voice_design_model
+
+    args = _parse_args()
+    voice_cache_dir = args.voice_cache_dir
+    voice_cache_probe_text = args.voice_cache_probe_text
+    voice_runtime_model = args.runtime_model
+    voice_design_model = args.design_model
+    if args.cache_dir:
+        os.environ.setdefault("UV_CACHE_DIR", args.cache_dir)
+
+    with open(args.presets, encoding="utf-8") as handle:
+        voice_presets = json.load(handle)
+    if not voice_presets:
+        raise SystemExit(f"no voices configured in {args.presets}")
+
+    from faster_qwen3_tts import FasterQwen3TTS
+
+    os.makedirs(voice_cache_dir, exist_ok=True)
+    _prepare_references(FasterQwen3TTS, args.device)
+
+    logger.info("loading runtime model %s on %s", voice_runtime_model, args.device)
+    tts_model = FasterQwen3TTS.from_pretrained(voice_runtime_model, device=args.device, dtype=torch.bfloat16)
+    _sample_rate = tts_model.sample_rate
+    _prepare_speakers()
+    logger.info("loaded stable voices: %s", ", ".join(sorted(voice_presets)))
+    logger.info("voice cache dir: %s", voice_cache_dir)
+
+    uvicorn.run(app, host=args.host, port=args.port)
+
+
+if __name__ == "__main__":
+    main()

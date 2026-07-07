@@ -78,6 +78,50 @@ LlamaSwap runs on `ailab-ubuntu` with GPU acceleration across the two RTX 3090s.
 - **Context sizing:** explicit per-model context sizes in `llama_ctx_size_qwen35_3090` and `llama_ctx_size_qwen27_3090`; do not rely on llama.cpp `--fit` under tensor parallelism
 - **WebUI:** https://llama-swap.kirelabs.org/ui
 
+### Qwen3-TTS Stable Voices
+
+`qwen3-tts` is served as an OpenAI-compatible TTS endpoint inside LlamaSwap.
+It uses a JSON voice registry at `qwen3-tts/design-voices.json`.
+
+Voice preparation is Ansible/LlamaSwap driven:
+
+1. Missing voice reference WAVs are generated once with the VoiceDesign model.
+2. Speaker embeddings are extracted once with the Base model and stored as `*.speaker.pt`.
+3. Runtime requests use Base voice cloning with the cached speaker embedding.
+
+This keeps named voices stable across requests while still letting prompts define
+new voices declaratively.
+
+Default voices are defined in `group_vars/all/llama-swap-tts.yml` (`llamaswap_qwen3_tts_presets`):
+
+- `de-host`
+- `de-female`
+- `de-explain`
+
+To change voices, edit that file and redeploy LlamaSwap. A changed prompt creates
+a new cache signature; unchanged voices keep their existing reference WAV and
+speaker embedding.
+
+```bash
+uv run ansible-playbook setup.yml --tags llm-inference --limit ailab_ubuntus
+```
+
+Generate speech (`model` must match the LlamaSwap alias `qwen3-tts`):
+
+```bash
+curl https://llama-swap.kirelabs.org/v1/audio/speech \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen3-tts","input":"Hallo, willkommen im Homelab.","voice":"de-host","response_format":"wav"}' \
+  --output speech.wav
+```
+
+Supported `response_format` values are `wav`, `mp3`, and `opus` (Ogg/Opus).
+List configured voices (the model query param is required by LlamaSwap's routing):
+
+```bash
+curl "https://llama-swap.kirelabs.org/v1/audio/voices?model=qwen3-tts" | jq
+```
+
 ### Embedding Presets
 
 Embedding models use a simple fixed default in `group_vars/all/llms.yml`:

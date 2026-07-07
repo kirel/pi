@@ -26,6 +26,36 @@
   become: true
   when: llamaswap_enabled | bool
 
+- name: Ensure qwen3-tts data directory is writable by container user
+  ansible.builtin.file:
+    path: "{{ llamaswap_qwen3_tts_voices_path }}"
+    state: directory
+    owner: "10001"
+    group: "10001"
+    mode: "0755"
+  become: true
+  when: llamaswap_enabled | bool
+
+- name: Ensure qwen3-TTS voice cache directory is writable by container user
+  ansible.builtin.file:
+    path: "{{ llamaswap_qwen3_tts_voice_cache_path }}"
+    state: directory
+    owner: "10001"
+    group: "10001"
+    mode: "0755"
+  become: true
+  when: llamaswap_enabled | bool
+
+- name: Ensure uv cache directory is writable by container user
+  ansible.builtin.file:
+    path: "{{ llamaswap_qwen3_tts_uv_cache_path }}"
+    state: directory
+    owner: "10001"
+    group: "10001"
+    mode: "0755"
+  become: true
+  when: llamaswap_enabled | bool
+
 - name: Ensure llama.cpp slot cache directories exist
   ansible.builtin.file:
     path: "{{ llamaswap_config_path }}/cache/{{ item }}"
@@ -56,6 +86,24 @@
     src: Dockerfile.llamaswap.j2
     dest: "{{ llamaswap_build_context }}/Dockerfile"
     mode: "0644"
+  become: true
+  notify: Restart llama-swap
+  when: llamaswap_enabled | bool
+
+- name: Template qwen3-TTS voice design presets
+  ansible.builtin.template:
+    src: qwen3_tts_design_presets.json.j2
+    dest: "{{ llamaswap_qwen3_tts_presets_path }}"
+    mode: "0644"
+  become: true
+  notify: Restart llama-swap
+  when: llamaswap_enabled | bool
+
+- name: Template qwen3-TTS OpenAI-compatible server script
+  ansible.builtin.template:
+    src: qwen3_tts_openai_server.py.j2
+    dest: "{{ llamaswap_qwen3_tts_server_script }}"
+    mode: "0755"
   become: true
   notify: Restart llama-swap
   when: llamaswap_enabled | bool
@@ -103,6 +151,8 @@
     volumes:
       - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
       - "{{ llamaswap_config_path }}/cache:/app/.cache"
+      - "{{ llamaswap_qwen3_tts_voices_path }}:{{ llamaswap_qwen3_tts_container_path }}"
+      - "{{ llamaswap_qwen3_tts_uv_cache_path }}:/app/.uv-cache"
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/usr/bin/docker:/usr/bin/docker"
     device_requests:

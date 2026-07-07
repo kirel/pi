@@ -10,10 +10,7 @@ model_group_alias:
   home-embed: "qwen3-embedding"
   home-remote: "google/gemini-3-flash-preview"
 
-# Shared memory reservation knobs for the 24 GiB RTX 3090.
-# Keep enough headroom for persistent embeddings and speech services while
-# llama.cpp auto-fits the context budget.
-llama_fit_target_3090_mb: "3000,4500"
+# llama.cpp --fit is not implemented for tensor split mode.
 llama_prompt_cache_parallel_slots: 3
 # Fixed total ctx for the 3 dedicated llama.cpp slots on the 3090.
 # MTP GGUFs are slightly larger than the base GGUFs, so keep a little more
@@ -44,12 +41,24 @@ litellm_extra_models:
       model: minimax/MiniMax-M3
       api_key: os.environ/MINIMAX_API_KEY
       api_base: https://api.minimax.io/v1
+    # MiniMax-M3 is a reasoning-capable multimodal model (per pi-ai catalog);
+    # declare capabilities so LiteLLM reports them via /model/info and clients
+    # like pi-provider-litellm enable thinking/vision instead of falling back
+    # to supports_reasoning=false on /v1/models-only discovery.
+    model_info:
+      supports_reasoning: true
+      supports_vision: true
 
   - model_name: glm-5.2
     litellm_params:
       model: openai/glm-5.2
       api_key: os.environ/ZAI_API_KEY
       api_base: https://api.z.ai/api/coding/paas/v4
+    # GLM-5.2 supports extended thinking (zai thinkingFormat); LiteLLM's
+    # /v1/models fallback doesn't expose supports_reasoning, so declare it
+    # here. The zai compat/thinkingFormat is matched by pi via the catalog id.
+    model_info:
+      supports_reasoning: true
 
 llamaswap_models:
   # Keep public model IDs stable once exposed via LiteLLM/LlamaSwap.
@@ -72,6 +81,7 @@ llamaswap_models:
       --n-predict 32768
       --n-gpu-layers 99
       -sm tensor
+      --fit off
       -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
@@ -84,8 +94,6 @@ llamaswap_models:
       --spec-draft-n-max 2
       --chat-template-kwargs '{"preserve_thinking": true}'
       --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -133,6 +141,7 @@ llamaswap_models:
       --n-predict 32768
       --n-gpu-layers 99
       -sm tensor
+      --fit off
       -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
@@ -145,8 +154,6 @@ llamaswap_models:
       --spec-draft-n-max 2
       --chat-template-kwargs '{"preserve_thinking": true}'
       --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -194,6 +201,7 @@ llamaswap_models:
       --n-predict 32768
       --n-gpu-layers 99
       -sm tensor
+      --fit off
       -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
@@ -204,8 +212,6 @@ llamaswap_models:
       --spec-draft-n-max 2
       --chat-template-kwargs '{"enable_thinking": true}'
       --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -252,6 +258,7 @@ llamaswap_models:
       --n-predict 32768
       --n-gpu-layers 99
       -sm tensor
+      --fit off
       -fa on
       --cache-type-k q4_0
       --cache-type-v q4_0
@@ -262,8 +269,6 @@ llamaswap_models:
       --spec-draft-n-max 2
       --chat-template-kwargs '{"enable_thinking": true}'
       --jinja
-      --fit on
-      --fit-target {{ llama_fit_target_3090_mb }}
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
@@ -321,6 +326,30 @@ llamaswap_models:
     env:
       - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}}"
 
+
+  - alias: qwen3-tts
+    # OpenAI-compatible stable TTS runtime. VoiceDesign prepares missing
+    # reference WAVs once; runtime requests use Base voice cloning with cached
+    # speaker embeddings. Keep it on GPU1 so embeddings and TTS do not contend.
+    cmd: >-
+      /app/qwen3-tts-venv/bin/python {{ llamaswap_qwen3_tts_server_container_script }}
+      --runtime-model {{ llamaswap_qwen3_tts_runtime_model }}
+      --design-model {{ llamaswap_qwen3_tts_design_model }}
+      --presets {{ llamaswap_qwen3_tts_presets_container_path }}
+      --voice-cache-dir {{ llamaswap_qwen3_tts_voice_cache_container_path }}
+      --voice-cache-probe-text "{{ llamaswap_qwen3_tts_voice_cache_probe_text }}"
+      --host 0.0.0.0
+      --port ${PORT}
+      --device cuda
+      --cache-dir /app/.uv-cache
+    supports_function_calling: false
+    supports_vision: false
+    supports_reasoning: false
+    group: "forever"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{gpu_3090_1_uuid}}"
+      - "UV_CACHE_DIR=/app/.uv-cache"
+
 llamaswap_model_groups:
   forever:
     persistent: true
@@ -331,4 +360,6 @@ llamaswap_model_groups:
     exclusive: false
 
 llamaswap_preload:
+  - "{{ model_group_alias['home-embed'] }}"
+  - "qwen3-tts"
   - "{{ model_group_alias['home-fast'] }}"

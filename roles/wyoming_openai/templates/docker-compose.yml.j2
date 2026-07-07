@@ -10,7 +10,9 @@ services:
         curl -LsSf https://astral.sh/uv/install.sh | sh
         export PATH="/home/ubuntu/.local/bin:$PATH"
         uvx speaches-cli model download {{ stt_model }}
+{% if tts_backend == "SPEACHES" and (tts_models | string | length > 0) %}
         for model in {{ tts_models }}; do uvx speaches-cli model download "$model"; done
+{% endif %}
       '
     volumes:
       - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
@@ -41,7 +43,7 @@ services:
       - WHISPER__compute_type={{ speaches_whisper_compute_type }}
       - STT_MODEL_TTL={{ speaches_stt_model_ttl }}
       - UNSTABLE_ORT_OPTS__EXCLUDE_PROVIDERS={{ speaches_ort_exclude_providers | to_json }}
-      - NVIDIA_VISIBLE_DEVICES={{ gpu_3090_1_uuid }}
+      - NVIDIA_VISIBLE_DEVICES={{ speaches_gpu_uuid }}
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     volumes:
       - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
@@ -57,7 +59,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["{{ gpu_3090_1_uuid }}"]
+              device_ids: ["{{ speaches_gpu_uuid }}"]
               capabilities: ["gpu"]
 
 {% if wyoming_openai_enable_chatterbox %}
@@ -152,6 +154,9 @@ services:
       TTS_BACKEND: "{{ tts_backend }}"
       TTS_VOICES: "{{ tts_voices }}"
       TTS_SPEED: "{{ tts_speed }}"
+{% if tts_extra_body | string | length > 0 %}
+      TTS_EXTRA_BODY: '{{ tts_extra_body }}'
+{% endif %}
       # Enable streaming for your models
       # STT_STREAMING_MODELS: "{{ stt_streaming_models }}"
       TTS_STREAMING_MODELS: "{{ tts_streaming_models }}"
