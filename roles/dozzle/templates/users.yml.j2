@@ -1,0 +1,23 @@
+---
+users:
+{% for username, user in dozzle_users.items() if user.password is defined and user.password | length > 0 %}
+  {{ username }}:
+{% if user.email is defined %}
+    email: {{ user.email }}
+{% endif %}
+{% if user.name is defined %}
+    name: {{ user.name }}
+{% endif %}
+    password: {{ user.password }}
+{% if user.filter is defined %}
+    filter: {{ user.filter }}
+{% endif %}
+{% if user.roles is defined %}
+    roles:
+{% for role in user.roles %}
+      - {{ role }}
+{% endfor %}
+{% else %}
+    roles:
+{% endif %}
+{% endfor %}

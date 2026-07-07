@@ -1,0 +1,35 @@
+---
+dozzle_image: amir20/dozzle:latest
+dozzle_project_name: dozzle
+
+dozzle_ui_host: homelab-nuc
+dozzle_ui_enabled: "{{ inventory_hostname == dozzle_ui_host }}"
+dozzle_agent_enabled: "{{ inventory_hostname in dozzle_agent_hosts }}"
+
+dozzle_http_port: 8018
+dozzle_agent_port: 7007
+dozzle_agent_bind_address: "{{ ansible_host }}"
+
+dozzle_data_folder: "{{ config_root }}/dozzle"
+
+dozzle_agent_hosts:
+  - nameserver-pi
+  - ailab-ubuntu
+  - ubuntu-8gb-fsn1-1
+
+dozzle_agent_groups:
+  nameserver-pi: Homelab
+  ailab-ubuntu: AI
+  ubuntu-8gb-fsn1-1: Cloud
+
+dozzle_agent_names:
+  nameserver-pi: Nameserver
+  ailab-ubuntu: AI Lab
+  ubuntu-8gb-fsn1-1: Hetzner
+
+dozzle_auth_provider: simple
+dozzle_users: []
+
+dozzle_enable_actions: false
+dozzle_enable_shell: false
+dozzle_no_analytics: true

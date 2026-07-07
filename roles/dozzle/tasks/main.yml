@@ -1,0 +1,128 @@
+---
+- name: Build Dozzle remote agent list
+  ansible.builtin.set_fact:
+    dozzle_remote_agents: "{{ dozzle_remote_agents | default([]) + [_dozzle_agent] }}"
+  vars:
+    _dozzle_endpoint: "{{ hostvars[item].dozzle_agent_advertise_address | default(hostvars[item].ansible_host) }}:{{ hostvars[item].dozzle_agent_port | default(dozzle_agent_port) }}"
+    _dozzle_name: "{{ dozzle_agent_names[item] | default(item) }}"
+    _dozzle_group: "{{ dozzle_agent_groups[item] | default('Docker') }}"
+    _dozzle_agent: "{{ _dozzle_endpoint ~ '|' ~ _dozzle_name ~ '|' ~ _dozzle_group }}"
+  loop: "{{ dozzle_agent_hosts }}"
+  when:
+    - dozzle_ui_enabled | bool
+    - item in hostvars
+
+- name: Create Dozzle data directory
+  ansible.builtin.file:
+    path: "{{ dozzle_data_folder }}"
+    state: directory
+    owner: "{{ username | default(ansible_user) }}"
+    group: "{{ username | default(ansible_user) }}"
+    mode: '0755'
+  when: dozzle_ui_enabled | bool
+
+- name: Render Dozzle users file
+  ansible.builtin.template:
+    src: users.yml.j2
+    dest: "{{ dozzle_data_folder }}/users.yml"
+    owner: "{{ username | default(ansible_user) }}"
+    group: "{{ username | default(ansible_user) }}"
+    mode: '0600'
+  when:
+    - dozzle_ui_enabled | bool
+    - dozzle_users | length > 0
+
+- name: Remove Dozzle users file when no users are configured
+  ansible.builtin.file:
+    path: "{{ dozzle_data_folder }}/users.yml"
+    state: absent
+  when:
+    - dozzle_ui_enabled | bool
+    - dozzle_users | length == 0
+
+- name: Start Dozzle UI
+  community.docker.docker_compose_v2:
+    project_name: "{{ dozzle_project_name }}"
+    pull: always
+    state: present
+    definition:
+      services:
+        dozzle:
+          image: "{{ dozzle_image }}"
+          container_name: dozzle
+          restart: unless-stopped
+          ports:
+            - "{{ dozzle_http_port }}:8080"
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - "{{ dozzle_data_folder }}:/data"
+          environment: "{{ _dozzle_ui_environment }}"
+          healthcheck:
+            test: ["CMD", "/dozzle", "healthcheck"]
+            interval: 10s
+            retries: 5
+            start_period: 10s
+          labels:
+            homepage.group: "{{ services.dozzle.group }}"
+            homepage.name: "{{ services.dozzle.name }}"
+            homepage.href: "https://{{ services.dozzle.domain }}"
+            homepage.icon: "{{ services.dozzle.icon }}"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: dozzle
+  vars:
+    _dozzle_auth_environment: >-
+      {{ {'DOZZLE_AUTH_PROVIDER': dozzle_auth_provider}
+         if dozzle_auth_provider | length > 0 and dozzle_users | length > 0 else {} }}
+    _dozzle_ui_environment: >-
+      {{
+        {
+          'DOZZLE_HOSTNAME': dozzle_agent_names[inventory_hostname] | default(inventory_hostname),
+          'DOZZLE_REMOTE_AGENT': dozzle_remote_agents | default([]) | join(','),
+          'DOZZLE_ENABLE_ACTIONS': dozzle_enable_actions | string | lower,
+          'DOZZLE_ENABLE_SHELL': dozzle_enable_shell | string | lower,
+          'DOZZLE_NO_ANALYTICS': dozzle_no_analytics | string | lower
+        } | combine(_dozzle_auth_environment)
+      }}
+  register: dozzle_ui_output
+  when: dozzle_ui_enabled | bool
+
+- name: Assert Dozzle UI container is running
+  ansible.builtin.assert:
+    that:
+      - dozzle_ui_output.containers | selectattr('Name', 'equalto', 'dozzle') | list | length > 0
+      - dozzle_ui_output.containers | selectattr('Name', 'equalto', 'dozzle') | map(attribute='State') | list | first == 'running'
+  when: dozzle_ui_enabled | bool
+
+- name: Start Dozzle agent
+  community.docker.docker_compose_v2:
+    project_name: dozzle-agent
+    pull: always
+    state: present
+    definition:
+      services:
+        dozzle-agent:
+          image: "{{ dozzle_image }}"
+          container_name: dozzle-agent
+          command: agent
+          restart: unless-stopped
+          ports:
+            - "{{ dozzle_agent_bind_address }}:{{ dozzle_agent_port }}:7007"
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+          environment:
+            DOZZLE_HOSTNAME: "{{ dozzle_agent_names[inventory_hostname] | default(inventory_hostname) }}"
+            DOZZLE_NO_ANALYTICS: "{{ dozzle_no_analytics | string | lower }}"
+          healthcheck:
+            test: ["CMD", "/dozzle", "healthcheck"]
+            interval: 10s
+            retries: 5
+            start_period: 10s
+  register: dozzle_agent_output
+  when: dozzle_agent_enabled | bool
+
+- name: Assert Dozzle agent container is running
+  ansible.builtin.assert:
+    that:
+      - dozzle_agent_output.containers | selectattr('Name', 'equalto', 'dozzle-agent') | list | length > 0
+      - dozzle_agent_output.containers | selectattr('Name', 'equalto', 'dozzle-agent') | map(attribute='State') | list | first == 'running'
+  when: dozzle_agent_enabled | bool
