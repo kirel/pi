@@ -22,6 +22,16 @@
     update: true
     force: true
   become_user: "{{ username_personal }}"
+  register: wan2gp_checkout_result
+
+- name: Ensure Wan2GP checkpoint directory is writable by container user
+  ansible.builtin.file:
+    path: "{{ wan2gp_app_path }}/ckpts"
+    state: directory
+    mode: "0755"
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    recurse: true
 
 - name: Ensure Wan2GP Docker helper directory exists
   ansible.builtin.file:
@@ -57,16 +67,23 @@
       new_section = 'compute_capabilities = ' + arch_set + '''
       print(f"Manually set compute capabilities: {compute_capabilities}")'''
 
-      content = content.replace(old_section, new_section)
+      if old_section in content:
+          content = content.replace(old_section, new_section)
+      elif 'TORCH_CUDA_ARCH_LIST' in content:
+          print('SageAttention setup.py already supports TORCH_CUDA_ARCH_LIST; no patch needed')
+      else:
+          raise SystemExit('SageAttention setup.py GPU detection section not found; update Wan2GP patch_setup.py')
 
       with open('setup.py', 'w') as f:
           f.write(content)
+  register: wan2gp_patch_setup_result
 
 - name: Make Wan2GP Dockerfile compatible with classic Docker builder
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
     regexp: 'COPY <<EOF /tmp/patch_setup\.py[\s\S]*?^EOF$'
     replace: 'COPY docker/patch_setup.py /tmp/patch_setup.py'
+  register: wan2gp_dockerfile_compat_result
 
 - name: Detect Wan2GP GPU name
   ansible.builtin.command:
@@ -106,6 +123,34 @@
       {% elif '4060' in wan2gp_gpu_name_result.stdout or '3060' in wan2gp_gpu_name_result.stdout or '2060' in wan2gp_gpu_name_result.stdout or 'GTX 16' in wan2gp_gpu_name_result.stdout or '1660' in wan2gp_gpu_name_result.stdout or '1650' in wan2gp_gpu_name_result.stdout %}4
       {% else %}4{% endif %}
 
+- name: Configure Wan2GP runtime arguments
+  ansible.builtin.set_fact:
+    wan2gp_runtime_args: >-
+      {{
+        [
+          '--profile', wan2gp_effective_profile | trim,
+          '--attention', wan2gp_attention,
+          '--preload', wan2gp_preload | string,
+          '--perc-reserved-mem-max', wan2gp_perc_reserved_mem_max | string
+        ]
+        + (['--fp16'] if wan2gp_fp16 | bool else [])
+        + (['--compile'] if wan2gp_compile | bool else [])
+      }}
+
+- name: Configure Wan2GP container command
+  ansible.builtin.set_fact:
+    wan2gp_container_command: >-
+      {{
+        [
+          '--mcp',
+          '--mcp-transport', wan2gp_mcp_transport,
+          '--mcp-host', wan2gp_mcp_host,
+          '--mcp-port', wan2gp_mcp_port | string
+        ] + wan2gp_runtime_args
+        if wan2gp_mode == 'mcp'
+        else wan2gp_runtime_args
+      }}
+
 - name: Build Wan2GP image
   community.docker.docker_image:
     name: "{{ wan2gp_image }}"
@@ -115,6 +160,7 @@
       path: "{{ wan2gp_app_path }}"
       args:
         CUDA_ARCHITECTURES: "{{ wan2gp_effective_cuda_architectures | trim }}"
+  register: wan2gp_image_build_result
 
 - name: Ensure Wan2GP container is running
   community.docker.docker_container:
@@ -122,6 +168,7 @@
     image: "{{ wan2gp_image }}"
     image_name_mismatch: recreate
     state: started
+    recreate: "{{ wan2gp_image_build_result.changed }}"
     restart_policy: unless-stopped
     device_requests:
       - driver: nvidia
@@ -129,7 +176,7 @@
         capabilities:
           - ["gpu"]
     ports:
-      - "{{ wan2gp_port }}:7860"
+      - "{{ wan2gp_port }}:{{ wan2gp_mcp_port }}"
     volumes:
       - "{{ wan2gp_app_path }}:/workspace"
       - "{{ wan2gp_cache_root }}/numba:/home/user/.cache/numba"
@@ -139,14 +186,7 @@
     env:
       NVIDIA_VISIBLE_DEVICES: "{{ gpu_5060ti_uuid }}"
       NVIDIA_DRIVER_CAPABILITIES: all
-    command:
-      - "--profile"
-      - "{{ wan2gp_effective_profile | trim }}"
-      - "--attention"
-      - "{{ wan2gp_attention }}"
-      - "--compile"
-      - "--perc-reserved-mem-max"
-      - "{{ wan2gp_perc_reserved_mem_max }}"
+    command: "{{ wan2gp_container_command }}"
     labels:
       homepage.group: "{{ services.wan2gp.group }}"
       homepage.name: "{{ services.wan2gp.name }}"
@@ -161,7 +201,7 @@
   ansible.posix.authorized_key:
     user: "{{ ansible_user }}"
     key: "{{ wan2gp_openclaw_ssh_key }}"
-    key_options: 'command="docker exec {{ wan2gp_container_name }} sh -c \"$SSH_ORIGINAL_COMMAND\"",restrict'
+    key_options: 'command="docker exec -i {{ wan2gp_container_name }} sh -c \"$SSH_ORIGINAL_COMMAND\"",restrict'
     state: present
     exclusive: false
     manage_dir: true

@@ -36,6 +36,10 @@ litellm_database_url: "postgresql://{{ litellm_db_user }}:{{ litellm_db_password
 # Additional provider-backed models rendered into LiteLLM model_list.
 litellm_extra_models: []
 
+# --- WanGP MCP Settings ---
+wan2gp_mcp_host_for_litellm: "192.168.50.10"
+wan2gp_mcp_port: "{{ wan2gp_port | default(7860) }}"
+
 # --- Google Workspace MCP Settings ---
 google_workspace_mcp_image: "ghcr.io/astral-sh/uv:debian"
 google_workspace_mcp_container_name: "google-workspace-mcp"
@@ -151,3 +155,7 @@ litellm_mcp_servers:
     install:
       manager: npm
       package: bring-mcp
+  wangp:
+    url: "http://{{ wan2gp_mcp_host_for_litellm }}:{{ wan2gp_mcp_port }}/mcp/"
+    timeout: 300
+    access_groups: ["global"]
