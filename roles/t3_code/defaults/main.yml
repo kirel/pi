@@ -1,5 +1,5 @@
 ---
-t3_code_version: "0.0.24"
+t3_code_version: "0.0.28"
 t3_code_node_image: "node:24-bookworm"
 t3_code_image: "local/t3-code:latest"
 t3_code_codex_package: "@openai/codex"
