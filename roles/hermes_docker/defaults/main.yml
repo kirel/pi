@@ -175,14 +175,12 @@ hermes_docker_config_overrides:
     provider: openai
   tts:
     enabled: true
-    provider: edge
-    edge:
-      voice: de-DE-KatjaNeural
+    provider: openai
     openai:
-      model: speaches-ai/piper-de_DE-eva_k-x_low
-      voice: eva_k
-      base_url: https://speaches.kirelabs.org/v1
-      api_key: bogus
+      model: qwen3-tts
+      voice: de-host
+      base_url: https://litellm.kirelabs.org/v1
+      api_key: "${LITELLM_API_KEY}"
       speed: 1.0
   group_sessions_per_user: true
   streaming:

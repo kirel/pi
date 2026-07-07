@@ -38,6 +38,7 @@ hermes_docker_litellm_team:
   models:
     - home-fast
     - home-smart
+    - qwen3-tts
   object_permission:
     mcp_access_groups:
       - family
@@ -48,6 +49,7 @@ hermes_docker_litellm_keys:
     models:
       - home-fast
       - home-smart
+      - qwen3-tts
     mcp_access_groups:
       - family
       - global
@@ -56,6 +58,7 @@ hermes_docker_litellm_keys:
     models:
       - home-fast
       - home-smart
+      - qwen3-tts
     mcp_access_groups:
       - global
   anna:
@@ -63,6 +66,7 @@ hermes_docker_litellm_keys:
     models:
       - home-fast
       - home-smart
+      - qwen3-tts
     mcp_access_groups:
       - global
   sabine:
@@ -70,6 +74,7 @@ hermes_docker_litellm_keys:
     models:
       - home-fast
       - home-smart
+      - qwen3-tts
     mcp_access_groups:
       - family
       - global
