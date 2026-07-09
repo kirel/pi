@@ -28,6 +28,19 @@ model_list:
     model_info:
       supports_function_calling: {{ model.supports_function_calling | lower }}
       supports_vision: {{ model.supports_vision | lower }}
+{% if model.supports_reasoning is defined %}
+      supports_reasoning: {{ model.supports_reasoning | lower }}
+{% endif %}
+{% if model.context_window is defined %}
+      context_window: {{ model.context_window }}
+      max_context_tokens: {{ model.context_window }}
+{% endif %}
+{% if model.max_input_tokens is defined %}
+      max_input_tokens: {{ model.max_input_tokens }}
+{% endif %}
+{% if model.max_output_tokens is defined %}
+      max_output_tokens: {{ model.max_output_tokens }}
+{% endif %}
 
   # Model variants (if any)
   {% if model.variants is defined -%}
@@ -44,6 +57,19 @@ model_list:
     model_info:
       supports_function_calling: {{ model.supports_function_calling | lower }}
       supports_vision: {{ model.supports_vision | lower }}
+{% if model.supports_reasoning is defined %}
+      supports_reasoning: {{ model.supports_reasoning | lower }}
+{% endif %}
+{% if model.context_window is defined %}
+      context_window: {{ model.context_window }}
+      max_context_tokens: {{ model.context_window }}
+{% endif %}
+{% if model.max_input_tokens is defined %}
+      max_input_tokens: {{ model.max_input_tokens }}
+{% endif %}
+{% if model.max_output_tokens is defined %}
+      max_output_tokens: {{ model.max_output_tokens }}
+{% endif %}
   {% endfor %}
   {% endif %}
   {% endfor %}
