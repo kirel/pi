@@ -26,3 +26,11 @@ RUN apt-get update \
 RUN npm install -g \
     t3@{{ t3_code_version }} \
     {{ t3_code_codex_package }}
+
+# T3 Code only exposes project actions below its phone breakpoint. Keep the
+# action tappable on wider touch devices such as an iPad in landscape.
+COPY touch-device-fixes.css /tmp/t3-code-touch-device-fixes.css
+
+RUN t3_client_dir="$(npm root -g)/t3/dist/client" \
+    && cp /tmp/t3-code-touch-device-fixes.css "$t3_client_dir/touch-device-fixes.css" \
+    && sed -i 's#</head>#<link rel="stylesheet" href="/touch-device-fixes.css"></head>#' "$t3_client_dir/index.html"

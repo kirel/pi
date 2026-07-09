@@ -1,0 +1,21 @@
+/*
+ * T3 Code 0.0.28 hides project actions until hover, with a width-based mobile
+ * exception. iPad Safari in landscape is wider than that breakpoint and may
+ * therefore leave the new-thread action invisible and non-interactive.
+ */
+@media (hover: none), (pointer: coarse) {
+  [data-slot="tooltip-trigger"]:has(> [data-testid="new-thread-button"]) {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  div:has(> [data-slot="tooltip-trigger"] > [data-testid="new-thread-button"])
+    > [data-slot="sidebar-menu-button"] {
+    padding-right: 3.5rem;
+  }
+
+  div:has(> [data-slot="tooltip-trigger"] > [data-testid="new-thread-button"])
+    > span[data-slot="tooltip-trigger"] {
+    right: 1.75rem !important;
+  }
+}

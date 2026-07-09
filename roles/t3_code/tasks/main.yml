@@ -54,6 +54,14 @@
     group: "{{ username_personal }}"
     mode: "0644"
 
+- name: Render T3 Code touch-device fixes
+  ansible.builtin.template:
+    src: touch-device-fixes.css.j2
+    dest: "{{ t3_code_base_dir }}/touch-device-fixes.css"
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    mode: "0644"
+
 - name: Deploy T3 Code
   community.docker.docker_compose_v2:
     project_name: "{{ t3_code_project_name }}"
