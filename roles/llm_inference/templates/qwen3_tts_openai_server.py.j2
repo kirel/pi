@@ -328,7 +328,17 @@ def create_speech(req: SpeechRequest):
 
     if not audio_arrays:
         raise HTTPException(status_code=500, detail="generation produced no audio")
-    return _audio_response(audio_arrays[0], sample_rate or _sample_rate, fmt)
+    response = _audio_response(audio_arrays[0], sample_rate or _sample_rate, fmt)
+
+    # Triton/torch keep generation workspaces in the CUDA allocator. Release
+    # those temporary blocks so the resident LLM keeps its planned GPU1
+    # headroom between voice requests; model weights remain allocated.
+    del audio_arrays
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    return response
 
 
 def _parse_args():
