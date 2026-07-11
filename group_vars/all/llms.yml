@@ -3,22 +3,27 @@ llamaswap_enabled: true
 model_group_alias:
   home: "Qwen3.6-35B-A3B-Instruct-nothink"
   home-fast: "Qwen3.6-35B-A3B-Instruct-nothink"
-  home-smart: "Qwen3.6-35B-A3B-Instruct-misc"
-  home-vision: "Qwen3.6-35B-A3B-Instruct-misc"
-  home-ha: "Qwen3.6-35B-A3B-Instruct-ha"
-  home-hermes: "Qwen3.6-35B-A3B-Instruct-hermes"
+  home-smart: "Qwen3.6-35B-A3B-Instruct"
+  home-vision: "Qwen3.6-35B-A3B-Instruct"
+  home-ha: "Qwen3.6-27B-Instruct"
+  home-hermes: "Qwen3.6-27B-Instruct"
   home-embed: "qwen3-embedding"
   home-remote: "google/gemini-3-flash-preview"
 
-# llama.cpp --fit is not implemented for tensor split mode.
-llama_prompt_cache_parallel_slots: 3
-# Fixed total ctx for the 3 dedicated llama.cpp slots on the 3090.
-# MTP GGUFs are slightly larger than the base GGUFs, so keep a little more
-# headroom while qwen3-embedding and speech services can stay resident.
-llama_ctx_size_qwen35_3090: 458752
-llama_ctx_size_qwen27_3090: 458752
-llama_ctx_size_gemma4_26b_3090: 458752
-llama_ctx_size_gemma4_31b_3090: 458752
+# llama.cpp --fit is not implemented for tensor split mode. Keep the total KV
+# pools explicit so qwen3-embedding, Speaches, and qwen3-tts can stay resident
+# with at least the existing GPU headroom. Unified KV lets three concurrent
+# sequences share each pool instead of dividing it into equal per-slot contexts.
+llama_parallel_slots: 3
+llama_prompt_cache_ram_mib: 8192
+llama_native_context_qwen36: 262144
+llama_native_context_gemma4: 262144
+# The dense 27B has a substantially larger KV footprint per token. The 35B
+# uses the same conservative pool so GPU1 keeps its reserve after TTS JIT.
+llama_ctx_size_qwen35_3090: 376832
+llama_ctx_size_qwen27_3090: 376832
+llama_ctx_size_gemma4_26b_3090: 376832
+llama_ctx_size_gemma4_31b_3090: 376832
 llama_n_predict_3090: 32768
 
 litellm_fallbacks:
@@ -68,17 +73,18 @@ llamaswap_models:
   # only when we expose multiple runtimes of the same base model.
 
   - alias: Qwen3.6-35B-A3B-Instruct
-    # Use three explicit llama-server slots so Home Assistant and Hermes can
-    # keep stable prompt caches on dedicated slots while miscellaneous traffic
-    # is routed to a third slot. Fix ctx-size explicitly so the slot budget is
-    # stable even when qwen3-embedding is already resident on the 3090.
+    # Keep the proven total KV budget, but share it dynamically across three
+    # concurrent sequences. Idle histories are moved to the host prompt cache
+    # and selected automatically by prefix similarity.
     cmd: >-
       /app/llama-server
       -hf unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q4_K_XL
       --port ${PORT}
       --ctx-size {{ llama_ctx_size_qwen35_3090 }}
-      --parallel {{ llama_prompt_cache_parallel_slots }}
-      --slot-save-path /app/.cache/qwen3.6-mtp-slots
+      --parallel {{ llama_parallel_slots }}
+      --kv-unified
+      --cache-ram {{ llama_prompt_cache_ram_mib }}
+      --cache-idle-slots
       --n-predict {{ llama_n_predict_3090 }}
       --n-gpu-layers 99
       -sm tensor
@@ -98,8 +104,8 @@ llamaswap_models:
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
-    context_window: "{{ (llama_ctx_size_qwen35_3090 / llama_prompt_cache_parallel_slots) | int }}"
-    max_input_tokens: "{{ ((llama_ctx_size_qwen35_3090 / llama_prompt_cache_parallel_slots) | int) - llama_n_predict_3090 }}"
+    context_window: "{{ llama_native_context_qwen36 }}"
+    max_input_tokens: "{{ llama_native_context_qwen36 }}"
     max_output_tokens: "{{ llama_n_predict_3090 }}"
     allowed_openai_params:
       - extra_body
@@ -111,37 +117,22 @@ llamaswap_models:
         temperature: 0.7
         top_p: 0.8
         extra_body:
-          id_slot: 2
           cache_prompt: true
           chat_template_kwargs:
             enable_thinking: false
-      ha:
-        extra_body:
-          id_slot: 0
-          cache_prompt: true
-      hermes:
-        temperature: 0.6
-        top_p: 0.95
-        presence_penalty: 0.0
-        extra_body:
-          id_slot: 1
-          cache_prompt: true
-      misc:
-        extra_body:
-          id_slot: 2
-          cache_prompt: true
 
   - alias: Qwen3.6-27B-Instruct
-    # Keep the same dedicated prompt-cache slot layout as the 35B entry so the
-    # Home Assistant and Hermes routes can retain stable caches. Cap ctx-size
-    # lower than the 35B entry so qwen3-embedding can stay loaded on the 3090.
+    # Use the same dynamic three-sequence layout and total KV budget as the 35B
+    # model. The smaller Q3 weights offset this dense model's larger KV cache.
     cmd: >-
       /app/llama-server
       -hf unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q3_K_XL
       --port ${PORT}
       --ctx-size {{ llama_ctx_size_qwen27_3090 }}
-      --parallel {{ llama_prompt_cache_parallel_slots }}
-      --slot-save-path /app/.cache/qwen3.6-27b-mtp-slots
+      --parallel {{ llama_parallel_slots }}
+      --kv-unified
+      --cache-ram {{ llama_prompt_cache_ram_mib }}
+      --cache-idle-slots
       --n-predict {{ llama_n_predict_3090 }}
       --n-gpu-layers 99
       -sm tensor
@@ -161,8 +152,8 @@ llamaswap_models:
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
-    context_window: "{{ (llama_ctx_size_qwen27_3090 / llama_prompt_cache_parallel_slots) | int }}"
-    max_input_tokens: "{{ ((llama_ctx_size_qwen27_3090 / llama_prompt_cache_parallel_slots) | int) - llama_n_predict_3090 }}"
+    context_window: "{{ llama_native_context_qwen36 }}"
+    max_input_tokens: "{{ llama_native_context_qwen36 }}"
     max_output_tokens: "{{ llama_n_predict_3090 }}"
     allowed_openai_params:
       - extra_body
@@ -174,26 +165,9 @@ llamaswap_models:
         temperature: 0.7
         top_p: 0.8
         extra_body:
-          id_slot: 2
           cache_prompt: true
           chat_template_kwargs:
             enable_thinking: false
-      ha:
-        extra_body:
-          id_slot: 0
-          cache_prompt: true
-      hermes:
-        temperature: 0.6
-        top_p: 0.95
-        presence_penalty: 0.0
-        extra_body:
-          id_slot: 1
-          cache_prompt: true
-      misc:
-        extra_body:
-          id_slot: 2
-          cache_prompt: true
-
   - alias: Gemma-4-26B-A4B-it-qat
     # Gemma 4 QAT uses one recommended GGUF quant (UD-Q4_K_XL). The same
     # Hugging Face repo includes mtp-* GGUFs, and current llama.cpp enables
@@ -203,8 +177,10 @@ llamaswap_models:
       -hf unsloth/gemma-4-26B-A4B-it-qat-GGUF:UD-Q4_K_XL
       --port ${PORT}
       --ctx-size {{ llama_ctx_size_gemma4_26b_3090 }}
-      --parallel {{ llama_prompt_cache_parallel_slots }}
-      --slot-save-path /app/.cache/gemma-4-26b-a4b-qat-slots
+      --parallel {{ llama_parallel_slots }}
+      --kv-unified
+      --cache-ram {{ llama_prompt_cache_ram_mib }}
+      --cache-idle-slots
       --n-predict {{ llama_n_predict_3090 }}
       --n-gpu-layers 99
       -sm tensor
@@ -222,8 +198,8 @@ llamaswap_models:
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
-    context_window: "{{ (llama_ctx_size_gemma4_26b_3090 / llama_prompt_cache_parallel_slots) | int }}"
-    max_input_tokens: "{{ ((llama_ctx_size_gemma4_26b_3090 / llama_prompt_cache_parallel_slots) | int) - llama_n_predict_3090 }}"
+    context_window: "{{ llama_native_context_gemma4 }}"
+    max_input_tokens: "{{ llama_native_context_gemma4 }}"
     max_output_tokens: "{{ llama_n_predict_3090 }}"
     allowed_openai_params:
       - extra_body
@@ -235,25 +211,9 @@ llamaswap_models:
         temperature: 1.0
         top_p: 0.95
         extra_body:
-          id_slot: 2
           cache_prompt: true
           chat_template_kwargs:
             enable_thinking: false
-      ha:
-        extra_body:
-          id_slot: 0
-          cache_prompt: true
-      hermes:
-        temperature: 1.0
-        top_p: 0.95
-        presence_penalty: 0.0
-        extra_body:
-          id_slot: 1
-          cache_prompt: true
-      misc:
-        extra_body:
-          id_slot: 2
-          cache_prompt: true
 
   - alias: Gemma-4-31B-it-qat
     # Gemma 4 QAT 31B with same-repo mtp-* GGUF auto-loaded by llama.cpp
@@ -263,8 +223,10 @@ llamaswap_models:
       -hf unsloth/gemma-4-31B-it-qat-GGUF:UD-Q4_K_XL
       --port ${PORT}
       --ctx-size {{ llama_ctx_size_gemma4_31b_3090 }}
-      --parallel {{ llama_prompt_cache_parallel_slots }}
-      --slot-save-path /app/.cache/gemma-4-31b-qat-slots
+      --parallel {{ llama_parallel_slots }}
+      --kv-unified
+      --cache-ram {{ llama_prompt_cache_ram_mib }}
+      --cache-idle-slots
       --n-predict {{ llama_n_predict_3090 }}
       --n-gpu-layers 99
       -sm tensor
@@ -282,8 +244,8 @@ llamaswap_models:
     supports_function_calling: true
     supports_vision: true
     supports_reasoning: true
-    context_window: "{{ (llama_ctx_size_gemma4_31b_3090 / llama_prompt_cache_parallel_slots) | int }}"
-    max_input_tokens: "{{ ((llama_ctx_size_gemma4_31b_3090 / llama_prompt_cache_parallel_slots) | int) - llama_n_predict_3090 }}"
+    context_window: "{{ llama_native_context_gemma4 }}"
+    max_input_tokens: "{{ llama_native_context_gemma4 }}"
     max_output_tokens: "{{ llama_n_predict_3090 }}"
     allowed_openai_params:
       - extra_body
@@ -295,25 +257,9 @@ llamaswap_models:
         temperature: 1.0
         top_p: 0.95
         extra_body:
-          id_slot: 2
           cache_prompt: true
           chat_template_kwargs:
             enable_thinking: false
-      ha:
-        extra_body:
-          id_slot: 0
-          cache_prompt: true
-      hermes:
-        temperature: 1.0
-        top_p: 0.95
-        presence_penalty: 0.0
-        extra_body:
-          id_slot: 1
-          cache_prompt: true
-      misc:
-        extra_body:
-          id_slot: 2
-          cache_prompt: true
 
 
   - alias: qwen3-embedding
@@ -377,4 +323,4 @@ llamaswap_model_groups:
 llamaswap_preload:
   - "{{ model_group_alias['home-embed'] }}"
   - "qwen3-tts"
-  - "{{ model_group_alias['home-fast'] }}"
+  - "Qwen3.6-27B-Instruct"

@@ -56,23 +56,6 @@
   become: true
   when: llamaswap_enabled | bool
 
-- name: Ensure llama.cpp slot cache directories exist
-  ansible.builtin.file:
-    path: "{{ llamaswap_config_path }}/cache/{{ item }}"
-    state: directory
-    owner: "10001"
-    group: "10001"
-    mode: "0755"
-  loop:
-    - qwen3.6-slots
-    - qwen3.6-27b-slots
-    - qwen3.6-mtp-slots
-    - qwen3.6-27b-mtp-slots
-    - gemma-4-26b-a4b-qat-slots
-    - gemma-4-31b-qat-slots
-  become: true
-  when: llamaswap_enabled | bool
-
 - name: Ensure llama-swap build context exists
   ansible.builtin.file:
     path: "{{ llamaswap_build_context }}"

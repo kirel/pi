@@ -48,7 +48,7 @@ graph TD
 
 `templates/litellm_config.yaml.j2` renders:
 
-- local LlamaSwap models from `group_vars/all/llms.yml`, including variants such as `ha`, `hermes`, `misc`, and `nothink`;
+- local LlamaSwap base models and explicit `nothink` variants from `group_vars/all/llms.yml`; public `home-*` names are mapped through `model_group_alias`;
 - local model metadata for `/model/info`, including capability flags and context limits (`context_window`, `max_context_tokens`, `max_input_tokens`, `max_output_tokens`);
 - cloud models using vaulted provider API keys;
 - fallbacks from `litellm_fallbacks`;

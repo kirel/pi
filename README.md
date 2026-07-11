@@ -74,8 +74,9 @@ uv run ansible-playbook setup.yml --tags llm --limit homelab,ailab_ubuntus
 
 LlamaSwap runs on `ailab-ubuntu` with GPU acceleration across the two RTX 3090s.
 
-- **Primary models:** configured in `group_vars/all/llms.yml` (currently Qwen3.6 35B/27B llama.cpp slots plus `qwen3-embedding`)
-- **Context sizing:** explicit per-model context sizes in `llama_ctx_size_qwen35_3090` and `llama_ctx_size_qwen27_3090`; do not rely on llama.cpp `--fit` under tensor parallelism
+- **Primary models:** configured in `group_vars/all/llms.yml` (currently Qwen3.6 35B/27B, Gemma 4 26B/31B, and `qwen3-embedding`)
+- **Context sizing:** Qwen and Gemma use a 376832-token unified KV pool shared by three concurrent sequences; each request retains the native 262144-token model limit. The pool preserves headroom for resident embedding, STT, and TTS services, including TTS's post-JIT CUDA state. Do not rely on llama.cpp `--fit` under tensor parallelism.
+- **Prompt caching:** idle histories are selected automatically by prefix similarity and may use up to 8 GiB of host RAM; no fixed llama.cpp slot IDs are assigned. Public `home-*` names map through `model_group_alias`; only the meaningful `-nothink` behavior remains an explicit variant.
 - **WebUI:** https://llama-swap.kirelabs.org/ui
 
 ### Qwen3-TTS Stable Voices
