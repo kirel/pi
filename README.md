@@ -7,7 +7,7 @@ This is my homelab config. The repo is called `pi` because it started as a singl
 - `ailab-ubuntu` (192.168.50.10) — bare-metal GPU server: dual RTX 3090 (LLM inference, STT, embeddings, Immich ML) + RTX 5060 Ti eGPU (ComfyUI, Wan2GP, Wolf)
 - `ubuntu-8gb-fsn1-1` / Hetzner (Tailnet IP 100.82.91.51) — cloud Docker host for Hermes agents
 - `dashserv-m-1` (77.90.42.61) — public VPS baseline host
-- `clawd` (192.168.50.12) and `winhost1` (192.168.50.11) — additional managed/special-purpose hosts
+- `clawd` (192.168.50.12) — additional managed/special-purpose host
 
 ## Bootstrap the Pi
 

@@ -282,8 +282,8 @@ Wenn etwas fehlschlägt:
   verschleiert sonst den Akteur in Audit-Logs. Key-Fingerprints sind die primäre Zuordnung.
 - **Revocation ist Pflicht:** `ops`-Keys dürfen nicht nur mit `exclusive: false` anwachsen. Für
   `ops` managed/exclusive Keylisten oder explizites Pruning verwenden.
-- **Inventory-Platzhalter/Plaintext prüfen:** `inventory` enthält `winhost1 … ansible_password=…`
-  im Klartext → Vault. Nicht ops-spezifisch, aber sicherheitsrelevant.
+- **Inventory und Git-Historie auf Klartext-Secrets prüfen:** Zugangsdaten gehören in den Vault,
+  nicht ins Inventory. Nicht ops-spezifisch, aber sicherheitsrelevant.
 - **Root-/Daniel-Zugang** erst einschränken, **nachdem** `ops` auf dem Host verifiziert funktioniert
   und ein Recovery-Pfad bestätigt ist.
 - **`cloud_security_ssh_allow_users` beachten:** falls gesetzt, muss `ops` enthalten sein, sonst
