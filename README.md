@@ -77,7 +77,16 @@ LlamaSwap runs on `ailab-ubuntu` with GPU acceleration across the two RTX 3090s.
 - **Primary models:** configured in `group_vars/all/llms.yml` (currently Qwen3.6 35B/27B, Gemma 4 26B/31B, and `qwen3-embedding`)
 - **Context sizing:** Qwen and Gemma use a 376832-token unified KV pool shared by three concurrent sequences; each request retains the native 262144-token model limit. The pool preserves headroom for resident embedding, STT, and TTS services, including TTS's post-JIT CUDA state. Do not rely on llama.cpp `--fit` under tensor parallelism.
 - **Prompt caching:** idle histories are selected automatically by prefix similarity and may use up to 8 GiB of host RAM; no fixed llama.cpp slot IDs are assigned. Public `home-*` names map through `model_group_alias`; only the meaningful `-nothink` behavior remains an explicit variant.
+- **GPU isolation:** the RTX 5060 Ti is reserved for generative media and gaming. LLM inference and its embedding/STT/TTS companions must continue to fit on the two RTX 3090s.
 - **WebUI:** https://llama-swap.kirelabs.org/ui
+
+The controlled Qwen3.6 27B prompt-processing benchmark is documented in
+[`docs/qwen36-27b-prompt-processing-benchmark-2026-07-11.md`](docs/qwen36-27b-prompt-processing-benchmark-2026-07-11.md).
+Its current recommendation is to retain tensor split, three slots, batch 2048,
+and micro-batch 512. Prompt-prefix stability produced a much larger latency
+improvement than the tested batch changes. The reserved context-pool size was
+held constant during that matrix and still requires a separate benchmark before
+any conclusion about changing it.
 
 ### Qwen3-TTS Stable Voices
 
