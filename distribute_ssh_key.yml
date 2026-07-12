@@ -18,7 +18,7 @@
         ssh_public_key: "{{ ssh_public_key_b64['content'] | b64decode }}"
 
 - name: Add SSH public key to all hosts
-  hosts: all:!winhost1
+  hosts: all
   become: yes
   gather_facts: yes
 
