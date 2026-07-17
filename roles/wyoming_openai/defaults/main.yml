@@ -27,7 +27,8 @@ stt_model: "Systran/faster-whisper-large-v3"
 speaches_whisper_inference_device: cuda
 speaches_whisper_compute_type: float16
 speaches_gpu_uuid: "{{ gpu_3090_0_uuid }}"
-speaches_stt_model_ttl: 0
+# Speaches uses -1 for "never unload"; 0 unloads immediately after each request.
+speaches_stt_model_ttl: -1
 # Keep ONNX Runtime models (Silero VAD/Piper TTS) off CUDA on RTX 50xx to avoid
 # poisoning the CUDA context before faster-whisper loads. Whisper itself still uses CUDA.
 speaches_ort_exclude_providers:

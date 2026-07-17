@@ -48,11 +48,18 @@ services:
     volumes:
       - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:{{ speaches_internal_port }}/health"]
+      # Keep the service unhealthy until Whisper is resident so dependent clients
+      # cannot send the first request into a slow CUDA/model cold start.
+      test:
+        - CMD-SHELL
+        - >-
+          curl -fsS http://localhost:{{ speaches_internal_port }}/health >/dev/null &&
+          (curl -fsS http://localhost:{{ speaches_internal_port }}/api/ps | grep -Fq '{{ stt_model }}' ||
+          curl -fsS -X POST http://localhost:{{ speaches_internal_port }}/api/ps/{{ stt_model }} >/dev/null)
       interval: 30s
-      timeout: 10s
+      timeout: 60s
       retries: 3
-      start_period: 40s
+      start_period: 90s
     runtime: nvidia
     deploy:
       resources:

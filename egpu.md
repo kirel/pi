@@ -25,7 +25,7 @@ models still resident.
 1. Keep Speaches Whisper resident:
 
 ```yaml
-speaches_stt_model_ttl: 0
+speaches_stt_model_ttl: -1
 ```
 
 This avoids repeated CTranslate2/Whisper CUDA load/unload cycles. If Speaches does
