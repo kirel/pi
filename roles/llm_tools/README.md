@@ -52,7 +52,7 @@ graph TD
 - local model metadata for `/model/info`, including capability flags and context limits (`context_window`, `max_context_tokens`, `max_input_tokens`, `max_output_tokens`);
 - cloud models using vaulted provider API keys;
 - fallbacks from `litellm_fallbacks`;
-- MCP server definitions for fetch, Tavily, Home Assistant, Immich, n8n, Todoist, GitHub Copilot, Google Maps, Notion, Bring, and Craft where configured.
+- MCP server definitions for fetch, Tavily, Home Assistant, Immich, n8n, Todoist, GitHub Copilot, Google Maps, Notion, and Craft where configured.
 
 If `/health/readiness` reports `Not connected to the query engine`, restart `litellm-proxy-container`; this usually triggers the Prisma migration path.
 

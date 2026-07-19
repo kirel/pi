@@ -145,16 +145,6 @@ litellm_mcp_servers:
     install:
       manager: npm
       package: "@notionhq/notion-mcp-server"
-  bring:
-    transport: stdio
-    command: bring-mcp
-    env:
-      MAIL: "{{ bring_email }}"
-      PW: "{{ bring_password }}"
-    access_groups: ["family"]
-    install:
-      manager: npm
-      package: bring-mcp
   wangp:
     url: "http://{{ wan2gp_mcp_host_for_litellm }}:{{ wan2gp_mcp_port }}/mcp/"
     timeout: 300
