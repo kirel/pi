@@ -75,7 +75,7 @@ uv run ansible-playbook setup.yml --tags llm --limit homelab,ailab_ubuntus
 LlamaSwap runs on `ailab-ubuntu` with GPU acceleration across the two RTX 3090s.
 
 - **Primary models:** configured in `group_vars/all/llms.yml` (currently Qwen3.6 35B/27B, Gemma 4 26B/31B, and `qwen3-embedding`)
-- **Context sizing:** Qwen and Gemma use a 376832-token unified KV pool shared by three concurrent sequences; each request retains the native 262144-token model limit. The pool preserves headroom for resident embedding, STT, and TTS services, including TTS's post-JIT CUDA state. Do not rely on llama.cpp `--fit` under tensor parallelism.
+- **Context sizing:** Qwen and Gemma 4 26B use a 376832-token unified KV pool shared by three concurrent sequences, with requests capped at the native 262144-token model limit. Dense Gemma 4 31B uses a separate 131072-token pool; 262144 leaves GPU0 effectively full and 376832 fails to start while embedding and TTS are resident. These explicit pools preserve headroom for embedding, STT, and TTS services, including TTS's post-JIT CUDA state. Do not rely on llama.cpp `--fit` under tensor parallelism.
 - **Prompt caching:** idle histories are selected automatically by prefix similarity and may use up to 8 GiB of host RAM; no fixed llama.cpp slot IDs are assigned. Public `home-*` names map through `model_group_alias`; only the meaningful `-nothink` behavior remains an explicit variant.
 - **GPU isolation:** the RTX 5060 Ti is reserved for generative media and gaming. LLM inference and its embedding/STT/TTS companions must continue to fit on the two RTX 3090s.
 - **WebUI:** https://llama-swap.kirelabs.org/ui

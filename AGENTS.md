@@ -58,6 +58,7 @@ my_server:
 - **GPUs:** GPU0+GPU1 (RTX 3090) run LLM inference plus embedding/STT/TTS. GPU2 (RTX 5060 Ti eGPU) is reserved for Wolf/ComfyUI/Wan2GP and gaming; do not use it for LLM inference or LLM benchmarks.
 - **VRAM constraint:** `llama.cpp --fit` does not work with `-sm tensor`; set explicit context sizes in `group_vars/all/llms.yml` and preserve headroom (~3GB GPU0, ~4.5GB GPU1).
 - **Qwen3.6 27B tuning:** keep tensor split, three slots, batch 2048, and micro-batch 512 unless a new simultaneous-load benchmark justifies a change. Micro-batch 1024 was only ~2.8% faster while using ~0.9GiB more VRAM per 3090; layer split and a separate single-slot profile were worse. See `docs/qwen36-27b-prompt-processing-benchmark-2026-07-11.md`.
+- **Gemma 4:** 26B uses the shared 376832-token pool; dense 31B must use its explicit 131072-token pool to preserve 3090 headroom with embedding/TTS resident. Current Unsloth GGUFs use `--reasoning on` and MTP draft max 4. When Unsloth replaces embedded chat templates, remove the affected Hugging Face repo cache before re-requesting the model; a container restart alone may retain the old GGUF.
 - **Prompt cache:** keep Think/NoThink as request variants of the same running Qwen backend. A separate LlamaSwap profile starts another `llama-server` process and discards the GPU and host prompt caches on profile switches. `preserve_thinking: true` plus stable message/tool serialization keeps the reusable prefix across turns and Think/NoThink switches.
 
 ## DNS Flow
