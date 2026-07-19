@@ -7,6 +7,8 @@ zfs_pool_name: "tank"
 immich_library_path: "/tank/immich/library"
 immich_postgres_path: "/tank/immich/postgres"
 immich_config_folder: "{{ config_root }}/immich"
+immich_external_ai_media_path: "{{ ai_media_visuals_path | default('/tank/medien/Bilder/Generated') }}"
+immich_external_ai_media_container_path: /external/ai-generated
 
 # Port Configuration
 immich_http_port: 2283

@@ -76,6 +76,14 @@
     mode: '0755'
     recurse: true
 
+- name: Ensure Immich AI-generated external library directory exists
+  ansible.builtin.file:
+    path: "{{ immich_external_ai_media_path }}"
+    state: directory
+    owner: "{{ immich_uid }}"
+    group: users
+    mode: "2775"
+
 # Create config directory
 - name: Create Immich config directory
   ansible.builtin.file:

@@ -22,6 +22,7 @@ services:
       - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
     volumes:
       - "{{ immich_library_path }}:/data"
+      - "{{ immich_external_ai_media_path }}:{{ immich_external_ai_media_container_path }}"
       - /etc/localtime:/etc/localtime:ro
       - /etc/ssl/certs:/etc/ssl/certs:ro
       - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
