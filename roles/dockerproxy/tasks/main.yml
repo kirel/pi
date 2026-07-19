@@ -7,7 +7,7 @@
 - name: Start dockerproxy
   community.docker.docker_compose_v2:
     project_name: dockerproxy
-    pull: always # Set to "always", "missing", "never", or "policy" based on your needs
+    pull: "{{ dockerproxy_pull_policy }}"
     state: present # Ensure the services are started
     definition:
       networks:
@@ -15,10 +15,10 @@
           external: true
       services:
         dockerproxy:
-          image: ghcr.io/tecnativa/docker-socket-proxy:latest
+          image: "{{ dockerproxy_image }}"
           container_name: dockerproxy
           environment:
-            LOG_LEVEL: debug
+            LOG_LEVEL: "{{ dockerproxy_log_level }}"
             POST: "1"
             CONTAINERS: "1"
             IMAGES: "1"
@@ -36,6 +36,11 @@
             - dockerproxy
           volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
+          logging:
+            driver: "{{ dockerproxy_log_driver }}"
+            options:
+              max-size: "{{ dockerproxy_log_max_size }}"
+              max-file: "{{ dockerproxy_log_max_files | string }}"
           restart: unless-stopped
   register: output
 

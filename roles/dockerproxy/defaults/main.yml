@@ -1,0 +1,7 @@
+---
+dockerproxy_image: ghcr.io/tecnativa/docker-socket-proxy:v0.4.2
+dockerproxy_pull_policy: always
+dockerproxy_log_level: warning
+dockerproxy_log_driver: local
+dockerproxy_log_max_size: 10m
+dockerproxy_log_max_files: 3
