@@ -15,6 +15,7 @@
     - { role: glances, become: true, tags: [glances] }
     - { role: zfs, become: true, tags: [zfs, storage] }
     - { role: storage, become: true, tags: [storage] }
+    - { role: syncthing_folders, become: true, tags: [storage, syncthing, syncthing-config] }
     - { role: borgmatic, become: true, tags: [borgmatic, backup] }
     - { role: caddy, become: true, tags: [caddy] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
@@ -118,6 +119,7 @@
     - { role: hermes_docker, become: true, tags: [hermes, hermes-docker] }
     - { role: t3_code, become: true, tags: [t3-code] }
     - { role: syncthing, become: true, tags: [syncthing] }
+    - { role: syncthing_folders, become: true, tags: [wan2gp, syncthing, syncthing-config] }
 
 - name: Setup SSH key distribution
   hosts: ailab_ubuntus,homelab,nameserver,hetzner,mic_satellites

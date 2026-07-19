@@ -1,0 +1,154 @@
+---
+- name: Find current Syncthing folder {{ syncthing_folders_managed_folder.id }}
+  ansible.builtin.set_fact:
+    syncthing_folders_current_folder_matches: >-
+      {{
+        syncthing_folders_current_folders_response.json
+        | selectattr('id', 'equalto', syncthing_folders_managed_folder.id)
+        | list
+      }}
+
+- name: Validate unique Syncthing folder ID {{ syncthing_folders_managed_folder.id }}
+  ansible.builtin.assert:
+    that:
+      - syncthing_folders_current_folder_matches | length <= 1
+    fail_msg: >-
+      Syncthing returned the folder ID {{ syncthing_folders_managed_folder.id }} more
+      than once.
+
+- name: Build desired Syncthing folder {{ syncthing_folders_managed_folder.id }}
+  ansible.builtin.set_fact:
+    syncthing_folders_desired_versioning: >-
+      {{
+        syncthing_folders_managed_folder.versioning
+        | default(syncthing_folders_disabled_versioning, true)
+      }}
+    syncthing_folders_desired_device_ids:
+      - "{{ syncthing_folders_local_device_id }}"
+      - "{{ syncthing_folders_peer_device_id }}"
+    syncthing_folders_folder_patch:
+      id: "{{ syncthing_folders_managed_folder.id }}"
+      label: "{{ syncthing_folders_managed_folder.label }}"
+      path: "{{ syncthing_folders_managed_folder.path }}"
+      type: sendreceive
+      devices:
+        - deviceID: "{{ syncthing_folders_local_device_id }}"
+          introducedBy: ""
+          encryptionPassword: ""
+        - deviceID: "{{ syncthing_folders_peer_device_id }}"
+          introducedBy: ""
+          encryptionPassword: ""
+      versioning: >-
+        {{
+          syncthing_folders_managed_folder.versioning
+          | default(syncthing_folders_disabled_versioning, true)
+        }}
+
+- name: Compare Syncthing folder {{ syncthing_folders_managed_folder.id }}
+  ansible.builtin.set_fact:
+    syncthing_folders_current_folder: >-
+      {{
+        (syncthing_folders_current_folder_matches | first)
+        if syncthing_folders_current_folder_matches | length == 1
+        else {}
+      }}
+    syncthing_folders_folder_exists: "{{ syncthing_folders_current_folder_matches | length == 1 }}"
+    syncthing_folders_folder_needs_update: >-
+      {{
+        syncthing_folders_current_folder_matches | length == 0
+        or (syncthing_folders_current_folder_matches | first).label != syncthing_folders_managed_folder.label
+        or (syncthing_folders_current_folder_matches | first).path != syncthing_folders_managed_folder.path
+        or (syncthing_folders_current_folder_matches | first).type != 'sendreceive'
+        or ((syncthing_folders_current_folder_matches | first).devices
+            | map(attribute='deviceID') | sort | list)
+           != (syncthing_folders_desired_device_ids | sort | list)
+        or (syncthing_folders_current_folder_matches | first).versioning
+           != syncthing_folders_desired_versioning
+      }}
+
+- name: Build new Syncthing folder from local defaults
+  ansible.builtin.set_fact:
+    syncthing_folders_new_folder_payload: >-
+      {{
+        syncthing_folders_default_folder_response.json
+        | combine(syncthing_folders_folder_patch, recursive=true, list_merge='replace')
+      }}
+  when: not syncthing_folders_folder_exists | bool
+
+- name: Create Syncthing folder {{ syncthing_folders_managed_folder.id }}
+  ansible.builtin.uri:
+    url: "{{ syncthing_folders_api_url }}/rest/config/folders"
+    method: POST
+    headers:
+      X-API-Key: "{{ syncthing_folders_api_key }}"
+    body_format: json
+    body: "{{ syncthing_folders_new_folder_payload }}"
+    status_code:
+      - 200
+      - 201
+    use_proxy: false
+  no_log: true
+  when:
+    - not ansible_check_mode
+    - not syncthing_folders_folder_exists | bool
+  changed_when: true
+
+- name: Update Syncthing folder {{ syncthing_folders_managed_folder.id }}
+  ansible.builtin.uri:
+    url: >-
+      {{ syncthing_folders_api_url }}/rest/config/folders/{{ syncthing_folders_managed_folder.id }}
+    method: PATCH
+    headers:
+      X-API-Key: "{{ syncthing_folders_api_key }}"
+    body_format: json
+    body: "{{ syncthing_folders_folder_patch }}"
+    status_code: 200
+    use_proxy: false
+  no_log: true
+  when:
+    - not ansible_check_mode
+    - syncthing_folders_folder_exists | bool
+    - syncthing_folders_folder_needs_update | bool
+  changed_when: true
+
+- name: Report pending Syncthing folder change in check mode
+  ansible.builtin.debug:
+    msg: >-
+      Syncthing folder {{ syncthing_folders_managed_folder.id }} would be
+      {{ 'updated' if syncthing_folders_folder_exists | bool else 'created' }}.
+  when:
+    - ansible_check_mode
+    - syncthing_folders_folder_needs_update | bool
+  changed_when: true
+
+- name: Read reconciled Syncthing folder {{ syncthing_folders_managed_folder.id }}
+  ansible.builtin.uri:
+    url: >-
+      {{ syncthing_folders_api_url }}/rest/config/folders/{{ syncthing_folders_managed_folder.id }}
+    method: GET
+    headers:
+      X-API-Key: "{{ syncthing_folders_api_key }}"
+    return_content: true
+    status_code: 200
+    use_proxy: false
+  register: syncthing_folders_reconciled_folder_response
+  no_log: true
+  check_mode: false
+  changed_when: false
+  when: not ansible_check_mode
+
+- name: Validate reconciled Syncthing folder {{ syncthing_folders_managed_folder.id }}
+  ansible.builtin.assert:
+    that:
+      - syncthing_folders_reconciled_folder_response.json.label == syncthing_folders_managed_folder.label
+      - syncthing_folders_reconciled_folder_response.json.path == syncthing_folders_managed_folder.path
+      - syncthing_folders_reconciled_folder_response.json.type == 'sendreceive'
+      - >-
+        (syncthing_folders_reconciled_folder_response.json.devices
+         | map(attribute='deviceID') | sort | list)
+        == (syncthing_folders_desired_device_ids | sort | list)
+      - syncthing_folders_reconciled_folder_response.json.versioning == syncthing_folders_desired_versioning
+    fail_msg: >-
+      Syncthing did not retain the desired configuration for folder
+      {{ syncthing_folders_managed_folder.id }}.
+  when: not ansible_check_mode

@@ -21,6 +21,20 @@
     - "{{ syncthing_config_folder }}"
     - "{{ syncthing_data_folder }}"
 
+- name: Create AI-generated media sync and recovery folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: users
+    mode: "2775"
+  loop:
+    - "{{ ai_media_visuals_path }}"
+    - "{{ ai_media_music_path }}"
+    - "{{ ai_media_syncthing_versions_path }}"
+    - "{{ ai_media_syncthing_versions_path }}/visuals"
+    - "{{ ai_media_syncthing_versions_path }}/music"
+
 - name: Build Samba volume list
   ansible.builtin.set_fact:
     samba_volumes: "{{ samba_volumes | default([]) + ['/etc/avahi/services/:/external/avahi'] }}"
@@ -42,7 +56,14 @@
 
 - name: Build Syncthing volume list
   ansible.builtin.set_fact:
-    syncthing_volumes: "{{ syncthing_volumes | default([]) + [syncthing_config_folder + ':/config', syncthing_data_folder + ':/data'] }}"
+    syncthing_volumes: >-
+      {{
+        syncthing_volumes | default([])
+        + [
+          syncthing_config_folder + ':/config',
+          syncthing_data_folder + ':/data'
+        ]
+      }}
   loop: "{{ [0] }}"  # Run once to initialize
 
 - name: Add Syncthing datasets to volumes

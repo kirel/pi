@@ -12,6 +12,34 @@ comfyui_storage_path: /home/{{ username_personal }}/comfyui/storage # Specific p
 # Wan2GP specific vars
 wan2gp_base_dir: /home/{{ username_personal }}/wan2gp
 
+# Syncthing folders managed through the local REST API. Folder IDs are shared
+# with the NUC configuration; paths are local to this Syncthing instance.
+syncthing_folders_config_file: /home/{{ username_personal }}/.local/state/syncthing/config.xml
+syncthing_folders_peer_name: Homelab
+syncthing_folders_managed_folders:
+  - id: ai-generated-visuals
+    label: AI Generated Visuals
+    path: "{{ wan2gp_base_dir }}/generated/visuals"
+    host_path: "{{ wan2gp_base_dir }}/generated/visuals"
+    versioning:
+      type: trashcan
+      params:
+        cleanoutDays: "30"
+      cleanupIntervalS: 3600
+      fsPath: "{{ wan2gp_base_dir }}/generated/.stversions/visuals"
+      fsType: basic
+  - id: ai-generated-music
+    label: AI Generated Music
+    path: "{{ wan2gp_base_dir }}/generated/music"
+    host_path: "{{ wan2gp_base_dir }}/generated/music"
+    versioning:
+      type: trashcan
+      params:
+        cleanoutDays: "30"
+      cleanupIntervalS: 3600
+      fsPath: "{{ wan2gp_base_dir }}/generated/.stversions/music"
+      fsType: basic
+
 # GPU performance and stability
 # Clear stale prebuilt NVIDIA kernel-module packages whose branch does not match
 # the pinned DKMS driver.

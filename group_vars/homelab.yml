@@ -4,6 +4,34 @@ dhcp_start: 192.168.50.175
 dhcp_end: 192.168.50.250
 pihole_virtual_host: pihole-homelab.lan
 
+# Syncthing folders managed through the local REST API. Versioning is enabled
+# on both peers because Syncthing versions only changes received from a peer.
+syncthing_folders_config_file: "{{ syncthing_config_folder }}/config.xml"
+syncthing_folders_peer_name: AI Lab Ubuntu
+syncthing_folders_managed_folders:
+  - id: ai-generated-visuals
+    label: AI Generated Visuals
+    path: /Medien/Bilder/Generated
+    host_path: "{{ ai_media_visuals_path }}"
+    versioning:
+      type: trashcan
+      params:
+        cleanoutDays: "30"
+      cleanupIntervalS: 3600
+      fsPath: /Medien/.stversions/ai-generated/visuals
+      fsType: basic
+  - id: ai-generated-music
+    label: AI Generated Music
+    path: /Medien/Musik/Generated
+    host_path: "{{ ai_media_music_path }}"
+    versioning:
+      type: trashcan
+      params:
+        cleanoutDays: "30"
+      cleanupIntervalS: 3600
+      fsPath: /Medien/.stversions/ai-generated/music
+      fsType: basic
+
 # Borgmatic backup configuration (Tier 2: Local configs only)
 backup_local_repo: "/tank/backups/homelab-configs"
 backup_source_directories:

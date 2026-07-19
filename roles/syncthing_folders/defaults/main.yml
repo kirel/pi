@@ -1,0 +1,12 @@
+---
+syncthing_folders_api_url: "http://127.0.0.1:{{ syncthing_http_port }}"
+syncthing_folders_config_file: ""
+syncthing_folders_peer_name: ""
+syncthing_folders_managed_folders: []
+
+syncthing_folders_disabled_versioning:
+  type: ""
+  params: {}
+  cleanupIntervalS: 3600
+  fsPath: ""
+  fsType: basic

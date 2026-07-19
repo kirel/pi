@@ -1,0 +1,211 @@
+---
+- name: Validate Syncthing folder configuration inputs
+  ansible.builtin.assert:
+    that:
+      - syncthing_folders_config_file | length > 0
+      - syncthing_folders_peer_name | length > 0
+      - syncthing_folders_managed_folders | length > 0
+      - item.id is defined
+      - item.id | length > 0
+      - item.label is defined
+      - item.path is defined
+      - item.path.startswith('/')
+      - item.host_path is defined
+      - item.host_path.startswith('/')
+    fail_msg: "Invalid managed Syncthing folder configuration: {{ item }}"
+  loop: "{{ syncthing_folders_managed_folders }}"
+  loop_control:
+    label: "{{ item.id | default('missing-id') }}"
+
+- name: Check managed Syncthing host paths
+  ansible.builtin.stat:
+    path: "{{ item.host_path }}"
+    follow: false
+  loop: "{{ syncthing_folders_managed_folders }}"
+  loop_control:
+    label: "{{ item.host_path }}"
+  register: syncthing_folders_managed_path_stats
+
+- name: Validate managed Syncthing host paths
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+      - item.stat.isdir
+    fail_msg: >-
+      Syncthing prerequisite directory {{ item.item.host_path }} is missing.
+      Deploy its owning storage or WanGP role first.
+  loop: "{{ syncthing_folders_managed_path_stats.results }}"
+  loop_control:
+    label: "{{ item.item.host_path }}"
+  when: not ansible_check_mode
+
+- name: Wait for local Syncthing REST API
+  ansible.builtin.uri:
+    url: "{{ syncthing_folders_api_url }}/rest/noauth/health"
+    method: GET
+    return_content: true
+    status_code: 200
+    use_proxy: false
+  register: syncthing_folders_health_response
+  until:
+    - syncthing_folders_health_response.json.status | default('') == 'OK'
+  retries: 15
+  delay: 2
+  check_mode: false
+  changed_when: false
+
+- name: Read local Syncthing configuration for API authentication
+  ansible.builtin.slurp:
+    src: "{{ syncthing_folders_config_file }}"
+  register: syncthing_folders_raw_config
+  no_log: true
+
+- name: Extract local Syncthing API key
+  ansible.builtin.set_fact:
+    syncthing_folders_api_key_matches: >-
+      {{
+        (syncthing_folders_raw_config.content | b64decode)
+        | regex_findall('<apikey>([^<]+)</apikey>')
+      }}
+  no_log: true
+
+- name: Validate local Syncthing API key
+  ansible.builtin.assert:
+    that:
+      - syncthing_folders_api_key_matches | length == 1
+    fail_msg: "Expected exactly one API key in {{ syncthing_folders_config_file }}."
+  no_log: true
+
+- name: Store local Syncthing API key
+  ansible.builtin.set_fact:
+    syncthing_folders_api_key: "{{ syncthing_folders_api_key_matches | first }}"
+  no_log: true
+
+- name: Read local Syncthing identity
+  ansible.builtin.uri:
+    url: "{{ syncthing_folders_api_url }}/rest/system/status"
+    method: GET
+    headers:
+      X-API-Key: "{{ syncthing_folders_api_key }}"
+    return_content: true
+    status_code: 200
+    use_proxy: false
+  register: syncthing_folders_system_status_response
+  no_log: true
+  check_mode: false
+  changed_when: false
+
+- name: Read configured Syncthing devices
+  ansible.builtin.uri:
+    url: "{{ syncthing_folders_api_url }}/rest/config/devices"
+    method: GET
+    headers:
+      X-API-Key: "{{ syncthing_folders_api_key }}"
+    return_content: true
+    status_code: 200
+    use_proxy: false
+  register: syncthing_folders_devices_response
+  no_log: true
+  check_mode: false
+  changed_when: false
+
+- name: Resolve local and peer Syncthing devices
+  ansible.builtin.set_fact:
+    syncthing_folders_local_device_id: "{{ syncthing_folders_system_status_response.json.myID }}"
+    syncthing_folders_peer_matches: >-
+      {{
+        syncthing_folders_devices_response.json
+        | selectattr('name', 'equalto', syncthing_folders_peer_name)
+        | list
+      }}
+
+- name: Validate unique Syncthing peer
+  ansible.builtin.assert:
+    that:
+      - syncthing_folders_peer_matches | length == 1
+      - syncthing_folders_peer_matches[0].deviceID != syncthing_folders_local_device_id
+    fail_msg: >-
+      Expected exactly one non-local Syncthing device named
+      {{ syncthing_folders_peer_name }}; found {{ syncthing_folders_peer_matches | length }}.
+
+- name: Store Syncthing peer device ID
+  ansible.builtin.set_fact:
+    syncthing_folders_peer_device_id: "{{ syncthing_folders_peer_matches[0].deviceID }}"
+
+- name: Read Syncthing default folder template
+  ansible.builtin.uri:
+    url: "{{ syncthing_folders_api_url }}/rest/config/defaults/folder"
+    method: GET
+    headers:
+      X-API-Key: "{{ syncthing_folders_api_key }}"
+    return_content: true
+    status_code: 200
+    use_proxy: false
+  register: syncthing_folders_default_folder_response
+  no_log: true
+  check_mode: false
+  changed_when: false
+
+- name: Read configured Syncthing folders
+  ansible.builtin.uri:
+    url: "{{ syncthing_folders_api_url }}/rest/config/folders"
+    method: GET
+    headers:
+      X-API-Key: "{{ syncthing_folders_api_key }}"
+    return_content: true
+    status_code: 200
+    use_proxy: false
+  register: syncthing_folders_current_folders_response
+  no_log: true
+  check_mode: false
+  changed_when: false
+
+- name: Reconcile managed Syncthing folders
+  ansible.builtin.include_tasks: manage_folder.yml
+  loop: "{{ syncthing_folders_managed_folders }}"
+  loop_control:
+    loop_var: syncthing_folders_managed_folder
+    label: "{{ syncthing_folders_managed_folder.id }}"
+
+- name: Check whether Syncthing restart is required
+  ansible.builtin.uri:
+    url: "{{ syncthing_folders_api_url }}/rest/config/restart-required"
+    method: GET
+    headers:
+      X-API-Key: "{{ syncthing_folders_api_key }}"
+    return_content: true
+    status_code: 200
+    use_proxy: false
+  register: syncthing_folders_restart_required_response
+  no_log: true
+  check_mode: false
+  changed_when: false
+
+- name: Restart Syncthing when required by configuration
+  ansible.builtin.uri:
+    url: "{{ syncthing_folders_api_url }}/rest/system/restart"
+    method: POST
+    headers:
+      X-API-Key: "{{ syncthing_folders_api_key }}"
+    status_code: 200
+    use_proxy: false
+  no_log: true
+  when:
+    - not ansible_check_mode
+    - syncthing_folders_restart_required_response.json.requiresRestart | bool
+  changed_when: true
+
+- name: Wait for Syncthing after optional restart
+  ansible.builtin.uri:
+    url: "{{ syncthing_folders_api_url }}/rest/noauth/health"
+    method: GET
+    return_content: true
+    status_code: 200
+    use_proxy: false
+  register: syncthing_folders_post_config_health_response
+  until:
+    - syncthing_folders_post_config_health_response.json.status | default('') == 'OK'
+  retries: 15
+  delay: 2
+  check_mode: false
+  changed_when: false

@@ -126,6 +126,11 @@ teslamate_grafana_data_folder: "{{ config_root }}/teslamate-grafana"
 nextcloud_data_folder: "{{ config_root }}/nextcloud"
 syncthing_config_folder: "{{ config_root }}/syncthing/config"
 syncthing_data_folder: "{{ config_root }}/syncthing/data"
+# AI-generated media is synced directly from AI Lab. Syncthing versions live
+# outside paths scanned by Immich, Jellyfin, and Navidrome.
+ai_media_visuals_path: /tank/medien/Bilder/Generated
+ai_media_music_path: /tank/medien/Musik/Generated
+ai_media_syncthing_versions_path: /tank/medien/.stversions/ai-generated
 openwakeword_data_folder: "{{ config_root }}/openwakeword"
 satellite_data_folder: "{{ config_root }}/satellite"
 piper_data_folder: "{{ config_root }}/piper"
