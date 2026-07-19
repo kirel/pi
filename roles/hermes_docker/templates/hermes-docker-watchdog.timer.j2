@@ -1,0 +1,12 @@
+[Unit]
+Description=Run the Hermes Docker Tailscale watchdog
+
+[Timer]
+OnBootSec={{ hermes_docker_watchdog_boot_delay }}
+OnUnitActiveSec={{ hermes_docker_watchdog_interval }}
+AccuracySec=10s
+Persistent=true
+Unit={{ hermes_docker_watchdog_service_name }}
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,9 @@
+[Unit]
+Description=Hermes Docker Tailscale watchdog
+Requires=docker.service
+After=docker.service tailscaled.service
+ConditionPathExists={{ hermes_docker_watchdog_script_path }}
+
+[Service]
+Type=oneshot
+ExecStart={{ hermes_docker_watchdog_script_path }}

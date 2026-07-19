@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+readonly compose_dir={{ hermes_docker_base_dir | quote }}
+readonly project_name={{ hermes_docker_project_name | quote }}
+readonly check_timeout={{ hermes_docker_watchdog_check_timeout_seconds | int }}
+readonly cooldown={{ hermes_docker_watchdog_cooldown_seconds | int }}
+readonly stop_timeout={{ hermes_docker_watchdog_stop_timeout_seconds | int }}
+readonly runtime_dir=/run/hermes-docker-watchdog
+readonly lock_file=/run/lock/hermes-docker-watchdog.lock
+readonly log_tag=hermes-docker-watchdog
+
+agents=(
+{% for agent_name in hermes_docker_effective_agent_names %}
+  {{ agent_name | to_json }}
+{% endfor %}
+)
+
+mkdir -p "$runtime_dir"
+exec 9>"$lock_file"
+flock -n 9 || exit 0
+
+log() {
+  logger -t "$log_tag" -- "$*"
+}
+
+claim_recovery() {
+  local component=$1
+  local stamp_file="$runtime_dir/$component.last-recovery"
+  local now last=0
+
+  now=$(date +%s)
+  if [[ -r "$stamp_file" ]]; then
+    read -r last < "$stamp_file" || last=0
+  fi
+  if (( now - last < cooldown )); then
+    log "$component is unhealthy, but recovery is in cooldown for $((cooldown - now + last)) more seconds"
+    return 1
+  fi
+  printf '%s\n' "$now" > "$stamp_file"
+}
+
+host_status=$(timeout "$check_timeout" tailscale status --json 2>/dev/null || true)
+if ! grep -q '"BackendState": "Running"' <<<"$host_status"; then
+  if claim_recovery host-tailscale; then
+    log "host tailscaled is unresponsive; restarting tailscaled.service"
+    if systemctl restart tailscaled.service; then
+      log "host tailscaled restart completed"
+    else
+      log "ERROR: host tailscaled restart failed"
+    fi
+  fi
+fi
+
+compose=(
+  docker compose
+  --project-directory "$compose_dir"
+  --project-name "$project_name"
+  --file "$compose_dir/docker-compose.yml"
+)
+
+for agent in "${agents[@]}"; do
+  sidecar="ts-hermes-$agent"
+  health=$(docker inspect --format '{% raw %}{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}{% endraw %}' "$sidecar" 2>/dev/null || true)
+  [[ "$health" == unhealthy ]] || continue
+  claim_recovery "$sidecar" || continue
+
+  services=()
+  for service in "caddy-hermes-$agent" "webui-hermes-$agent" "hermes-$agent" "$sidecar"; do
+    if docker inspect "$service" >/dev/null 2>&1; then
+      services+=("$service")
+    fi
+  done
+{% raw %}  if (( ${#services[@]} == 0 )); then{% endraw %}
+    log "ERROR: $sidecar is unhealthy but no agent services were found"
+    continue
+  fi
+
+  log "$sidecar is unhealthy; restarting the $agent agent stack"
+  if "${compose[@]}" stop --timeout "$stop_timeout" "${services[@]}" &&
+     "${compose[@]}" up --detach "${services[@]}"; then
+    log "$agent agent stack recovery completed"
+  else
+    log "ERROR: $agent agent stack recovery failed"
+  fi
+done

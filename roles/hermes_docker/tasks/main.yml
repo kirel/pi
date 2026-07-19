@@ -273,7 +273,9 @@
   become: true
   become_user: "{{ hermes_external_skills_host_owner }}"
   no_log: true
-  when: not hermes_external_skills_repo_git.stat.exists
+  when:
+    - not ansible_check_mode
+    - not hermes_external_skills_repo_git.stat.exists
 
 - name: Update external Hermes skills repository when clean
   ansible.builtin.git:
@@ -285,6 +287,7 @@
   become_user: "{{ hermes_external_skills_host_owner }}"
   no_log: true
   when:
+    - not ansible_check_mode
     - hermes_external_skills_repo_git.stat.exists
     - hermes_external_skills_repo_status.stdout | length == 0
 
@@ -414,6 +417,16 @@
   ansible.builtin.copy:
     src: patch-hermes-mcp-reconnect-38488.py
     dest: "{{ hermes_docker_base_dir }}/hermes-image/patch-hermes-mcp-reconnect-38488.py"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Recreate Hermes Docker agents
+  when: hermes_docker_build_enabled | bool
+
+- name: Copy Hermes Telegram HTTPXRequest slots patch script
+  ansible.builtin.copy:
+    src: patch-hermes-telegram-httpxrequest-slots.py
+    dest: "{{ hermes_docker_base_dir }}/hermes-image/patch-hermes-telegram-httpxrequest-slots.py"
     owner: root
     group: root
     mode: '0644'
@@ -645,6 +658,52 @@
     enabled: true
     state: restarted
   when: hermes_docker_isolate_agents | bool
+
+- name: Render Hermes Docker watchdog script
+  ansible.builtin.template:
+    src: hermes-docker-watchdog.sh.j2
+    dest: "{{ hermes_docker_watchdog_script_path }}"
+    owner: root
+    group: root
+    mode: '0755'
+  when:
+    - hermes_docker_tailscale_enabled | bool
+    - hermes_docker_watchdog_enabled | bool
+
+- name: Render Hermes Docker watchdog systemd units
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "/etc/systemd/system/{{ item.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - src: hermes-docker-watchdog.service.j2
+      dest: "{{ hermes_docker_watchdog_service_name }}"
+    - src: hermes-docker-watchdog.timer.j2
+      dest: "{{ hermes_docker_watchdog_timer_name }}"
+  register: hermes_docker_watchdog_units
+  when:
+    - hermes_docker_tailscale_enabled | bool
+    - hermes_docker_watchdog_enabled | bool
+
+- name: Reload systemd when Hermes Docker watchdog units change
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when:
+    - hermes_docker_tailscale_enabled | bool
+    - hermes_docker_watchdog_enabled | bool
+    - hermes_docker_watchdog_units is changed
+
+- name: Enable and start Hermes Docker watchdog timer
+  ansible.builtin.systemd:
+    name: "{{ hermes_docker_watchdog_timer_name }}"
+    enabled: true
+    state: started
+  when:
+    - not ansible_check_mode
+    - hermes_docker_tailscale_enabled | bool
+    - hermes_docker_watchdog_enabled | bool
 
 - name: Render Hermes Docker Compose file
   ansible.builtin.template:

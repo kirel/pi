@@ -79,13 +79,38 @@ hermes_docker_webui_workspace_host_dirs: {}
 # reach the agent by its MagicDNS name (for example hermes-marian.<tailnet>) and
 # the container's internal ports, not by host-published ports.
 hermes_docker_tailscale_enabled: true
-hermes_docker_tailscale_image: tailscale/tailscale:latest
+# Pin the stable client instead of relying on a locally cached `latest` tag.
+# Keep the host package on the same stable release via the artis3n.tailscale role.
+hermes_docker_tailscale_version: v1.98.8
+hermes_docker_tailscale_image: "tailscale/tailscale:{{ hermes_docker_tailscale_version }}"
 hermes_docker_tailscale_authkey: "{{ vault_tailscale_hermes_oauth_client_secret | default(tailscale_authkey | default('')) }}"
 hermes_docker_tailscale_authkey_suffix: "?ephemeral=false&preauthorized=true"
 hermes_docker_tailscale_tag_prefix: hermes
 hermes_docker_tailscale_hostname_prefix: hermes
 hermes_docker_tailscale_state_dir: /var/lib/tailscale
 hermes_docker_tailscale_extra_args: ""
+hermes_docker_tailscale_healthcheck_enabled: true
+hermes_docker_tailscale_healthcheck_interval: 30s
+hermes_docker_tailscale_healthcheck_timeout: 10s
+hermes_docker_tailscale_healthcheck_retries: 3
+hermes_docker_tailscale_healthcheck_start_period: 45s
+
+# Docker marks a sidecar unhealthy but does not restart it automatically. This
+# optional host watchdog recovers a stuck host daemon or the complete affected
+# agent stack. A cooldown prevents a persistent fault from causing a restart loop.
+hermes_docker_watchdog_enabled: false
+hermes_docker_watchdog_script_path: /usr/local/sbin/hermes-docker-watchdog
+hermes_docker_watchdog_service_name: hermes-docker-watchdog.service
+hermes_docker_watchdog_timer_name: hermes-docker-watchdog.timer
+hermes_docker_watchdog_check_timeout_seconds: 10
+hermes_docker_watchdog_cooldown_seconds: 900
+hermes_docker_watchdog_stop_timeout_seconds: 20
+hermes_docker_watchdog_boot_delay: 5min
+hermes_docker_watchdog_interval: 1min
+
+# Bound json-file logs so a noisy agent cannot fill the host filesystem.
+hermes_docker_log_max_size: 10m
+hermes_docker_log_max_files: 3
 
 # Optional per-agent Caddy reverse proxy running in the same Tailscale network
 # namespace as the Hermes agent. This lets users publish local agent services as

@@ -4,10 +4,13 @@ FROM ${HERMES_BASE_IMAGE}
 USER root
 
 COPY patch-hermes-mcp-reconnect-38488.py /tmp/patch-hermes-mcp-reconnect-38488.py
+COPY patch-hermes-telegram-httpxrequest-slots.py /tmp/patch-hermes-telegram-httpxrequest-slots.py
 
 RUN mkdir -p /etc/supervisor \
     && uv pip install --python /opt/hermes/.venv/bin/python --no-cache supervisor \
     && /opt/hermes/.venv/bin/python /tmp/patch-hermes-mcp-reconnect-38488.py \
+    && /opt/hermes/.venv/bin/python /tmp/patch-hermes-telegram-httpxrequest-slots.py \
     && find /opt/hermes -type d -exec chmod a+rx {} + \
     && find /opt/hermes -type f -exec chmod a+r {} + \
-    && rm /tmp/patch-hermes-mcp-reconnect-38488.py
+    && rm /tmp/patch-hermes-mcp-reconnect-38488.py \
+          /tmp/patch-hermes-telegram-httpxrequest-slots.py

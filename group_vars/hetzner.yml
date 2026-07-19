@@ -12,6 +12,7 @@ cloud_security_docker_user_firewall_enabled: true
 # Expose dockerproxy only on the Hetzner Tailnet IP, never on the public VPS interface.
 dockerproxy_bind_address: "{{ ansible_host }}"
 hermes_docker_base_image: nousresearch/hermes-agent:main
+hermes_docker_watchdog_enabled: true
 hermes_docker_agent_order:
   - multipurpose
   - marian

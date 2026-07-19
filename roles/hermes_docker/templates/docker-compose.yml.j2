@@ -1,4 +1,10 @@
 ---
+x-hermes-logging: &hermes-logging
+  driver: json-file
+  options:
+    max-size: {{ hermes_docker_log_max_size | string | to_json }}
+    max-file: {{ hermes_docker_log_max_files | string | to_json }}
+
 services:
 {% for agent_name in hermes_docker_effective_agent_names %}
 {% set agent_env = hermes_docker_agents_env.get(agent_name, {}) | combine(hermes_docker_agents_env_secret.get(agent_name, {}), recursive=True) %}
@@ -9,6 +15,7 @@ services:
     container_name: ts-hermes-{{ agent_name }}
     hostname: {{ hermes_docker_tailscale_hostname_prefix }}-{{ agent_name }}
     restart: {{ hermes_docker_restart_policy }}
+    logging: *hermes-logging
     env_file:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/tailscale.env
     volumes:
@@ -18,6 +25,17 @@ services:
     cap_add:
       - net_admin
       - sys_module
+{% if hermes_docker_tailscale_healthcheck_enabled | bool %}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          tailscale status --json | grep -q '"BackendState": "Running"'
+      interval: {{ hermes_docker_tailscale_healthcheck_interval }}
+      timeout: {{ hermes_docker_tailscale_healthcheck_timeout }}
+      retries: {{ hermes_docker_tailscale_healthcheck_retries }}
+      start_period: {{ hermes_docker_tailscale_healthcheck_start_period }}
+{% endif %}
 {% if hermes_docker_isolate_agents | bool %}
     extra_hosts:
 {% for host_entry in hermes_docker_agent_extra_hosts[agent_name] %}
@@ -46,6 +64,7 @@ services:
     pull_policy: {{ hermes_docker_pull_policy }}
     container_name: hermes-{{ agent_name }}
     restart: {{ hermes_docker_restart_policy }}
+    logging: *hermes-logging
 {% if hermes_docker_tailscale_enabled | bool %}
     network_mode: service:ts-hermes-{{ agent_name }}
     depends_on:
@@ -120,6 +139,7 @@ services:
       context: {{ hermes_docker_base_dir }}/caddy-image
     container_name: caddy-hermes-{{ agent_name }}
     restart: {{ hermes_docker_restart_policy }}
+    logging: *hermes-logging
     network_mode: service:ts-hermes-{{ agent_name }}
     depends_on:
       - ts-hermes-{{ agent_name }}
@@ -147,6 +167,7 @@ services:
     image: {{ hermes_docker_webui_image }}
     container_name: webui-hermes-{{ agent_name }}
     restart: {{ hermes_docker_restart_policy }}
+    logging: *hermes-logging
     env_file:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/webui.env
 {% if hermes_docker_tailscale_enabled | bool %}

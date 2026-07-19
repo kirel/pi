@@ -38,6 +38,23 @@ tailscale status | grep hermes-
 # or in the Tailscale admin console: Machines -> hermes-<agent>
 ```
 
+### Tailscale health and recovery
+
+Each Tailscale sidecar has a bounded Docker healthcheck. When
+`hermes_docker_watchdog_enabled` is true, a host systemd timer also checks the
+host daemon and unhealthy sidecars. It restarts `tailscaled.service` when the
+host CLI is unresponsive, or stops and starts the complete affected agent stack
+when a sidecar is unhealthy. Recoveries have a cooldown to avoid restart loops.
+
+```bash
+systemctl status hermes-docker-watchdog.timer
+journalctl -u hermes-docker-watchdog.service
+docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{end}}' ts-hermes-marian
+```
+
+The role pins the Tailscale container version instead of relying on a cached
+`latest` tag. Container `json-file` logs are also size-limited.
+
 Because Caddy uses DNS-01 via Regfish, these hostnames do not need to be publicly reachable. They only need to resolve for the users/devices that should access them.
 
 ## Container DNS and egress firewall
