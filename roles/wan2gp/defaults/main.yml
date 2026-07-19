@@ -24,3 +24,17 @@ wan2gp_perc_reserved_mem_max: "0.2"
 wan2gp_rebuild_image: false
 wan2gp_openclaw_ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPDUljPF2X+7jVxeXfEMO6DN4kNXQfovYzMGcpCxZKhU hermes-wangp-ssh-key"
 wan2gp_openclaw_ssh_enabled: true
+
+# Durable AI-generated media archive. Only visuals/ and music/ are synced;
+# .staging and .stversions stay outside Syncthing and media-library scans.
+wan2gp_generated_root: "{{ wan2gp_base_dir }}/generated"
+wan2gp_generated_staging_dir: "{{ wan2gp_generated_root }}/.staging"
+wan2gp_generated_versions_dir: "{{ wan2gp_generated_root }}/.stversions"
+wan2gp_generated_visuals_dir: "{{ wan2gp_generated_root }}/visuals"
+wan2gp_generated_music_dir: "{{ wan2gp_generated_root }}/music"
+wan2gp_ai_media_bin_dir: "{{ wan2gp_base_dir }}/bin"
+wan2gp_ai_media_bin: "{{ wan2gp_ai_media_bin_dir }}/ai-media"
+wan2gp_ai_media_container_bin: /usr/local/bin/ai-media
+wan2gp_ai_media_source_roots:
+  - /workspace/outputs
+  - /workspace/hermes_outputs

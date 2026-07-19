@@ -13,6 +13,27 @@
     - { path: "{{ wan2gp_cache_root }}/matplotlib", mode: "0700" }
     - { path: "{{ wan2gp_cache_root }}/huggingface", mode: "0700" }
     - { path: "{{ wan2gp_cache_root }}/torch", mode: "0700" }
+    - { path: "{{ wan2gp_ai_media_bin_dir }}", mode: "0755" }
+    - { path: "{{ wan2gp_generated_root }}", mode: "0755" }
+    - { path: "{{ wan2gp_generated_staging_dir }}", mode: "0700" }
+    - { path: "{{ wan2gp_generated_versions_dir }}", mode: "0700" }
+    - { path: "{{ wan2gp_generated_versions_dir }}/visuals", mode: "0700" }
+    - { path: "{{ wan2gp_generated_versions_dir }}/music", mode: "0700" }
+    - { path: "{{ wan2gp_generated_visuals_dir }}", mode: "0775" }
+    - { path: "{{ wan2gp_generated_music_dir }}", mode: "0775" }
+
+- name: Look up Wan2GP archive owner
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ username_personal }}"
+
+- name: Install ai-media archive CLI
+  ansible.builtin.copy:
+    src: ai_media.py
+    dest: "{{ wan2gp_ai_media_bin }}"
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    mode: "0755"
 
 - name: Checkout Wan2GP
   ansible.builtin.git:
@@ -77,6 +98,20 @@
       with open('setup.py', 'w') as f:
           f.write(content)
   register: wan2gp_patch_setup_result
+
+- name: Restrict Wan2GP Docker build context
+  ansible.builtin.copy:
+    dest: "{{ wan2gp_app_path }}/.dockerignore"
+    owner: "{{ username_personal }}"
+    group: "{{ username_personal }}"
+    mode: "0644"
+    content: |
+      **
+      !Dockerfile
+      !requirements.txt
+      !entrypoint.sh
+      !docker/
+      !docker/patch_setup.py
 
 - name: Make Wan2GP Dockerfile compatible with classic Docker builder
   ansible.builtin.replace:
@@ -155,7 +190,13 @@
   community.docker.docker_image:
     name: "{{ wan2gp_image }}"
     source: build
-    force_source: "{{ wan2gp_rebuild_image }}"
+    force_source: >-
+      {{
+        (wan2gp_rebuild_image | bool)
+        or
+        ((wan2gp_checkout_result.before | default(''))
+         != (wan2gp_checkout_result.after | default('')))
+      }}
     build:
       path: "{{ wan2gp_app_path }}"
       args:
@@ -179,6 +220,8 @@
       - "{{ wan2gp_port }}:{{ wan2gp_mcp_port }}"
     volumes:
       - "{{ wan2gp_app_path }}:/workspace"
+      - "{{ wan2gp_generated_root }}:/generated"
+      - "{{ wan2gp_ai_media_bin }}:{{ wan2gp_ai_media_container_bin }}:ro"
       - "{{ wan2gp_cache_root }}/numba:/home/user/.cache/numba"
       - "{{ wan2gp_cache_root }}/matplotlib:/home/user/.cache/matplotlib"
       - "{{ wan2gp_cache_root }}/huggingface:/home/user/.cache/huggingface"
@@ -186,6 +229,10 @@
     env:
       NVIDIA_VISIBLE_DEVICES: "{{ gpu_5060ti_uuid }}"
       NVIDIA_DRIVER_CAPABILITIES: all
+      AI_MEDIA_ROOT: /generated
+      AI_MEDIA_ALLOWED_SOURCE_ROOTS: "{{ wan2gp_ai_media_source_roots | join(':') }}"
+      AI_MEDIA_OWNER_UID: "{{ ansible_facts.getent_passwd[username_personal][1] }}"
+      AI_MEDIA_OWNER_GID: "{{ ansible_facts.getent_passwd[username_personal][2] }}"
     command: "{{ wan2gp_container_command }}"
     labels:
       homepage.group: "{{ services.wan2gp.group }}"
@@ -196,6 +243,17 @@
       homepage.container: "{{ wan2gp_container_name }}"
     security_opts:
       - "label=type:nvidia_container_t"
+
+- name: Verify ai-media runtime dependencies inside Wan2GP
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - "{{ wan2gp_container_name }}"
+      - sh
+      - -lc
+      - "command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null && python3 -c 'import PIL' && test -x {{ wan2gp_ai_media_container_bin }}"
+  changed_when: false
 
 - name: Configure restricted SSH key for Wan2GP
   ansible.posix.authorized_key:
