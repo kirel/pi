@@ -44,6 +44,9 @@ static_dhcp:
   receiver:
     mac: "00:09:B0:F2:F4:A4"
     ip_suffix: 15
+  echo-show-5:
+    mac: "44:42:01:7E:50:53"
+    ip_suffix: 16
   dashboard-10:
     mac: 10:CE:02:F5:67:BC
     ip_suffix: 17
