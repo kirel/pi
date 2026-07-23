@@ -155,13 +155,6 @@ services:
     domain: litellm.kirelabs.org
     group: AI
     icon: litellm.png
-  speaches:
-    name: SPEACHES
-    target: ailab-ubuntu.lan
-    http_port: "{{ speaches_port }}"
-    domain: speaches.kirelabs.org
-    group: AI
-    icon: audio
   pihole-homelab-nuc:
     name: Pihole Homelab
     target: homelab-nuc.lan

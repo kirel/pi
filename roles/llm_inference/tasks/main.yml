@@ -64,6 +64,36 @@
   become: true
   when: llamaswap_enabled | bool
 
+- name: Inspect Docker socket for llama-swap lifecycle management
+  ansible.builtin.stat:
+    path: /var/run/docker.sock
+  register: llamaswap_docker_socket
+  become: true
+  when: llamaswap_enabled | bool
+
+- name: Require Docker socket for llama-swap lifecycle management
+  ansible.builtin.assert:
+    that:
+      - llamaswap_docker_socket.stat.exists
+      - llamaswap_docker_socket.stat.gid is defined
+    fail_msg: "llama-swap requires /var/run/docker.sock to manage Parakeet"
+  when: llamaswap_enabled | bool
+
+- name: Ensure llama-swap backend network exists
+  community.docker.docker_network:
+    name: "{{ llamaswap_backend_network }}"
+    state: present
+  become: true
+  when: llamaswap_enabled | bool
+
+- name: Pull pinned Parakeet image
+  community.docker.docker_image:
+    name: "{{ llamaswap_parakeet_image }}"
+    source: pull
+    state: present
+  become: true
+  when: llamaswap_enabled | bool
+
 - name: Template llama-swap Dockerfile
   ansible.builtin.template:
     src: Dockerfile.llamaswap.j2
@@ -114,6 +144,13 @@
   notify: Restart llama-swap
   when: llamaswap_enabled | bool
 
+- name: Remove stale llama-swap-managed Parakeet container before restart
+  community.docker.docker_container:
+    name: "{{ llamaswap_parakeet_container_name }}"
+    state: absent
+  become: true
+  when: llamaswap_enabled | bool
+
 - name: Start the llama-swap container
   community.docker.docker_container:
     name: "{{ llamaswap_container_name }}"
@@ -138,6 +175,10 @@
       - "{{ llamaswap_qwen3_tts_uv_cache_path }}:/app/.uv-cache"
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/usr/bin/docker:/usr/bin/docker"
+    groups:
+      - "{{ llamaswap_docker_socket.stat.gid | string }}"
+    networks:
+      - name: "{{ llamaswap_backend_network }}"
     device_requests:
       - driver: nvidia
         device_ids: ["{{ gpu_3090_0_uuid }}", "{{ gpu_3090_1_uuid }}"]
@@ -156,3 +197,70 @@
       homepage.container: "{{ llamaswap_container_name }}"
   become: true
   when: llamaswap_enabled | bool
+
+- name: Apply pending llama-swap restart before warmup
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for llama-swap API before ASR warmup
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ llamaswap_port }}/health"
+    method: GET
+    status_code: 200
+  register: llamaswap_health
+  retries: 30
+  delay: 2
+  until: llamaswap_health.status == 200
+  when:
+    - llamaswap_enabled | bool
+    - not ansible_check_mode
+
+- name: Create short silent WAV for Parakeet warmup
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - "{{ llamaswap_container_name }}"
+      - ffmpeg
+      - -hide_banner
+      - -loglevel
+      - error
+      - -f
+      - lavfi
+      - -i
+      - anullsrc=r=16000:cl=mono
+      - -t
+      - "1"
+      - -y
+      - /tmp/parakeet-warmup.wav
+  changed_when: false
+  become: true
+  when:
+    - llamaswap_enabled | bool
+    - not ansible_check_mode
+
+- name: Warm Parakeet through llama-swap
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - "{{ llamaswap_container_name }}"
+      - curl
+      - --fail
+      - --show-error
+      - --silent
+      - --max-time
+      - "300"
+      - -F
+      - file=@/tmp/parakeet-warmup.wav
+      - -F
+      - model=parakeet-tdt-0.6b
+      - http://127.0.0.1:8080/v1/audio/transcriptions
+  register: llamaswap_parakeet_warmup
+  changed_when: false
+  retries: 3
+  delay: 5
+  until: llamaswap_parakeet_warmup.rc == 0
+  become: true
+  when:
+    - llamaswap_enabled | bool
+    - not ansible_check_mode

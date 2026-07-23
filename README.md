@@ -167,14 +167,15 @@ LITELLM_MASTER_KEY=<your-key> uv run --with openai python3 todo/scripts/llm_benc
 
 ### STT for LLM Agents
 
-Default STT should stay on Speaches with `Systran/faster-whisper-large-v3`.
+Default STT is Parakeet TDT 0.6B, managed as a persistent llama-swap
+backend on the same RTX 3090 GPU0 previously used by Speaches. LiteLLM exposes
+it as `home-asr`; Wyoming OpenAI calls the canonical
+`parakeet-tdt-0.6b` model directly through llama-swap.
 
-Parakeet TDT 0.6B v3 GPU was tested as an OpenAI-compatible ad-hoc
-container on `ailab-ubuntu` against Speaches. The Parakeet GPU path is much
-faster, but less reliable for German agent input, especially technical terms,
-compound words, and service names. For agent transcription, those errors are
-more risky than raw WER suggests because they can change tool names, service
-names, or user intent.
+Parakeet was tested as an OpenAI-compatible GPU backend against the previous
+Speaches/Faster-Whisper service. It is substantially faster, with a known
+quality trade-off for some German technical terms, compound words, and service
+names.
 
 Benchmark notes from the 2026-06-04 test run:
 
@@ -193,10 +194,9 @@ Benchmark notes from the 2026-06-04 test run:
   realtime at concurrency 16; Parakeet v3 GPU reached about `157x` realtime at
   concurrency 16.
 
-Recommendation: use Speaches `large-v3` as the default for agent-facing STT.
-Only consider Parakeet v3 GPU as a separate fast path for high-volume,
-low-risk transcription where occasional German technical-word mistakes are
-acceptable.
+The deployment intentionally chooses Parakeet as the default for its latency
+and memory advantages. Keep the quality results above as a regression baseline
+for future Parakeet/model updates.
 
 ## LLM Service Architecture
 

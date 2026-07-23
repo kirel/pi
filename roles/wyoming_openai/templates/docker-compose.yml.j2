@@ -1,74 +1,4 @@
 services:
-  init-speaches:
-    container_name: init-speaches
-    image: "{{ speaches_image }}"
-    pull_policy: {{ wyoming_openai_pull_policy }}
-    environment:
-      - SPEACHES_BASE_URL=http://speaches:8000
-    command: >
-      /bin/bash -c '
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        export PATH="/home/ubuntu/.local/bin:$PATH"
-        uvx speaches-cli model download {{ stt_model }}
-{% if tts_backend == "SPEACHES" and (tts_models | string | length > 0) %}
-        for model in {{ tts_models }}; do uvx speaches-cli model download "$model"; done
-{% endif %}
-      '
-    volumes:
-      - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
-    runtime: nvidia
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
-    restart: "no"
-    depends_on:
-      speaches:
-        condition: service_started
-
-  speaches:
-    container_name: "{{ speaches_container_name }}"
-    image: "{{ speaches_image }}"
-    pull_policy: {{ wyoming_openai_pull_policy }}
-    restart: unless-stopped
-    ports:
-      - "{{ speaches_external_port }}:{{ speaches_internal_port }}"
-    environment:
-      - enable_ui=False
-      - log_level=info
-      - WHISPER__MODEL={{ stt_model }}
-      - WHISPER__INFERENCE_DEVICE={{ speaches_whisper_inference_device }}
-      - WHISPER__compute_type={{ speaches_whisper_compute_type }}
-      - STT_MODEL_TTL={{ speaches_stt_model_ttl }}
-      - UNSTABLE_ORT_OPTS__EXCLUDE_PROVIDERS={{ speaches_ort_exclude_providers | to_json }}
-      - NVIDIA_VISIBLE_DEVICES={{ speaches_gpu_uuid }}
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-    volumes:
-      - "{{ huggingface_cache_folder }}:/home/ubuntu/.cache/huggingface/hub"
-    healthcheck:
-      # Keep the service unhealthy until Whisper is resident so dependent clients
-      # cannot send the first request into a slow CUDA/model cold start.
-      test:
-        - CMD-SHELL
-        - >-
-          curl -fsS http://localhost:{{ speaches_internal_port }}/health >/dev/null &&
-          (curl -fsS http://localhost:{{ speaches_internal_port }}/api/ps | grep -Fq '{{ stt_model }}' ||
-          curl -fsS -X POST http://localhost:{{ speaches_internal_port }}/api/ps/{{ stt_model }} >/dev/null)
-      interval: 30s
-      timeout: 60s
-      retries: 3
-      start_period: 90s
-    runtime: nvidia
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              device_ids: ["{{ speaches_gpu_uuid }}"]
-              capabilities: ["gpu"]
-
 {% if wyoming_openai_enable_chatterbox %}
   chatterbox-tts:
     container_name: "{{ chatterbox_container_name }}"
@@ -170,10 +100,8 @@ services:
       TTS_STREAMING_MIN_WORDS: "{{ tts_streaming_min_words }}"
       TTS_STREAMING_MAX_CHARS: "{{ tts_streaming_max_chars }}"
       INVALIDATE: "6"  # increment to force redeploy
-    depends_on:
-      speaches:
-        condition: service_healthy
 {% if wyoming_openai_enable_chatterbox %}
+    depends_on:
       chatterbox-tts:
         condition: service_healthy
 {% endif %}

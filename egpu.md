@@ -2,7 +2,8 @@
 
 ## Current diagnosis
 
-The eGPU is the current stability risk, not Speaches or the 3090 VRAM layout.
+The eGPU is the current stability risk, not the resident ASR service or the
+3090 VRAM layout.
 Kernel logs showed the RTX 5060 Ti at PCI `0000:08:00.0` / UUID
 `GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f` triggering:
 
@@ -13,8 +14,8 @@ Xid ... 154 ... GPU recovery action ... OS Reboot
 ```
 
 Once this happens, NVIDIA UVM is poisoned globally: existing CUDA contexts may keep
-running for a while, but new large CUDA loads fail (llama-swap reloads, Speaches
-Whisper STT). A normal container restart is not enough; host reboot/power-cycle is
+running for a while, but new large CUDA loads fail (llama-swap reloads and
+temporary Parakeet migration tests). A normal container restart is not enough; host reboot/power-cycle is
 required.
 
 Ghost VRAM on GPU2 is not itself evidence of a leak here; it can simply be ComfyUI
@@ -22,14 +23,15 @@ models still resident.
 
 ## Immediate software mitigations
 
-1. Keep Speaches Whisper resident:
+1. Keep Parakeet resident through llama-swap:
 
 ```yaml
-speaches_stt_model_ttl: -1
+llamaswap_preload:
+  - parakeet-tdt-0.6b
 ```
 
-This avoids repeated CTranslate2/Whisper CUDA load/unload cycles. If Speaches does
-not treat `0` as never-unload, use a very large value such as `86400`.
+This avoids repeated ONNX Runtime CUDA initialization. The durable target is
+GPU0; the RTX 5060 Ti is only used temporarily during migration.
 
 2. Move off the bleeding-edge 610 driver branch. Pin NVIDIA through the `gpu` role
 to a packaged, less experimental branch first:
@@ -96,13 +98,13 @@ sudo dmesg -T | grep -Ei 'NVRM|Xid|thunderbolt|AER|pcie' | tail -100
 
 - 27B or 35B via llama-swap
 - qwen3-embedding on GPU0
-- Speaches STT on GPU1
+- Parakeet STT on GPU0
 
-4. Test Speaches once and keep it resident:
+4. Test Parakeet once through llama-swap and keep it resident:
 
 ```bash
-curl https://speaches.kirelabs.org/health
-# TTS + STT smoke tests
+curl -F file=@sample.ogg -F model=parakeet-tdt-0.6b \
+  http://127.0.0.1:9292/v1/audio/transcriptions
 ```
 
 5. Only then start ComfyUI/Wan2GP workloads on GPU2. If Xid 31 returns, isolate the

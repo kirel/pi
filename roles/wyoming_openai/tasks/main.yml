@@ -8,7 +8,6 @@
     group: "{{ uid }}"
     recurse: yes
   with_items:
-    - "{{ huggingface_cache_folder }}"
     - "{{ chatterbox_models_folder }}"
     - "{{ chatterbox_voices_folder }}"
     - "{{ chatterbox_longtext_data_folder }}"

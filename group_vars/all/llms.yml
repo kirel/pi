@@ -8,10 +8,12 @@ model_group_alias:
   home-ha: "Qwen3.6-27B-Instruct"
   home-hermes: "Qwen3.6-27B-Instruct"
   home-embed: "qwen3-embedding"
+  home-asr: "parakeet-tdt-0.6b"
+  home-tts: "qwen3-tts"
   home-remote: "google/gemini-3-flash-preview"
 
 # llama.cpp --fit is not implemented for tensor split mode. Keep the total KV
-# pools explicit so qwen3-embedding, Speaches, and qwen3-tts can stay resident
+# pools explicit so qwen3-embedding, Parakeet, and qwen3-tts can stay resident
 # with at least the existing GPU headroom. Unified KV lets three concurrent
 # sequences share each pool instead of dividing it into equal per-slot contexts.
 llama_parallel_slots: 3
@@ -289,6 +291,37 @@ llamaswap_models:
     env:
       - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}}"
 
+  - alias: parakeet-tdt-0.6b
+    # OpenAI-compatible ASR replacement for Speaches. Run it as an isolated
+    # sibling container managed by llama-swap through the Docker socket.
+    # The checked-in target is GPU0; the 5060 Ti is only a cutover override.
+    cmd: >-
+      docker run
+      --init
+      --rm
+      --pull never
+      --name {{ llamaswap_parakeet_container_name }}
+      --label io.kirelabs.managed-by=llama-swap
+      --log-driver local
+      --log-opt max-size=10m
+      --log-opt max-file=3
+      --network {{ llamaswap_backend_network }}
+      --gpus device={{ llamaswap_parakeet_gpu_uuid }}
+      {{ llamaswap_parakeet_image }}
+      -models /models
+      -workers {{ llamaswap_parakeet_workers }}
+      -gpu cuda
+      -gpu-device 0
+      -long-audio
+    cmd_stop: >-
+      docker stop --time 15 {{ llamaswap_parakeet_container_name }}
+    proxy: "http://{{ llamaswap_parakeet_container_name }}:{{ llamaswap_parakeet_internal_port }}"
+    check_endpoint: "/health"
+    supports_function_calling: false
+    supports_vision: false
+    supports_reasoning: false
+    mode: audio_transcription
+    group: "asr"
 
   - alias: qwen3-tts
     # OpenAI-compatible stable TTS runtime. VoiceDesign prepares missing
@@ -308,6 +341,7 @@ llamaswap_models:
     supports_function_calling: false
     supports_vision: false
     supports_reasoning: false
+    mode: audio_speech
     group: "forever"
     env:
       - "CUDA_VISIBLE_DEVICES={{gpu_3090_1_uuid}}"
@@ -318,11 +352,16 @@ llamaswap_model_groups:
     persistent: true
     swap: false
     exclusive: false
+  asr:
+    persistent: true
+    swap: false
+    exclusive: false
   "3090":
     swap: true
     exclusive: false
 
 llamaswap_preload:
   - "{{ model_group_alias['home-embed'] }}"
+  - "{{ model_group_alias['home-asr'] }}"
   - "qwen3-tts"
   - "Qwen3.6-27B-Instruct"

@@ -8,6 +8,16 @@ llamaswap_image: "llama-swap:local"
 llamaswap_port: "8080"
 llamaswap_config_path: "{{ llamaswap_host_path }}"
 llamaswap_build_context: "{{ llamaswap_config_path }}/build"
+llamaswap_backend_network: "llamaswap-backends"
+llamaswap_parakeet_image: "ghcr.io/achetronic/parakeet:0.8.0-cuda"
+llamaswap_parakeet_container_name: "llamaswap-parakeet"
+llamaswap_parakeet_internal_port: 5092
+# Two workers preserve ~3.9 GiB GPU0 headroom in the combined resident layout.
+# Four workers reached ~4.8 GiB VRAM; two warmed workers use ~3.2 GiB.
+llamaswap_parakeet_workers: 2
+# Target placement: Parakeet replaces Speaches on the same RTX 3090 (GPU0).
+# A deployment can temporarily override this with gpu_5060ti_uuid during cutover.
+llamaswap_parakeet_gpu_uuid: "{{ gpu_3090_0_uuid }}"
 # Persisted Qwen3-TTS settings mounted into the llama-swap container.
 llamaswap_qwen3_tts_repo: "https://github.com/andimarafioti/faster-qwen3-tts.git"
 llamaswap_qwen3_tts_repo_ref: "main"

@@ -29,6 +29,9 @@ model_list:
     model_info:
       supports_function_calling: {{ model.supports_function_calling | lower }}
       supports_vision: {{ model.supports_vision | lower }}
+{% if model.mode is defined %}
+      mode: {{ model.mode }}
+{% endif %}
 {% if model.supports_reasoning is defined %}
       supports_reasoning: {{ model.supports_reasoning | lower }}
 {% endif %}
@@ -58,6 +61,9 @@ model_list:
     model_info:
       supports_function_calling: {{ model.supports_function_calling | lower }}
       supports_vision: {{ model.supports_vision | lower }}
+{% if model.mode is defined %}
+      mode: {{ model.mode }}
+{% endif %}
 {% if model.supports_reasoning is defined %}
       supports_reasoning: {{ model.supports_reasoning | lower }}
 {% endif %}

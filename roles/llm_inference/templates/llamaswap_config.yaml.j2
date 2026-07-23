@@ -8,10 +8,20 @@ sendLoadingState: true
 models:
 {% for model in llamaswap_models %}
   {{ model.alias }}:
+{% if model.proxy is defined %}
+    proxy: "{{ model.proxy }}"
+{% endif %}
+{% if model.check_endpoint is defined %}
+    checkEndpoint: "{{ model.check_endpoint }}"
+{% endif %}
+{% if model.cmd_stop is defined %}
+    cmdStop: |
+      {{ model.cmd_stop }}
+{% endif %}
     cmd: |
       {{ model.cmd }}
-    env:
 {% if model.env is defined and model.env %}
+    env:
 {% for env_var in model.env %}
       - "{{ env_var }}"
 {% endfor %}
