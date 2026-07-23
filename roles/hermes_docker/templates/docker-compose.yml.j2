@@ -56,12 +56,21 @@ services:
   hermes-{{ agent_name }}:
     image: {{ hermes_docker_image }}
 {% if hermes_docker_build_enabled | bool %}
+{% if loop.first %}
     build:
       context: {{ hermes_docker_base_dir }}/hermes-image
       args:
         HERMES_BASE_IMAGE: {{ hermes_docker_base_image }}
-{% endif %}
     pull_policy: {{ hermes_docker_pull_policy }}
+{% else %}
+    # All agents share one locally-built image. Building the same tag in
+    # parallel for every service can leave containers referencing superseded
+    # BuildKit manifests, so only the first service owns the build.
+    pull_policy: never
+{% endif %}
+{% else %}
+    pull_policy: {{ hermes_docker_pull_policy }}
+{% endif %}
     container_name: hermes-{{ agent_name }}
     restart: {{ hermes_docker_restart_policy }}
     logging: *hermes-logging
@@ -134,9 +143,14 @@ services:
 {% if hermes_docker_agent_caddy_enabled | bool %}
   caddy-hermes-{{ agent_name }}:
     image: {{ hermes_docker_agent_caddy_image }}
+{% if loop.first %}
     pull_policy: build
     build:
       context: {{ hermes_docker_base_dir }}/caddy-image
+{% else %}
+    # Reuse the single Caddy image built by the first agent service.
+    pull_policy: never
+{% endif %}
     container_name: caddy-hermes-{{ agent_name }}
     restart: {{ hermes_docker_restart_policy }}
     logging: *hermes-logging

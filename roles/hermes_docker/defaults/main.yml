@@ -139,7 +139,6 @@ hermes_docker_network_cidr_suffix: 24
 hermes_docker_extra_host_services:
   - litellm
   - comfyui
-  - speaches
 hermes_docker_agent_extra_host_services: {}
 hermes_docker_extra_hosts_target_ip: "{{ homelab_nuc_ip }}"
 # Resolver priority for Hermes containers:
@@ -198,11 +197,13 @@ hermes_docker_config_overrides:
   stt:
     enabled: true
     provider: openai
+    openai:
+      model: home-asr
   tts:
     enabled: true
     provider: openai
     openai:
-      model: qwen3-tts
+      model: home-tts
       voice: de-host
       base_url: https://litellm.kirelabs.org/v1
       api_key: "${LITELLM_API_KEY}"
@@ -239,9 +240,7 @@ hermes_gateway_base_port: 18642
 
 # Environment injected into every agent's /opt/data/.env. Non-secret values go in
 # hermes_docker_global_env; secrets go in hermes_docker_global_env_secret.
-hermes_docker_global_env:
-  OPENAI_API_KEY: sk-speaches-no-key-required
-  VOICE_TOOLS_OPENAI_KEY: sk-speaches-no-key-required
+hermes_docker_global_env: {}
 hermes_docker_global_env_secret: {}
 
 # Per-agent environment. Non-secret values go in hermes_docker_agents_env;
@@ -270,8 +269,8 @@ hermes_docker_runtime_env:
   HERMES_DASHBOARD_TUI: "1"
   HERMES_YOLO_MODE: "1"
   HERMES_EXEC_ASK: "false"
-  STT_OPENAI_MODEL: Systran/faster-whisper-large-v3
-  STT_OPENAI_BASE_URL: https://speaches.kirelabs.org/v1
+  STT_OPENAI_MODEL: home-asr
+  STT_OPENAI_BASE_URL: https://litellm.kirelabs.org/v1
 
 # Validate that Docker and the Compose v2 plugin are available on the target.
 hermes_docker_validate_prerequisites: true

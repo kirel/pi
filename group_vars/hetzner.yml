@@ -11,7 +11,7 @@ cloud_security_docker_user_firewall_enabled: true
 
 # Expose dockerproxy only on the Hetzner Tailnet IP, never on the public VPS interface.
 dockerproxy_bind_address: "{{ ansible_host }}"
-hermes_docker_base_image: nousresearch/hermes-agent:main
+hermes_docker_base_image: nousresearch/hermes-agent:v2026.7.20
 hermes_docker_watchdog_enabled: true
 hermes_docker_agent_order:
   - multipurpose
@@ -39,7 +39,8 @@ hermes_docker_litellm_team:
   models:
     - home-fast
     - home-smart
-    - qwen3-tts
+    - home-asr
+    - home-tts
   object_permission:
     mcp_access_groups:
       - family
@@ -50,7 +51,8 @@ hermes_docker_litellm_keys:
     models:
       - home-fast
       - home-smart
-      - qwen3-tts
+      - home-asr
+      - home-tts
     mcp_access_groups:
       - family
       - global
@@ -59,7 +61,8 @@ hermes_docker_litellm_keys:
     models:
       - home-fast
       - home-smart
-      - qwen3-tts
+      - home-asr
+      - home-tts
     mcp_access_groups:
       - global
   anna:
@@ -67,7 +70,8 @@ hermes_docker_litellm_keys:
     models:
       - home-fast
       - home-smart
-      - qwen3-tts
+      - home-asr
+      - home-tts
     mcp_access_groups:
       - global
   sabine:
@@ -75,7 +79,8 @@ hermes_docker_litellm_keys:
     models:
       - home-fast
       - home-smart
-      - qwen3-tts
+      - home-asr
+      - home-tts
     mcp_access_groups:
       - family
       - global

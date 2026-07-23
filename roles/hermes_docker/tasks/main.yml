@@ -413,16 +413,6 @@
     mode: '0755'
   when: hermes_docker_build_enabled | bool
 
-- name: Copy Hermes MCP reconnect patch script
-  ansible.builtin.copy:
-    src: patch-hermes-mcp-reconnect-38488.py
-    dest: "{{ hermes_docker_base_dir }}/hermes-image/patch-hermes-mcp-reconnect-38488.py"
-    owner: root
-    group: root
-    mode: '0644'
-  notify: Recreate Hermes Docker agents
-  when: hermes_docker_build_enabled | bool
-
 - name: Copy Hermes Telegram HTTPXRequest slots patch script
   ansible.builtin.copy:
     src: patch-hermes-telegram-httpxrequest-slots.py
