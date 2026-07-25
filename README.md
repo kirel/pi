@@ -90,27 +90,16 @@ any conclusion about changing it.
 
 ### Qwen3-TTS Stable Voices
 
-`qwen3-tts` is served as an OpenAI-compatible TTS endpoint inside LlamaSwap.
-It uses a JSON voice registry at `qwen3-tts/design-voices.json`.
+`qwen3-tts` is served by CrispASR as an OpenAI-compatible sibling container
+managed by LlamaSwap. It uses Qwen3-TTS 1.7B Base Q8 on GPU1. The stable
+`de-host` reference WAV and its exact transcript are mounted from
+`crispasr-tts-voices/`; deployment migrates the newest completed `de-host`
+reference from the previous faster-qwen3-tts cache.
 
-Voice preparation is Ansible/LlamaSwap driven:
-
-1. Missing voice reference WAVs are generated once with the VoiceDesign model.
-2. Speaker embeddings are extracted once with the Base model and stored as `*.speaker.pt`.
-3. Runtime requests use Base voice cloning with the cached speaker embedding.
-
-This keeps named voices stable across requests while still letting prompts define
-new voices declaratively.
-
-Default voices are defined in `group_vars/all/llama-swap-tts.yml` (`llamaswap_qwen3_tts_presets`):
-
-- `de-host`
-- `de-female`
-- `de-explain`
-
-To change voices, edit that file and redeploy LlamaSwap. A changed prompt creates
-a new cache signature; unchanged voices keep their existing reference WAV and
-speaker embedding.
+To replace the voice, update `de-host.wav` and its matching `de-host.txt` on the
+host. The text must be the exact spoken content of the reference WAV. CrispASR
+uses both files for voice cloning; it does not need the former Python speaker
+embedding or VoiceDesign runtime.
 
 ```bash
 uv run ansible-playbook setup.yml --tags llm-inference --limit ailab_ubuntus
@@ -125,7 +114,6 @@ curl https://llama-swap.kirelabs.org/v1/audio/speech \
   --output speech.wav
 ```
 
-Supported `response_format` values are `wav`, `mp3`, and `opus` (Ogg/Opus).
 List configured voices (the model query param is required by LlamaSwap's routing):
 
 ```bash
@@ -167,10 +155,12 @@ LITELLM_MASTER_KEY=<your-key> uv run --with openai python3 todo/scripts/llm_benc
 
 ### STT for LLM Agents
 
-Default STT is Parakeet TDT 0.6B, managed as a persistent llama-swap
-backend on the same RTX 3090 GPU0 previously used by Speaches. LiteLLM exposes
-it as `home-asr`; Wyoming OpenAI calls the canonical
-`parakeet-tdt-0.6b` model directly through llama-swap.
+Default STT is Whisper large-v3-turbo Q8 through CrispASR, managed as a
+persistent llama-swap sibling on RTX 3090 GPU0. LiteLLM exposes it as
+`home-asr`; Wyoming OpenAI calls the canonical
+`whisper-large-v3-turbo-q8-crispasr` model through llama-swap. CrispASR also
+publishes its native Wyoming STT endpoint on port `10302` for parallel testing;
+the existing Wyoming OpenAI gateway remains on port `10300`.
 
 Parakeet was tested as an OpenAI-compatible GPU backend against the previous
 Speaches/Faster-Whisper service. It is substantially faster, with a known
@@ -194,9 +184,10 @@ Benchmark notes from the 2026-06-04 test run:
   realtime at concurrency 16; Parakeet v3 GPU reached about `157x` realtime at
   concurrency 16.
 
-The deployment intentionally chooses Parakeet as the default for its latency
-and memory advantages. Keep the quality results above as a regression baseline
-for future Parakeet/model updates.
+The historical Parakeet results remain a regression baseline. The deployment
+uses CrispASR/Whisper Q8 because real Hermes voice notes showed materially
+better German technical-term recognition while still processing about 96x
+realtime with a roughly 1.3 GiB process peak.
 
 ## LLM Service Architecture
 

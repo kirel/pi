@@ -14,24 +14,24 @@ Xid ... 154 ... GPU recovery action ... OS Reboot
 ```
 
 Once this happens, NVIDIA UVM is poisoned globally: existing CUDA contexts may keep
-running for a while, but new large CUDA loads fail (llama-swap reloads and
-temporary Parakeet migration tests). A normal container restart is not enough; host reboot/power-cycle is
-required.
+running for a while, but new CUDA loads fail (llama-swap reloads and temporary
+CrispASR tests). A normal container restart is not enough; host
+reboot/power-cycle is required.
 
 Ghost VRAM on GPU2 is not itself evidence of a leak here; it can simply be ComfyUI
 models still resident.
 
 ## Immediate software mitigations
 
-1. Keep Parakeet resident through llama-swap:
+1. Keep CrispASR resident through llama-swap:
 
 ```yaml
 llamaswap_preload:
-  - parakeet-tdt-0.6b
+  - whisper-large-v3-turbo-q8-crispasr
 ```
 
-This avoids repeated ONNX Runtime CUDA initialization. The durable target is
-GPU0; the RTX 5060 Ti is only used temporarily during migration.
+This avoids repeated CUDA initialization. The durable target is GPU0; the RTX
+5060 Ti is only used for isolated temporary tests.
 
 2. Move off the bleeding-edge 610 driver branch. Pin NVIDIA through the `gpu` role
 to a packaged, less experimental branch first:
@@ -98,12 +98,12 @@ sudo dmesg -T | grep -Ei 'NVRM|Xid|thunderbolt|AER|pcie' | tail -100
 
 - 27B or 35B via llama-swap
 - qwen3-embedding on GPU0
-- Parakeet STT on GPU0
+- CrispASR/Whisper STT on GPU0
 
-4. Test Parakeet once through llama-swap and keep it resident:
+4. Test CrispASR once through llama-swap and keep it resident:
 
 ```bash
-curl -F file=@sample.ogg -F model=parakeet-tdt-0.6b \
+curl -F file=@sample.ogg -F model=whisper-large-v3-turbo-q8-crispasr \
   http://127.0.0.1:9292/v1/audio/transcriptions
 ```
 

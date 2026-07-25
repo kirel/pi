@@ -26,41 +26,79 @@
   become: true
   when: llamaswap_enabled | bool
 
-- name: Ensure qwen3-tts data directory is writable by container user
+- name: Ensure CrispASR model cache directory exists
   ansible.builtin.file:
-    path: "{{ llamaswap_qwen3_tts_voices_path }}"
+    path: "{{ llamaswap_crispasr_cache_path }}"
     state: directory
-    owner: "10001"
-    group: "10001"
+    owner: "1000"
+    group: "1000"
     mode: "0755"
   become: true
   when: llamaswap_enabled | bool
 
-- name: Ensure qwen3-TTS voice cache directory is writable by container user
+- name: Ensure CrispASR TTS directories exist
   ansible.builtin.file:
-    path: "{{ llamaswap_qwen3_tts_voice_cache_path }}"
+    path: "{{ item }}"
     state: directory
-    owner: "10001"
-    group: "10001"
+    owner: "1000"
+    group: "1000"
     mode: "0755"
+  loop:
+    - "{{ llamaswap_crispasr_tts_cache_path }}"
+    - "{{ llamaswap_crispasr_tts_voices_path }}"
   become: true
   when: llamaswap_enabled | bool
 
-- name: Ensure uv cache directory is writable by container user
-  ansible.builtin.file:
-    path: "{{ llamaswap_qwen3_tts_uv_cache_path }}"
-    state: directory
-    owner: "10001"
-    group: "10001"
-    mode: "0755"
+- name: Find completed legacy reference for the CrispASR voice
+  ansible.builtin.find:
+    paths: "{{ llamaswap_qwen3_tts_voice_cache_path }}"
+    patterns: "{{ llamaswap_crispasr_tts_voice }}.*.speaker.pt"
+    file_type: file
+  register: llamaswap_crispasr_tts_voice_refs
   become: true
   when: llamaswap_enabled | bool
 
-- name: Ensure llama-swap build context exists
-  ansible.builtin.file:
-    path: "{{ llamaswap_build_context }}"
-    state: directory
-    mode: "0755"
+- name: Require a completed legacy reference for the CrispASR voice
+  ansible.builtin.assert:
+    that:
+      - llamaswap_crispasr_tts_voice_refs.matched | int > 0
+    fail_msg: "No completed {{ llamaswap_crispasr_tts_voice }} reference exists in {{ llamaswap_qwen3_tts_voice_cache_path }}"
+  when: llamaswap_enabled | bool
+
+- name: Select newest completed legacy voice reference
+  ansible.builtin.set_fact:
+    llamaswap_crispasr_tts_voice_stem: >-
+      {{ (llamaswap_crispasr_tts_voice_refs.files | sort(attribute='mtime') | last).path
+         | regex_replace('\.speaker\.pt$', '') }}
+  when: llamaswap_enabled | bool
+
+- name: Read migrated voice metadata
+  ansible.builtin.slurp:
+    src: "{{ llamaswap_crispasr_tts_voice_stem }}.json"
+  register: llamaswap_crispasr_tts_voice_metadata
+  become: true
+  when: llamaswap_enabled | bool
+
+- name: Install migrated CrispASR voice reference
+  ansible.builtin.copy:
+    src: "{{ llamaswap_crispasr_tts_voice_stem }}.wav"
+    dest: "{{ llamaswap_crispasr_tts_voices_path }}/{{ llamaswap_crispasr_tts_voice }}.wav"
+    remote_src: true
+    owner: "1000"
+    group: "1000"
+    mode: "0644"
+    force: false
+  become: true
+  when: llamaswap_enabled | bool
+
+- name: Install migrated CrispASR voice transcript
+  ansible.builtin.copy:
+    content: "{{ (llamaswap_crispasr_tts_voice_metadata.content | b64decode | from_json).reference_text }}\n"
+    dest: "{{ llamaswap_crispasr_tts_voices_path }}/{{ llamaswap_crispasr_tts_voice }}.txt"
+    owner: "1000"
+    group: "1000"
+    mode: "0644"
+    force: false
   become: true
   when: llamaswap_enabled | bool
 
@@ -76,7 +114,7 @@
     that:
       - llamaswap_docker_socket.stat.exists
       - llamaswap_docker_socket.stat.gid is defined
-    fail_msg: "llama-swap requires /var/run/docker.sock to manage Parakeet"
+    fail_msg: "llama-swap requires /var/run/docker.sock to manage CrispASR"
   when: llamaswap_enabled | bool
 
 - name: Ensure llama-swap backend network exists
@@ -86,39 +124,12 @@
   become: true
   when: llamaswap_enabled | bool
 
-- name: Pull pinned Parakeet image
+- name: Pull pinned CrispASR image
   community.docker.docker_image:
-    name: "{{ llamaswap_parakeet_image }}"
+    name: "{{ llamaswap_crispasr_image }}"
     source: pull
     state: present
   become: true
-  when: llamaswap_enabled | bool
-
-- name: Template llama-swap Dockerfile
-  ansible.builtin.template:
-    src: Dockerfile.llamaswap.j2
-    dest: "{{ llamaswap_build_context }}/Dockerfile"
-    mode: "0644"
-  become: true
-  notify: Restart llama-swap
-  when: llamaswap_enabled | bool
-
-- name: Template qwen3-TTS voice design presets
-  ansible.builtin.template:
-    src: qwen3_tts_design_presets.json.j2
-    dest: "{{ llamaswap_qwen3_tts_presets_path }}"
-    mode: "0644"
-  become: true
-  notify: Restart llama-swap
-  when: llamaswap_enabled | bool
-
-- name: Template qwen3-TTS OpenAI-compatible server script
-  ansible.builtin.template:
-    src: qwen3_tts_openai_server.py.j2
-    dest: "{{ llamaswap_qwen3_tts_server_script }}"
-    mode: "0755"
-  become: true
-  notify: Restart llama-swap
   when: llamaswap_enabled | bool
 
 - name: Create llama-swap config file
@@ -130,24 +141,23 @@
   notify: Restart llama-swap
   when: llamaswap_enabled | bool
 
-- name: Build llama-swap image
+- name: Pull pinned upstream llama-swap image
   community.docker.docker_image:
     name: "{{ llamaswap_image }}"
-    source: build
-    force_source: true
-    build:
-      path: "{{ llamaswap_build_context }}"
-      pull: true
-      nocache: false
+    source: pull
     state: present
   become: true
   notify: Restart llama-swap
   when: llamaswap_enabled | bool
 
-- name: Remove stale llama-swap-managed Parakeet container before restart
+- name: Remove stale llama-swap-managed audio containers before restart
   community.docker.docker_container:
-    name: "{{ llamaswap_parakeet_container_name }}"
+    name: "{{ item }}"
     state: absent
+  loop:
+    - "llamaswap-parakeet"
+    - "{{ llamaswap_crispasr_container_name }}"
+    - "{{ llamaswap_crispasr_tts_container_name }}"
   become: true
   when: llamaswap_enabled | bool
 
@@ -171,8 +181,6 @@
     volumes:
       - "{{ llamaswap_config_path }}/config.yaml:/app/config.yaml"
       - "{{ llamaswap_config_path }}/cache:/app/.cache"
-      - "{{ llamaswap_qwen3_tts_voices_path }}:{{ llamaswap_qwen3_tts_container_path }}"
-      - "{{ llamaswap_qwen3_tts_uv_cache_path }}:/app/.uv-cache"
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/usr/bin/docker:/usr/bin/docker"
     groups:
@@ -220,7 +228,7 @@
     - llamaswap_enabled | bool
     - not ansible_check_mode
 
-- name: Create short silent WAV for Parakeet warmup
+- name: Create short silent WAV for ASR warmup
   ansible.builtin.command:
     argv:
       - docker
@@ -237,14 +245,14 @@
       - -t
       - "1"
       - -y
-      - /tmp/parakeet-warmup.wav
+      - /tmp/asr-warmup.wav
   changed_when: false
   become: true
   when:
     - llamaswap_enabled | bool
     - not ansible_check_mode
 
-- name: Warm Parakeet through llama-swap
+- name: Warm CrispASR through llama-swap
   ansible.builtin.command:
     argv:
       - docker
@@ -257,15 +265,15 @@
       - --max-time
       - "300"
       - -F
-      - file=@/tmp/parakeet-warmup.wav
+      - file=@/tmp/asr-warmup.wav
       - -F
-      - model=parakeet-tdt-0.6b
+      - model={{ model_group_alias['home-asr'] }}
       - http://127.0.0.1:8080/v1/audio/transcriptions
-  register: llamaswap_parakeet_warmup
+  register: llamaswap_crispasr_warmup
   changed_when: false
   retries: 3
   delay: 5
-  until: llamaswap_parakeet_warmup.rc == 0
+  until: llamaswap_crispasr_warmup.rc == 0
   become: true
   when:
     - llamaswap_enabled | bool

@@ -8,6 +8,15 @@ sendLoadingState: true
 models:
 {% for model in llamaswap_models %}
   {{ model.alias }}:
+{% if model.aliases is defined and model.aliases %}
+    aliases:
+{% for alias in model.aliases %}
+      - "{{ alias }}"
+{% endfor %}
+{% endif %}
+{% if model.use_model_name is defined %}
+    useModelName: "{{ model.use_model_name }}"
+{% endif %}
 {% if model.proxy is defined %}
     proxy: "{{ model.proxy }}"
 {% endif %}

@@ -136,3 +136,7 @@ mcp_servers:
 general_settings:
   store_model_in_db: true
   store_prompts_in_spend_logs: false
+{% if litellm_pass_through_endpoints %}
+  pass_through_endpoints:
+{{ litellm_pass_through_endpoints | to_nice_yaml(indent=4, sort_keys=False, width=1000) | indent(4, true) }}
+{% endif %}

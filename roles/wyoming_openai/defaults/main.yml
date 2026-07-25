@@ -9,7 +9,7 @@ wyoming_openai_container_name: wyoming-openai
 wyoming_openai_chatterbox_container_name: wyoming-openai-chatterbox
 chatterbox_container_name: chatterbox-tts
 
-# Wyoming OpenAI Gateway (Wyoming protocol) - Parakeet STT + Qwen3-TTS via llama-swap
+# Wyoming OpenAI Gateway (Wyoming protocol) - CrispASR STT + Qwen3-TTS via llama-swap
 wyoming_openai_external_port: 10300
 wyoming_openai_internal_port: 10300
 
@@ -21,15 +21,18 @@ wyoming_languages: en es fr de it pt ru ja ko ar da el fi he hi ms nl no pl sv s
 
 stt_backend: "OPENAI"
 stt_openai_url: "http://{{ ailab_ubuntu_ip }}:{{ llamaswap_port }}/v1"
-stt_model: "parakeet-tdt-0.6b"
+stt_model: "whisper-large-v3-turbo-q8-crispasr"
 tts_backend: "OPENAI"
 tts_openai_url: "http://{{ ailab_ubuntu_ip }}:{{ llamaswap_port }}/v1"
 tts_models: "qwen3-tts"
 
 # TTS Configuration
-tts_voices: "de-host de-female de-explain"
+tts_voices: "de-host"
 tts_speed: "1.0"
-tts_extra_body: ""
+# CrispASR WAV responses include LIST/C2PA chunks after the PCM data. Wyoming
+# OpenAI 0.5.0 strips only the leading WAV header and would play those trailing
+# metadata bytes as a short burst of noise. Request headerless PCM instead.
+tts_extra_body: '{"response_format":"pcm"}'
 
 # wyoming_chatterbox config
 

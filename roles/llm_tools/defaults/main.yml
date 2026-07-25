@@ -36,6 +36,20 @@ litellm_database_url: "postgresql://{{ litellm_db_user }}:{{ litellm_db_password
 # Additional provider-backed models rendered into LiteLLM model_list.
 litellm_extra_models: []
 
+# Non-standard OpenAI-compatible endpoints forwarded through LiteLLM. The
+# voices endpoint defaults to the actual llama-swap TTS model so clients do not
+# need to know its backend alias.
+litellm_pass_through_endpoints:
+  - path: /v1/audio/voices
+    target: "http://{{ llm_inference_host }}:{{ llamaswap_port }}/v1/audio/voices"
+    methods: ["GET"]
+    # LiteLLM OSS restricts authenticated passthrough routes to the master key;
+    # per-key/team grants require Enterprise. This endpoint exposes only the
+    # non-sensitive, read-only voice catalog.
+    auth: false
+    default_query_params:
+      model: "{{ model_group_alias['home-tts'] }}"
+
 # --- WanGP MCP Settings ---
 wan2gp_mcp_host_for_litellm: "192.168.50.10"
 wan2gp_mcp_port: "{{ wan2gp_port | default(7860) }}"

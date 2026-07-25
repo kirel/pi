@@ -8,12 +8,12 @@ model_group_alias:
   home-ha: "Qwen3.6-27B-Instruct"
   home-hermes: "Qwen3.6-27B-Instruct"
   home-embed: "qwen3-embedding"
-  home-asr: "parakeet-tdt-0.6b"
+  home-asr: "whisper-large-v3-turbo-q8-crispasr"
   home-tts: "qwen3-tts"
   home-remote: "google/gemini-3-flash-preview"
 
 # llama.cpp --fit is not implemented for tensor split mode. Keep the total KV
-# pools explicit so qwen3-embedding, Parakeet, and qwen3-tts can stay resident
+# pools explicit so qwen3-embedding, CrispASR, and qwen3-tts can stay resident
 # with at least the existing GPU headroom. Unified KV lets three concurrent
 # sequences share each pool instead of dividing it into equal per-slot contexts.
 llama_parallel_slots: 3
@@ -425,31 +425,38 @@ llamaswap_models:
     env:
       - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}}"
 
-  - alias: parakeet-tdt-0.6b
-    # OpenAI-compatible ASR replacement for Speaches. Run it as an isolated
-    # sibling container managed by llama-swap through the Docker socket.
-    # The checked-in target is GPU0; the 5060 Ti is only a cutover override.
+  - alias: whisper-large-v3-turbo-q8-crispasr
+    # OpenAI-compatible CrispASR sibling managed by llama-swap. Keep the exact
+    # Whisper filename explicit: CrispASR 0.8.23 resolves unknown shorthand
+    # names to Whisper Base.
     cmd: >-
       docker run
       --init
       --rm
       --pull never
-      --name {{ llamaswap_parakeet_container_name }}
+      --name {{ llamaswap_crispasr_container_name }}
       --label io.kirelabs.managed-by=llama-swap
       --log-driver local
       --log-opt max-size=10m
       --log-opt max-file=3
       --network {{ llamaswap_backend_network }}
-      --gpus device={{ llamaswap_parakeet_gpu_uuid }}
-      {{ llamaswap_parakeet_image }}
-      -models /models
-      -workers {{ llamaswap_parakeet_workers }}
-      -gpu cuda
-      -gpu-device 0
-      -long-audio
+      --gpus device={{ llamaswap_crispasr_gpu_uuid }}
+      -p {{ llamaswap_crispasr_wyoming_port }}:{{ llamaswap_crispasr_wyoming_port }}
+      -v {{ llamaswap_crispasr_cache_path }}:{{ llamaswap_crispasr_cache_container_path }}
+      --entrypoint crispasr
+      {{ llamaswap_crispasr_image }}
+      --server
+      --host 0.0.0.0
+      --port {{ llamaswap_crispasr_internal_port }}
+      --wyoming-port {{ llamaswap_crispasr_wyoming_port }}
+      --cache-dir {{ llamaswap_crispasr_cache_container_path }}
+      --backend whisper
+      --hf-repo {{ llamaswap_crispasr_model_repo }}:{{ llamaswap_crispasr_model_file }}
+      --server-workers {{ llamaswap_crispasr_workers }}
+      --language de
     cmd_stop: >-
-      docker stop --time 15 {{ llamaswap_parakeet_container_name }}
-    proxy: "http://{{ llamaswap_parakeet_container_name }}:{{ llamaswap_parakeet_internal_port }}"
+      docker stop --time 15 {{ llamaswap_crispasr_container_name }}
+    proxy: "http://{{ llamaswap_crispasr_container_name }}:{{ llamaswap_crispasr_internal_port }}"
     check_endpoint: "/health"
     supports_function_calling: false
     supports_vision: false
@@ -458,28 +465,45 @@ llamaswap_models:
     group: "asr"
 
   - alias: qwen3-tts
-    # OpenAI-compatible stable TTS runtime. VoiceDesign prepares missing
-    # reference WAVs once; runtime requests use Base voice cloning with cached
-    # speaker embeddings. Keep it on GPU1 so embeddings and TTS do not contend.
+    # OpenAI-compatible CrispASR Qwen3-TTS sibling. The stable de-host reference
+    # is migrated from the previous faster-qwen3-tts cache during deployment.
+    aliases:
+      - home-tts
+    use_model_name: qwen3-tts
     cmd: >-
-      /app/qwen3-tts-venv/bin/python {{ llamaswap_qwen3_tts_server_container_script }}
-      --runtime-model {{ llamaswap_qwen3_tts_runtime_model }}
-      --design-model {{ llamaswap_qwen3_tts_design_model }}
-      --presets {{ llamaswap_qwen3_tts_presets_container_path }}
-      --voice-cache-dir {{ llamaswap_qwen3_tts_voice_cache_container_path }}
-      --voice-cache-probe-text "{{ llamaswap_qwen3_tts_voice_cache_probe_text }}"
+      docker run
+      --init
+      --rm
+      --pull never
+      --name {{ llamaswap_crispasr_tts_container_name }}
+      --label io.kirelabs.managed-by=llama-swap
+      --log-driver local
+      --log-opt max-size=10m
+      --log-opt max-file=3
+      --network {{ llamaswap_backend_network }}
+      --gpus device={{ llamaswap_crispasr_tts_gpu_uuid }}
+      -v {{ llamaswap_crispasr_tts_cache_path }}:{{ llamaswap_crispasr_tts_cache_container_path }}
+      -v {{ llamaswap_crispasr_tts_voices_path }}:{{ llamaswap_crispasr_tts_voices_container_path }}:ro
+      --entrypoint crispasr
+      {{ llamaswap_crispasr_image }}
+      --server
       --host 0.0.0.0
-      --port ${PORT}
-      --device cuda
-      --cache-dir /app/.uv-cache
+      --port {{ llamaswap_crispasr_tts_internal_port }}
+      --cache-dir {{ llamaswap_crispasr_tts_cache_container_path }}
+      --backend {{ llamaswap_crispasr_tts_backend }}
+      -m auto
+      --voice-dir {{ llamaswap_crispasr_tts_voices_container_path }}
+      --language de
+      --i-have-rights
+    cmd_stop: >-
+      docker stop --time 15 {{ llamaswap_crispasr_tts_container_name }}
+    proxy: "http://{{ llamaswap_crispasr_tts_container_name }}:{{ llamaswap_crispasr_tts_internal_port }}"
+    check_endpoint: "/health"
     supports_function_calling: false
     supports_vision: false
     supports_reasoning: false
     mode: audio_speech
     group: "forever"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{gpu_3090_1_uuid}}"
-      - "UV_CACHE_DIR=/app/.uv-cache"
 
 llamaswap_model_groups:
   forever:
