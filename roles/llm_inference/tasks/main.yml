@@ -181,12 +181,18 @@
       - name: "{{ llamaswap_backend_network }}"
     device_requests:
       - driver: nvidia
-        device_ids: ["{{ gpu_3090_0_uuid }}", "{{ gpu_3090_1_uuid }}"]
+        # GPU2 is visible only for explicit 3-GPU profiles. Per-model
+        # CUDA_VISIBLE_DEVICES keeps every existing LLM on the two 3090s.
+        device_ids: ["{{ gpu_3090_0_uuid }}", "{{ gpu_3090_1_uuid }}", "{{ gpu_5060ti_uuid }}"]
         capabilities:
           - [gpu]
     capabilities:
       - SYS_NICE
     env:
+      # The upstream image runs as root and otherwise resolves Hugging Face
+      # downloads below /root/.cache, bypassing the persistent host cache.
+      HOME: /app
+      HF_HOME: /app/.cache/huggingface
       LLAMASWAP_RESTART_TOKEN: "{{ ansible_facts.date_time.epoch }}"
     labels:
       homepage.group: "{{ services['llama-swap'].group }}"
