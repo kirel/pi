@@ -74,6 +74,16 @@ hermes_docker_webui_workspace_dir: /workspace
 hermes_docker_webui_workspace_host_dir: ""
 hermes_docker_webui_workspace_host_dirs: {}
 
+# Shared read/write workspaces mounted into selected Hermes agent containers.
+# Each entry defines a Docker-safe name, its hosting owner, and the agents that
+# receive the mount. The owner must be one of the assigned agents.
+# Host and container paths default to:
+#   <hermes_docker_base_dir>/shared-workspaces/<name>
+#   /shared-workspaces/<name>
+hermes_docker_shared_workspaces: []
+hermes_docker_shared_workspaces_host_dir: "{{ hermes_docker_base_dir }}/shared-workspaces"
+hermes_docker_shared_workspaces_container_dir: /shared-workspaces
+
 # Put each Hermes agent on the Tailnet through an official Tailscale sidecar.
 # The Hermes container shares the sidecar's network namespace, so Tailnet users
 # reach the agent by its MagicDNS name (for example hermes-marian.<tailnet>) and

@@ -16,16 +16,24 @@ hermes_docker_watchdog_enabled: true
 hermes_docker_agent_order:
   - multipurpose
   - marian
+  - nele
   - anna
   - sabine
 hermes_docker_agent_tailnet_ips:
   multipurpose: 100.88.41.45
   marian: 100.86.181.83
+  nele: 100.114.158.10
   anna: 100.115.175.58
   sabine: 100.83.173.54
 hermes_docker_agent_extra_host_services:
   multipurpose:
     - homeassistant
+hermes_docker_shared_workspaces:
+  - name: marian-nele-shared
+    owner: marian
+    agents:
+      - marian
+      - nele
 hermes_docker_agents_env:
   multipurpose:
     API_SERVER_ENABLED: "true"
@@ -65,6 +73,15 @@ hermes_docker_litellm_keys:
       - home-tts
     mcp_access_groups:
       - global
+  nele:
+    key_alias: hermes-nele
+    models:
+      - home-fast
+      - home-smart
+      - home-asr
+      - home-tts
+    mcp_access_groups:
+      - global
   anna:
     key_alias: hermes-anna
     models:
@@ -96,6 +113,11 @@ hermes_docker_agents_external_skill_dirs:
     - host_dir: /home/daniel/projects/agent-skills/skills/friends
       container_dir: /skills/friends
   marian:
+    - host_dir: /home/daniel/projects/agent-skills/skills/global
+      container_dir: /skills/global
+    - host_dir: /home/daniel/projects/agent-skills/skills/friends
+      container_dir: /skills/friends
+  nele:
     - host_dir: /home/daniel/projects/agent-skills/skills/global
       container_dir: /skills/global
     - host_dir: /home/daniel/projects/agent-skills/skills/friends
@@ -140,6 +162,12 @@ hermes_docker_agents_config_overrides:
         timeout: 180
         connect_timeout: 60
   marian:
+    skills:
+      external_dirs:
+        - /skills/global
+        - /skills/friends
+        - /skills/caddy-proxy
+  nele:
     skills:
       external_dirs:
         - /skills/global

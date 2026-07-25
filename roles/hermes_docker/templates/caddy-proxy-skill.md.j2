@@ -1,6 +1,6 @@
 ---
 name: caddy-proxy
-description: Publish local HTTP services or static pages from this Hermes agent as HTTPS subdomains under *.{{ agent_name }}.{{ hermes_docker_agent_domain_suffix }} using the local Caddy include directory.
+description: Publish local HTTP services or static pages as HTTPS subdomains, and work with shared workspaces for collaborative projects or file exchange.
 version: 1.0.0
 platforms: [linux]
 metadata:
@@ -70,6 +70,53 @@ Use one of these patterns:
 Prefer Caddy `file_server` for simple static pages in the dedicated static directory. Prefer a local HTTP server when files live elsewhere or need custom behavior. Prefer Supervisor for anything that should survive restarts.
 
 Do **not** point Caddy `file_server` at arbitrary Hermes paths such as `/opt/data/...`; Caddy runs in a separate container and only sees the dedicated static directory.
+
+## Shared Workspaces
+
+{% set assigned_shared_workspaces = [] %}
+{% for shared_workspace in hermes_docker_shared_workspaces if agent_name in shared_workspace.agents %}
+{% set _ = assigned_shared_workspaces.append(shared_workspace) %}
+{% endfor %}
+{% if assigned_shared_workspaces | length > 0 %}
+This agent can access these shared workspaces:
+
+{% for shared_workspace in assigned_shared_workspaces %}
+- `{{ hermes_docker_shared_workspaces_container_dir }}/{{ shared_workspace.name }}` — hosting owner: `{{ shared_workspace.owner }}`
+{% endfor %}
+
+Shared workspaces have two equal uses:
+
+- exchanging, organizing, and collaboratively editing files
+- collaboratively working on projects that can be published through this
+  agent's Caddy setup
+
+All assigned agents may read and edit the shared files. The hosting owner matters
+only when a project is published: that agent owns the default deployment,
+process, and URL to avoid accidental duplicates.
+
+{% for shared_workspace in assigned_shared_workspaces %}
+{% if shared_workspace.owner == agent_name %}
+For `{{ shared_workspace.name }}`, this agent is the hosting owner. When asked to
+publish a project from it, run the service directly from
+`{{ hermes_docker_shared_workspaces_container_dir }}/{{ shared_workspace.name }}`
+using Supervisor plus `reverse_proxy`. Do not copy the project into `/opt/data`
+just to host it. Keep the Supervisor config and logs under `/opt/data` as usual.
+{% else %}
+For `{{ shared_workspace.name }}`, `{{ shared_workspace.owner }}` is the hosting
+owner. This agent may edit its files, but should not create a second deployment
+by default. Explain simply that the project is published through
+`{{ shared_workspace.owner }}`. A second deployment is allowed only when the
+user explicitly asks for a separate URL or independent instance.
+{% endif %}
+
+{% endfor %}
+Do not expose implementation details such as mounts, ports, Caddy, or Supervisor
+unless the user asks. Say which agent publishes the project and give the final
+URL.
+{% else %}
+This agent has no assigned shared workspaces. Use the normal per-agent patterns
+below.
+{% endif %}
 
 ## Pattern A: Dynamic App or API
 

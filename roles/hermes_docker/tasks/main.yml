@@ -144,6 +144,8 @@
       - hermes_docker_agents_external_skill_dirs is mapping
       - hermes_docker_webui_agents_enabled is mapping
       - hermes_docker_webui_workspace_host_dirs is mapping
+      - hermes_docker_shared_workspaces is sequence
+      - hermes_docker_shared_workspaces is not string
       - hermes_docker_effective_agent_names | length > 0
       - >-
         hermes_docker_effective_agent_names |
@@ -176,6 +178,39 @@
       hermes_docker_tailscale_authkey when Tailscale sidecars are enabled,
       provide regfish_token when per-agent Caddy is enabled, and set
       hermes_docker_webui_password when any Hermes WebUI is enabled.
+
+- name: Validate Hermes Docker shared workspaces
+  ansible.builtin.assert:
+    that:
+      - item is mapping
+      - item.name is defined
+      - item.name | string is match('^[A-Za-z0-9][A-Za-z0-9_.-]*$')
+      - item.owner is defined
+      - item.owner | string | length > 0
+      - item.agents is defined
+      - item.agents is sequence
+      - item.agents is not string
+      - item.agents | length > 0
+      - item.agents | unique | length == item.agents | length
+      - item.agents | difference(hermes_docker_effective_agent_names) | length == 0
+      - item.owner in item.agents
+    fail_msg: >-
+      Shared Hermes workspace entries must define a Docker-safe unique name, an
+      owner included in the workspace, and a non-empty, duplicate-free list of
+      existing Hermes agents.
+  loop: "{{ hermes_docker_shared_workspaces }}"
+  loop_control:
+    label: "{{ item.name | default('unnamed') }}"
+
+- name: Validate unique Hermes Docker shared workspace names
+  ansible.builtin.assert:
+    that:
+      - >-
+        hermes_docker_shared_workspaces |
+        map(attribute='name') |
+        unique |
+        length == hermes_docker_shared_workspaces | length
+    fail_msg: "Hermes shared workspace names must be unique."
 
 - name: Validate Hermes Docker LiteLLM key configuration
   ansible.builtin.assert:
@@ -383,6 +418,17 @@
   loop_control:
     label: "{{ item.key }} -> {{ item.value }}"
   when: hermes_docker_webui_effective_workspace_host_dirs | length > 0
+
+- name: Create Hermes Docker shared workspace directories
+  ansible.builtin.file:
+    path: "{{ hermes_docker_shared_workspaces_host_dir }}/{{ item.name }}"
+    state: directory
+    owner: "{{ hermes_docker_data_uid }}"
+    group: "{{ hermes_docker_data_gid }}"
+    mode: "0770"
+  loop: "{{ hermes_docker_shared_workspaces }}"
+  loop_control:
+    label: "{{ item.name }}"
 
 - name: Create per-agent supervisor directories
   ansible.builtin.file:

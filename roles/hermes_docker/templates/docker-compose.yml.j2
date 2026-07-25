@@ -110,6 +110,9 @@ services:
 {% if agent_workspace_host_dir | string | length > 0 %}
       - {{ agent_workspace_host_dir }}:{{ hermes_docker_webui_workspace_dir }}
 {% endif %}
+{% for shared_workspace in hermes_docker_shared_workspaces if agent_name in shared_workspace.agents %}
+      - {{ hermes_docker_shared_workspaces_host_dir }}/{{ shared_workspace.name }}:{{ hermes_docker_shared_workspaces_container_dir }}/{{ shared_workspace.name }}
+{% endfor %}
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf:ro
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/conf.d:{{ hermes_container_data_dir }}/supervisor/conf.d
 {% if hermes_docker_agent_caddy_enabled | bool %}
