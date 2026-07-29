@@ -110,7 +110,11 @@
             REDIS_PORT: "{{ litellm_redis_port_container }}"
             GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
-            MINIMAX_API_KEY: "{{ MINIMAX_API_KEY | default('') }}"
+            MINIMAX_API_KEY: >-
+              {{
+                MINIMAX_API_KEY |
+                default(hermes_docker_global_env_secret.MINIMAX_API_KEY | default(''))
+              }}
             ZAI_API_KEY: "{{ ZAI_API_KEY | default(GLM_API_KEY | default('')) }}"
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
             LITELLM_MCP_STDIO_EXTRA_COMMANDS: >-
@@ -246,3 +250,22 @@
         llm-network:
           driver: bridge
   become: true
+
+- name: Wait for LiteLLM readiness before virtual key sync
+  ansible.builtin.uri:
+    url: "{{ litellm_managed_keys_api_base_url }}/health/readiness"
+    method: GET
+    status_code: 200
+  register: llm_tools_managed_keys_readiness
+  until: llm_tools_managed_keys_readiness.status == 200
+  retries: 36
+  delay: 5
+  when:
+    - litellm_managed_virtual_keys | length > 0
+    - not ansible_check_mode
+
+- name: Sync managed LiteLLM virtual keys
+  ansible.builtin.include_tasks: managed_virtual_keys.yml
+  when:
+    - litellm_managed_virtual_keys | length > 0
+    - not ansible_check_mode

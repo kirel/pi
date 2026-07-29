@@ -59,6 +59,9 @@ services:
 {% if loop.first %}
     build:
       context: {{ hermes_docker_base_dir }}/hermes-image
+      # Refresh mutable base tags such as nousresearch/hermes-agent:main.
+      # Compose pull_policy controls the derived image, not Dockerfile FROM.
+      pull: true
       args:
         HERMES_BASE_IMAGE: {{ hermes_docker_base_image }}
     pull_policy: {{ hermes_docker_pull_policy }}
@@ -104,7 +107,9 @@ services:
     volumes:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_container_data_dir }}
 {% if agent_name in hermes_docker_webui_agent_names %}
-      - hermes-agent-src-{{ agent_name }}:/opt/hermes
+      # Docker only seeds a named volume on first creation. Include the base
+      # image in its identity so a pinned Hermes upgrade cannot keep stale code.
+      - hermes-agent-src-{{ agent_name }}-{{ hermes_docker_base_image | hash('sha1') | truncate(12, true, '') }}:/opt/hermes
 {% endif %}
 {% set agent_workspace_host_dir = hermes_docker_webui_effective_workspace_host_dirs.get(agent_name, '') %}
 {% if agent_workspace_host_dir | string | length > 0 %}
@@ -216,7 +221,7 @@ services:
 {% endif %}
     volumes:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_docker_webui_home_dir }}
-      - hermes-agent-src-{{ agent_name }}:{{ hermes_docker_webui_agent_dir }}:ro
+      - hermes-agent-src-{{ agent_name }}-{{ hermes_docker_base_image | hash('sha1') | truncate(12, true, '') }}:{{ hermes_docker_webui_agent_dir }}:ro
 {% set webui_workspace_host_dir = hermes_docker_webui_effective_workspace_host_dirs.get(agent_name, '') %}
 {% if webui_workspace_host_dir | string | length > 0 %}
       - {{ webui_workspace_host_dir }}:{{ hermes_docker_webui_workspace_dir }}
@@ -241,6 +246,6 @@ networks:
 
 volumes:
 {% for agent_name in hermes_docker_webui_agent_names %}
-  hermes-agent-src-{{ agent_name }}:
+  hermes-agent-src-{{ agent_name }}-{{ hermes_docker_base_image | hash('sha1') | truncate(12, true, '') }}:
 {% endfor %}
 {% endif %}

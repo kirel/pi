@@ -44,63 +44,61 @@ hermes_docker_litellm_manage_keys: true
 hermes_docker_litellm_team:
   team_id: hermes-docker
   team_alias: Hermes Docker
-  models:
-    - home-fast
-    - home-smart
-    - home-asr
-    - home-tts
+  models: "{{ hermes_litellm_model_profiles.voice_only }}"
   object_permission:
+    mcp_servers:
+      - todoist
     mcp_access_groups:
-      - family
-      - global
+      - web
+      - maps
+      - home_control
+      - home_admin
+      - shopping
+      - photos
+      - notes
 hermes_docker_litellm_keys:
   multipurpose:
     key_alias: hermes-multipurpose
-    models:
-      - home-fast
-      - home-smart
-      - home-asr
-      - home-tts
+    models: "{{ hermes_litellm_model_profiles.voice_only }}"
     mcp_access_groups:
-      - family
-      - global
+      - web
+      - maps
+      - home_admin
+      - shopping
+      - photos
+      - notes
+    mcp_tool_permissions:
+      todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
   marian:
     key_alias: hermes-marian
-    models:
-      - home-fast
-      - home-smart
-      - home-asr
-      - home-tts
+    models: "{{ hermes_litellm_model_profiles.voice_only }}"
     mcp_access_groups:
-      - global
+      - web
+      - maps
   nele:
     key_alias: hermes-nele
-    models:
-      - home-fast
-      - home-smart
-      - home-asr
-      - home-tts
+    models: "{{ hermes_litellm_model_profiles.voice_only }}"
     mcp_access_groups:
-      - global
+      - web
+      - maps
   anna:
     key_alias: hermes-anna
-    models:
-      - home-fast
-      - home-smart
-      - home-asr
-      - home-tts
+    models: "{{ hermes_litellm_model_profiles.voice_only }}"
     mcp_access_groups:
-      - global
+      - web
+      - maps
   sabine:
     key_alias: hermes-sabine
-    models:
-      - home-fast
-      - home-smart
-      - home-asr
-      - home-tts
+    models: "{{ hermes_litellm_model_profiles.voice_only }}"
     mcp_access_groups:
-      - family
-      - global
+      - web
+      - maps
+      - home_control
+      - shopping
+      - photos
+      - notes
+    mcp_tool_permissions:
+      todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
 hermes_docker_agents_external_skill_dirs:
   multipurpose:
     - host_dir: /home/daniel/projects/agent-skills/skills/global

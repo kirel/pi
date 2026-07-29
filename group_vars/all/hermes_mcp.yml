@@ -1,0 +1,60 @@
+---
+hermes_litellm_model_profiles:
+  local_hermes:
+    - home-hermes
+    - minimax-m3
+    - glm-5.2
+    - home-asr
+    - home-tts
+  voice_only:
+    - home-asr
+    - home-tts
+
+hermes_mcp_tool_profiles:
+  shopping:
+    todoist:
+      - find-sections
+      - find-tasks
+      - fetch
+      - add-tasks
+      - update-tasks
+      - complete-tasks
+      - delete-object
+
+litellm_managed_virtual_keys:
+  baremetal_daniel:
+    key: "{{ vault_hermes_baremetal_litellm_api_key | trim }}"
+    key_alias: hermes
+    team_id: hermes-baremetal
+    models: "{{ hermes_litellm_model_profiles.voice_only }}"
+    mcp_access_groups:
+      - web
+      - maps
+      - home_admin
+      - shopping
+      - photos
+      - notes
+      - workflow_admin
+      - code
+      - media_generation
+    mcp_tool_permissions:
+      todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
+
+litellm_managed_virtual_key_teams:
+  baremetal:
+    team_id: hermes-baremetal
+    team_alias: Hermes Bare Metal
+    models: "{{ hermes_litellm_model_profiles.voice_only }}"
+    object_permission:
+      mcp_servers:
+        - todoist
+      mcp_access_groups:
+        - web
+        - maps
+        - home_admin
+        - shopping
+        - photos
+        - notes
+        - workflow_admin
+        - code
+        - media_generation

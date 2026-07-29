@@ -55,6 +55,7 @@ gpu_configs:
 
 # Local Hermes dashboard on ailab. This uses the host-published dashboard port
 # and the central homelab Caddy service, not per-agent Caddy/Tailscale sidecars.
+hermes_docker_base_image: nousresearch/hermes-agent:v2026.7.20
 hermes_docker_tailscale_enabled: false
 hermes_docker_agent_caddy_enabled: false
 hermes_docker_require_minimax_api_key: false
@@ -89,25 +90,27 @@ hermes_docker_litellm_manage_keys: true
 hermes_docker_litellm_team:
   team_id: hermes-ailab
   team_alias: Hermes Ailab
-  models:
-    - "*"
+  models: "{{ hermes_litellm_model_profiles.local_hermes }}"
   object_permission:
+    mcp_servers:
+      - todoist
     mcp_access_groups:
-      - global
-      - family
-      - private
-      - coding_agents
+      - web
+      - maps
+      - home_control
+      - shopping
 
 hermes_docker_litellm_keys:
   local:
     key_alias: hermes-ailab-local
-    models:
-      - "*"
+    models: "{{ hermes_litellm_model_profiles.local_hermes }}"
     mcp_access_groups:
-      - global
-      - family
-      - private
-      - coding_agents
+      - web
+      - maps
+      - home_control
+      - shopping
+    mcp_tool_permissions:
+      todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
 
 hermes_docker_agents_external_skill_dirs:
   local:
