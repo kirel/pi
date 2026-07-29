@@ -5,7 +5,7 @@ model_group_alias:
   home-fast: "Qwen3.6-35B-A3B-Instruct-nothink"
   home-smart: "Qwen3.6-35B-A3B-Instruct"
   home-vision: "Qwen3.6-35B-A3B-Instruct"
-  home-ha: "Qwen3.6-27B-Instruct"
+  home-ha: "Qwen3.6-27B-Instruct-nothink"
   home-hermes: "Qwen3.6-27B-Instruct"
   home-embed: "qwen3-embedding"
   home-asr: "whisper-large-v3-turbo-q8-crispasr"
@@ -85,10 +85,12 @@ llamaswap_models:
   - alias: Qwen3.6-35B-A3B-Instruct
     # Keep the proven total KV budget, but share it dynamically across three
     # concurrent sequences. Idle histories are moved to the host prompt cache
-    # and selected automatically by prefix similarity.
+    # and selected automatically by prefix similarity. Q6_K was validated with
+    # parallel LLM, TTS, ASR, and embedding requests (minimum free: GPU0
+    # 2145 MiB, GPU1 1008 MiB).
     cmd: >-
       /app/llama-server
-      -hf unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q4_K_XL
+      -hf unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q6_K
       --port ${PORT}
       --ctx-size {{ llama_ctx_size_qwen35_3090 }}
       --parallel {{ llama_parallel_slots }}
@@ -133,10 +135,11 @@ llamaswap_models:
 
   - alias: Qwen3.6-27B-Instruct
     # Use the same dynamic three-sequence layout and total KV budget as the 35B
-    # model. The smaller Q3 weights offset this dense model's larger KV cache.
+    # model. Q6_K preserves more runtime headroom than Q6 XL alongside the
+    # resident GPU services.
     cmd: >-
       /app/llama-server
-      -hf unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q3_K_XL
+      -hf unsloth/Qwen3.6-27B-MTP-GGUF:Q6_K
       --port ${PORT}
       --ctx-size {{ llama_ctx_size_qwen27_3090 }}
       --parallel {{ llama_parallel_slots }}
@@ -226,8 +229,10 @@ llamaswap_models:
   - alias: Laguna-S-2.1-3GPU
     # Higher-quality Laguna profile using the 5060 Ti as a smaller layer
     # segment. Layer split avoids tensor-parallel synchronization over the
-    # eGPU link. Unlike tensor split, layer mode supports --fit; leave the
-    # layer count unset so llama.cpp can account for the large fixed tensors.
+    # eGPU link. The updated IQ3_S GGUF requires 4096 MiB target headroom on
+    # GPU1 for concurrent TTS and fits 99072 tokens; this passed two parallel
+    # LLM/TTS/ASR/embedding runs. Leave the layer count unset so llama.cpp can
+    # account for the large fixed tensors.
     cmd: >-
       /app/llama-server
       -hf unsloth/Laguna-S-2.1-GGUF:UD-IQ3_S
@@ -238,7 +243,7 @@ llamaswap_models:
       --ubatch-size 256
       --split-mode layer
       --fit on
-      --fit-target 1024,1536,512
+      --fit-target 1024,4096,512
       --fit-ctx {{ llama_ctx_size_laguna_s_3090 }}
       -fa on
       --cache-type-k q4_0
