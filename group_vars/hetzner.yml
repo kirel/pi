@@ -44,7 +44,7 @@ hermes_docker_litellm_manage_keys: true
 hermes_docker_litellm_team:
   team_id: hermes-docker
   team_alias: Hermes Docker
-  models: "{{ hermes_litellm_model_profiles.voice_only }}"
+  models: "{{ hermes_litellm_model_profiles.docker_chat }}"
   object_permission:
     mcp_servers:
       - todoist
@@ -59,7 +59,7 @@ hermes_docker_litellm_team:
 hermes_docker_litellm_keys:
   multipurpose:
     key_alias: hermes-multipurpose
-    models: "{{ hermes_litellm_model_profiles.voice_only }}"
+    models: "{{ hermes_litellm_model_profiles.docker_chat }}"
     mcp_access_groups:
       - web
       - maps
@@ -71,25 +71,25 @@ hermes_docker_litellm_keys:
       todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
   marian:
     key_alias: hermes-marian
-    models: "{{ hermes_litellm_model_profiles.voice_only }}"
+    models: "{{ hermes_litellm_model_profiles.docker_chat }}"
     mcp_access_groups:
       - web
       - maps
   nele:
     key_alias: hermes-nele
-    models: "{{ hermes_litellm_model_profiles.voice_only }}"
+    models: "{{ hermes_litellm_model_profiles.docker_chat }}"
     mcp_access_groups:
       - web
       - maps
   anna:
     key_alias: hermes-anna
-    models: "{{ hermes_litellm_model_profiles.voice_only }}"
+    models: "{{ hermes_litellm_model_profiles.docker_chat }}"
     mcp_access_groups:
       - web
       - maps
   sabine:
     key_alias: hermes-sabine
-    models: "{{ hermes_litellm_model_profiles.voice_only }}"
+    models: "{{ hermes_litellm_model_profiles.docker_chat }}"
     mcp_access_groups:
       - web
       - maps
@@ -125,11 +125,21 @@ hermes_docker_agents_external_skill_dirs:
       container_dir: /skills/global
     - host_dir: /home/daniel/projects/agent-skills/skills/family
       container_dir: /skills/family
+hermes_docker_kirelabs_custom_providers:
+  - name: KireLabs LiteLLM
+    base_url: https://litellm.kirelabs.org/v1
+    key_env: LITELLM_API_KEY
+    api_mode: chat_completions
+    discover_models: true
+
 hermes_docker_agents_config_overrides:
   multipurpose:
     model:
-      default: MiniMax-M3
-      provider: minimax
+      default: gpt-5.6-terra-cpa
+      provider: custom:kirelabs-litellm
+      base_url: "{{ hermes_docker_config_delete_marker }}"
+      api_key: "{{ hermes_docker_config_delete_marker }}"
+    custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     skills:
       external_dirs:
         - /skills/global
@@ -137,8 +147,11 @@ hermes_docker_agents_config_overrides:
         - /skills/caddy-proxy
   anna:
     model:
-      default: MiniMax-M3
-      provider: minimax
+      default: gpt-5.6-terra-cpa
+      provider: custom:kirelabs-litellm
+      base_url: "{{ hermes_docker_config_delete_marker }}"
+      api_key: "{{ hermes_docker_config_delete_marker }}"
+    custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     skills:
       external_dirs:
         - /skills/global
@@ -146,9 +159,11 @@ hermes_docker_agents_config_overrides:
         - /skills/caddy-proxy
   sabine:
     model:
-      default: MiniMax-M3
-      provider: minimax
-      base_url: ""
+      default: gpt-5.6-terra-cpa
+      provider: custom:kirelabs-litellm
+      base_url: "{{ hermes_docker_config_delete_marker }}"
+      api_key: "{{ hermes_docker_config_delete_marker }}"
+    custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     skills:
       external_dirs:
         - /skills/global
@@ -160,12 +175,24 @@ hermes_docker_agents_config_overrides:
         timeout: 180
         connect_timeout: 60
   marian:
+    model:
+      default: gpt-5.6-terra-cpa
+      provider: custom:kirelabs-litellm
+      base_url: "{{ hermes_docker_config_delete_marker }}"
+      api_key: "{{ hermes_docker_config_delete_marker }}"
+    custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     skills:
       external_dirs:
         - /skills/global
         - /skills/friends
         - /skills/caddy-proxy
   nele:
+    model:
+      default: gpt-5.6-terra-cpa
+      provider: custom:kirelabs-litellm
+      base_url: "{{ hermes_docker_config_delete_marker }}"
+      api_key: "{{ hermes_docker_config_delete_marker }}"
+    custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     skills:
       external_dirs:
         - /skills/global

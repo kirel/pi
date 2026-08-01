@@ -52,6 +52,107 @@ openrouter_models:
   - google/gemini-3.1-flash-lite
 
 litellm_extra_models:
+  # CLIProxyAPI is exposed to LiteLLM as an OpenAI-compatible upstream. Keep
+  # the public aliases suffixed with -cpa so callers can select this quota pool
+  # explicitly and usage remains attributable in both LiteLLM and Usage Keeper.
+  - model_name: gpt-5.6-sol-cpa
+    litellm_params:
+      model: openai/gpt-5.6-sol
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: gpt-5.6-terra-cpa
+    litellm_params:
+      model: openai/gpt-5.6-terra
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: gpt-5.6-luna-cpa
+    litellm_params:
+      model: openai/gpt-5.6-luna
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: gpt-5.5-cpa
+    litellm_params:
+      model: openai/gpt-5.5
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: claude-opus-4-6-thinking-cpa
+    litellm_params:
+      model: openai/claude-opus-4-6-thinking
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: gemini-3.1-pro-low-cpa
+    litellm_params:
+      model: openai/gemini-3.1-pro-low
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: gemini-3.6-flash-high-cpa
+    litellm_params:
+      model: openai/gemini-3.6-flash-high
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: grok-4.5-cpa
+    litellm_params:
+      model: openai/grok-4.5
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  # Media models must declare their endpoint mode. They are invoked through
+  # LiteLLM's native image/video APIs, not through /chat/completions.
+  - model_name: gpt-image-2-cpa
+    litellm_params:
+      model: openai/gpt-image-2
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: image_generation
+
+  - model_name: gemini-3.1-flash-image-cpa
+    litellm_params:
+      model: openai/gemini-3.1-flash-image
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: image_generation
+
+  - model_name: grok-imagine-image-cpa
+    litellm_params:
+      model: openai/grok-imagine-image
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: image_generation
+
+  - model_name: grok-imagine-image-quality-cpa
+    litellm_params:
+      model: openai/grok-imagine-image-quality
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: image_generation
+
+  - model_name: grok-imagine-video-cpa
+    litellm_params:
+      model: openai/grok-imagine-video
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: video_generation
+
+  - model_name: grok-imagine-video-1.5-preview-cpa
+    litellm_params:
+      model: openai/grok-imagine-video-1.5-preview
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: video_generation
+
   - model_name: minimax-m3
     litellm_params:
       model: minimax/MiniMax-M3

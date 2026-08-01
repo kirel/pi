@@ -225,6 +225,9 @@ hermes_docker_config_overrides:
 # Config merged only into specific Hermes Docker agents after first start.
 # Keys are agent names from hermes_docker_agents_env/hermes_docker_agents_env_secret.
 hermes_docker_agents_config_overrides: {}
+# Override values set to this marker remove the corresponding key from the
+# existing config instead of retaining stale settings during migrations.
+hermes_docker_config_delete_marker: "__HERMES_ANSIBLE_DELETE__"
 
 # MCP servers managed as named entries in each agent's config.yaml. The task
 # upserts only these names and leaves user-added MCP servers untouched.

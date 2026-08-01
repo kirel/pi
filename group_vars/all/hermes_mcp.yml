@@ -9,6 +9,17 @@ hermes_litellm_model_profiles:
   voice_only:
     - home-asr
     - home-tts
+  all_models:
+    - all-proxy-models
+  docker_chat:
+    - gpt-5.6-sol-cpa
+    - gpt-5.6-terra-cpa
+    - gpt-5.6-luna-cpa
+    - gpt-5.5-cpa
+    - grok-4.5-cpa
+    - claude-opus-4-6-thinking-cpa
+    - home-asr
+    - home-tts
 
 hermes_mcp_tool_profiles:
   shopping:
@@ -26,7 +37,7 @@ litellm_managed_virtual_keys:
     key: "{{ vault_hermes_baremetal_litellm_api_key | trim }}"
     key_alias: hermes
     team_id: hermes-baremetal
-    models: "{{ hermes_litellm_model_profiles.voice_only }}"
+    models: "{{ hermes_litellm_model_profiles.all_models }}"
     mcp_access_groups:
       - web
       - maps
@@ -44,7 +55,7 @@ litellm_managed_virtual_key_teams:
   baremetal:
     team_id: hermes-baremetal
     team_alias: Hermes Bare Metal
-    models: "{{ hermes_litellm_model_profiles.voice_only }}"
+    models: "{{ hermes_litellm_model_profiles.all_models }}"
     object_permission:
       mcp_servers:
         - todoist

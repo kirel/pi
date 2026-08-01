@@ -110,6 +110,7 @@
             REDIS_PORT: "{{ litellm_redis_port_container }}"
             GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
+            CPA_API_KEY: "{{ vault_cpa_api_key }}"
             MINIMAX_API_KEY: >-
               {{
                 MINIMAX_API_KEY |

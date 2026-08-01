@@ -824,8 +824,13 @@
 
         import yaml
 
+        delete_marker = sys.argv[2]
+
         def merge(base, override):
             for key, value in override.items():
+                if value == delete_marker:
+                    base.pop(key, None)
+                    continue
                 if isinstance(value, dict) and isinstance(base.get(key), dict):
                     merge(base[key], value)
                 else:
@@ -844,6 +849,7 @@
         else:
             print('ok')
       - "{{ (hermes_docker_config_overrides | combine(hermes_docker_agents_config_overrides.get(agent_name, {}), recursive=True)) | to_json }}"
+      - "{{ hermes_docker_config_delete_marker }}"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
