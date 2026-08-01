@@ -135,7 +135,9 @@ mcp_servers:
 {% endfor %}
 general_settings:
   store_model_in_db: true
-  store_prompts_in_spend_logs: false
+  # TEMPORARY: capture the exact Hermes request and normalized CPA response
+  # for the gpt-5.6 tool-calling investigation. Disable after the A/B run.
+  store_prompts_in_spend_logs: true
 {% if litellm_pass_through_endpoints %}
   pass_through_endpoints:
 {{ litellm_pass_through_endpoints | to_nice_yaml(indent=4, sort_keys=False, width=1000) | indent(4, true) }}

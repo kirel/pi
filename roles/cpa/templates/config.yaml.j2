@@ -18,7 +18,10 @@ auth-dir: "~/.cli-proxy-api"
 api-keys:
   - "{{ cpa_api_key }}"
 
-debug: false
+# TEMPORARY: retain the Codex request/response conversion for the gpt-5.6
+# tool-calling investigation. Disable both settings after the A/B run.
+debug: true
+request-log: true
 logging-to-file: true
 logs-max-total-size-mb: 256
 usage-statistics-enabled: true
