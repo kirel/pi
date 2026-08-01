@@ -259,6 +259,17 @@ services:
     nodocker: true
     group: AI
     icon: si-openai
+  hermes-baremetal-daniel:
+    name: Hermes Daniel Bare Metal
+    target: ubuntu-8gb-fsn1-1.halfmoon-platy.ts.net
+    http_port: 9119
+    upstream_scheme: https
+    upstream_host_header: 127.0.0.1:9119
+    upstream_origin: http://127.0.0.1:9119
+    domain: hermes-baremetal.kirelabs.org
+    nodocker: true
+    group: AI
+    icon: mdi-robot-outline
   glances-ailab-ubuntu:
     name: Glances AI Lab
     target: ailab-ubuntu.lan

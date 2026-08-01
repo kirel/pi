@@ -313,7 +313,7 @@
       [Service]
       Type=simple
       EnvironmentFile=%h/.hermes/.env
-      ExecStart=/home/{{ item }}/.local/bin/hermes dashboard --host ${HERMES_DASHBOARD_HOST} --port ${HERMES_DASHBOARD_PORT} --no-open --insecure --tui
+      ExecStart=/home/{{ item }}/.local/bin/hermes dashboard --host ${HERMES_DASHBOARD_HOST} --port ${HERMES_DASHBOARD_PORT} --no-open --tui
       Restart=always
       RestartSec=5
 
@@ -369,6 +369,19 @@
   when:
     - (hetzner_hermes_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
     - hetzner_hermes_env_file is changed or hetzner_hermes_dashboard_service is changed
+  tags: [hermes]
+
+- name: Expose Hermes dashboard through Tailscale Serve
+  ansible.builtin.command:
+    argv:
+      - tailscale
+      - serve
+      - --bg
+      - --yes
+      - "--https={{ hetzner_hermes_env.HERMES_DASHBOARD_PORT }}"
+      - "http://127.0.0.1:{{ hetzner_hermes_env.HERMES_DASHBOARD_PORT }}"
+  changed_when: false
+  when: (hetzner_hermes_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
   tags: [hermes]
 
 - name: Check Hermes Agent installation

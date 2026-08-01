@@ -210,7 +210,7 @@ hetzner_hermes_users:
 hetzner_hermes_install_url: https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh
 hetzner_hermes_env:
   HERMES_DASHBOARD: "1"
-  HERMES_DASHBOARD_HOST: "{{ ansible_host }}"
+  HERMES_DASHBOARD_HOST: "127.0.0.1"
   HERMES_DASHBOARD_PORT: "9119"
   HERMES_DASHBOARD_TUI: "1"
 
