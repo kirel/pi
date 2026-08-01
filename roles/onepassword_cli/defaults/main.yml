@@ -1,0 +1,4 @@
+---
+onepassword_cli_user: "{{ username_personal }}"
+onepassword_cli_token_file: "/home/{{ onepassword_cli_user }}/.config/op/service-account-token"
+onepassword_cli_verify_service_account: true

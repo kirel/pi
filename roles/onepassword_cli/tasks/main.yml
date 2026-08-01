@@ -1,0 +1,97 @@
+---
+- name: Assert 1Password CLI supports this host
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] == 'Debian'
+    fail_msg: 1Password CLI installation currently supports Debian-family hosts.
+
+- name: Install 1Password repository prerequisites
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - gnupg
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Get dpkg architecture
+  ansible.builtin.command: dpkg --print-architecture
+  register: onepassword_cli_dpkg_architecture
+  changed_when: false
+
+- name: Assert 1Password-supported architecture
+  ansible.builtin.assert:
+    that:
+      - onepassword_cli_dpkg_architecture.stdout in ['amd64', 'arm64']
+    fail_msg: >-
+      Unsupported architecture: {{ onepassword_cli_dpkg_architecture.stdout }}.
+      1Password CLI supports amd64 and arm64 through this repository.
+
+- name: Install 1Password apt signing key
+  ansible.builtin.get_url:
+    url: https://downloads.1password.com/linux/keys/1password.asc
+    dest: /usr/share/keyrings/1password-archive-keyring.asc
+    owner: root
+    group: root
+    mode: '0644'
+  register: onepassword_cli_signing_key
+
+- name: Configure 1Password deb822 repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/1password.sources
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      Types: deb
+      URIs: https://downloads.1password.com/linux/debian/{{ onepassword_cli_dpkg_architecture.stdout }}
+      Suites: stable
+      Components: main
+      Architectures: {{ onepassword_cli_dpkg_architecture.stdout }}
+      Signed-By: /usr/share/keyrings/1password-archive-keyring.asc
+  register: onepassword_cli_repository
+
+- name: Update apt cache after 1Password repository changes
+  ansible.builtin.apt:
+    update_cache: true
+  when: onepassword_cli_signing_key.changed or onepassword_cli_repository.changed
+
+- name: Install 1Password CLI
+  ansible.builtin.apt:
+    name: 1password-cli
+    state: present
+
+- name: Inspect 1Password service-account token file
+  ansible.builtin.stat:
+    path: "{{ onepassword_cli_token_file }}"
+  register: onepassword_cli_token
+  when: onepassword_cli_verify_service_account | bool
+
+- name: Assert 1Password service-account token permissions
+  ansible.builtin.assert:
+    that:
+      - onepassword_cli_token.stat.exists
+      - onepassword_cli_token.stat.isreg
+      - onepassword_cli_token.stat.pw_name == onepassword_cli_user
+      - onepassword_cli_token.stat.mode == '0600'
+      - onepassword_cli_token.stat.size > 0
+    fail_msg: >-
+      {{ onepassword_cli_token_file }} must be a non-empty regular file owned by
+      {{ onepassword_cli_user }} with mode 0600.
+  when: onepassword_cli_verify_service_account | bool
+
+- name: Install scoped 1Password service-account wrapper
+  ansible.builtin.template:
+    src: op-sa.j2
+    dest: /usr/local/bin/op-sa
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Verify 1Password service-account authentication
+  ansible.builtin.command: /usr/local/bin/op-sa user get --me
+  become: true
+  become_user: "{{ onepassword_cli_user }}"
+  changed_when: false
+  no_log: true
+  when: onepassword_cli_verify_service_account | bool

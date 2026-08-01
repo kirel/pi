@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+token_file="{{ onepassword_cli_token_file }}"
+
+if [[ ! -r "$token_file" ]]; then
+  echo "1Password service-account token is not readable: $token_file" >&2
+  exit 1
+fi
+
+export OP_SERVICE_ACCOUNT_TOKEN
+OP_SERVICE_ACCOUNT_TOKEN="$(<"$token_file")"
+
+exec /usr/bin/op "$@"
