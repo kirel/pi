@@ -1,0 +1,8 @@
+---
+cpa_image: eceasy/cli-proxy-api:v7.2.111
+cpa_usage_keeper_image: ghcr.io/willxup/cpa-usage-keeper:v1.14.1
+cpa_container_name: cli-proxy-api
+cpa_usage_keeper_container_name: cpa-usage-keeper
+cpa_management_key: "{{ vault_cpa_management_key }}"
+cpa_api_key: "{{ vault_cpa_api_key }}"
+cpa_keeper_login_password: "{{ vault_cpa_keeper_login_password }}"

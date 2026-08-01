@@ -1,0 +1,30 @@
+---
+- name: Create CPA persistent directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: "{{ cpa_config_folder }}", mode: "0700" }
+    - { path: "{{ cpa_config_folder }}/auths", mode: "0700" }
+    - { path: "{{ cpa_config_folder }}/logs", mode: "0700" }
+    - { path: "{{ cpa_keeper_data_folder }}", mode: "0700" }
+
+- name: Template CPA configuration
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ cpa_config_folder }}/config.yaml"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: Deploy CPA and Usage Keeper
+  community.docker.docker_compose_v2:
+    project_name: cpa
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+    pull: policy
+    state: present
+  no_log: true

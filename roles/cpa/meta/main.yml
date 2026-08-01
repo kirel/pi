@@ -1,0 +1,4 @@
+---
+dependencies:
+  - role: dockerhub
+    tags: [docker, dockerhub]

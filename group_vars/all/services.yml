@@ -155,6 +155,20 @@ services:
     domain: litellm.kirelabs.org
     group: AI
     icon: litellm.png
+  cpa:
+    name: CLIProxyAPI
+    target: homelab-nuc.lan
+    http_port: "{{ cpa_http_port }}"
+    domain: cpa.kirelabs.org
+    group: AI
+    icon: mdi-api
+  cpa-usage:
+    name: CPA Usage Keeper
+    target: homelab-nuc.lan
+    http_port: "{{ cpa_usage_keeper_http_port }}"
+    domain: cpa-usage.kirelabs.org
+    group: AI
+    icon: mdi-chart-line
   pihole-homelab-nuc:
     name: Pihole Homelab
     target: homelab-nuc.lan

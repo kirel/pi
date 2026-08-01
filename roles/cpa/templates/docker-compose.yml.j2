@@ -1,0 +1,59 @@
+---
+services:
+  cli-proxy-api:
+    image: "{{ cpa_image }}"
+    pull_policy: always
+    container_name: "{{ cpa_container_name }}"
+    restart: unless-stopped
+    ports:
+      - "{{ cpa_http_port }}:8317"
+      - "{{ cpa_oauth_callback_port }}:1455"
+    volumes:
+      - "{{ cpa_config_folder }}/config.yaml:/CLIProxyAPI/config.yaml:ro"
+      - "{{ cpa_config_folder }}/auths:/root/.cli-proxy-api"
+      - "{{ cpa_config_folder }}/logs:/CLIProxyAPI/logs"
+    networks:
+      - cpa-network
+    labels:
+      - homepage.group={{ services['cpa'].group }}
+      - homepage.name={{ services['cpa'].name }}
+      - homepage.href=https://{{ services['cpa'].domain }}
+      - homepage.icon={{ services['cpa'].icon }}
+      - homepage.server={{ inventory_hostname }}
+      - homepage.container={{ cpa_container_name }}
+
+  cpa-usage-keeper:
+    image: "{{ cpa_usage_keeper_image }}"
+    pull_policy: always
+    container_name: "{{ cpa_usage_keeper_container_name }}"
+    restart: unless-stopped
+    depends_on:
+      - cli-proxy-api
+    ports:
+      - "{{ cpa_usage_keeper_http_port }}:8080"
+    environment:
+      TZ: "{{ system_timezone }}"
+      CPA_BASE_URL: "http://cli-proxy-api:8317"
+      CPA_MANAGEMENT_KEY: "{{ cpa_management_key }}"
+      CPA_PUBLIC_URL: "https://{{ services['cpa'].domain }}"
+      REDIS_QUEUE_ADDR: "cli-proxy-api:8317"
+      AUTH_ENABLED: "true"
+      LOGIN_PASSWORD: "{{ cpa_keeper_login_password }}"
+      BACKUP_ENABLED: "true"
+      BACKUP_INTERVAL: "24h"
+      BACKUP_RETENTION_DAYS: "7"
+    volumes:
+      - "{{ cpa_keeper_data_folder }}:/data"
+    networks:
+      - cpa-network
+    labels:
+      - homepage.group={{ services['cpa-usage'].group }}
+      - homepage.name={{ services['cpa-usage'].name }}
+      - homepage.href=https://{{ services['cpa-usage'].domain }}
+      - homepage.icon={{ services['cpa-usage'].icon }}
+      - homepage.server={{ inventory_hostname }}
+      - homepage.container={{ cpa_usage_keeper_container_name }}
+
+networks:
+  cpa-network:
+    driver: bridge

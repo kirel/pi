@@ -96,6 +96,11 @@ config_root: /home/{{ username }}/config
 base_src_path: /opt/src # Base path for cloning source repos
 llm_inference_host: ailab-ubuntu.lan
 litellm_proxy_port: 4000
+cpa_http_port: 8317
+cpa_oauth_callback_port: 1455
+cpa_usage_keeper_http_port: 8020
+cpa_config_folder: "{{ config_root }}/cpa"
+cpa_keeper_data_folder: "{{ config_root }}/cpa-usage-keeper"
 phoenix_port: 6006
 phoenix_grpc_port: 4317
 phoenix_data_folder: "{{ config_root }}/phoenix"
