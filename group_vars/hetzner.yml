@@ -129,7 +129,7 @@ hermes_docker_kirelabs_custom_providers:
   - name: KireLabs LiteLLM
     base_url: https://litellm.kirelabs.org/v1
     key_env: LITELLM_API_KEY
-    api_mode: chat_completions
+    api_mode: codex_responses
     discover_models: true
 
 hermes_docker_agents_config_overrides:
