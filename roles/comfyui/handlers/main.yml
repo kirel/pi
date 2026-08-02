@@ -5,3 +5,12 @@
     name: docker
     state: restarted
   become: true
+
+- name: Restart ComfyUI
+  ansible.builtin.command:
+    argv:
+      - docker
+      - restart
+      - "{{ comfyui_container_name }}"
+  changed_when: true
+  become: true

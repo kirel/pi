@@ -56,6 +56,16 @@
   retries: 3
   delay: 2
 
+- name: Install ComfyUI custom node Python dependencies
+  community.docker.docker_container_exec:
+    container: "{{ comfyui_container_name }}"
+    argv: "{{ ['python3', '-m', 'pip', 'install'] + comfyui_custom_python_packages }}"
+  register: comfyui_custom_python_packages_install
+  changed_when: >-
+    'Successfully installed' in comfyui_custom_python_packages_install.stdout
+    or 'Successfully installed' in comfyui_custom_python_packages_install.stderr
+  notify: Restart ComfyUI
+
 - name: Configure restricted SSH key for OpenClaw (ComfyUI docker exec only)
   ansible.posix.authorized_key:
     user: "{{ ansible_user }}"

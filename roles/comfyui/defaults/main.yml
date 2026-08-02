@@ -5,5 +5,10 @@ comfyui_storage_path: /opt/comfyui/storage # Static default storage path
 comfyui_image: yanwk/comfyui-boot:cu130-slim
 comfyui_cli_args: "--preview-method latent2rgb --reserve-vram 1.0"
 comfyui_container_name: comfyui
+comfyui_custom_python_packages:
+  - pywavelets
+  - rotary-embedding-torch>=0.5.3
+  # ComfyUI-LTXVideo imports pad from pyramid.py; Kornia 0.8.3 removed it.
+  - kornia==0.8.2
 comfyui_openclaw_ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGOtmOfi47EnpdA/9ciKYhLI2b9+aGCWby3aRWgRb5D7 shrimp-openclaw@github.com"
 comfyui_openclaw_ssh_enabled: true
