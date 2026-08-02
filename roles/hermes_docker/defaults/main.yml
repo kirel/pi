@@ -129,7 +129,8 @@ hermes_docker_log_max_files: 3
 hermes_docker_agent_caddy_enabled: true
 hermes_docker_agent_domain_suffix: kirelabs.org
 hermes_docker_agent_caddy_email: danishkirel@gmail.com
-hermes_docker_agent_caddy_image: hermes-agent-caddy:latest
+hermes_docker_agent_caddy_version: 2.11.4
+hermes_docker_agent_caddy_image: "hermes-agent-caddy:{{ hermes_docker_agent_caddy_version }}"
 hermes_docker_agent_caddy_admin: 127.0.0.1:2019
 hermes_docker_agent_caddy_dashboard_subdomain: dashboard
 hermes_docker_agent_caddy_sites_dir: "{{ hermes_container_data_dir }}/caddy/sites"

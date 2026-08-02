@@ -469,6 +469,16 @@
   notify: Recreate Hermes Docker agents
   when: hermes_docker_build_enabled | bool
 
+- name: Copy Hermes Docker service publisher
+  ansible.builtin.copy:
+    src: hermes-service
+    dest: "{{ hermes_docker_base_dir }}/hermes-image/hermes-service"
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Recreate Hermes Docker agents
+  when: hermes_docker_build_enabled | bool
+
 - name: Render Hermes image Dockerfile
   ansible.builtin.template:
     src: hermes-Dockerfile.j2
@@ -592,9 +602,9 @@
   notify: Recreate Hermes Docker agents
   when: hermes_docker_agent_caddy_enabled | bool
 
-- name: Render per-agent Caddy proxy skill
-  ansible.builtin.template:
-    src: caddy-proxy-skill.md.j2
+- name: Install shared Caddy proxy skill for Docker Hermes agents
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/hermes_shared/files/caddy-proxy/SKILL.md"
     dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/skills/caddy-proxy/SKILL.md"
     owner: root
     group: root
@@ -760,7 +770,12 @@
       - docker-compose.yml
     project_name: "{{ hermes_docker_project_name }}"
     state: present
-    pull: "{{ hermes_docker_compose_pull }}"
+    # Build-context changes are handled once by the flushed recreate handler.
+    # This steady-state guard only starts missing/stopped services; it must not
+    # rebuild or recreate the large local stack after the handler reconciled it.
+    build: never
+    pull: never
+    recreate: never
     remove_orphans: true
   when: hermes_docker_ensure_running | bool
 

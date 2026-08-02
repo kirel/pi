@@ -6,11 +6,13 @@ USER root
 ENV PATH="/opt/hermes/.venv/bin:${PATH}"
 
 COPY patch-hermes-telegram-httpxrequest-slots.py /tmp/patch-hermes-telegram-httpxrequest-slots.py
+COPY hermes-service /usr/local/bin/hermes-service
 
 RUN mkdir -p /etc/supervisor \
     && uv pip install --python /opt/hermes/.venv/bin/python --no-cache supervisor \
     && /opt/hermes/.venv/bin/python /tmp/patch-hermes-telegram-httpxrequest-slots.py \
     && ln -sf /opt/hermes/.venv/bin/hermes /usr/local/bin/hermes \
+    && chmod 0755 /usr/local/bin/hermes-service \
     && find /opt/hermes -type d -exec chmod a+rx {} + \
     && find /opt/hermes -type f -exec chmod a+r {} + \
     && rm /tmp/patch-hermes-telegram-httpxrequest-slots.py

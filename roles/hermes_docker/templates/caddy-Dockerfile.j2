@@ -1,7 +1,7 @@
-FROM caddy:builder AS builder
+FROM caddy:{{ hermes_docker_agent_caddy_version }}-builder AS builder
 
-RUN xcaddy build \
+RUN xcaddy build v{{ hermes_docker_agent_caddy_version }} \
     --with github.com/caddy-dns/regfish
 
-FROM caddy:latest
+FROM caddy:{{ hermes_docker_agent_caddy_version }}
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy

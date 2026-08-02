@@ -64,7 +64,9 @@ services:
       pull: true
       args:
         HERMES_BASE_IMAGE: {{ hermes_docker_base_image }}
-    pull_policy: {{ hermes_docker_pull_policy }}
+    # This is a local image. The Ansible recreate handler explicitly builds it
+    # when managed inputs change; steady-state Compose runs must reuse it.
+    pull_policy: never
 {% else %}
     # All agents share one locally-built image. Building the same tag in
     # parallel for every service can leave containers referencing superseded
@@ -152,7 +154,9 @@ services:
   caddy-hermes-{{ agent_name }}:
     image: {{ hermes_docker_agent_caddy_image }}
 {% if loop.first %}
-    pull_policy: build
+    # This is a local image. The Ansible recreate handler explicitly builds it
+    # when managed inputs change; steady-state Compose runs must reuse it.
+    pull_policy: never
     build:
       context: {{ hermes_docker_base_dir }}/caddy-image
 {% else %}

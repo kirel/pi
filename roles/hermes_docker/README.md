@@ -27,6 +27,7 @@ Create wildcard DNS records pointing at the corresponding Tailscale node IPs:
 ```text
 *.multipurpose.kirelabs.org  -> Tailscale IP of hermes-multipurpose
 *.marian.kirelabs.org        -> Tailscale IP of hermes-marian
+*.nele.kirelabs.org          -> Tailscale IP of hermes-nele
 *.anna.kirelabs.org          -> Tailscale IP of hermes-anna
 *.sabine.kirelabs.org        -> Tailscale IP of hermes-sabine
 ```
@@ -80,3 +81,20 @@ tls {
 ```
 
 This lets Caddy issue certificates for the wildcard site without opening ports on the public VPS interface.
+
+## Shared publishing interface
+
+The Ansible-owned `caddy-proxy` skill is shared with the bare-metal Hermes. It
+uses the runtime adapter installed as `hermes-service`:
+
+```bash
+hermes-service info
+hermes-service publish demo 3456
+hermes-service publish-static report /opt/data/report
+hermes-service list
+hermes-service remove demo
+```
+
+Docker routes are written into the existing per-agent Caddy include directory
+and loaded through the sidecar's local admin API. The agent never receives the
+Regfish credential.
