@@ -1,0 +1,230 @@
+#!/usr/bin/env python3
+"""Controlled service publisher for the bare-metal Hermes host Caddy."""
+
+from __future__ import annotations
+
+import fcntl
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
+
+RUNTIME = "baremetal"
+DOMAIN_SUFFIX = {{ hermes_baremetal_publish_domain_suffix | to_json }}
+RESERVED = set({{ hermes_baremetal_publish_reserved_names | to_json }})
+SITES_DIR = Path({{ hermes_baremetal_caddy_sites_dir | to_json }})
+STATIC_DIR = Path({{ hermes_baremetal_caddy_static_dir | to_json }})
+CADDYFILE = Path({{ hermes_baremetal_caddyfile | to_json }})
+CADDY_BINARY = {{ hermes_baremetal_caddy_binary_link | to_json }}
+CADDY_ENV_FILE = Path({{ hermes_baremetal_caddy_env_file | to_json }})
+ALLOWED_STATIC_ROOTS = [Path(item) for item in {{ hermes_baremetal_publish_static_roots | to_json }}]
+LOCK_PATH = Path("/run/hermes-service.lock")
+NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$")
+
+
+def fail(message: str) -> "NoReturn":
+    print(f"error: {message}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def become_root() -> None:
+    if os.geteuid() != 0:
+        os.execvp("sudo", ["sudo", "-n", os.path.realpath(__file__), *sys.argv[1:]])
+
+
+def validate_name(name: str) -> str:
+    if not NAME_RE.fullmatch(name):
+        fail("service name must be a lowercase DNS label with at most 63 characters")
+    if name in RESERVED:
+        fail(f"service name '{name}' is reserved")
+    return name
+
+
+def validate_port(raw_port: str) -> int:
+    try:
+        port = int(raw_port)
+    except ValueError:
+        fail("port must be an integer")
+    if not 1024 <= port <= 65535:
+        fail("port must be between 1024 and 65535")
+    return port
+
+
+def domain(name: str) -> str:
+    return f"{name}.{DOMAIN_SUFFIX}"
+
+
+def matcher(name: str) -> str:
+    return f"service_{name.replace('-', '_')}"
+
+
+def caddy_environment() -> dict[str, str]:
+    environment = os.environ.copy()
+    for line in CADDY_ENV_FILE.read_text().splitlines():
+        if line and not line.lstrip().startswith("#") and "=" in line:
+            key, value = line.split("=", 1)
+            environment[key.strip()] = value.strip()
+    return environment
+
+
+def reload_caddy() -> None:
+    environment = caddy_environment()
+    subprocess.run(
+        [CADDY_BINARY, "validate", "--config", str(CADDYFILE), "--adapter", "caddyfile"],
+        check=True,
+        env=environment,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    subprocess.run(
+        [CADDY_BINARY, "reload", "--config", str(CADDYFILE), "--adapter", "caddyfile"],
+        check=True,
+        env=environment,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
+def atomic_route_change(path: Path, content: str | None) -> None:
+    old_content = path.read_text() if path.exists() else None
+    if content is None:
+        path.unlink(missing_ok=True)
+    else:
+        with tempfile.NamedTemporaryFile("w", dir=SITES_DIR, delete=False) as handle:
+            handle.write(content)
+            temporary = Path(handle.name)
+        temporary.chmod(0o644)
+        temporary.replace(path)
+
+    try:
+        reload_caddy()
+    except Exception:
+        if old_content is None:
+            path.unlink(missing_ok=True)
+        else:
+            path.write_text(old_content)
+            path.chmod(0o644)
+        try:
+            reload_caddy()
+        except Exception as rollback_error:
+            print(f"warning: Caddy rollback reload failed: {rollback_error}", file=sys.stderr)
+        raise
+
+
+def route_for_proxy(name: str, port: int) -> str:
+    route_matcher = matcher(name)
+    return (
+        f"@{route_matcher} host {domain(name)}\n"
+        "handle @" + route_matcher + " {\n"
+        f"    reverse_proxy 127.0.0.1:{port}\n"
+        "}\n"
+    )
+
+
+def route_for_static(name: str) -> str:
+    route_matcher = matcher(name)
+    return (
+        f"@{route_matcher} host {domain(name)}\n"
+        "handle @" + route_matcher + " {\n"
+        f"    root * {STATIC_DIR / name}\n"
+        "    file_server\n"
+        "}\n"
+    )
+
+
+def allowed_source(path: Path) -> Path:
+    resolved = path.expanduser().resolve(strict=True)
+    roots = [root.expanduser().resolve() for root in ALLOWED_STATIC_ROOTS]
+    if not resolved.is_dir():
+        fail("static source must be a directory")
+    if not any(resolved == root or root in resolved.parents for root in roots):
+        fail("static source is outside an allowed root")
+    if any(item.is_symlink() for item in resolved.rglob("*")):
+        fail("static source must not contain symbolic links")
+    return resolved
+
+
+def make_caddy_readable(path: Path) -> None:
+    shutil.chown(path, user="root", group="caddy")
+    path.chmod(0o750 if path.is_dir() else 0o640)
+    if path.is_dir():
+        for item in path.rglob("*"):
+            shutil.chown(item, user="root", group="caddy")
+            item.chmod(0o750 if item.is_dir() else 0o640)
+
+
+def publish_static(name: str, source: Path) -> None:
+    destination = STATIC_DIR / name
+    temporary = Path(tempfile.mkdtemp(prefix=f".{name}.", dir=STATIC_DIR))
+    shutil.rmtree(temporary)
+    shutil.copytree(source, temporary)
+    make_caddy_readable(temporary)
+    previous = STATIC_DIR / f".{name}.previous"
+    shutil.rmtree(previous, ignore_errors=True)
+    if destination.exists():
+        destination.replace(previous)
+    temporary.replace(destination)
+    try:
+        atomic_route_change(SITES_DIR / f"{name}.caddy", route_for_static(name))
+    except Exception:
+        shutil.rmtree(destination, ignore_errors=True)
+        if previous.exists():
+            previous.replace(destination)
+        raise
+    shutil.rmtree(previous, ignore_errors=True)
+
+
+def print_info() -> None:
+    print(f"runtime={RUNTIME}")
+    print(f"namespace=*.{DOMAIN_SUFFIX}")
+    print(f"reserved_names={':'.join(sorted(RESERVED))}")
+    print(f"static_roots={':'.join(str(path) for path in ALLOWED_STATIC_ROOTS)}")
+    print("service_manager=systemd-user")
+
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        fail("usage: hermes-service info|publish|publish-static|remove|list|check")
+    become_root()
+    SITES_DIR.mkdir(parents=True, exist_ok=True)
+    STATIC_DIR.mkdir(parents=True, exist_ok=True)
+    command = sys.argv[1]
+    with LOCK_PATH.open("w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if command == "info" and len(sys.argv) == 2:
+            print_info()
+        elif command == "publish" and len(sys.argv) == 4:
+            name = validate_name(sys.argv[2])
+            port = validate_port(sys.argv[3])
+            atomic_route_change(SITES_DIR / f"{name}.caddy", route_for_proxy(name, port))
+            print(f"https://{domain(name)}")
+        elif command == "publish-static" and len(sys.argv) == 4:
+            name = validate_name(sys.argv[2])
+            publish_static(name, allowed_source(Path(sys.argv[3])))
+            print(f"https://{domain(name)}")
+        elif command == "remove" and len(sys.argv) == 3:
+            name = validate_name(sys.argv[2])
+            atomic_route_change(SITES_DIR / f"{name}.caddy", None)
+            shutil.rmtree(STATIC_DIR / name, ignore_errors=True)
+            print(f"removed https://{domain(name)}")
+        elif command == "list" and len(sys.argv) == 2:
+            for path in sorted(SITES_DIR.glob("*.caddy")):
+                if not path.name.startswith("00-"):
+                    print(f"{path.stem}\thttps://{domain(path.stem)}")
+        elif command == "check" and len(sys.argv) == 3:
+            name = validate_name(sys.argv[2])
+            host = domain(name)
+            subprocess.run(
+                ["curl", "-fsSI", "--connect-timeout", "10", "--resolve", f"{host}:443:127.0.0.1", f"https://{host}"],
+                check=True,
+            )
+        else:
+            fail("usage: hermes-service info|publish NAME PORT|publish-static NAME PATH|remove NAME|list|check NAME")
+
+
+if __name__ == "__main__":
+    main()

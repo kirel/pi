@@ -1,0 +1,16 @@
+*.{{ hermes_baremetal_publish_domain_suffix }} {
+    tls {
+        dns regfish {env.REGFISH_TOKEN}
+    }
+
+    @external not remote_ip {{ hermes_baremetal_caddy_allowed_client_cidrs | join(' ') }}
+    abort @external
+
+    import {{ hermes_baremetal_caddy_sites_dir }}/*.caddy
+
+    handle {
+        respond "No route configured for {host}" 404
+    }
+
+    log
+}

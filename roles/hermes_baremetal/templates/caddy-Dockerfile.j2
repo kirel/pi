@@ -1,0 +1,7 @@
+FROM caddy:{{ hermes_baremetal_caddy_version }}-builder AS builder
+
+RUN xcaddy build v{{ hermes_baremetal_caddy_version }} \
+    --with github.com/caddy-dns/regfish
+
+FROM caddy:{{ hermes_baremetal_caddy_version }}
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy

@@ -1,0 +1,30 @@
+---
+- name: Reload systemd for bare-metal Hermes Caddy
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: not ansible_check_mode
+  listen: Restart bare-metal Hermes Caddy
+
+- name: Validate bare-metal Hermes Caddy configuration
+  ansible.builtin.command:
+    argv:
+      - "{{ hermes_baremetal_caddy_binary_link }}"
+      - validate
+      - --config
+      - "{{ hermes_baremetal_caddyfile }}"
+      - --adapter
+      - caddyfile
+  environment:
+    REGFISH_TOKEN: "{{ regfish_token }}"
+  changed_when: false
+  no_log: true
+  when: not ansible_check_mode
+  listen: Restart bare-metal Hermes Caddy
+
+- name: Restart bare-metal Hermes Caddy service
+  ansible.builtin.systemd:
+    name: caddy.service
+    state: restarted
+    enabled: true
+  when: not ansible_check_mode
+  listen: Restart bare-metal Hermes Caddy

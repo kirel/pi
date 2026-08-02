@@ -1,0 +1,390 @@
+---
+- name: Validate bare-metal Hermes configuration
+  ansible.builtin.assert:
+    that:
+      - hermes_baremetal_users is sequence
+      - hermes_baremetal_users is not string
+      - hermes_baremetal_users | length > 0
+      - >-
+        not (hermes_baremetal_publish_enabled | bool) or
+        (regfish_token is defined and regfish_token | string | length > 0)
+      - >-
+        not (hermes_baremetal_publish_enabled | bool) or
+        (hermes_baremetal_publish_static_roots | length > 0)
+    fail_msg: >-
+      Configure at least one bare-metal Hermes user and, when publishing is
+      enabled, provide regfish_token plus allowed static roots.
+
+- name: Ensure user-local bin is on PATH for bare-metal Hermes users
+  ansible.builtin.lineinfile:
+    path: "/home/{{ item }}/.zshrc"
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
+    create: true
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0644'
+  loop: "{{ hermes_baremetal_users }}"
+
+- name: Install bare-metal Hermes Agent when missing
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL {{ hermes_baremetal_install_url }} | bash -s -- --skip-setup --skip-browser
+  args:
+    executable: /bin/bash
+    creates: "/home/{{ item }}/.local/bin/hermes"
+  become: true
+  become_user: "{{ item }}"
+  environment:
+    HOME: "/home/{{ item }}"
+    PATH: "/home/{{ item }}/.local/bin:{{ ansible_facts['env']['PATH'] }}"
+  loop: "{{ hermes_baremetal_users }}"
+
+- name: Ensure bare-metal Hermes config directories exist
+  ansible.builtin.file:
+    path: "/home/{{ item }}/.hermes"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0700'
+  loop: "{{ hermes_baremetal_users }}"
+
+- name: Configure managed bare-metal Hermes environment
+  ansible.builtin.blockinfile:
+    path: "/home/{{ item }}/.hermes/.env"
+    create: true
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0600'
+    marker: "# {mark} ANSIBLE MANAGED HERMES ENV"
+    block: |
+      {% for key, value in (hermes_baremetal_env | dictsort) %}
+      {{ key }}={{ value }}
+      {% endfor %}
+  loop: "{{ hermes_baremetal_users }}"
+  register: hermes_baremetal_env_file
+  no_log: true
+  when: hermes_baremetal_env | length > 0
+
+- name: Ensure bare-metal Hermes user service directories exist
+  ansible.builtin.file:
+    path: "/home/{{ item }}/.config/systemd/user/hermes-gateway.service.d"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0755'
+  loop: "{{ hermes_baremetal_users }}"
+  when: hermes_baremetal_env | length > 0
+
+- name: Configure bare-metal Hermes gateway environment drop-in
+  ansible.builtin.copy:
+    dest: "/home/{{ item }}/.config/systemd/user/hermes-gateway.service.d/10-ansible-env.conf"
+    content: |
+      [Service]
+      EnvironmentFile=%h/.hermes/.env
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0644'
+  loop: "{{ hermes_baremetal_users }}"
+  register: hermes_baremetal_service_env_dropin
+  when: hermes_baremetal_env | length > 0
+
+- name: Configure bare-metal Hermes dashboard user service
+  ansible.builtin.copy:
+    dest: "/home/{{ item }}/.config/systemd/user/hermes-dashboard.service"
+    content: |
+      [Unit]
+      Description=Hermes Agent Dashboard
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=simple
+      EnvironmentFile=%h/.hermes/.env
+      ExecStart=/home/{{ item }}/.local/bin/hermes dashboard --host ${HERMES_DASHBOARD_HOST} --port ${HERMES_DASHBOARD_PORT} --no-open --tui
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=default.target
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0644'
+  loop: "{{ hermes_baremetal_users }}"
+  register: hermes_baremetal_dashboard_service
+  when: (hermes_baremetal_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
+
+- name: Reload bare-metal Hermes user systemd manager when configuration changed
+  ansible.builtin.shell: >-
+    XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user daemon-reload
+  become: true
+  become_user: "{{ item }}"
+  loop: "{{ hermes_baremetal_users }}"
+  changed_when: false
+  when:
+    - hermes_baremetal_env | length > 0
+    - hermes_baremetal_env_file is changed or hermes_baremetal_service_env_dropin is changed or hermes_baremetal_dashboard_service is changed
+
+- name: Restart bare-metal Hermes gateway when environment changed
+  ansible.builtin.shell: >-
+    XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user restart hermes-gateway.service
+  become: true
+  become_user: "{{ item }}"
+  loop: "{{ hermes_baremetal_users }}"
+  changed_when: true
+  when:
+    - hermes_baremetal_env | length > 0
+    - hermes_baremetal_env_file is changed or hermes_baremetal_service_env_dropin is changed
+
+- name: Enable and start bare-metal Hermes dashboard user service
+  ansible.builtin.shell: >-
+    XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user enable --now hermes-dashboard.service
+  become: true
+  become_user: "{{ item }}"
+  loop: "{{ hermes_baremetal_users }}"
+  changed_when: false
+  when: (hermes_baremetal_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
+
+- name: Restart bare-metal Hermes dashboard when configuration changed
+  ansible.builtin.shell: >-
+    XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user restart hermes-dashboard.service
+  become: true
+  become_user: "{{ item }}"
+  loop: "{{ hermes_baremetal_users }}"
+  changed_when: true
+  when:
+    - (hermes_baremetal_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
+    - hermes_baremetal_env_file is changed or hermes_baremetal_dashboard_service is changed
+
+- name: Expose bare-metal Hermes dashboard through Tailscale Serve
+  ansible.builtin.command:
+    argv:
+      - tailscale
+      - serve
+      - --bg
+      - --yes
+      - "--https={{ hermes_baremetal_env.HERMES_DASHBOARD_PORT }}"
+      - "http://127.0.0.1:{{ hermes_baremetal_env.HERMES_DASHBOARD_PORT }}"
+  changed_when: false
+  when: (hermes_baremetal_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
+
+- name: Check bare-metal Hermes installation
+  ansible.builtin.command: "/home/{{ item }}/.local/bin/hermes version"
+  become: true
+  become_user: "{{ item }}"
+  environment:
+    HOME: "/home/{{ item }}"
+  loop: "{{ hermes_baremetal_users }}"
+  changed_when: false
+
+- name: Check whether a bare-metal Hermes update is available
+  ansible.builtin.command: "/home/{{ item }}/.local/bin/hermes update --check"
+  become: true
+  become_user: "{{ item }}"
+  environment:
+    HOME: "/home/{{ item }}"
+  loop: "{{ hermes_baremetal_users }}"
+  changed_when: false
+  when: hermes_baremetal_update_check | bool
+
+- name: Create bare-metal Hermes Caddy build and install directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - path: "{{ hermes_baremetal_caddy_build_dir }}"
+      group: root
+      mode: '0755'
+    - path: "{{ hermes_baremetal_caddy_install_dir }}"
+      group: root
+      mode: '0755'
+    - path: "{{ hermes_baremetal_caddy_dropin_dir }}"
+      group: root
+      mode: '0755'
+    - path: "{{ hermes_baremetal_caddy_sites_dir }}"
+      group: caddy
+      mode: '0755'
+    - path: "{{ hermes_baremetal_caddy_static_dir }}"
+      group: caddy
+      mode: '0750'
+    - path: "{{ hermes_baremetal_caddy_systemd_dropin_dir }}"
+      group: root
+      mode: '0755'
+  when: hermes_baremetal_publish_enabled | bool
+
+- name: Render bare-metal Hermes custom Caddy Dockerfile
+  ansible.builtin.template:
+    src: caddy-Dockerfile.j2
+    dest: "{{ hermes_baremetal_caddy_build_dir }}/Dockerfile"
+    owner: root
+    group: root
+    mode: '0644'
+  register: hermes_baremetal_caddy_dockerfile
+  when: hermes_baremetal_publish_enabled | bool
+
+- name: Build bare-metal Hermes custom Caddy image
+  community.docker.docker_image:
+    name: "{{ hermes_baremetal_caddy_image_name }}"
+    tag: "{{ hermes_baremetal_caddy_version }}"
+    source: build
+    force_source: "{{ hermes_baremetal_caddy_dockerfile is changed }}"
+    build:
+      path: "{{ hermes_baremetal_caddy_build_dir }}"
+      pull: true
+  when:
+    - hermes_baremetal_publish_enabled | bool
+    - not ansible_check_mode
+
+- name: Extract versioned bare-metal Hermes Caddy binary
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --rm
+      - --entrypoint
+      - /bin/cp
+      - --volume
+      - "{{ hermes_baremetal_caddy_install_dir }}:/export"
+      - "{{ hermes_baremetal_caddy_image_name }}:{{ hermes_baremetal_caddy_version }}"
+      - /usr/bin/caddy
+      - "/export/caddy-{{ hermes_baremetal_caddy_version }}"
+    creates: "{{ hermes_baremetal_caddy_binary }}"
+  when:
+    - hermes_baremetal_publish_enabled | bool
+    - not ansible_check_mode
+  notify: Restart bare-metal Hermes Caddy
+
+- name: Link active bare-metal Hermes Caddy binary
+  ansible.builtin.file:
+    src: "{{ hermes_baremetal_caddy_binary }}"
+    dest: "{{ hermes_baremetal_caddy_binary_link }}"
+    state: link
+    owner: root
+    group: root
+    force: true
+  when:
+    - hermes_baremetal_publish_enabled | bool
+    - not ansible_check_mode
+  notify: Restart bare-metal Hermes Caddy
+
+- name: Inspect bare-metal Hermes Caddy modules
+  ansible.builtin.command: "{{ hermes_baremetal_caddy_binary_link }} list-modules"
+  register: hermes_baremetal_caddy_modules
+  changed_when: false
+  when:
+    - hermes_baremetal_publish_enabled | bool
+    - not ansible_check_mode
+
+- name: Verify bare-metal Hermes Caddy has the Regfish module
+  ansible.builtin.assert:
+    that:
+      - "'dns.providers.regfish' in hermes_baremetal_caddy_modules.stdout_lines"
+    fail_msg: "The custom Caddy binary does not contain dns.providers.regfish."
+  when:
+    - hermes_baremetal_publish_enabled | bool
+    - not ansible_check_mode
+
+- name: Render bare-metal Hermes Caddy Regfish environment
+  ansible.builtin.template:
+    src: caddy.env.j2
+    dest: "{{ hermes_baremetal_caddy_env_file }}"
+    owner: root
+    group: root
+    mode: '0600'
+  no_log: true
+  when: hermes_baremetal_publish_enabled | bool
+  notify: Restart bare-metal Hermes Caddy
+
+- name: Preserve pre-managed host Caddyfile for rollback
+  ansible.builtin.copy:
+    src: "{{ hermes_baremetal_caddyfile }}"
+    dest: "{{ hermes_baremetal_caddyfile }}.pre-hermes-baremetal"
+    remote_src: true
+    owner: root
+    group: root
+    mode: '0644'
+    force: false
+  when: hermes_baremetal_publish_enabled | bool
+
+- name: Ensure bare-metal Hermes Caddy include placeholder exists
+  ansible.builtin.copy:
+    dest: "{{ hermes_baremetal_caddy_sites_dir }}/00-placeholder.caddy"
+    content: "# Managed placeholder so the Caddy import glob always matches.\n"
+    owner: root
+    group: caddy
+    mode: '0644'
+    force: false
+  when: hermes_baremetal_publish_enabled | bool
+
+- name: Render bare-metal Hermes wildcard Caddy site
+  ansible.builtin.template:
+    src: hermes-wildcard.caddy.j2
+    dest: "{{ hermes_baremetal_caddy_site_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  when: hermes_baremetal_publish_enabled | bool
+  notify: Restart bare-metal Hermes Caddy
+
+- name: Ensure host Caddy imports managed drop-ins
+  ansible.builtin.lineinfile:
+    path: "{{ hermes_baremetal_caddyfile }}"
+    line: "import {{ hermes_baremetal_caddy_dropin_dir }}/*.caddy"
+    insertafter: EOF
+    owner: root
+    group: root
+    mode: '0644'
+  when: hermes_baremetal_publish_enabled | bool
+  notify: Restart bare-metal Hermes Caddy
+
+- name: Configure host Caddy to use the custom Hermes binary
+  ansible.builtin.template:
+    src: caddy-systemd-override.conf.j2
+    dest: "{{ hermes_baremetal_caddy_systemd_dropin }}"
+    owner: root
+    group: root
+    mode: '0644'
+  when: hermes_baremetal_publish_enabled | bool
+  notify: Restart bare-metal Hermes Caddy
+
+- name: Install bare-metal Hermes service publisher
+  ansible.builtin.template:
+    src: hermes-service.py.j2
+    dest: "{{ hermes_baremetal_service_command }}"
+    owner: root
+    group: root
+    mode: '0755'
+  when: hermes_baremetal_publish_enabled | bool
+
+- name: Ensure bare-metal Hermes Caddy skill directories exist
+  ansible.builtin.file:
+    path: "/home/{{ item }}/.agents/skills/caddy-proxy"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0755'
+  loop: "{{ hermes_baremetal_users }}"
+  when: hermes_baremetal_publish_enabled | bool
+
+- name: Install shared Caddy proxy skill for bare-metal Hermes
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/hermes_shared/files/caddy-proxy/SKILL.md"
+    dest: "/home/{{ item }}/.agents/skills/caddy-proxy/SKILL.md"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0644'
+  loop: "{{ hermes_baremetal_users }}"
+  when: hermes_baremetal_publish_enabled | bool
+
+- name: Apply pending bare-metal Hermes Caddy changes
+  ansible.builtin.meta: flush_handlers
+
+- name: Verify bare-metal Hermes service publisher configuration
+  ansible.builtin.command: "{{ hermes_baremetal_service_command }} info"
+  register: hermes_baremetal_service_info
+  changed_when: false
+  when:
+    - hermes_baremetal_publish_enabled | bool
+    - not ansible_check_mode

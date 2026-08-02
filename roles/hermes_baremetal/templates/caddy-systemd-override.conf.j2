@@ -1,0 +1,6 @@
+[Service]
+EnvironmentFile={{ hermes_baremetal_caddy_env_file }}
+ExecStart=
+ExecStart={{ hermes_baremetal_caddy_binary_link }} run --config {{ hermes_baremetal_caddyfile }} --adapter caddyfile
+ExecReload=
+ExecReload={{ hermes_baremetal_caddy_binary_link }} reload --config {{ hermes_baremetal_caddyfile }} --adapter caddyfile --force

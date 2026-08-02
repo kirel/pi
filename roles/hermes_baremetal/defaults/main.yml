@@ -1,0 +1,36 @@
+---
+hermes_baremetal_users: []
+hermes_baremetal_install_url: https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh
+hermes_baremetal_env: {}
+hermes_baremetal_update_check: true
+
+hermes_baremetal_publish_enabled: true
+hermes_baremetal_publish_domain_suffix: hermes.kirelabs.org
+hermes_baremetal_publish_reserved_names:
+  - dashboard
+hermes_baremetal_publish_static_roots: []
+
+hermes_baremetal_caddy_version: 2.11.4
+hermes_baremetal_caddy_image_name: hermes-baremetal-caddy
+hermes_baremetal_caddy_build_dir: /opt/hermes-baremetal/caddy-image
+hermes_baremetal_caddy_install_dir: /usr/local/lib/hermes-baremetal
+hermes_baremetal_caddy_binary: "{{ hermes_baremetal_caddy_install_dir }}/caddy-{{ hermes_baremetal_caddy_version }}"
+hermes_baremetal_caddy_binary_link: /usr/local/bin/caddy-hermes
+hermes_baremetal_caddy_env_file: /etc/caddy/hermes-regfish.env
+hermes_baremetal_caddyfile: /etc/caddy/Caddyfile
+hermes_baremetal_caddy_dropin_dir: /etc/caddy/Caddyfile.d
+hermes_baremetal_caddy_site_file: "{{ hermes_baremetal_caddy_dropin_dir }}/90-hermes-wildcard.caddy"
+hermes_baremetal_caddy_sites_dir: /etc/caddy/hermes-sites
+hermes_baremetal_caddy_static_dir: /var/lib/hermes-service/static
+hermes_baremetal_caddy_systemd_dropin_dir: /etc/systemd/system/caddy.service.d
+hermes_baremetal_caddy_systemd_dropin: "{{ hermes_baremetal_caddy_systemd_dropin_dir }}/20-hermes-custom.conf"
+hermes_baremetal_caddy_email: danishkirel@gmail.com
+hermes_baremetal_caddy_allowed_client_cidrs:
+  - 100.64.0.0/10
+  - 192.168.0.0/16
+  - 172.16.0.0/12
+  - 10.0.0.0/8
+  - 127.0.0.1
+  - ::1
+
+hermes_baremetal_service_command: /usr/local/bin/hermes-service
