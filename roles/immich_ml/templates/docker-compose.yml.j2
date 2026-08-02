@@ -29,7 +29,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["{{ gpu_3090_1_uuid }}"]
+              device_ids: ["{{ immich_ml_gpu_uuid }}"]
               capabilities: [gpu]
 {% endif %}
     labels:
