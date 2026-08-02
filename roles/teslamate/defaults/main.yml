@@ -1,6 +1,6 @@
 ---
 # TeslaMate Configuration
-teslamate_version: "latest"
+teslamate_version: "4.0.1"
 postgres_version: "18-trixie"
 grafana_version: "latest"
 
