@@ -587,6 +587,21 @@
     label: "{{ agent_name }}"
   when: hermes_docker_agent_caddy_enabled | bool
 
+- name: Ensure per-agent Hermes service lock is agent-writable
+  ansible.builtin.file:
+    path: "{{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/sites/.hermes-service.lock"
+    state: touch
+    owner: "{{ hermes_docker_data_uid }}"
+    group: "{{ hermes_docker_data_gid }}"
+    mode: '0660'
+    access_time: preserve
+    modification_time: preserve
+  loop: "{{ hermes_docker_effective_agent_names }}"
+  loop_control:
+    loop_var: agent_name
+    label: "{{ agent_name }}"
+  when: hermes_docker_agent_caddy_enabled | bool
+
 - name: Render per-agent Caddy environment files
   ansible.builtin.template:
     src: agent-caddy.env.j2

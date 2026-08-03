@@ -21,7 +21,8 @@ SITES_DIR = Path(os.environ.get("HERMES_SERVICE_SITES_DIR", "/opt/data/caddy/sit
 STATIC_DIR = Path(os.environ.get("HERMES_SERVICE_STATIC_DIR", "/opt/data/caddy/static"))
 CADDYFILE = Path(os.environ.get("HERMES_SERVICE_CADDYFILE", "/etc/caddy/Caddyfile"))
 ADMIN_URL = os.environ.get("HERMES_SERVICE_CADDY_ADMIN_URL", "http://127.0.0.1:2019/load?adapter=caddyfile")
-LOCK_PATH = Path("/tmp/hermes-service.lock")
+LOCK_PATH = SITES_DIR / ".hermes-service.lock"
+MUTATING_COMMANDS = {"publish", "publish-static", "remove"}
 NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$")
 
 
@@ -157,43 +158,50 @@ def print_info() -> None:
     print("service_manager=supervisor")
 
 
+def run_command(command: str) -> None:
+    if command == "info" and len(sys.argv) == 2:
+        print_info()
+    elif command == "publish" and len(sys.argv) == 4:
+        name = validate_name(sys.argv[2])
+        port = validate_port(sys.argv[3])
+        atomic_route_change(SITES_DIR / f"{name}.caddy", route_for_proxy(name, port))
+        print(f"https://{domain(name)}")
+    elif command == "publish-static" and len(sys.argv) == 4:
+        name = validate_name(sys.argv[2])
+        publish_static(name, allowed_source(Path(sys.argv[3])))
+        print(f"https://{domain(name)}")
+    elif command == "remove" and len(sys.argv) == 3:
+        name = validate_name(sys.argv[2])
+        atomic_route_change(SITES_DIR / f"{name}.caddy", None)
+        shutil.rmtree(STATIC_DIR / name, ignore_errors=True)
+        print(f"removed https://{domain(name)}")
+    elif command == "list" and len(sys.argv) == 2:
+        for path in sorted(SITES_DIR.glob("*.caddy")):
+            if not path.name.startswith("00-"):
+                print(f"{path.stem}\thttps://{domain(path.stem)}")
+    elif command == "check" and len(sys.argv) == 3:
+        name = validate_name(sys.argv[2])
+        host = domain(name)
+        subprocess.run(
+            ["curl", "-fsSI", "--connect-timeout", "10", "--resolve", f"{host}:443:127.0.0.1", f"https://{host}"],
+            check=True,
+        )
+    else:
+        fail("usage: hermes-service info|publish NAME PORT|publish-static NAME PATH|remove NAME|list|check NAME")
+
+
 def main() -> None:
     if len(sys.argv) < 2:
         fail("usage: hermes-service info|publish|publish-static|remove|list|check")
     SITES_DIR.mkdir(parents=True, exist_ok=True)
     STATIC_DIR.mkdir(parents=True, exist_ok=True)
     command = sys.argv[1]
-    with LOCK_PATH.open("w") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        if command == "info" and len(sys.argv) == 2:
-            print_info()
-        elif command == "publish" and len(sys.argv) == 4:
-            name = validate_name(sys.argv[2])
-            port = validate_port(sys.argv[3])
-            atomic_route_change(SITES_DIR / f"{name}.caddy", route_for_proxy(name, port))
-            print(f"https://{domain(name)}")
-        elif command == "publish-static" and len(sys.argv) == 4:
-            name = validate_name(sys.argv[2])
-            publish_static(name, allowed_source(Path(sys.argv[3])))
-            print(f"https://{domain(name)}")
-        elif command == "remove" and len(sys.argv) == 3:
-            name = validate_name(sys.argv[2])
-            atomic_route_change(SITES_DIR / f"{name}.caddy", None)
-            shutil.rmtree(STATIC_DIR / name, ignore_errors=True)
-            print(f"removed https://{domain(name)}")
-        elif command == "list" and len(sys.argv) == 2:
-            for path in sorted(SITES_DIR.glob("*.caddy")):
-                if not path.name.startswith("00-"):
-                    print(f"{path.stem}\thttps://{domain(path.stem)}")
-        elif command == "check" and len(sys.argv) == 3:
-            name = validate_name(sys.argv[2])
-            host = domain(name)
-            subprocess.run(
-                ["curl", "-fsSI", "--connect-timeout", "10", "--resolve", f"{host}:443:127.0.0.1", f"https://{host}"],
-                check=True,
-            )
-        else:
-            fail("usage: hermes-service info|publish NAME PORT|publish-static NAME PATH|remove NAME|list|check NAME")
+    if command in MUTATING_COMMANDS:
+        with LOCK_PATH.open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            run_command(command)
+    else:
+        run_command(command)
 
 
 if __name__ == "__main__":
