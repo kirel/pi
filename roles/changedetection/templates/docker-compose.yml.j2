@@ -20,5 +20,6 @@ services:
       - homepage.group={{ services['changedetection'].group }}
       - homepage.name={{ services['changedetection'].name }}
       - homepage.href=http://{{ services['changedetection'].domain }}
+      - homepage.icon={{ services['changedetection'].icon }}
       - homepage.server={{ inventory_hostname }}
       - homepage.container={{ changedetection_service_name }}

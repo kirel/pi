@@ -21,7 +21,7 @@
             'service': 'hermes-' ~ agent_name,
             'name': 'Hermes ' ~ agent_label,
             'group': 'AI',
-            'icon': 'mdi-robot',
+            'icon': 'hermes-icon.png',
             'href': 'https://dashboard.' ~ agent_name ~ '.' ~ (hermes_host.hermes_docker_agent_domain_suffix | default('kirelabs.org')),
             'description': agent_label ~ ' Hermes dashboard'
         }) -%}

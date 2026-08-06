@@ -206,7 +206,7 @@
       homepage.group: "{{ services['llama-swap'].group }}"
       homepage.name: "{{ services['llama-swap'].name }}"
       homepage.href: "https://{{ services['llama-swap'].domain }}"
-      homepage.icon: llama.png
+      homepage.icon: "{{ services['llama-swap'].icon }}"
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: "{{ llamaswap_container_name }}"
   become: true

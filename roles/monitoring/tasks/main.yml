@@ -37,7 +37,7 @@
             homepage.group: "{{ services.uptime.group }}"
             homepage.name: "{{ services.uptime.name }}"
             homepage.href: https://{{ services.uptime.domain }}
-            homepage.icon: mdi-server
+            homepage.icon: "{{ services.uptime.icon }}"
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: uptime_kuma
 
@@ -54,7 +54,7 @@
             homepage.group: "{{ services.dockhand.group }}"
             homepage.name: "{{ services.dockhand.name }}"
             homepage.href: https://{{ services.dockhand.domain }}
-            homepage.icon: mdi-docker
+            homepage.icon: "{{ services.dockhand.icon }}"
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: dockhand
 

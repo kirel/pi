@@ -11,12 +11,14 @@ services:
     target: homelab-nuc.lan
     domain: homeassistant.kirelabs.org
     group: Smart Home
+    icon: home-assistant.png
   musicassistant:
     name: Music Assistant
     http_port: "{{ music_assistant_http_port }}"
     target: homelab-nuc.lan
     domain: musicassistant.kirelabs.org
     group: Media
+    icon: music-assistant.png
   immich:
     name: Immich
     target: homelab-nuc.lan
@@ -31,6 +33,7 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ uptime_kuma_http_port }}"
     domain: uptime.kirelabs.org
+    icon: uptime-kuma.png
   readeck:
     name: Readeck
     target: homelab-nuc.lan
@@ -51,14 +54,14 @@ services:
     http_port: "{{ changedetection_http_port }}"
     domain: changedetection.kirelabs.org
     group: Monitoring
-    icon: change-detection
+    icon: changedetection.png
   dockhand:
     name: Dockhand
     target: homelab-nuc.lan
     http_port: "{{ dockhand_http_port }}"
     domain: dockhand.kirelabs.org
     group: Monitoring
-    icon: mdi-docker
+    icon: dockhand.png
   dozzle:
     name: Dozzle
     target: homelab-nuc.lan
@@ -72,7 +75,7 @@ services:
     http_port: 7676
     domain: prunemate.kirelabs.org
     group: Monitoring
-    icon: mdi-docker
+    icon: prunemate.png
   n8n:
     name: n8n
     target: homelab-nuc.lan
@@ -141,20 +144,21 @@ services:
     http_port: "{{ open_webui_http_port }}"
     domain: open-webui.kirelabs.org
     group: AI
+    icon: open-webui.png
   phoenix:
     name: Arize Phoenix
     target: homelab-nuc.lan
     http_port: "{{ phoenix_port }}"
     domain: phoenix.kirelabs.org
     group: AI
-    icon: phoenix.png
+    icon: https://phoenix.kirelabs.org/favicon.ico
   litellm:
     name: LiteLLM
     target: homelab-nuc.lan
     http_port: "{{ litellm_proxy_port }}"
     domain: litellm.kirelabs.org
     group: AI
-    icon: litellm.png
+    icon: https://litellm.kirelabs.org/swagger/favicon.png
   cpa:
     name: CLIProxyAPI
     target: homelab-nuc.lan
@@ -207,6 +211,7 @@ services:
     http_port: 9292
     domain: llama-swap.kirelabs.org
     group: AI
+    icon: https://cdn.jsdelivr.net/gh/mostlygeek/llama-swap@main/ui-svelte/public/favicon.svg
     wol: "{{ ailab_mac_address }}"
     try: 360s
   comfyui:
@@ -224,7 +229,7 @@ services:
     http_port: "{{ wan2gp_port }}"
     domain: wan2gp.kirelabs.org
     group: AI
-    icon: video
+    icon: mdi-video
     wol: "{{ ailab_mac_address }}"
     try: 360s
   chatterbox-ui:
@@ -233,7 +238,7 @@ services:
     http_port: 4321
     domain: chatterbox-ui.kirelabs.org
     group: AI
-    icon: audio
+    icon: mdi-volume-high
   t3-code-ailab:
     name: T3 Code AI Lab
     target: ailab-ubuntu.lan
@@ -250,7 +255,7 @@ services:
     domain: hermes-local.kirelabs.org
     nodocker: true
     group: AI
-    icon: mdi-view-dashboard
+    icon: hermes-icon.png
   hermes-local-webui:
     name: Hermes Local WebUI
     target: ailab-ubuntu.lan
@@ -258,7 +263,7 @@ services:
     domain: hermes-local-webui.kirelabs.org
     nodocker: true
     group: AI
-    icon: si-openai
+    icon: hermes-icon.png
   hermes-baremetal-daniel:
     name: Hermes Daniel Bare Metal
     target: ubuntu-8gb-fsn1-1.halfmoon-platy.ts.net
@@ -269,7 +274,7 @@ services:
     domain: hermes-baremetal.kirelabs.org
     nodocker: true
     group: AI
-    icon: mdi-robot-outline
+    icon: hermes-icon.png
   glances-ailab-ubuntu:
     name: Glances AI Lab
     target: ailab-ubuntu.lan

@@ -130,7 +130,7 @@
             - homepage.group={{ services.homeassistant.group }}
             - homepage.name={{ services.homeassistant.name }}
             - homepage.href=https://{{ services.homeassistant.domain }}
-            - homepage.icon=home-assistant.png
+            - homepage.icon={{ services.homeassistant.icon }}
             - homepage.server={{ inventory_hostname }}
             - homepage.container=homeassistant
         ha-mcp:
@@ -170,7 +170,7 @@
             - homepage.group={{ services.musicassistant.group }}
             - homepage.name={{ services.musicassistant.name }}
             - homepage.href=https://{{ services.musicassistant.domain }}
-            - homepage.icon=home-assistant.png
+            - homepage.icon={{ services.musicassistant.icon }}
             - homepage.server={{ inventory_hostname }}
             - homepage.container=music-assistant-server
         # nodered:

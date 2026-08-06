@@ -72,7 +72,7 @@
           labels:
             - homepage.group=Network
             - homepage.name=Caddy
-            - homepage.icon=mdi-server
+            - homepage.icon=caddy.png
             - homepage.server={{ inventory_hostname }}
             - homepage.container=caddy
             - homepage.widget.type=caddy
