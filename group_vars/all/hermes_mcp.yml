@@ -6,9 +6,11 @@ hermes_litellm_model_profiles:
     - glm-5.2
     - home-asr
     - home-tts
+    - home-tts-design
   voice_only:
     - home-asr
     - home-tts
+    - home-tts-design
   all_models:
     - all-proxy-models
   docker_chat:
@@ -20,6 +22,7 @@ hermes_litellm_model_profiles:
     - claude-opus-4-6-thinking-cpa
     - home-asr
     - home-tts
+    - home-tts-design
 
 hermes_mcp_tool_profiles:
   shopping:

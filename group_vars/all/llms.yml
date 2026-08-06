@@ -10,6 +10,7 @@ model_group_alias:
   home-embed: "qwen3-embedding"
   home-asr: "whisper-large-v3-turbo-q8-crispasr"
   home-tts: "qwen3-tts"
+  home-tts-design: "qwen3-tts-design"
   home-remote: "google/gemini-3-flash-preview"
 
 # llama.cpp --fit is not implemented for tensor split mode. Keep the total KV
@@ -624,7 +625,48 @@ llamaswap_models:
     supports_vision: false
     supports_reasoning: false
     mode: audio_speech
-    group: "forever"
+    group: "tts"
+
+  - alias: qwen3-tts-design
+    # VoiceDesign is a separate Qwen3-TTS checkpoint. It shares GPU1 and the
+    # model cache with the Base backend, and LlamaSwap swaps the two members of
+    # the exclusive tts group according to the requested model.
+    aliases:
+      - home-tts-design
+    use_model_name: qwen3-tts-design
+    allowed_openai_params:
+      - instructions
+    cmd: >-
+      docker run
+      --init
+      --rm
+      --pull never
+      --name {{ llamaswap_crispasr_tts_design_container_name }}
+      --label io.kirelabs.managed-by=llama-swap
+      --log-driver local
+      --log-opt max-size=10m
+      --log-opt max-file=3
+      --network {{ llamaswap_backend_network }}
+      --gpus device={{ llamaswap_crispasr_tts_gpu_uuid }}
+      -v {{ llamaswap_crispasr_tts_cache_path }}:{{ llamaswap_crispasr_tts_cache_container_path }}
+      --entrypoint crispasr
+      {{ llamaswap_crispasr_image }}
+      --server
+      --host 0.0.0.0
+      --port {{ llamaswap_crispasr_tts_internal_port }}
+      --cache-dir {{ llamaswap_crispasr_tts_cache_container_path }}
+      --backend {{ llamaswap_crispasr_tts_design_backend }}
+      -m auto
+      --language de
+    cmd_stop: >-
+      docker stop --time 15 {{ llamaswap_crispasr_tts_design_container_name }}
+    proxy: "http://{{ llamaswap_crispasr_tts_design_container_name }}:{{ llamaswap_crispasr_tts_internal_port }}"
+    check_endpoint: "/health"
+    supports_function_calling: false
+    supports_vision: false
+    supports_reasoning: false
+    mode: audio_speech
+    group: "tts"
 
 llamaswap_model_groups:
   forever:
@@ -635,6 +677,9 @@ llamaswap_model_groups:
     persistent: true
     swap: false
     exclusive: false
+  tts:
+    swap: true
+    exclusive: true
   "3090":
     swap: true
     exclusive: false

@@ -24,12 +24,14 @@ llamaswap_crispasr_workers: 1
 llamaswap_crispasr_gpu_uuid: "{{ gpu_3090_0_uuid }}"
 # CrispASR Qwen3-TTS runs as a sibling container managed by llama-swap.
 llamaswap_crispasr_tts_container_name: "llamaswap-crispasr-tts"
+llamaswap_crispasr_tts_design_container_name: "llamaswap-crispasr-tts-design"
 llamaswap_crispasr_tts_internal_port: 8080
 llamaswap_crispasr_tts_cache_path: "{{ llamaswap_config_path }}/crispasr-tts-cache"
 llamaswap_crispasr_tts_cache_container_path: "/cache"
 llamaswap_crispasr_tts_voices_path: "{{ llamaswap_config_path }}/crispasr-tts-voices"
 llamaswap_crispasr_tts_voices_container_path: "/voices"
 llamaswap_crispasr_tts_backend: "qwen3-tts-1.7b-base"
+llamaswap_crispasr_tts_design_backend: "qwen3-tts-1.7b-voicedesign"
 llamaswap_crispasr_tts_gpu_uuid: "{{ gpu_3090_1_uuid }}"
 llamaswap_crispasr_tts_voice: "de-host"
 # Existing faster-qwen3-tts references remain the migration source. The newest

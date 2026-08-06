@@ -158,6 +158,7 @@
     - "llamaswap-parakeet"
     - "{{ llamaswap_crispasr_container_name }}"
     - "{{ llamaswap_crispasr_tts_container_name }}"
+    - "{{ llamaswap_crispasr_tts_design_container_name }}"
   become: true
   when: llamaswap_enabled | bool
 
