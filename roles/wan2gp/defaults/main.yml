@@ -7,6 +7,20 @@ wan2gp_cache_root: "{{ wan2gp_base_dir }}/cache"
 wan2gp_image: local/wan2gp:latest
 wan2gp_container_name: wan2gp
 wan2gp_port: 7860
+wan2gp_cuda_base_image: nvidia/cuda:13.1.1-cudnn-devel-ubuntu24.04
+wan2gp_uv_image: ghcr.io/astral-sh/uv:0.12.1
+wan2gp_python_version: 3.11.14
+wan2gp_torch_version: 2.10.0
+wan2gp_torchvision_version: 0.25.0
+wan2gp_torchaudio_version: 2.10.0
+wan2gp_torch_cuda_suffix: cu130
+wan2gp_lightx2v_wheel: "https://github.com/deepbeepmeep/kernels/releases/download/Light2xv/\
+  lightx2v_kernel-0.0.2+torch2.10.0-cp311-abi3-linux_x86_64.whl"
+wan2gp_lightx2v_cuda12_compat_packages:
+  - nvidia-cublas-cu12==12.9.2.10
+  - nvidia-cuda-runtime-cu12==12.9.79
+wan2gp_gguf_cuda_wheel: "https://github.com/deepbeepmeep/kernels/releases/download/GGUF_Kernels/\
+  llamacpp_gguf_cuda-1.0.2+torch210cu13py311-cp311-cp311-linux_x86_64.whl"
 wan2gp_cuda_architectures: auto
 # WanGP memory profile. Profile 5 is documented as minimum system-RAM usage;
 # profile 2 keeps unused models in reserved RAM and caused host memory pressure
@@ -16,7 +30,7 @@ wan2gp_mode: mcp
 wan2gp_mcp_transport: streamable-http
 wan2gp_mcp_host: "0.0.0.0"
 wan2gp_mcp_port: "{{ wan2gp_port }}"
-wan2gp_attention: sage
+wan2gp_attention: sdpa
 wan2gp_fp16: true
 wan2gp_compile: false
 wan2gp_preload: 0
