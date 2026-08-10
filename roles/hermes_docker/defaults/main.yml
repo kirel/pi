@@ -208,6 +208,7 @@ hermes_docker_config_overrides:
   stt:
     enabled: true
     provider: openai
+    language: de
     openai:
       model: home-asr
   tts:
