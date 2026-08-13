@@ -53,6 +53,14 @@ litellm_pass_through_endpoints:
 # --- WanGP MCP Settings ---
 wan2gp_mcp_host_for_litellm: "192.168.50.10"
 wan2gp_mcp_port: "{{ wan2gp_port | default(7860) }}"
+ha_mcp_version: "8.1.1"
+ha_mcp_image: "ghcr.io/homeassistant-ai/ha-mcp:{{ ha_mcp_version }}"
+ha_mcp_container_name: "ha-mcp"
+ha_mcp_port: 8086
+
+# --- ComfyUI MCP Settings ---
+comfyui_mcp_version: "0.50.25"
+comfyui_mcp_url: "http://ailab-ubuntu.lan:{{ comfyui_port | default(8188) }}"
 
 # --- Google Workspace MCP Settings ---
 google_workspace_mcp_image: "ghcr.io/astral-sh/uv:debian"
@@ -97,17 +105,8 @@ litellm_mcp_servers:
       manager: npm
       package: tavily-mcp
   hamcp:
-    transport: stdio
-    command: ha-mcp
-    env:
-      HOMEASSISTANT_URL: "https://homeassistant.kirelabs.org"
-      HOMEASSISTANT_TOKEN: "{{ ha_access_token }}"
-      ENABLE_SKILLS: "true"
-      ENABLE_SKILLS_AS_TOOLS: "false"
+    url: "http://{{ ha_mcp_container_name }}:{{ ha_mcp_port }}/mcp"
     access_groups: ["home_admin"]
-    install:
-      manager: uv
-      args: ["ha-mcp"]
   home_assistant:
     url: "https://{{ services['homeassistant'].domain }}/api/mcp"
     auth_type: bearer_token
@@ -169,6 +168,17 @@ litellm_mcp_servers:
     install:
       manager: npm
       package: "@notionhq/notion-mcp-server"
+  comfyui:
+    transport: stdio
+    command: comfyui-mcp
+    args: ["--comfyui-url", "{{ comfyui_mcp_url }}"]
+    env:
+      COMFYUI_MCP_TOOL_MODE: compact
+      PATH: /usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+    access_groups: ["media_generation"]
+    install:
+      manager: npm
+      package: "comfyui-mcp@{{ comfyui_mcp_version }}"
   wangp:
     url: "http://{{ wan2gp_mcp_host_for_litellm }}:{{ wan2gp_mcp_port }}/mcp/"
     timeout: 300

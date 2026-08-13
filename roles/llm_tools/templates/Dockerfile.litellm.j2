@@ -11,7 +11,7 @@ RUN if command -v apt-get >/dev/null 2>&1; then \
         exit 1; \
     fi
 
-# Install uv/uvx for Python-based MCP stdio servers (ha-mcp, fetch)
+# Install uv/uvx for Python-based MCP stdio servers (for example fetch).
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
 # Install npm/npx for Node.js-based MCP stdio servers (tavily, n8n, notion).
@@ -44,7 +44,9 @@ ENV UV_COMPILE_BYTECODE=1 \
 {% endif %}
 {% endfor %}
 {% if npm_packages | length > 0 %}
-RUN npm install -g {{ npm_packages | join(' ') }}
+{% for package in npm_packages %}
+RUN npm install -g {{ package }}
+{% endfor %}
 {% endif %}
 {% for _name, server in litellm_mcp_servers.items() %}
 {% if server.install is defined and server.install.manager == 'uv' %}

@@ -85,6 +85,30 @@
           networks:
             - llm-network
 
+        ha-mcp:
+          image: "{{ ha_mcp_image }}"
+          pull_policy: always
+          container_name: "{{ ha_mcp_container_name }}"
+          command: ["ha-mcp-web"]
+          environment:
+            HOMEASSISTANT_URL: "https://homeassistant.kirelabs.org"
+            HOMEASSISTANT_TOKEN: "{{ ha_access_token }}"
+            ENABLE_SKILLS: "true"
+            ENABLE_SKILLS_AS_TOOLS: "false"
+          healthcheck:
+            test:
+              - CMD-SHELL
+              - >-
+                python -c "import socket;
+                socket.create_connection(('127.0.0.1', {{ ha_mcp_port }}), 5).close()"
+            interval: 10s
+            timeout: 5s
+            retries: 12
+            start_period: 20s
+          restart: unless-stopped
+          networks:
+            - llm-network
+
         litellm-proxy:
           build:
             context: "{{ litellm_proxy_config_dir_host }}"
@@ -143,6 +167,8 @@
               condition: service_healthy
             redis:
               condition: service_started
+            ha-mcp:
+              condition: service_healthy
           restart: unless-stopped
           networks:
             - llm-network
