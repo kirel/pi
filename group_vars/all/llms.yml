@@ -114,6 +114,16 @@ litellm_extra_models:
     model_info:
       mode: image_generation
 
+  # Hermes' native OpenAI image provider sends the upstream model name
+  # verbatim, so expose the same CPA backend without the routing suffix too.
+  - model_name: gpt-image-2
+    litellm_params:
+      model: openai/gpt-image-2
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: image_generation
+
   - model_name: gemini-3.1-flash-image-cpa
     litellm_params:
       model: openai/gemini-3.1-flash-image

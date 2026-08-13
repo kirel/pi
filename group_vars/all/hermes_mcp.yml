@@ -20,6 +20,11 @@ hermes_litellm_model_profiles:
     - gpt-5.5-cpa
     - grok-4.5-cpa
     - claude-opus-4-6-thinking-cpa
+    - gpt-image-2
+    - gpt-image-2-cpa
+    - gemini-3.1-flash-image-cpa
+    - grok-imagine-image-cpa
+    - grok-imagine-image-quality-cpa
     - home-asr
     - home-tts
     - home-tts-design

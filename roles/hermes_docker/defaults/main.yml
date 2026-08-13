@@ -65,6 +65,7 @@ hermes_docker_webui_inherit_env_keys:
   - LITELLM_API_KEY
   - MINIMAX_API_KEY
   - OPENAI_API_KEY
+  - OPENAI_BASE_URL
   - TAVILY_API_KEY
   - VOICE_TOOLS_OPENAI_KEY
 hermes_docker_webui_workspace_dir: /workspace
@@ -211,6 +212,10 @@ hermes_docker_config_overrides:
     language: de
     openai:
       model: home-asr
+  image_gen:
+    provider: openai
+    openai:
+      model: gpt-image-2-medium
   tts:
     enabled: true
     provider: openai
@@ -284,6 +289,7 @@ hermes_docker_runtime_env:
   HERMES_DASHBOARD_TUI: "1"
   HERMES_YOLO_MODE: "1"
   HERMES_EXEC_ASK: "false"
+  OPENAI_BASE_URL: https://litellm.kirelabs.org/v1
   STT_OPENAI_MODEL: home-asr
   STT_OPENAI_BASE_URL: https://litellm.kirelabs.org/v1
 
