@@ -90,3 +90,21 @@
 
       volumes:
         jellyfin-cache: {} # Define the volume
+
+- name: Ensure Jellyfin transcode cache is writable
+  community.docker.docker_container_exec:
+    container: jellyfin
+    user: "0"
+    argv:
+      - sh
+      - -c
+      - |
+        current="$(stat -c '%u:%g:%a' /cache/transcodes 2>/dev/null || true)"
+        if [ "$current" != "{{ uid }}:{{ uid }}:755" ]; then
+          mkdir -p /cache/transcodes
+          chown "{{ uid }}:{{ uid }}" /cache/transcodes
+          chmod 0755 /cache/transcodes
+          echo changed
+        fi
+  register: jellyfin_transcode_cache
+  changed_when: "'changed' in jellyfin_transcode_cache.stdout"
