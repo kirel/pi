@@ -4,7 +4,10 @@
 # --- llama-swap Settings ---
 llamaswap_enabled: true
 llamaswap_container_name: "llama-swap"
-llamaswap_image: "ghcr.io/mostlygeek/llama-swap:cuda@sha256:74eb596938b6c907789924a84a7ce2b6bd43a22bb2f99675b90ca5fd88801c22"
+llamaswap_base_image: "ghcr.io/mostlygeek/llama-swap:cuda@sha256:915dea80fb2a01cb2ba6c02dcb0196e8043c715fad9aa74021f99b28574901fc"
+llamaswap_llama_cpp_version: "b10353"
+llamaswap_image: "kirelabs/llama-swap:cuda-{{ llamaswap_llama_cpp_version }}"
+llamaswap_build_path: "{{ llamaswap_config_path }}/image-build"
 llamaswap_port: "8080"
 llamaswap_config_path: "{{ llamaswap_host_path }}"
 llamaswap_backend_network: "llamaswap-backends"

@@ -1,0 +1,40 @@
+FROM node:24 AS source
+
+ARG LLAMA_CPP_VERSION={{ llamaswap_llama_cpp_version }}
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git ca-certificates \
+    && git clone --depth 1 --branch "${LLAMA_CPP_VERSION}" \
+        https://github.com/ggml-org/llama.cpp.git /src \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src/tools/ui
+RUN npm ci \
+    && LLAMA_BUILD_NUMBER="${LLAMA_CPP_VERSION#b}" npm run build
+
+FROM nvidia/cuda:12.8.1-devel-ubuntu24.04 AS build
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential ca-certificates cmake gcc-14 g++-14 libssl-dev libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CC=gcc-14 CXX=g++-14 CUDAHOSTCXX=g++-14
+
+COPY --from=source /src /src
+WORKDIR /src
+RUN cmake -B build \
+        -DGGML_NATIVE=OFF \
+        -DGGML_CUDA=ON \
+        -DGGML_BACKEND_DL=ON \
+        -DGGML_CPU_ALL_VARIANTS=ON \
+        -DLLAMA_BUILD_TESTS=OFF \
+        -DCMAKE_EXE_LINKER_FLAGS=-Wl,--allow-shlib-undefined \
+    && cmake --build build --config Release --target llama-server -j"$(nproc)" \
+    && mkdir /out \
+    && find build -name '*.so*' -exec cp -P {} /out/ \; \
+    && cp build/bin/llama-server /out/
+
+FROM {{ llamaswap_base_image }}
+
+COPY --from=build /out/ /app/

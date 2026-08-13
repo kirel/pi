@@ -141,10 +141,38 @@
   notify: Restart llama-swap
   when: llamaswap_enabled | bool
 
-- name: Pull pinned upstream llama-swap image
+- name: Ensure llama-swap image build directory exists
+  ansible.builtin.file:
+    path: "{{ llamaswap_build_path }}"
+    state: directory
+    mode: "0755"
+  become: true
+  when: llamaswap_enabled | bool
+
+- name: Remove obsolete llama-swap Dockerfile from the model-cache root
+  ansible.builtin.file:
+    path: "{{ llamaswap_config_path }}/Dockerfile.llamaswap"
+    state: absent
+  become: true
+  when: llamaswap_enabled | bool
+
+- name: Render versioned llama-swap CUDA image
+  ansible.builtin.template:
+    src: Dockerfile.llamaswap.j2
+    dest: "{{ llamaswap_build_path }}/Dockerfile.llamaswap"
+    mode: "0644"
+  become: true
+  register: llamaswap_dockerfile
+  when: llamaswap_enabled | bool
+
+- name: Build versioned llama-swap CUDA image
   community.docker.docker_image:
     name: "{{ llamaswap_image }}"
-    source: pull
+    source: build
+    force_source: "{{ llamaswap_dockerfile.changed }}"
+    build:
+      path: "{{ llamaswap_build_path }}"
+      dockerfile: Dockerfile.llamaswap
     state: present
   become: true
   notify: Restart llama-swap

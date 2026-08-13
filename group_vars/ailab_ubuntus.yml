@@ -126,7 +126,7 @@ hermes_docker_agents_config_overrides:
       provider: custom
       base_url: https://litellm.kirelabs.org/v1
       api_key: ${LITELLM_API_KEY}
-      context_length: "{{ llama_native_context_qwen36 }}"
+      context_length: "{{ llama_native_context_muse_glimmer }}"
     skills:
       external_dirs:
         - /skills/global

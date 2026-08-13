@@ -2,11 +2,11 @@ llamaswap_enabled: true
 
 model_group_alias:
   home: "Qwen3.6-35B-A3B-Instruct-nothink"
-  home-fast: "Qwen3.6-35B-A3B-Instruct-nothink"
-  home-smart: "Qwen3.6-35B-A3B-Instruct"
-  home-vision: "Qwen3.6-35B-A3B-Instruct"
-  home-ha: "Qwen3.6-27B-Instruct-nothink"
-  home-hermes: "Qwen3.6-27B-Instruct"
+  home-fast: "Muse-Glimmer-30B-low"
+  home-smart: "Muse-Glimmer-30B-high"
+  home-vision: "Muse-Glimmer-30B"
+  home-ha: "Muse-Glimmer-30B-low"
+  home-hermes: "Muse-Glimmer-30B-low"
   home-embed: "qwen3-embedding"
   home-asr: "whisper-large-v3-turbo-q8-crispasr"
   home-tts: "qwen3-tts"
@@ -21,6 +21,7 @@ llama_parallel_slots: 3
 llama_prompt_cache_ram_mib: 8192
 llama_native_context_qwen36: 262144
 llama_native_context_gemma4: 262144
+llama_native_context_muse_glimmer: 131072
 # The dense 27B has a substantially larger KV footprint per token. The 35B
 # uses the same conservative pool so GPU1 keeps its reserve after TTS JIT.
 llama_ctx_size_qwen35_3090: 376832
@@ -293,6 +294,62 @@ llamaswap_models:
           cache_prompt: true
           chat_template_kwargs:
             enable_thinking: false
+
+  - alias: Muse-Glimmer-30B
+    # Use Meta's matched target, vision projector, and DFlash sidecar. Current
+    # llama.cpp resolves mmproj-kquant.gguf and dflash-kquant.gguf from this HF
+    # repo when the target file and speculative type are explicit.
+    cmd: >-
+      /app/llama-server
+      -hf meta-models/Muse-Glimmer-30B-GGUF
+      -hff muse-glimmer-30B-kquant-dynamic.gguf
+      --port ${PORT}
+      --ctx-size {{ llama_native_context_muse_glimmer }}
+      --parallel {{ llama_parallel_slots }}
+      --kv-unified
+      --cache-ram {{ llama_prompt_cache_ram_mib }}
+      --cache-idle-slots
+      --n-predict {{ llama_n_predict_3090 }}
+      --n-gpu-layers 99
+      -sm tensor
+      --fit off
+      -fa on
+      --cache-type-k q4_0
+      --cache-type-v q4_0
+      --temp 1.0
+      --top-p 0.95
+      --top-k 64
+      --spec-type draft-dflash
+      --spec-draft-ngl 99
+      --jinja
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    context_window: "{{ llama_native_context_muse_glimmer }}"
+    max_input_tokens: "{{ llama_native_context_muse_glimmer }}"
+    max_output_tokens: "{{ llama_n_predict_3090 }}"
+    allowed_openai_params:
+      - extra_body
+    group: "3090"
+    env:
+      - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}},{{gpu_3090_1_uuid}}"
+    variants:
+      low:
+        extra_body:
+          chat_template_kwargs:
+            reasoning_strength: low
+      medium:
+        extra_body:
+          chat_template_kwargs:
+            reasoning_strength: medium
+      high:
+        extra_body:
+          chat_template_kwargs:
+            reasoning_strength: high
+      xhigh:
+        extra_body:
+          chat_template_kwargs:
+            reasoning_strength: xhigh
 
   - alias: Laguna-S-2.1
     # Laguna S 2.1 is a 118B-A8B MoE. IQ2_M leaves only a few GiB beyond
@@ -698,4 +755,4 @@ llamaswap_preload:
   - "{{ model_group_alias['home-embed'] }}"
   - "{{ model_group_alias['home-asr'] }}"
   - "qwen3-tts"
-  - "Qwen3.6-27B-Instruct"
+  - "{{ model_group_alias['home-hermes'] }}"
