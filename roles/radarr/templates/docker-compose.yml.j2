@@ -1,0 +1,22 @@
+---
+services:
+  radarr:
+    image: "{{ radarr_image }}"
+    container_name: radarr
+    restart: unless-stopped
+    environment:
+      PUID: "{{ uid }}"
+      PGID: "{{ qbittorrent_gid }}"
+      TZ: Europe/Berlin
+    ports:
+      - "{{ radarr_http_port }}:7878"
+    volumes:
+      - "{{ radarr_config_folder }}:/config"
+      - "{{ qbittorrent_data_folder }}:/data"
+    labels:
+      homepage.group: "{{ services.radarr.group }}"
+      homepage.name: "{{ services.radarr.name }}"
+      homepage.href: "https://{{ services.radarr.domain }}"
+      homepage.icon: "{{ services.radarr.icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: radarr

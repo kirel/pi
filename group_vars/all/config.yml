@@ -50,6 +50,12 @@ teddycloud_box_port: 4443
 changedetection_http_port: 8016
 dockhand_http_port: 8017
 dozzle_http_port: 8018
+qbittorrent_http_port: 8019
+qbittorrent_torrenting_port: 6881
+qbittorrent_gid: 100 # users
+prowlarr_http_port: 9696
+sonarr_http_port: 8989
+radarr_http_port: 7878
 dozzle_agent_port: 7007
 immich_http_port: 2283
 immich_ml_http_port: 3003
@@ -134,6 +140,16 @@ satellite_data_folder: "{{ config_root }}/satellite"
 piper_data_folder: "{{ config_root }}/piper"
 whisper_data_folder: "{{ config_root }}/whisper"
 readeck_data_folder: "{{ config_root }}/readeck"
+qbittorrent_config_folder: "{{ config_root }}/qbittorrent"
+qbittorrent_data_folder: /tank/medien
+qbittorrent_image: lscr.io/linuxserver/qbittorrent:latest
+qbittorrent_vuetorrent_mod: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
+prowlarr_config_folder: "{{ config_root }}/prowlarr"
+sonarr_config_folder: "{{ config_root }}/sonarr"
+radarr_config_folder: "{{ config_root }}/radarr"
+prowlarr_image: lscr.io/linuxserver/prowlarr:latest
+sonarr_image: lscr.io/linuxserver/sonarr:latest
+radarr_image: lscr.io/linuxserver/radarr:latest
 readeck_domain_name: readeck.kirelabs.org
 dockhand_data_folder: "{{ config_root }}/dockhand"
 dozzle_data_folder: "{{ config_root }}/dozzle"

@@ -1,0 +1,15 @@
+---
+- name: Create Radarr config directory
+  ansible.builtin.file:
+    path: "{{ radarr_config_folder }}"
+    state: directory
+    owner: "{{ username }}"
+    group: users
+    mode: "2775"
+
+- name: Deploy Radarr
+  community.docker.docker_compose_v2:
+    project_name: radarr
+    pull: always
+    state: present
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"

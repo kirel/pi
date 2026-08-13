@@ -1,0 +1,22 @@
+---
+services:
+  sonarr:
+    image: "{{ sonarr_image }}"
+    container_name: sonarr
+    restart: unless-stopped
+    environment:
+      PUID: "{{ uid }}"
+      PGID: "{{ qbittorrent_gid }}"
+      TZ: Europe/Berlin
+    ports:
+      - "{{ sonarr_http_port }}:8989"
+    volumes:
+      - "{{ sonarr_config_folder }}:/config"
+      - "{{ qbittorrent_data_folder }}:/data"
+    labels:
+      homepage.group: "{{ services.sonarr.group }}"
+      homepage.name: "{{ services.sonarr.name }}"
+      homepage.href: "https://{{ services.sonarr.domain }}"
+      homepage.icon: "{{ services.sonarr.icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: sonarr

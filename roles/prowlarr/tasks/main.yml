@@ -1,0 +1,15 @@
+---
+- name: Create Prowlarr config directory
+  ansible.builtin.file:
+    path: "{{ prowlarr_config_folder }}"
+    state: directory
+    owner: "{{ username }}"
+    group: users
+    mode: "2775"
+
+- name: Deploy Prowlarr
+  community.docker.docker_compose_v2:
+    project_name: prowlarr
+    pull: always
+    state: present
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"

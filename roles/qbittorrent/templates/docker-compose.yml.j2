@@ -1,0 +1,28 @@
+---
+services:
+  qbittorrent:
+    image: "{{ qbittorrent_image }}"
+    container_name: qbittorrent
+    restart: unless-stopped
+    stop_grace_period: 30m
+    environment:
+      PUID: "{{ uid }}"
+      PGID: "{{ qbittorrent_gid }}"
+      TZ: Europe/Berlin
+      WEBUI_PORT: "{{ qbittorrent_http_port }}"
+      TORRENTING_PORT: "{{ qbittorrent_torrenting_port }}"
+      DOCKER_MODS: "{{ qbittorrent_vuetorrent_mod }}"
+    ports:
+      - "{{ qbittorrent_http_port }}:{{ qbittorrent_http_port }}/tcp"
+      - "{{ qbittorrent_torrenting_port }}:{{ qbittorrent_torrenting_port }}/tcp"
+      - "{{ qbittorrent_torrenting_port }}:{{ qbittorrent_torrenting_port }}/udp"
+    volumes:
+      - "{{ qbittorrent_config_folder }}:/config"
+      - "{{ qbittorrent_data_folder }}:/data"
+    labels:
+      homepage.group: "{{ services.qbittorrent.group }}"
+      homepage.name: "{{ services.qbittorrent.name }}"
+      homepage.href: "https://{{ services.qbittorrent.domain }}"
+      homepage.icon: "{{ services.qbittorrent.icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: qbittorrent

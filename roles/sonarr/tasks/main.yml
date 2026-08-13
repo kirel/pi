@@ -1,0 +1,15 @@
+---
+- name: Create Sonarr config directory
+  ansible.builtin.file:
+    path: "{{ sonarr_config_folder }}"
+    state: directory
+    owner: "{{ username }}"
+    group: users
+    mode: "2775"
+
+- name: Deploy Sonarr
+  community.docker.docker_compose_v2:
+    project_name: sonarr
+    pull: always
+    state: present
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"

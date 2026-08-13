@@ -41,6 +41,34 @@ services:
     domain: readeck.kirelabs.org
     group: Productivity
     icon: readeck
+  qbittorrent:
+    name: qBittorrent
+    target: homelab-nuc.lan
+    http_port: "{{ qbittorrent_http_port }}"
+    domain: qbittorrent.kirelabs.org
+    group: Downloads
+    icon: qbittorrent
+  prowlarr:
+    name: Prowlarr
+    target: homelab-nuc.lan
+    http_port: "{{ prowlarr_http_port }}"
+    domain: prowlarr.kirelabs.org
+    group: Downloads
+    icon: prowlarr
+  sonarr:
+    name: Sonarr
+    target: homelab-nuc.lan
+    http_port: "{{ sonarr_http_port }}"
+    domain: sonarr.kirelabs.org
+    group: Downloads
+    icon: sonarr
+  radarr:
+    name: Radarr
+    target: homelab-nuc.lan
+    http_port: "{{ radarr_http_port }}"
+    domain: radarr.kirelabs.org
+    group: Downloads
+    icon: radarr
   linkding:
     name: Linkding
     target: homelab-nuc.lan

@@ -1,0 +1,22 @@
+---
+- name: Create qBittorrent directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: users
+    mode: "2775"
+  loop:
+    - "{{ qbittorrent_config_folder }}"
+    - "{{ qbittorrent_data_folder }}/Downloads"
+    - "{{ qbittorrent_data_folder }}/Downloads/complete"
+    - "{{ qbittorrent_data_folder }}/Downloads/incomplete"
+    - "{{ qbittorrent_data_folder }}/Downloads/complete/sonarr"
+    - "{{ qbittorrent_data_folder }}/Downloads/complete/radarr"
+
+- name: Deploy qBittorrent
+  community.docker.docker_compose_v2:
+    project_name: qbittorrent
+    pull: always
+    state: present
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"

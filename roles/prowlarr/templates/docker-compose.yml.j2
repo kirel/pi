@@ -1,0 +1,21 @@
+---
+services:
+  prowlarr:
+    image: "{{ prowlarr_image }}"
+    container_name: prowlarr
+    restart: unless-stopped
+    environment:
+      PUID: "{{ uid }}"
+      PGID: "{{ qbittorrent_gid }}"
+      TZ: Europe/Berlin
+    ports:
+      - "{{ prowlarr_http_port }}:9696"
+    volumes:
+      - "{{ prowlarr_config_folder }}:/config"
+    labels:
+      homepage.group: "{{ services.prowlarr.group }}"
+      homepage.name: "{{ services.prowlarr.name }}"
+      homepage.href: "https://{{ services.prowlarr.domain }}"
+      homepage.icon: "{{ services.prowlarr.icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: prowlarr
