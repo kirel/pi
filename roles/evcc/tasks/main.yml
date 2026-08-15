@@ -1,0 +1,74 @@
+---
+- name: Create evcc configuration and database directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: users
+    mode: "0750"
+  loop:
+    - "{{ evcc_data_folder }}"
+    - "{{ evcc_database_folder }}"
+
+- name: Render evcc configuration
+  ansible.builtin.template:
+    src: evcc.yaml.j2
+    dest: "{{ evcc_config_file }}"
+    owner: "{{ username }}"
+    group: users
+    mode: "0640"
+  notify: Restart evcc
+
+- name: Start evcc
+  community.docker.docker_compose_v2:
+    project_name: evcc
+    pull: always
+    state: present
+    definition:
+      services:
+        evcc:
+          image: "{{ evcc_image }}"
+          container_name: evcc
+          network_mode: host
+          restart: unless-stopped
+          volumes:
+            - "{{ evcc_config_file }}:/etc/evcc.yaml:ro"
+            - "{{ evcc_database_folder }}:/root/.evcc"
+          labels:
+            homepage.group: "{{ services.evcc.group }}"
+            homepage.name: "{{ services.evcc.name }}"
+            homepage.href: "https://{{ services.evcc.domain }}"
+            homepage.icon: "{{ services.evcc.icon }}"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: evcc
+
+- name: Read evcc loadpoint maximum current setting
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - evcc
+      - evcc
+      - settings
+      - get
+      - ^lp1\.maxCurrent$
+  register: evcc_loadpoint_max_current_setting
+  changed_when: false
+
+- name: Configure evcc loadpoint maximum current
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - evcc
+      - evcc
+      - settings
+      - set
+      - --force
+      - lp1.maxCurrent
+      - "{{ evcc_loadpoint_max_current | string }}"
+  when: >-
+    ('lp1.maxCurrent: ' ~ (evcc_loadpoint_max_current | string))
+    not in evcc_loadpoint_max_current_setting.stdout
+  changed_when: true
+  notify: Restart evcc

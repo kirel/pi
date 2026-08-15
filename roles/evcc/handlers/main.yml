@@ -1,0 +1,6 @@
+---
+- name: Restart evcc
+  community.docker.docker_container:
+    name: evcc
+    state: started
+    restart: true

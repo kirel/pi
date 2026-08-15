@@ -180,6 +180,13 @@ services:
     domain: phoenix.kirelabs.org
     group: AI
     icon: https://phoenix.kirelabs.org/favicon.ico
+  evcc:
+    name: evcc
+    target: homelab-nuc.lan
+    http_port: "{{ evcc_http_port }}"
+    domain: evcc.kirelabs.org
+    group: Smart Home
+    icon: evcc.png
   litellm:
     name: LiteLLM
     target: homelab-nuc.lan

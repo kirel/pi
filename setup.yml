@@ -23,6 +23,7 @@
     - { role: pihole, become: true, tags: [pihole] }
     - { role: homeassistant, become: true, tags: [ha] }
     - { role: fix_hass_bluetooth, become: true, tags: [ha] }
+    - { role: evcc, become: true, tags: [evcc] }
     - { role: media, become: true, tags: [media] }
     - { role: monitoring, become: true, tags: [monitoring] }
     - { role: homepage, become: true, tags: [homepage] }

@@ -1,0 +1,12 @@
+---
+evcc_image: evcc/evcc:latest
+evcc_config_file: "{{ evcc_data_folder }}/evcc.yaml"
+evcc_database_folder: "{{ evcc_data_folder }}/database"
+evcc_site_title: Zuhause
+evcc_loadpoint_max_current: 18
+evcc_battery_capacity_kwh: 9.04
+evcc_pv_capacity_kwp: 10.01
+evcc_pv_azimuth: 24
+evcc_pv_declination: 25
+evcc_location_latitude: 49.4228561
+evcc_location_longitude: 8.3836243

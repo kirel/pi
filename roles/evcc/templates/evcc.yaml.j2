@@ -1,0 +1,76 @@
+network:
+  port: {{ evcc_http_port }}
+
+mqtt:
+  broker: "{{ mosquitto_address }}:{{ mosquitto_port }}"
+  topic: evcc
+  clientid: evcc
+
+tariffs:
+  solar:
+    - type: template
+      template: open-meteo
+      lat: {{ evcc_location_latitude }}
+      lon: {{ evcc_location_longitude }}
+      az: {{ evcc_pv_azimuth }}
+      dec: {{ evcc_pv_declination }}
+      kwp: {{ evcc_pv_capacity_kwp }}
+
+site:
+  title: "{{ evcc_site_title }}"
+  meters:
+    grid: sigen-grid
+    pv:
+      - sigen-pv
+    battery:
+      - sigen-battery
+
+loadpoints:
+  - title: Sigenergy EVDC
+    charger: sigen-evdc
+    vehicle: tesla-model-y
+    mode: pv
+
+meters:
+  - name: sigen-grid
+    type: template
+    template: sigenergy
+    usage: grid
+    host: "{{ evcc_sigen_host }}"
+    port: {{ evcc_sigen_port }}
+    id: {{ evcc_sigen_id }}
+
+  - name: sigen-pv
+    type: template
+    template: sigenergy
+    usage: pv
+    host: "{{ evcc_sigen_host }}"
+    port: {{ evcc_sigen_port }}
+    id: {{ evcc_sigen_id }}
+
+  - name: sigen-battery
+    type: template
+    template: sigenergy
+    usage: battery
+    capacity: {{ evcc_battery_capacity_kwh }}
+    host: "{{ evcc_sigen_host }}"
+    port: {{ evcc_sigen_port }}
+    id: {{ evcc_sigen_id }}
+
+chargers:
+  - name: sigen-evdc
+    type: template
+    template: sigenergy-evdc
+    host: "{{ evcc_sigen_host }}"
+    port: {{ evcc_sigen_port }}
+    id: {{ evcc_sigen_id }}
+
+vehicles:
+  - name: tesla-model-y
+    type: template
+    template: teslamate
+    title: Fahrgerät
+    capacity: 60
+    maxPower: 12500
+    maxCurrent: 18
+    id: 1
