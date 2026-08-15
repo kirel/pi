@@ -8,6 +8,19 @@
     recurse: yes
   become: true
 
+- name: Ensure ComfyUI runtime dependencies are current before startup
+  ansible.builtin.copy:
+    dest: "{{ comfyui_storage_path }}/user-scripts/pre-start.sh"
+    mode: "0755"
+    owner: "{{ uid }}"
+    group: "{{ gid }}"
+    content: |
+      #!/usr/bin/env bash
+      python3 -m pip install --disable-pip-version-check --no-input \
+        --requirement /root/ComfyUI/requirements.txt
+  become: true
+  notify: Restart ComfyUI
+
 - name: Ensure ComfyUI container is running
   community.docker.docker_container:
     name: "{{ comfyui_container_name }}"
