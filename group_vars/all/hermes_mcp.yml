@@ -2,6 +2,10 @@
 hermes_litellm_model_profiles:
   local_hermes:
     - home-hermes
+    - Qwen3.8-27B-Instruct
+    - Qwen3.8-27B-Instruct-low
+    - Qwen3.8-27B-Instruct-medium
+    - Qwen3.8-27B-Instruct-nothink
     - minimax-m3
     - glm-5.2
     - home-asr
