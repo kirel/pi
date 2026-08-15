@@ -78,6 +78,8 @@
             - DATABASE_HOST=teslamate-db
             - MQTT_HOST={{ mosquitto_address }}
             - MQTT_PORT={{ mosquitto_port }}
+            - MQTT_HOME_ASSISTANT_DISCOVERY=true
+            - MQTT_HOME_ASSISTANT_DISCOVERY_URL=https://{{ services.teslamate.domain }}/
             - ENCRYPTION_KEY={{ teslamate_encryption_key }}
           volumes:
             - "{{ teslamate_data_folder }}:/opt/teslamate/data"
