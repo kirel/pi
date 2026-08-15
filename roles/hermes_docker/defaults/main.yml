@@ -283,6 +283,10 @@ hermes_docker_require_minimax_api_key: true
 hermes_docker_runtime_env:
   HOME: "{{ hermes_container_data_dir }}"
   XDG_STATE_HOME: "{{ hermes_container_data_dir }}/.local/state"
+  NPM_CONFIG_PREFIX: "{{ hermes_container_data_dir }}/npm-global"
+  NPM_CONFIG_CACHE: "{{ hermes_container_data_dir }}/home/.npm"
+  NPM_CONFIG_USERCONFIG: "{{ hermes_container_data_dir }}/home/.npmrc"
+  PATH: "{{ hermes_container_data_dir }}/npm-global/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
   HERMES_DASHBOARD: "1"
   HERMES_DASHBOARD_HOST: "127.0.0.1"
   HERMES_DASHBOARD_PORT: "{{ hermes_dashboard_container_port }}"

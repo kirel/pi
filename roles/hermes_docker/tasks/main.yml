@@ -407,6 +407,28 @@
     loop_var: agent_name
     label: "{{ agent_name }}"
 
+- name: Create persistent per-agent npm directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ hermes_docker_data_uid }}"
+    group: "{{ hermes_docker_data_gid }}"
+    mode: "{{ item.mode }}"
+  loop: >-
+    {%- set dirs = [] -%}
+    {%- for agent_name in hermes_docker_effective_agent_names -%}
+      {%- set base = hermes_docker_base_dir ~ '/' ~ agent_name ~ '/data' -%}
+      {%- set _ = dirs.extend([
+        {'path': base ~ '/home', 'mode': '0700'},
+        {'path': base ~ '/home/.npm', 'mode': '0700'},
+        {'path': base ~ '/npm-global', 'mode': '0755'},
+        {'path': base ~ '/npm-global/bin', 'mode': '0755'}
+      ]) -%}
+    {%- endfor -%}
+    {{ dirs }}
+  loop_control:
+    label: "{{ item.path }}"
+
 - name: Create per-agent Hermes WebUI workspace directories
   ansible.builtin.file:
     path: "{{ item.value }}"
