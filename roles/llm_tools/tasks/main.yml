@@ -127,6 +127,7 @@
             - /etc/ssl/certs:/etc/ssl/certs:ro
             - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
           environment:
+            PROXY_BASE_URL: "https://{{ services['litellm'].domain }}"
             PHOENIX_COLLECTOR_ENDPOINT: "{{ phoenix_host_for_litellm }}"
             LITELLM_MASTER_KEY: "{{ litellm_master_key }}"
             DATABASE_URL: "{{ litellm_database_url }}"
