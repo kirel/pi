@@ -1,28 +1,4 @@
 ---
-- name: Create data folders
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    mode: "0755"
-    owner: "{{ uid }}"
-    group: "{{ uid }}"
-    recurse: yes
-  with_items:
-    - "{{ chatterbox_models_folder }}"
-    - "{{ chatterbox_voices_folder }}"
-    - "{{ chatterbox_longtext_data_folder }}"
-    - "{{ chatterbox_frontend_build_folder }}"
-  become: true
-
-- name: Create voice sample file (placeholder)
-  ansible.builtin.file:
-    path: "{{ chatterbox_voice_sample_file }}"
-    state: touch
-    mode: "0644"
-    owner: "{{ uid }}"
-    group: "{{ uid }}"
-  become: true
-
 - name: Start wyoming_openai stack
   community.docker.docker_compose_v2:
     project_name: wyoming-openai

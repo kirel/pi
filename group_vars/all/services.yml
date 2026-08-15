@@ -260,13 +260,6 @@ services:
     icon: mdi-video
     wol: "{{ ailab_mac_address }}"
     try: 360s
-  chatterbox-ui:
-    name: Chatterbox UI
-    target: ailab-ubuntu.lan
-    http_port: 4321
-    domain: chatterbox-ui.kirelabs.org
-    group: AI
-    icon: mdi-volume-high
   t3-code-ailab:
     name: T3 Code AI Lab
     target: ailab-ubuntu.lan
