@@ -7,6 +7,15 @@ mqtt:
   clientid: evcc
 
 tariffs:
+  currency: EUR
+  # Contract base price: {{ evcc_grid_base_price_eur_per_year }} EUR/year.
+  # evcc only accounts for consumption-based energy prices.
+  grid:
+    type: fixed
+    price: {{ evcc_grid_price_eur_per_kwh }}
+  feedin:
+    type: fixed
+    price: {{ evcc_feed_in_price_eur_per_kwh }}
   solar:
     - type: template
       template: open-meteo

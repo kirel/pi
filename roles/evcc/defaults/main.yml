@@ -4,6 +4,9 @@ evcc_config_file: "{{ evcc_data_folder }}/evcc.yaml"
 evcc_database_folder: "{{ evcc_data_folder }}/database"
 evcc_site_title: Zuhause
 evcc_loadpoint_max_current: 18
+evcc_grid_price_eur_per_kwh: 0.279
+evcc_grid_base_price_eur_per_year: 165.92
+evcc_feed_in_price_eur_per_kwh: 0.077
 evcc_battery_capacity_kwh: 9.04
 evcc_pv_capacity_kwp: 10.01
 evcc_pv_azimuth: 24
