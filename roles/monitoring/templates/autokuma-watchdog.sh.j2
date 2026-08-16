@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+log_file=/data/logs/autokuma_r00000.log
+mkdir -p /data/logs
+: > "${log_file}"
+
+autokuma &
+autokuma_pid=$!
+
+terminate() {
+    kill -TERM "${autokuma_pid}" 2>/dev/null || true
+    wait "${autokuma_pid}" 2>/dev/null || true
+    exit 0
+}
+
+trap terminate INT TERM
+
+while kill -0 "${autokuma_pid}" 2>/dev/null; do
+    sleep 10 &
+    wait $! || true
+
+    if grep -q "You are not logged in" "${log_file}" 2>/dev/null; then
+        kill -TERM "${autokuma_pid}" 2>/dev/null || true
+        wait "${autokuma_pid}" 2>/dev/null || true
+        exit 1
+    fi
+done
+
+wait "${autokuma_pid}"

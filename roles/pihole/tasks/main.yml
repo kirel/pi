@@ -2,6 +2,9 @@
 - ansible.builtin.set_fact:
     pihole_service: "{{ services['pihole-'~inventory_hostname] }}"
     leases_service: "{{ services['dnsmasq-leases-ui-'~inventory_hostname] }}"
+    pihole_monitor_id_prefix: "{{ 'pihole-homelab' if inventory_hostname == 'homelab-nuc' else 'pihole-nameserver' }}"
+    pihole_monitor_name_prefix: "{{ 'Pihole Homelab' if inventory_hostname == 'homelab-nuc' else 'Pihole Nameserver' }}"
+    pihole_monitor_docker_host: "{{ 'local' if inventory_hostname == 'homelab-nuc' else 'nameserver' }}"
 
 - ansible.builtin.debug:
     var: pihole_service
@@ -207,10 +210,17 @@
             - SYS_NICE
           restart: unless-stopped
           labels:
-            homepage.group: "{{ pihole_service.group }}"
-            homepage.name: "{{ pihole_service.name }}"
-            homepage.href: https://{{ pihole_service.domain }}/admin/
-            homepage.icon: mdi-pi-hole
+            - "homepage.group={{ pihole_service.group }}"
+            - "homepage.name={{ pihole_service.name }}"
+            - "homepage.href=https://{{ pihole_service.domain }}/admin/"
+            - homepage.icon=mdi-pi-hole
+            - "kuma.{{ pihole_monitor_id_prefix }}-web.http.name={{ pihole_monitor_name_prefix }} Web"
+            - "kuma.{{ pihole_monitor_id_prefix }}-web.http.url=https://{{ pihole_service.domain }}/admin"
+            - "kuma.{{ pihole_monitor_id_prefix }}-web.http.interval=60"
+            - "kuma.{{ pihole_monitor_id_prefix }}-container.docker.name={{ pihole_monitor_name_prefix }} Container"
+            - "kuma.{{ pihole_monitor_id_prefix }}-container.docker.docker_container=pihole"
+            - "kuma.{{ pihole_monitor_id_prefix }}-container.docker.docker_host_name={{ pihole_monitor_docker_host }}"
+            - "kuma.{{ pihole_monitor_id_prefix }}-container.docker.interval=60"
           depends_on:
             - dhcphelper
           networks:

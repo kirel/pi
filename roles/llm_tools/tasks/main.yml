@@ -180,6 +180,10 @@
             homepage.icon: "{{ services['litellm'].icon }}"
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: "{{ litellm_proxy_container_name }}"
+            kuma.litellm-health.keyword.name: LiteLLM Health
+            kuma.litellm-health.keyword.url: https://{{ services['litellm'].domain }}/health/readiness
+            kuma.litellm-health.keyword.keyword: 'db":"connected'
+            kuma.litellm-health.keyword.interval: "60"
 
         # mcp-proxy removed - using MetaMCP instead
         # mcp-proxy:

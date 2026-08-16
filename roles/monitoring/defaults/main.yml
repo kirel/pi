@@ -1,1 +1,79 @@
 ---
+# 2.1.0-rc.1 contains the latest reconnect work. It can still retain a dead
+# Socket.IO session after a Kuma restart, so the role also installs a watchdog.
+monitoring_autokuma_image: ghcr.io/bigboot/autokuma:2.1.0-rc.1
+monitoring_autokuma_data_folder: "{{ config_root }}/autokuma"
+monitoring_autokuma_static_monitors_folder: "{{ monitoring_autokuma_data_folder }}/static-monitors"
+monitoring_autokuma_secret_config_file: "{{ monitoring_autokuma_data_folder }}/autokuma.toml"
+monitoring_autokuma_watchdog_file: "{{ monitoring_autokuma_data_folder }}/autokuma-watchdog"
+monitoring_autokuma_sync_interval: 30
+monitoring_autokuma_delete_grace_period: 600
+monitoring_autokuma_migrate: false
+
+# AutoKuma scans the same restricted Docker API endpoints already used by
+# Homepage. The Hetzner endpoint is bound to its Tailnet address.
+monitoring_autokuma_docker_hosts:
+  - unix:///var/run/docker.sock
+  - "tcp://{{ nameserver_pi_ip }}:2375"
+  - "tcp://{{ ailab_ubuntu_ip }}:2375"
+  - "tcp://{{ hostvars[groups.hetzner | first].ansible_host }}:2375"
+
+# IDs are the file names and are globally stable within AutoKuma. Container-
+# owned monitors live on their Docker services as labels; only infrastructure
+# checks and Uptime Kuma Docker-host objects belong here.
+monitoring_autokuma_static_entities:
+  local:
+    type: docker_host
+    name: Local Docker
+    connection_type: socket
+    path: /var/run/docker.sock
+  nameserver:
+    type: docker_host
+    name: Nameserver Pi
+    connection_type: tcp
+    host: "http://{{ nameserver_pi_ip }}:2375"
+  ailab:
+    type: docker_host
+    name: AI Lab
+    connection_type: tcp
+    host: "http://{{ ailab_ubuntu_ip }}:2375"
+  hetzner:
+    type: docker_host
+    name: Hetzner
+    connection_type: tcp
+    host: "http://{{ hostvars[groups.hetzner | first].ansible_host }}:2375"
+  smb:
+    type: port
+    name: SMB
+    hostname: "{{ homelab_nuc_ip }}"
+    port: 445
+    interval: 60
+    retry_interval: 60
+    max_retries: 0
+  keller:
+    type: ping
+    name: Keller
+    hostname: 192.168.50.2
+    interval: 60
+    retry_interval: 60
+    max_retries: 0
+  borgmatic-homelab:
+    type: push
+    name: Borgmatic Homelab
+    interval: 90000
+    retry_interval: 60
+    max_retries: 0
+  claw-caddy:
+    type: http
+    name: Claw Caddy
+    url: https://clawd.lan/health
+    interval: 60
+    retry_interval: 60
+    max_retries: 0
+  online:
+    type: ping
+    name: Online?
+    hostname: 8.8.8.8
+    interval: 60
+    retry_interval: 60
+    max_retries: 0

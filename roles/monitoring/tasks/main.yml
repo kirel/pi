@@ -8,6 +8,64 @@
   with_items:
     - path: "{{ uptime_kuma_data_folder }}"
     - path: "{{ dockhand_data_folder }}"
+    - path: "{{ monitoring_autokuma_data_folder }}"
+      mode: "0700"
+    - path: "{{ monitoring_autokuma_static_monitors_folder }}"
+      mode: "0750"
+    - path: "{{ monitoring_autokuma_data_folder }}/logs"
+      mode: "0750"
+
+- name: Write AutoKuma secret configuration
+  ansible.builtin.copy:
+    content: |
+      [kuma]
+      auth_token = "{{ uptime_kuma_auth_token | trim }}"
+    dest: "{{ monitoring_autokuma_secret_config_file }}"
+    owner: "{{ username }}"
+    mode: "0600"
+  register: monitoring_autokuma_auth_token_result
+  no_log: true
+
+- name: Remove obsolete AutoKuma token file
+  ansible.builtin.file:
+    path: "{{ monitoring_autokuma_data_folder }}/uptime-kuma-auth-token"
+    state: absent
+
+- name: Render AutoKuma authentication watchdog
+  ansible.builtin.template:
+    src: autokuma-watchdog.sh.j2
+    dest: "{{ monitoring_autokuma_watchdog_file }}"
+    owner: "{{ username }}"
+    mode: "0750"
+  register: monitoring_autokuma_watchdog_result
+
+- name: Render AutoKuma static entities
+  ansible.builtin.copy:
+    content: "{{ item.value | to_nice_json }}\n"
+    dest: "{{ monitoring_autokuma_static_monitors_folder }}/{{ item.key }}.json"
+    owner: "{{ username }}"
+    mode: "0640"
+  loop: "{{ monitoring_autokuma_static_entities | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Find existing AutoKuma static entity files
+  ansible.builtin.find:
+    paths: "{{ monitoring_autokuma_static_monitors_folder }}"
+    patterns: "*.json"
+    file_type: file
+  register: monitoring_autokuma_static_entity_files
+
+- name: Remove stale AutoKuma static entity files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ monitoring_autokuma_static_entity_files.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when: >-
+    (item.path | basename | splitext | first)
+    not in monitoring_autokuma_static_entities
 
 - name: Start monitoring
   community.docker.docker_compose_v2:
@@ -41,6 +99,33 @@
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: uptime_kuma
 
+        autokuma:
+          image: "{{ monitoring_autokuma_image }}"
+          container_name: autokuma
+          command: /usr/local/bin/autokuma-watchdog
+          restart: unless-stopped
+          network_mode: host
+          depends_on:
+            - uptime_kuma
+          environment:
+            AUTOKUMA__KUMA__URL: http://127.0.0.1:3001
+            AUTOKUMA__DOCKER__ENABLED: "true"
+            AUTOKUMA__DOCKER__SOURCE: Containers
+            AUTOKUMA__DOCKER__HOSTS: "{{ monitoring_autokuma_docker_hosts | join(';') }}"
+            AUTOKUMA__DOCKER__EXCLUDE_CONTAINER_PATTERNS: "^[a-f0-9]{12}_.*_"
+            AUTOKUMA__FILES__ENABLED: "true"
+            AUTOKUMA__STATIC_MONITORS: /data/static-monitors
+            AUTOKUMA__SYNC_INTERVAL: "{{ monitoring_autokuma_sync_interval | string }}"
+            AUTOKUMA__ON_DELETE: delete
+            AUTOKUMA__DELETE_GRACE_PERIOD: "{{ monitoring_autokuma_delete_grace_period | string }}"
+            AUTOKUMA__MIGRATE: "{{ monitoring_autokuma_migrate | bool | lower }}"
+            AUTOKUMA__LOG_DIR: /data/logs
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - "{{ monitoring_autokuma_data_folder }}:/data"
+            - "{{ monitoring_autokuma_secret_config_file }}:/autokuma.toml:ro"
+            - "{{ monitoring_autokuma_watchdog_file }}:/usr/local/bin/autokuma-watchdog:ro"
+
         dockhand:
           image: fnsys/dockhand:latest
           container_name: dockhand
@@ -58,12 +143,35 @@
             homepage.server: "{{ inventory_hostname }}"
             homepage.container: dockhand
 
-  register: output
+  register: monitoring_compose_result
 
-- ansible.builtin.debug:
-    var: output
+- name: Restart AutoKuma after authentication or watchdog changes
+  community.docker.docker_container:
+    name: autokuma
+    state: started
+    restart: true
+  when: >-
+    monitoring_autokuma_auth_token_result.changed
+    or monitoring_autokuma_watchdog_result.changed
 
-- ansible.builtin.assert:
+- name: Wait for AutoKuma to remain running
+  community.docker.docker_container_info:
+    name: autokuma
+  register: monitoring_autokuma_container
+  until: >-
+    monitoring_autokuma_container.exists
+    and monitoring_autokuma_container.container.State.Running
+    and not monitoring_autokuma_container.container.State.Restarting
+  retries: 15
+  delay: 2
+
+- name: Show monitoring compose result
+  ansible.builtin.debug:
+    var: monitoring_compose_result
+
+- name: Assert monitoring containers are running
+  ansible.builtin.assert:
     that:
-      - output.containers | selectattr('Name', 'equalto', 'uptime_kuma') | map(attribute='State') | list | first == 'running'
-      - output.containers | selectattr('Name', 'equalto', 'dockhand') | map(attribute='State') | list | first == 'running'
+      - monitoring_compose_result.containers | selectattr('Name', 'equalto', 'uptime_kuma') | map(attribute='State') | list | first == 'running'
+      - monitoring_autokuma_container.container.State.Running
+      - monitoring_compose_result.containers | selectattr('Name', 'equalto', 'dockhand') | map(attribute='State') | list | first == 'running'

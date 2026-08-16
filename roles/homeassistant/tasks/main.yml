@@ -127,6 +127,13 @@
             - homepage.icon={{ services.homeassistant.icon }}
             - homepage.server={{ inventory_hostname }}
             - homepage.container=homeassistant
+            - kuma.homeassistant-web.http.name=Home Assistant Web
+            - kuma.homeassistant-web.http.url=https://{{ services.homeassistant.domain }}
+            - kuma.homeassistant-web.http.interval=60
+            - kuma.homeassistant-container.docker.name=Home Assistant Container
+            - kuma.homeassistant-container.docker.docker_container=homeassistant
+            - kuma.homeassistant-container.docker.docker_host_name=local
+            - kuma.homeassistant-container.docker.interval=60
         music-assistant-server:
           image: ghcr.io/music-assistant/server:latest
           container_name: music-assistant-server
@@ -178,6 +185,11 @@
             options:
               max-size: "10m"
               max-file: "3"
+          labels:
+            - kuma.mqtt-broker-tcp.port.name=Mqtt Broker Tcp
+            - kuma.mqtt-broker-tcp.port.hostname={{ homelab_nuc_ip }}
+            - kuma.mqtt-broker-tcp.port.port={{ mosquitto_port }}
+            - kuma.mqtt-broker-tcp.port.interval=60
         zigbee2mqtt:
           container_name: zigbee2mqtt
           image: koenkk/zigbee2mqtt:latest
@@ -200,6 +212,10 @@
             - homepage.icon=mdi-zigbee
             - homepage.server={{ inventory_hostname }}
             - homepage.container=zigbee2mqtt
+            - kuma.z2m-container.docker.name=z2m Container
+            - kuma.z2m-container.docker.docker_container=zigbee2mqtt
+            - kuma.z2m-container.docker.docker_host_name=local
+            - kuma.z2m-container.docker.interval=60
         matter-server:
           image: ghcr.io/home-assistant-libs/python-matter-server:stable
           container_name: matter-server
