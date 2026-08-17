@@ -153,13 +153,13 @@ litellm_mcp_servers:
     url: "https://api.githubcopilot.com/mcp/"
     auth_type: bearer_token
     auth_value: "{{ github_mcp_token }}"
-    access_groups: ["code"]
+    access_groups: ["code", "coding_agents"]
   regfish:
     url: "https://api.regfish.com/mcp"
     transport: http
     auth_type: oauth2
     oauth2_flow: authorization_code
-    access_groups: ["code"]
+    access_groups: ["code", "coding_agents"]
   google_maps:
     url: "https://mapstools.googleapis.com/mcp"
     static_headers:

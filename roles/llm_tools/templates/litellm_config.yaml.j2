@@ -135,6 +135,12 @@ mcp_servers:
 {% endfor %}
 general_settings:
   store_model_in_db: true
+  # Caddy runs on the Docker host and reaches LiteLLM through the bridge
+  # gateway. Trust only that direct proxy hop when resolving the client IP
+  # used by MCP's public/private server access control.
+  use_x_forwarded_for: true
+  mcp_trusted_proxy_ranges:
+    - 192.168.32.1/32
   # TEMPORARY: capture the exact Hermes request and normalized CPA response
   # for the gpt-5.6 tool-calling investigation. Disable after the A/B run.
   store_prompts_in_spend_logs: true
