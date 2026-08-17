@@ -1,5 +1,12 @@
 ---
 # Default superuser credentials. Override linkding_superuser_password in secrets.
+linkding_uid: 33
+linkding_gid: 33
 linkding_superuser_name: "admin"
 linkding_superuser_email: "admin@example.com"
 linkding_superuser_password: "password"
+linkding_oidc_client_id: linkding
+linkding_oidc_client_secret: "{{ vault_authelia_oidc_linkding_client_secret }}"
+linkding_oidc_provider_url: "https://{{ services.authelia.domain }}"
+linkding_oidc_username: "{{ authelia_username | default('daniel') }}"
+linkding_oidc_email: "{{ authelia_email | default('danishkirel@gmail.com') }}"

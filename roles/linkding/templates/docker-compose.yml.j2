@@ -16,7 +16,16 @@ services:
       - LD_SUPERUSER_NAME={{ linkding_superuser_name }}
       - LD_SUPERUSER_EMAIL={{ linkding_superuser_email }}
       - LD_SUPERUSER_PASSWORD={{ linkding_superuser_password }}
-      - LD_CSRF_TRUSTED_ORIGINS=https://{{ linkding_domain_name }}
+      - LD_CSRF_TRUSTED_ORIGINS=https://{{ linkding_domain_name }},{{ linkding_oidc_provider_url }}
+      - LD_ENABLE_OIDC=True
+      - OIDC_RP_CLIENT_ID={{ linkding_oidc_client_id }}
+      - OIDC_RP_CLIENT_SECRET={{ linkding_oidc_client_secret }}
+      - OIDC_RP_SCOPES=openid email profile
+      - OIDC_USERNAME_CLAIM=preferred_username
+      - OIDC_OP_AUTHORIZATION_ENDPOINT={{ linkding_oidc_provider_url }}/api/oidc/authorization
+      - OIDC_OP_TOKEN_ENDPOINT={{ linkding_oidc_provider_url }}/api/oidc/token
+      - OIDC_OP_USER_ENDPOINT={{ linkding_oidc_provider_url }}/api/oidc/userinfo
+      - OIDC_OP_JWKS_ENDPOINT={{ linkding_oidc_provider_url }}/jwks.json
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
       - CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
     labels:

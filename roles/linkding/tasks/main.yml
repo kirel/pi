@@ -3,12 +3,29 @@
   ansible.builtin.file:
     path: "{{ linkding_data_folder }}"
     state: directory
-    owner: "{{ uid | default(1000) }}"
-    group: "{{ gid | default(1000) }}"
-    mode: '0755'
+    owner: "{{ linkding_uid }}"
+    group: "{{ linkding_gid }}"
+    mode: '0750'
 
 - name: Deploy Linkding stack
   community.docker.docker_compose_v2:
     project_name: linkding
     definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
   become: true
+  no_log: true
+
+- name: Link the existing Linkding user to the Authelia identity
+  community.docker.docker_container_exec:
+    container: linkding
+    command: >-
+      python manage.py shell -c
+      "from django.contrib.auth import get_user_model;
+      username='{{ linkding_oidc_username }}';
+      email='{{ linkding_oidc_email }}';
+      user=get_user_model().objects.get(username=username);
+      changed=user.email != email;
+      user.email=email;
+      user.save(update_fields=['email']) if changed else None;
+      print('LINKDING_OIDC_EMAIL_UPDATED' if changed else 'LINKDING_OIDC_EMAIL_OK')"
+  register: linkding_oidc_user
+  changed_when: "'LINKDING_OIDC_EMAIL_UPDATED' in linkding_oidc_user.stdout"
