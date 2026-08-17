@@ -4,3 +4,15 @@
     name: "{{ username }}"
     comment: John Doe
     uid: "{{ uid }}"
+
+- name: Remove obsolete route to the remote 192.168.8.0/24 network
+  ansible.builtin.replace:
+    path: /etc/netplan/01-netcfg.yaml
+    regexp: '(?m)^\s{6}routes:\n\s{8}- to: 192\.168\.8\.0/24\n\s{10}via: 192\.168\.50\.1\n?'
+    replace: ''
+  register: nuc_obsolete_route
+
+- name: Apply netplan after removing the obsolete route
+  ansible.builtin.command: netplan apply
+  when: nuc_obsolete_route is changed
+  changed_when: true

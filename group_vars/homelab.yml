@@ -54,5 +54,6 @@ beszel_agent_smart_devices:
   - /dev/sdb
   - /dev/sdc
 
-# Advertise the homelab LAN to Tailnet clients, while keeping local DNS on the server.
-tailscale_args: "--accept-dns=false --advertise-routes={{ tailscale_lan_cidr }}"
+# Advertise the homelab LAN to Tailnet clients and accept approved remote
+# subnet routes, while keeping local DNS on the server.
+tailscale_args: "--accept-dns=false --accept-routes=true --advertise-routes={{ tailscale_lan_cidr }}"
