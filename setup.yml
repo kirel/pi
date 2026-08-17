@@ -12,11 +12,12 @@
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
     - { role: dozzle, become: true, tags: [dozzle, monitoring] }
-    - { role: glances, become: true, tags: [glances] }
     - { role: zfs, become: true, tags: [zfs, storage] }
     - { role: storage, become: true, tags: [storage] }
     - { role: syncthing_folders, become: true, tags: [storage, syncthing, syncthing-config] }
     - { role: borgmatic, become: true, tags: [borgmatic, backup] }
+    - { role: authelia, become: true, tags: [authelia] }
+    - { role: beszel, become: true, tags: [beszel, monitoring] }
     - { role: caddy, become: true, tags: [caddy] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
 
@@ -83,7 +84,7 @@
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
     - { role: dozzle, become: true, tags: [dozzle, monitoring] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
-    - { role: glances, become: true, tags: [glances] }
+    - { role: beszel, become: true, tags: [beszel, monitoring] }
     - { role: pihole, become: true, tags: [pihole] }
 
 - name: Setup virtualhere Pi
@@ -97,7 +98,6 @@
     - { role: dockerhub, become: true, tags: [docker, dockerhub] }
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
     - { role: dozzle, become: true, tags: [dozzle, monitoring] }
-    - { role: glances, become: true, tags: [glances] }
     - { role: virtualhere, become: true, tags: [virtualhere] }
 
 - name: Setup ailabs
@@ -115,7 +115,7 @@
     - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
     - { role: dozzle, become: true, tags: [dozzle, monitoring] }
     - { role: gpu, become: true, tags: [gpu, gpu-driver] }
-    - { role: glances, become: true, tags: [glances], vars: { glances_nvidia_support: true } }
+    - { role: beszel, become: true, tags: [beszel, monitoring] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }
 
     - { role: llm_inference, become: true, tags: [llm, llm-inference] }

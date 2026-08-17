@@ -1,0 +1,35 @@
+---
+beszel_version: 0.18.7
+beszel_hub_image: "docker.io/henrygd/beszel:{{ beszel_version }}"
+beszel_agent_image: "docker.io/henrygd/beszel-agent:{{ beszel_version }}"
+beszel_agent_alpine_image: "docker.io/henrygd/beszel-agent:{{ beszel_version }}-alpine"
+beszel_agent_nvidia_image: "docker.io/henrygd/beszel-agent-nvidia:{{ beszel_version }}"
+
+beszel_hub_inventory_hostname: homelab-nuc
+beszel_hub_url: "http://{{ homelab_nuc_ip }}:{{ beszel_http_port }}"
+beszel_public_url: "https://{{ services.beszel.domain }}"
+beszel_data_folder: "{{ config_root }}/beszel"
+beszel_agent_data_folder: "{{ config_root }}/beszel-agent"
+
+beszel_superuser_email: "{{ authelia_email | default('danishkirel@gmail.com') }}"
+beszel_superuser_password: "{{ vault_beszel_superuser_password }}"
+beszel_oidc_client_id: "{{ authelia_oidc_beszel_client_id | default('beszel-kirelabs') }}"
+# ansible-vault encrypt_string commonly preserves the input newline. PocketBase
+# must receive the exact secret bytes that were hashed for Authelia.
+beszel_oidc_client_secret: "{{ vault_authelia_oidc_beszel_client_secret | trim }}"
+beszel_user_creation: true
+# Set this to true only after the documented OIDC login test succeeded.
+beszel_disable_password_auth: false
+
+beszel_agent_nvidia_support: false
+beszel_agent_extra_filesystems: []
+beszel_agent_smart_devices: []
+beszel_agent_service_patterns:
+  - docker
+  - ssh
+  - tailscaled
+beszel_agent_docker_host: tcp://127.0.0.1:2375
+beszel_agent_smart_interval: 1h
+beszel_agent_disk_usage_cache: 5m
+beszel_enable_cgroup_memory: false
+beszel_boot_cmdline_path: /boot/firmware/cmdline.txt

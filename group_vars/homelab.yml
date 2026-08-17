@@ -46,6 +46,13 @@ backup_retention:
 
 # Monitoring
 uptime_kuma_push_url: "https://uptime.kirelabs.org/api/push/xvea108uQa"
+beszel_agent_extra_filesystems:
+  - host_path: /tank/.beszel
+    name: tank__ZFS_Pool
+beszel_agent_smart_devices:
+  - /dev/sda
+  - /dev/sdb
+  - /dev/sdc
 
 # Advertise the homelab LAN to Tailnet clients, while keeping local DNS on the server.
 tailscale_args: "--accept-dns=false --advertise-routes={{ tailscale_lan_cidr }}"

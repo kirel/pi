@@ -141,12 +141,6 @@ services:
     http_port: "{{ teddycloud_http_port }}"
     domain: teddycloud.kirelabs.org
     group: Family
-  glances-homelab-nuc:
-    name: Glances Homelab
-    target: homelab-nuc.lan
-    http_port: "{{ glances_http_port }}"
-    domain: glances-homelab.kirelabs.org
-    group: Monitoring
   nodered:
     target: homelab-nuc.lan
     http_port: "{{ nodered_http_port }}"
@@ -259,12 +253,6 @@ services:
     domain: leases-nameserver.kirelabs.org
     target: nameserver-pi.lan
     http_port: 5005
-  glances-nameserver-pi:
-    name: Glances Nameserver
-    target: nameserver-pi.lan
-    http_port: "{{ glances_http_port }}"
-    domain: glances-nameserver.kirelabs.org
-    group: Monitoring
   # ailab
   llama-swap:
     name: LlamaSwap
@@ -329,13 +317,6 @@ services:
     nodocker: true
     group: AI
     icon: hermes-icon.png
-  glances-ailab-ubuntu:
-    name: Glances AI Lab
-    target: ailab-ubuntu.lan
-    http_port: "{{ glances_http_port }}"
-    domain: glances-ailab.kirelabs.org
-    group: Monitoring
-    icon: glances.png
   syncthing-ailab:
     name: Syncthing AI Lab
     target: ailab-ubuntu.lan

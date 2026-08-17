@@ -53,6 +53,16 @@ gpu_configs:
   - uuid: "{{ gpu_5060ti_uuid }}"
     power_limit: 180
 
+# Beszel host metrics
+beszel_agent_nvidia_support: true
+beszel_agent_extra_filesystems:
+  - host_path: /mnt/ssd/.beszel
+    name: sda1__SSD
+beszel_agent_smart_devices:
+  - /dev/sda
+  - /dev/nvme0
+  - /dev/nvme1
+
 # Local Hermes dashboard on ailab. This uses the host-published dashboard port
 # and the central homelab Caddy service, not per-agent Caddy/Tailscale sidecars.
 hermes_docker_base_image: nousresearch/hermes-agent:v2026.7.20

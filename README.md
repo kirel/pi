@@ -46,6 +46,13 @@ uv run ansible-playbook setup.yml
 uv run ansible-playbook setup.yml --tags caddy,pihole,homepage --limit homelab,nameserver
 ```
 
+### Authentication
+
+Authelia provides passkey-based Caddy Forward Auth for services without SSO
+and native OpenID Connect for applications such as Linkding and Beszel. The
+architecture, decision guide, rollout steps, and recovery paths are documented
+in [`docs/authentication.md`](docs/authentication.md).
+
 ### Home Assistant
 
 ```bash

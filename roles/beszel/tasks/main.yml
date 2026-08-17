@@ -1,0 +1,390 @@
+---
+- name: Create Beszel Hub data directory
+  ansible.builtin.file:
+    path: "{{ beszel_data_folder }}"
+    state: directory
+    owner: "{{ username | default(username_personal) }}"
+    group: "{{ username | default(username_personal) }}"
+    mode: '0750'
+  when: inventory_hostname == beszel_hub_inventory_hostname
+
+- name: Start Beszel Hub
+  community.docker.docker_compose_v2:
+    project_name: beszel-hub
+    pull: always
+    state: present
+    definition:
+      services:
+        beszel:
+          image: "{{ beszel_hub_image }}"
+          container_name: beszel
+          restart: unless-stopped
+          network_mode: host
+          environment:
+            APP_URL: "{{ beszel_public_url }}"
+            CHECK_UPDATES: 'false'
+            CONTAINER_DETAILS: 'false'
+            DISABLE_PASSWORD_AUTH: "{{ beszel_disable_password_auth | bool | lower }}"
+            OAUTH_DISABLE_POPUP: 'true'
+            USER_CREATION: "{{ beszel_user_creation | bool | lower }}"
+          volumes:
+            - "{{ beszel_data_folder }}:/beszel_data"
+          healthcheck:
+            test: [CMD, /beszel, health]
+            interval: 30s
+            timeout: 5s
+            retries: 5
+            start_period: 15s
+          labels:
+            homepage.group: "{{ services.beszel.group }}"
+            homepage.name: "{{ services.beszel.name }}"
+            homepage.href: "{{ beszel_public_url }}"
+            homepage.icon: "{{ services.beszel.icon }}"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: beszel
+  when: inventory_hostname == beszel_hub_inventory_hostname
+
+- name: Wait for Beszel Hub API
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/health"
+    method: GET
+    status_code: 200
+  register: beszel_hub_health
+  until: beszel_hub_health.status == 200
+  retries: 30
+  delay: 2
+
+- name: Ensure Beszel bootstrap superuser exists
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - beszel
+      - /beszel
+      - superuser
+      - upsert
+      - "{{ beszel_superuser_email }}"
+      - "{{ beszel_superuser_password }}"
+  when: inventory_hostname == beszel_hub_inventory_hostname
+  changed_when: false
+  no_log: true
+
+- name: Authenticate with Beszel Hub API
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/collections/_superusers/auth-with-password"
+    method: POST
+    body_format: json
+    body:
+      identity: "{{ beszel_superuser_email }}"
+      password: "{{ beszel_superuser_password }}"
+    status_code: 200
+    return_content: true
+  register: beszel_superuser_auth
+  no_log: true
+
+- name: Read Beszel users collection authentication settings
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/collections/users"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ beszel_superuser_auth.json.token }}"
+    status_code: 200
+    return_content: true
+  register: beszel_users_collection
+  no_log: true
+
+- name: Guard Beszel OIDC bootstrap against overwriting another provider
+  ansible.builtin.assert:
+    that:
+      - >-
+        beszel_users_collection.json.oauth2.providers | length == 0
+        or
+        (
+          beszel_users_collection.json.oauth2.providers | length == 1
+          and
+          beszel_users_collection.json.oauth2.providers[0].name == 'oidc'
+        )
+    fail_msg: >-
+      Beszel already has a different OAuth2 provider. Preserve it and add
+      Authelia manually using docs/beszel-oidc-one-time-setup.md.
+  when: inventory_hostname == beszel_hub_inventory_hostname
+  no_log: true
+
+- name: Reconcile Authelia OIDC provider in Beszel
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/collections/users"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ beszel_superuser_auth.json.token }}"
+    body_format: json
+    body:
+      oauth2:
+        enabled: true
+        mappedFields:
+          id: ''
+          name: name
+          username: ''
+          avatarURL: ''
+        providers:
+          - name: oidc
+            clientId: "{{ beszel_oidc_client_id }}"
+            clientSecret: "{{ beszel_oidc_client_secret }}"
+            authURL: "https://{{ services.authelia.domain }}/api/oidc/authorization"
+            tokenURL: "https://{{ services.authelia.domain }}/api/oidc/token"
+            userInfoURL: "https://{{ services.authelia.domain }}/api/oidc/userinfo"
+            displayName: Authelia
+            pkce: true
+            extra: {}
+    status_code: 200
+  when: inventory_hostname == beszel_hub_inventory_hostname
+  no_log: true
+
+- name: Verify Beszel advertises the Authelia OIDC provider
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/collections/users/auth-methods"
+    method: GET
+    status_code: 200
+    return_content: true
+  register: beszel_auth_methods
+
+- name: Assert Beszel OIDC authentication contract
+  ansible.builtin.assert:
+    that:
+      - beszel_auth_methods.json.oauth2.enabled | bool
+      - >-
+        beszel_auth_methods.json.oauth2.providers
+        | selectattr('name', 'equalto', 'oidc')
+        | list
+        | length == 1
+    fail_msg: Beszel does not advertise the configured Authelia OIDC provider.
+
+- name: Check Beszel bootstrap user login
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/collections/users/auth-with-password"
+    method: POST
+    body_format: json
+    body:
+      identity: "{{ beszel_superuser_email }}"
+      password: "{{ beszel_superuser_password }}"
+    status_code: [200, 400]
+    return_content: true
+  register: beszel_user_login_check
+  no_log: true
+
+- name: Create Beszel bootstrap user
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/collections/users/records"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ beszel_superuser_auth.json.token }}"
+    body_format: json
+    body:
+      email: "{{ beszel_superuser_email }}"
+      emailVisibility: true
+      name: Daniel
+      password: "{{ beszel_superuser_password }}"
+      passwordConfirm: "{{ beszel_superuser_password }}"
+      verified: true
+    status_code: 200
+  when: beszel_user_login_check.status != 200
+  no_log: true
+
+- name: Authenticate as Beszel bootstrap user
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/collections/users/auth-with-password"
+    method: POST
+    body_format: json
+    body:
+      identity: "{{ beszel_superuser_email }}"
+      password: "{{ beszel_superuser_password }}"
+    status_code: 200
+    return_content: true
+  register: beszel_user_auth
+  no_log: true
+
+- name: Read Beszel Hub public key
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/beszel/getkey"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ beszel_user_auth.json.token }}"
+    status_code: 200
+    return_content: true
+  register: beszel_hub_key
+  no_log: true
+
+- name: Read current Beszel universal agent token
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/beszel/universal-token"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ beszel_user_auth.json.token }}"
+    status_code: 200
+    return_content: true
+  register: beszel_universal_token_current
+  no_log: true
+
+- name: Enable permanent Beszel universal agent token once
+  ansible.builtin.uri:
+    url: "{{ beszel_hub_url }}/api/beszel/universal-token?enable=1&permanent=1"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ beszel_user_auth.json.token }}"
+    status_code: 200
+    return_content: true
+  when: >-
+    not (beszel_universal_token_current.json.active | default(false) | bool)
+    or not (beszel_universal_token_current.json.permanent | default(false) | bool)
+  register: beszel_universal_token_enabled
+  no_log: true
+
+- name: Select active Beszel universal agent token
+  ansible.builtin.set_fact:
+    beszel_universal_token: >-
+      {{ beszel_universal_token_current
+         if (beszel_universal_token_current.json.active | default(false) | bool
+             and beszel_universal_token_current.json.permanent | default(false) | bool)
+         else beszel_universal_token_enabled }}
+  no_log: true
+
+- name: Validate Beszel bootstrap credentials
+  ansible.builtin.assert:
+    that:
+      - beszel_hub_key.json.key | default('') | length > 20
+      - beszel_universal_token.json.active | default(false) | bool
+      - beszel_universal_token.json.permanent | default(false) | bool
+      - beszel_universal_token.json.token | default('') | length > 20
+    fail_msg: Beszel did not return an active universal token and Hub public key.
+  no_log: true
+
+- name: Enable Raspberry Pi memory cgroup for Beszel container metrics
+  ansible.builtin.lineinfile:
+    path: "{{ beszel_boot_cmdline_path }}"
+    regexp: '^((?!.*cgroup_enable=memory).+)$'
+    line: '\1 cgroup_enable=memory cgroup_memory=1'
+    backrefs: true
+  when: beszel_enable_cgroup_memory | bool
+  register: beszel_cgroup_cmdline
+
+- name: Reboot after enabling Raspberry Pi memory cgroup
+  ansible.builtin.reboot:
+    reboot_timeout: 300
+    post_reboot_delay: 10
+  when:
+    - beszel_enable_cgroup_memory | bool
+    - beszel_cgroup_cmdline is changed
+
+- name: Create Beszel agent data directory
+  ansible.builtin.file:
+    path: "{{ beszel_agent_data_folder }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Create Beszel extra filesystem marker directories
+  ansible.builtin.file:
+    path: "{{ item.host_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop: "{{ beszel_agent_extra_filesystems }}"
+  loop_control:
+    label: "{{ item.host_path }}"
+
+- name: Store Beszel agent public key
+  ansible.builtin.copy:
+    content: "{{ beszel_hub_key.json.key }}\n"
+    dest: "{{ beszel_agent_data_folder }}/hub-key"
+    owner: root
+    group: root
+    mode: '0600'
+  register: beszel_agent_key_file
+  no_log: true
+
+- name: Store Beszel universal agent token
+  ansible.builtin.copy:
+    content: "{{ beszel_universal_token.json.token }}\n"
+    dest: "{{ beszel_agent_data_folder }}/token"
+    owner: root
+    group: root
+    mode: '0600'
+  register: beszel_agent_token_file
+  no_log: true
+
+- name: Build Beszel agent volume list
+  ansible.builtin.set_fact:
+    beszel_agent_volumes:
+      - "{{ beszel_agent_data_folder }}:/var/lib/beszel-agent"
+      - "{{ beszel_agent_data_folder }}/hub-key:/run/secrets/beszel-hub-key:ro"
+      - "{{ beszel_agent_data_folder }}/token:/run/secrets/beszel-token:ro"
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+
+- name: Add Beszel extra filesystem volumes
+  ansible.builtin.set_fact:
+    beszel_agent_volumes: "{{ beszel_agent_volumes + [item.host_path ~ ':/extra-filesystems/' ~ item.name ~ ':ro'] }}"
+  loop: "{{ beszel_agent_extra_filesystems }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Start Beszel agent
+  community.docker.docker_compose_v2:
+    project_name: beszel-agent
+    pull: always
+    state: present
+    definition:
+      services:
+        beszel-agent: "{{ beszel_agent_definition }}"
+  vars:
+    beszel_agent_base_definition:
+      image: >-
+        {{ beszel_agent_nvidia_image
+           if beszel_agent_nvidia_support | bool
+           else (beszel_agent_alpine_image
+                 if beszel_agent_smart_devices | length > 0
+                 else beszel_agent_image) }}
+      container_name: beszel-agent
+      restart: unless-stopped
+      network_mode: host
+      environment:
+        DATA_DIR: /var/lib/beszel-agent
+        DISABLE_SSH: 'true'
+        DISK_USAGE_CACHE: "{{ beszel_agent_disk_usage_cache }}"
+        DOCKER_HOST: "{{ beszel_agent_docker_host }}"
+        HUB_URL: "{{ beszel_hub_url }}"
+        KEY_FILE: /run/secrets/beszel-hub-key
+        SERVICE_PATTERNS: "{{ beszel_agent_service_patterns | join(',') }}"
+        SMART_DEVICES: "{{ beszel_agent_smart_devices | join(',') }}"
+        SMART_INTERVAL: "{{ beszel_agent_smart_interval }}"
+        SYSTEM_NAME: "{{ inventory_hostname }}"
+        TOKEN_FILE: /run/secrets/beszel-token
+      volumes: "{{ beszel_agent_volumes }}"
+      devices: "{{ beszel_agent_smart_devices }}"
+      cap_add: "{{ ['SYS_RAWIO', 'SYS_ADMIN'] if beszel_agent_smart_devices | length > 0 else [] }}"
+      healthcheck:
+        test: [CMD, /agent, health]
+        interval: 120s
+        timeout: 5s
+        retries: 3
+        start_period: 10s
+    beszel_agent_nvidia_definition:
+      deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                count: all
+                capabilities: [utility]
+    beszel_agent_definition: >-
+      {{ beszel_agent_base_definition
+         | combine(beszel_agent_nvidia_definition
+                   if beszel_agent_nvidia_support | bool
+                   else {}, recursive=True) }}
+
+- name: Restart Beszel agent after credential change
+  community.docker.docker_container:
+    name: beszel-agent
+    state: started
+    restart: true
+  when: beszel_agent_key_file is changed or beszel_agent_token_file is changed
