@@ -1,0 +1,8 @@
+---
+users:
+  {{ authelia_username }}:
+    disabled: false
+    displayname: "{{ authelia_display_name }}"
+    password: "{{ authelia_password_hash }}"
+    email: "{{ authelia_email }}"
+    groups: {{ authelia_groups | to_json }}

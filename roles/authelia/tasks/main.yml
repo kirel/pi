@@ -1,0 +1,115 @@
+---
+- name: Create Authelia directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ uid }}"
+    group: "{{ gid | default(uid) }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - path: "{{ authelia_config_folder }}"
+      mode: "0750"
+    - path: "{{ authelia_config_folder }}/secrets"
+      mode: "0700"
+
+- name: Render Authelia configuration
+  ansible.builtin.template:
+    src: configuration.yml.j2
+    dest: "{{ authelia_config_folder }}/configuration.yml"
+    owner: "{{ uid }}"
+    group: "{{ gid | default(uid) }}"
+    mode: "0640"
+  notify: Restart Authelia
+
+- name: Render Authelia user database
+  ansible.builtin.template:
+    src: users_database.yml.j2
+    dest: "{{ authelia_config_folder }}/users_database.yml"
+    owner: "{{ uid }}"
+    group: "{{ gid | default(uid) }}"
+    mode: "0600"
+  no_log: true
+  notify: Restart Authelia
+
+- name: Render Authelia secret files
+  ansible.builtin.copy:
+    content: "{{ item.value }}"
+    dest: "{{ authelia_config_folder }}/secrets/{{ item.name }}"
+    owner: "{{ uid }}"
+    group: "{{ gid | default(uid) }}"
+    mode: "0600"
+  loop:
+    - name: JWT_SECRET
+      value: "{{ authelia_jwt_secret }}"
+    - name: SESSION_SECRET
+      value: "{{ authelia_session_secret }}"
+    - name: STORAGE_ENCRYPTION_KEY
+      value: "{{ authelia_storage_encryption_key }}"
+    - name: SMTP_PASSWORD
+      value: "{{ authelia_smtp_password }}"
+    - name: OIDC_HMAC_SECRET
+      value: "{{ authelia_oidc_hmac_secret }}"
+    - name: OIDC_ISSUER_PRIVATE_KEY
+      value: "{{ authelia_oidc_issuer_private_key }}"
+  no_log: true
+  notify: Restart Authelia
+
+- name: Start Authelia
+  community.docker.docker_compose_v2:
+    project_name: authelia
+    pull: always
+    state: present
+    definition:
+      networks:
+        default:
+          ipam:
+            config:
+              - subnet: "{{ authelia_network_subnet }}"
+      services:
+        authelia:
+          image: "{{ authelia_image }}"
+          container_name: authelia
+          restart: unless-stopped
+          user: "{{ uid }}:{{ gid | default(uid) }}"
+          ports:
+            - "127.0.0.1:{{ authelia_http_port }}:9091"
+          volumes:
+            - "{{ authelia_config_folder }}:/config"
+          environment:
+            X_AUTHELIA_CONFIG_FILTERS: template
+            AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: /config/secrets/JWT_SECRET
+            AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE: /config/secrets/OIDC_HMAC_SECRET
+            AUTHELIA_SESSION_SECRET_FILE: /config/secrets/SESSION_SECRET
+            AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /config/secrets/STORAGE_ENCRYPTION_KEY
+            AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE: /config/secrets/SMTP_PASSWORD
+          labels:
+            homepage.group: "{{ services.authelia.group }}"
+            homepage.name: "{{ services.authelia.name }}"
+            homepage.href: "https://{{ services.authelia.domain }}"
+            homepage.icon: "{{ services.authelia.icon }}"
+            homepage.server: "{{ inventory_hostname }}"
+            homepage.container: authelia
+  register: authelia_output
+
+- name: Assert Authelia container is running
+  ansible.builtin.assert:
+    that:
+      - authelia_output.containers | selectattr('Name', 'equalto', 'authelia') | list | length > 0
+      - authelia_output.containers | selectattr('Name', 'equalto', 'authelia') | map(attribute='State') | list | first == 'running'
+
+- name: Apply pending Authelia configuration changes
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for Authelia health endpoint
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ authelia_http_port }}/api/health"
+    status_code: 200
+  register: authelia_health
+  retries: 12
+  delay: 5
+  until: authelia_health.status == 200
+
+- name: Remove legacy filesystem notification output
+  ansible.builtin.file:
+    path: "{{ authelia_config_folder }}/notification.txt"
+    state: absent

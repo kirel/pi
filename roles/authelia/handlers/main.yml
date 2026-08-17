@@ -1,0 +1,6 @@
+---
+- name: Restart Authelia
+  community.docker.docker_container:
+    name: authelia
+    state: started
+    restart: true

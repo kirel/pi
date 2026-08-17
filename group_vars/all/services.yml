@@ -5,6 +5,17 @@ services:
     http_port: "{{ homepage_http_port }}"
     domain: homepage.kirelabs.org
     group: Smart Home
+    auth:
+      provider: authelia
+      policy: two_factor
+      groups: [admins]
+  authelia:
+    name: Authelia
+    target: homelab-nuc.lan
+    http_port: "{{ authelia_http_port }}"
+    domain: auth.kirelabs.org
+    group: Network
+    icon: authelia.png
   homeassistant:
     name: Home Assistant
     http_port: "{{ homeassistant_http_port }}"
@@ -104,6 +115,17 @@ services:
     domain: prunemate.kirelabs.org
     group: Monitoring
     icon: prunemate.png
+    auth:
+      provider: authelia
+      policy: two_factor
+      groups: [admins]
+  beszel:
+    name: Beszel
+    target: homelab-nuc.lan
+    http_port: "{{ beszel_http_port }}"
+    domain: beszel.kirelabs.org
+    group: Monitoring
+    icon: beszel.png
   n8n:
     name: n8n
     target: homelab-nuc.lan
@@ -220,6 +242,10 @@ services:
     domain: leases-homelab.kirelabs.org
     target: homelab-nuc.lan
     http_port: 5005
+    auth:
+      provider: authelia
+      policy: two_factor
+      groups: [admins]
   # nameserver
   pihole-nameserver-pi:
     name: Pihole Nameserver

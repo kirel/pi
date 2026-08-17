@@ -1,0 +1,29 @@
+---
+authelia_image: docker.io/authelia/authelia:4.39.20
+authelia_http_port: 9092
+authelia_config_folder: "{{ config_root }}/authelia"
+authelia_network_subnet: 10.204.0.0/24
+authelia_domain: "{{ services.authelia.domain }}"
+authelia_default_redirection_url: "https://{{ services.homepage.domain }}"
+authelia_session_domain: kirelabs.org
+authelia_username: daniel
+authelia_display_name: Daniel
+authelia_email: danishkirel@gmail.com
+authelia_groups:
+  - admins
+authelia_smtp_address: submission://smtp-relay.brevo.com:587
+authelia_smtp_username: ae8c8f001@smtp-brevo.com
+authelia_smtp_password: "{{ vault_authelia_smtp_password }}"
+authelia_smtp_sender: "Authelia <authelia@mail.kirelabs.org>"
+authelia_smtp_identifier: auth.kirelabs.org
+authelia_smtp_startup_check_address: "{{ authelia_email }}"
+authelia_password_hash: "{{ vault_authelia_password_hash }}"
+authelia_jwt_secret: "{{ vault_authelia_jwt_secret }}"
+authelia_session_secret: "{{ vault_authelia_session_secret }}"
+authelia_storage_encryption_key: "{{ vault_authelia_storage_encryption_key }}"
+authelia_oidc_hmac_secret: "{{ vault_authelia_oidc_hmac_secret }}"
+authelia_oidc_issuer_private_key: "{{ vault_authelia_oidc_issuer_private_key }}"
+authelia_oidc_linkding_client_id: linkding
+authelia_oidc_linkding_client_secret_hash: "{{ vault_authelia_oidc_linkding_client_secret_hash }}"
+authelia_oidc_beszel_client_id: beszel-kirelabs
+authelia_oidc_beszel_client_secret_hash: "{{ vault_authelia_oidc_beszel_client_secret_digest }}"

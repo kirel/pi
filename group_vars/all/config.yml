@@ -20,6 +20,7 @@ zigbee_dongle_ip: "{{ ip_prefix }}226"
 cidr: 192.168.50.0/24
 pihole_http_port: 81
 glances_http_port: 61208
+beszel_http_port: 8090
 homeassistant_http_port: 8123
 homepage_http_port: 3002
 music_assistant_http_port: 8095
@@ -124,6 +125,10 @@ dnsmasq_config_folder: "{{ config_root }}/dnsmasq"
 caddy_folder: "{{ config_root }}/caddy"
 caddy_data_folder: "{{ config_root }}/caddy/data"
 caddy_config_folder: "{{ config_root }}/caddy/config"
+authelia_http_port: 9092
+authelia_config_folder: "{{ config_root }}/authelia"
+beszel_data_folder: "{{ config_root }}/beszel"
+beszel_agent_data_folder: "{{ config_root }}/beszel-agent"
 uptime_kuma_data_folder: "{{ config_root }}/uptime-kuma/data"
 jellyfin_config_folder: "{{ config_root }}/jellyfin"
 jellyfin_movie_folder: /tank/medien/Filme

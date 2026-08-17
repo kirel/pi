@@ -21,6 +21,12 @@ danishkirel.asuscomm.com {
         # Use localhost if the target is the current host (homelab-nuc)
         {% set target_host = (props.target | regex_replace('\\.lan$', '')) if props.target.endswith('.lan') else props.target %}
         {% set backend_host = 'localhost' if target_host == 'homelab-nuc' else props.target %}
+{% if props.auth is defined and props.auth.provider | default('') == 'authelia' %}
+        forward_auth localhost:{{ authelia_http_port }} {
+                uri /api/authz/forward-auth
+                copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+        }
+{% endif %}
         reverse_proxy {% if props.upstream_scheme is defined %}{{ props.upstream_scheme }}://{% elif props.tls_skip | default(false) %}http://{% endif %}{{ backend_host }}:{{ props.http_port }} {
                 {% if props.upstream_host_header is defined %}
                 header_up Host "{{ props.upstream_host_header }}"
