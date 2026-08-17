@@ -2,12 +2,19 @@
 hermes_litellm_model_profiles:
   local_hermes:
     - home-hermes
+    - Muse-Glimmer-30B-low
     - Qwen3.8-27B-Instruct
     - Qwen3.8-27B-Instruct-low
     - Qwen3.8-27B-Instruct-medium
     - Qwen3.8-27B-Instruct-nothink
     - minimax-m3
     - glm-5.2
+    - gpt-5.6-sol-cpa
+    - gpt-5.6-terra-cpa
+    - gpt-5.6-luna-cpa
+    - gpt-5.5-cpa
+    - grok-4.5-cpa
+    - claude-opus-4-6-thinking-cpa
     - home-asr
     - home-tts
     - home-tts-design

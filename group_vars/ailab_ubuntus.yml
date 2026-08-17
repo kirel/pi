@@ -137,6 +137,15 @@ hermes_docker_agents_config_overrides:
       base_url: https://litellm.kirelabs.org/v1
       api_key: ${LITELLM_API_KEY}
       context_length: "{{ llama_native_context_muse_glimmer }}"
+    platforms:
+      api_server:
+        enabled: true
+        extra:
+          model_routes:
+            hermes-bench-muse-low:
+              model: Muse-Glimmer-30B-low
+            hermes-bench-qwen-nothink:
+              model: Qwen3.8-27B-Instruct-nothink
     skills:
       external_dirs:
         - /skills/global
