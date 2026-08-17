@@ -18,4 +18,12 @@ services:
       homepage.icon: "{{ services.phoenix.icon }}"
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: "phoenix"
+    networks:
+      - default
     restart: unless-stopped
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: "{{ phoenix_network_subnet }}"

@@ -2,3 +2,4 @@
 # defaults file for llm_observability
 llm_base_config_path: "{{ config_root }}" # Base path for configuration files
 phoenix_working_dir: /mnt/data
+phoenix_network_subnet: 10.203.0.0/24
