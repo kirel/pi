@@ -18,6 +18,8 @@ hermes_litellm_model_profiles:
   all_models:
     - all-proxy-models
   docker_chat:
+    - glm-5.3
+    - minimax-m3
     - gpt-5.6-sol-cpa
     - gpt-5.6-terra-cpa
     - gpt-5.6-luna-cpa

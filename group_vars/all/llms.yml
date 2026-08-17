@@ -190,6 +190,20 @@ litellm_extra_models:
     model_info:
       supports_reasoning: true
 
+  - model_name: glm-5.3
+    litellm_params:
+      model: openai/glm-5.3
+      api_key: os.environ/ZAI_API_KEY
+      api_base: https://api.z.ai/api/coding/paas/v4
+      # Hermes speaks the Responses API, while Z.AI's coding endpoint exposes
+      # Chat Completions. Ask LiteLLM to bridge /responses to /chat/completions.
+      use_chat_completions_api: true
+    # Keep the same OpenAI-compatible Z.AI coding endpoint and explicit
+    # reasoning capability as GLM-5.2. The live Z.AI model catalog exposes
+    # glm-5.3 on this endpoint.
+    model_info:
+      supports_reasoning: true
+
 llamaswap_models:
   # Keep public model IDs stable once exposed via LiteLLM/LlamaSwap.
   # Existing aliases are mixed-case because clients may already depend on them.

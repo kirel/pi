@@ -134,6 +134,12 @@ hermes_docker_kirelabs_custom_providers:
     api_mode: codex_responses
     discover_models: true
 
+hermes_docker_fallback_providers:
+  - provider: custom:kirelabs-litellm
+    model: glm-5.3
+  - provider: custom:kirelabs-litellm
+    model: minimax-m3
+
 hermes_docker_agents_config_overrides:
   multipurpose:
     model:
@@ -142,6 +148,7 @@ hermes_docker_agents_config_overrides:
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
+    fallback_providers: "{{ hermes_docker_fallback_providers }}"
     skills:
       external_dirs:
         - /skills/global
@@ -154,6 +161,7 @@ hermes_docker_agents_config_overrides:
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
+    fallback_providers: "{{ hermes_docker_fallback_providers }}"
     skills:
       external_dirs:
         - /skills/global
@@ -166,6 +174,7 @@ hermes_docker_agents_config_overrides:
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
+    fallback_providers: "{{ hermes_docker_fallback_providers }}"
     skills:
       external_dirs:
         - /skills/global
@@ -183,6 +192,7 @@ hermes_docker_agents_config_overrides:
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
+    fallback_providers: "{{ hermes_docker_fallback_providers }}"
     skills:
       external_dirs:
         - /skills/global
@@ -195,6 +205,7 @@ hermes_docker_agents_config_overrides:
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
+    fallback_providers: "{{ hermes_docker_fallback_providers }}"
     skills:
       external_dirs:
         - /skills/global
