@@ -153,6 +153,11 @@ qbittorrent_config_folder: "{{ config_root }}/qbittorrent"
 qbittorrent_data_folder: /tank/medien
 qbittorrent_image: lscr.io/linuxserver/qbittorrent:latest
 qbittorrent_vuetorrent_mod: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
+qbittorrent_gluetun_image: qmcgaw/gluetun:latest
+qbittorrent_port_sync_image: alpine:3.22
+qbittorrent_gluetun_config_folder: "{{ config_root }}/qbittorrent-gluetun"
+qbittorrent_gluetun_secret_folder: "{{ config_root }}/qbittorrent-gluetun-secrets"
+qbittorrent_vpn_server_countries: Germany
 prowlarr_config_folder: "{{ config_root }}/prowlarr"
 sonarr_config_folder: "{{ config_root }}/sonarr"
 radarr_config_folder: "{{ config_root }}/radarr"

@@ -1,4 +1,12 @@
 ---
+- name: Validate qBittorrent ProtonVPN secret
+  ansible.builtin.assert:
+    that:
+      - vault_qbittorrent_protonvpn_wireguard_private_key is defined
+      - vault_qbittorrent_protonvpn_wireguard_private_key | trim | length == 44
+    fail_msg: A valid Vault-encrypted ProtonVPN WireGuard private key is required.
+  no_log: true
+
 - name: Create qBittorrent directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -14,9 +22,100 @@
     - "{{ qbittorrent_data_folder }}/Downloads/complete/sonarr"
     - "{{ qbittorrent_data_folder }}/Downloads/complete/radarr"
 
+- name: Create qBittorrent VPN directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - path: "{{ qbittorrent_gluetun_config_folder }}"
+      mode: "0755"
+    - path: "{{ qbittorrent_gluetun_secret_folder }}"
+      mode: "0700"
+
+- name: Render qBittorrent VPN secret
+  ansible.builtin.copy:
+    content: "{{ vault_qbittorrent_protonvpn_wireguard_private_key | trim }}\n"
+    dest: "{{ qbittorrent_gluetun_secret_folder }}/wireguard_private_key"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: Render qBittorrent port updater
+  ansible.builtin.template:
+    src: update-qbittorrent-port.sh.j2
+    dest: "{{ qbittorrent_gluetun_config_folder }}/update-qbittorrent-port.sh"
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Deploy qBittorrent
   community.docker.docker_compose_v2:
     project_name: qbittorrent
     pull: always
     state: present
     definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+
+- name: Wait for qBittorrent configuration
+  ansible.builtin.wait_for:
+    path: "{{ qbittorrent_config_folder }}/qBittorrent/qBittorrent.conf"
+    timeout: 120
+  when: not ansible_check_mode
+
+- name: Check qBittorrent localhost API authentication
+  ansible.builtin.command:
+    argv:
+      - grep
+      - -Fqx
+      - 'WebUI\LocalHostAuth=false'
+      - "{{ qbittorrent_config_folder }}/qBittorrent/qBittorrent.conf"
+  register: qbittorrent_localhost_auth
+  changed_when: false
+  failed_when: qbittorrent_localhost_auth.rc not in [0, 1]
+  when: not ansible_check_mode
+
+- name: Stop qBittorrent before changing localhost API authentication
+  community.docker.docker_container:
+    name: qbittorrent
+    state: stopped
+    stop_timeout: 1800
+  when:
+    - not ansible_check_mode
+    - qbittorrent_localhost_auth.rc == 1
+
+- name: Allow localhost API access for the Gluetun port updater
+  ansible.builtin.lineinfile:
+    path: "{{ qbittorrent_config_folder }}/qBittorrent/qBittorrent.conf"
+    regexp: '^WebUI\\LocalHostAuth='
+    line: 'WebUI\LocalHostAuth=false'
+    insertafter: '^\[Preferences\]$'
+  when:
+    - not ansible_check_mode
+    - qbittorrent_localhost_auth.rc == 1
+
+- name: Start qBittorrent after changing localhost API authentication
+  community.docker.docker_container:
+    name: qbittorrent
+    state: started
+  when:
+    - not ansible_check_mode
+    - qbittorrent_localhost_auth.rc == 1
+
+- name: Wait for ProtonVPN port forwarding
+  ansible.builtin.wait_for:
+    path: "{{ qbittorrent_gluetun_config_folder }}/forwarded_port"
+    timeout: 180
+  when: not ansible_check_mode
+
+- name: Synchronize qBittorrent with the ProtonVPN forwarded port
+  community.docker.docker_container_exec:
+    container: qbittorrent-gluetun
+    argv:
+      - /bin/sh
+      - /gluetun/update-qbittorrent-port.sh
+  register: qbittorrent_forwarded_port_sync
+  changed_when: "'updated' in qbittorrent_forwarded_port_sync.stdout"
+  when: not ansible_check_mode

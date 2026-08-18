@@ -1,0 +1,52 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ge 1 ]; then
+  port="$1"
+  vpn_interface="${2:-tun0}"
+elif ip link show tun0 2>/dev/null | grep -q '<[^>]*UP'; then
+  port="$(cat /gluetun/forwarded_port)"
+  vpn_interface="tun0"
+else
+  port="0"
+  vpn_interface="lo"
+fi
+
+case "$port" in
+  ''|*[!0-9]*)
+    echo "Invalid forwarded port" >&2
+    exit 1
+    ;;
+esac
+
+if [ "$port" -lt 0 ] || [ "$port" -gt 65535 ]; then
+  echo "Forwarded port is outside the valid range" >&2
+  exit 1
+fi
+
+api_url="http://127.0.0.1:{{ qbittorrent_http_port }}/api/v2/app"
+attempt=0
+
+while [ "$attempt" -lt 120 ]; do
+  preferences="$(wget -qO- "$api_url/preferences" 2>/dev/null || true)"
+
+  if printf '%s' "$preferences" | grep -q "\"listen_port\":$port" \
+    && printf '%s' "$preferences" | grep -q "\"current_network_interface\":\"$vpn_interface\"" \
+    && printf '%s' "$preferences" | grep -q '"upnp":false'; then
+    echo "already-current"
+    exit 0
+  fi
+
+  if wget -qO- \
+    --post-data="json={\"listen_port\":$port,\"current_network_interface\":\"$vpn_interface\",\"random_port\":false,\"upnp\":false}" \
+    "$api_url/setPreferences" >/dev/null 2>&1; then
+    echo "updated"
+    exit 0
+  fi
+
+  attempt=$((attempt + 1))
+  sleep 2
+done
+
+echo "Unable to update qBittorrent after $attempt attempts" >&2
+exit 1

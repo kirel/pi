@@ -1,10 +1,46 @@
 ---
+secrets:
+  wireguard_private_key:
+    file: "{{ qbittorrent_gluetun_secret_folder }}/wireguard_private_key"
+
 services:
+  gluetun:
+    image: "{{ qbittorrent_gluetun_image }}"
+    container_name: qbittorrent-gluetun
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      TZ: Europe/Berlin
+      VPN_SERVICE_PROVIDER: protonvpn
+      VPN_TYPE: wireguard
+      SERVER_COUNTRIES: "{{ qbittorrent_vpn_server_countries }}"
+      PORT_FORWARD_ONLY: "on"
+      VPN_PORT_FORWARDING: "on"
+      VPN_PORT_FORWARDING_STATUS_FILE: /gluetun/forwarded_port
+      VPN_PORT_FORWARDING_UP_COMMAND: >-
+        /bin/sh /gluetun/update-qbittorrent-port.sh
+        {{ '{{PORT}}' }} {{ '{{VPN_INTERFACE}}' }}
+      VPN_PORT_FORWARDING_DOWN_COMMAND: >-
+        /bin/sh /gluetun/update-qbittorrent-port.sh 0 lo
+    ports:
+      - "{{ qbittorrent_http_port }}:{{ qbittorrent_http_port }}/tcp"
+    volumes:
+      - "{{ qbittorrent_gluetun_config_folder }}:/gluetun"
+    secrets:
+      - wireguard_private_key
+
   qbittorrent:
     image: "{{ qbittorrent_image }}"
     container_name: qbittorrent
     restart: unless-stopped
     stop_grace_period: 30m
+    network_mode: service:gluetun
+    depends_on:
+      gluetun:
+        condition: service_started
     environment:
       PUID: "{{ uid }}"
       PGID: "{{ qbittorrent_gid }}"
@@ -12,10 +48,6 @@ services:
       WEBUI_PORT: "{{ qbittorrent_http_port }}"
       TORRENTING_PORT: "{{ qbittorrent_torrenting_port }}"
       DOCKER_MODS: "{{ qbittorrent_vuetorrent_mod }}"
-    ports:
-      - "{{ qbittorrent_http_port }}:{{ qbittorrent_http_port }}/tcp"
-      - "{{ qbittorrent_torrenting_port }}:{{ qbittorrent_torrenting_port }}/tcp"
-      - "{{ qbittorrent_torrenting_port }}:{{ qbittorrent_torrenting_port }}/udp"
     volumes:
       - "{{ qbittorrent_config_folder }}:/config"
       - "{{ qbittorrent_data_folder }}:/data"
@@ -26,3 +58,24 @@ services:
       homepage.icon: "{{ services.qbittorrent.icon }}"
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: qbittorrent
+
+  port-sync:
+    image: "{{ qbittorrent_port_sync_image }}"
+    container_name: qbittorrent-port-sync
+    restart: unless-stopped
+    network_mode: service:gluetun
+    depends_on:
+      gluetun:
+        condition: service_started
+      qbittorrent:
+        condition: service_started
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        while true; do
+          /bin/sh /gluetun/update-qbittorrent-port.sh >/dev/null 2>&1 || true;
+          sleep 15;
+        done
+    volumes:
+      - "{{ qbittorrent_gluetun_config_folder }}:/gluetun:ro"
