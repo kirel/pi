@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://schemas.recyclarr.dev/v8/config-schema.json
+---
+radarr:
+  radarr:
+    base_url: !secret radarr_url
+    api_key: !secret radarr_apikey
+
+    quality_definition:
+      type: movie
+
+    media_management:
+      propers_and_repacks: do_not_prefer
+
+    quality_profiles:
+      # Default for movies watched in English. This is the TRaSH HD profile,
+      # capped at 1080p and with 720p retained as a fallback.
+      - trash_id: d1d67249d3890e49bc12e275d989a7e9
+        name: HD - 720p/1080p
+        reset_unmatched_scores:
+          enabled: true
+        qualities:
+          - name: HD Bluray + WEB
+            qualities:
+              - Bluray-1080p
+              - WEBDL-1080p
+              - WEBRip-1080p
+              - Bluray-720p
+              - WEBDL-720p
+              - WEBRip-720p
+
+      # Select this per movie when German or German dual-language audio should
+      # be preferred. English remains an allowed fallback until German exists.
+      - trash_id: 2b90e905c99490edc7c7a5787443748b
+        name: HD - 720p/1080p - German
+        reset_unmatched_scores:
+          enabled: true
+
+    custom_formats:
+      # Reject releases without an English audio track in the English profile.
+      # German dual-language releases still qualify because they contain English.
+      - trash_ids:
+          - 0dc8aec3bd1c47cd6c40c46ecd27e846
+        assign_scores_to:
+          - name: HD - 720p/1080p
+            score: -35000

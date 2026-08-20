@@ -1,0 +1,4 @@
+---
+radarr_recyclarr_image: ghcr.io/recyclarr/recyclarr:8
+radarr_recyclarr_config_folder: "{{ config_root }}/recyclarr-radarr"
+radarr_recyclarr_cron_schedule: "@daily"

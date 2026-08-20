@@ -7,9 +7,93 @@
     group: users
     mode: "2775"
 
+- name: Check whether Radarr has generated its configuration
+  ansible.builtin.stat:
+    path: "{{ radarr_config_folder }}/config.xml"
+  register: radarr_config_xml
+
+- name: Bootstrap Radarr before configuring Recyclarr
+  community.docker.docker_compose_v2:
+    project_name: radarr
+    pull: always
+    state: present
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+  vars:
+    radarr_include_recyclarr: false
+  when: not radarr_config_xml.stat.exists
+
+- name: Wait for Radarr to generate its configuration
+  ansible.builtin.wait_for:
+    path: "{{ radarr_config_folder }}/config.xml"
+    timeout: 60
+  when: not radarr_config_xml.stat.exists
+
+- name: Create Recyclarr config directory
+  ansible.builtin.file:
+    path: "{{ radarr_recyclarr_config_folder }}"
+    state: directory
+    owner: "{{ username }}"
+    group: users
+    mode: "2770"
+
+- name: Read the generated Radarr configuration
+  ansible.builtin.slurp:
+    src: "{{ radarr_config_folder }}/config.xml"
+  register: radarr_config_xml_content
+  no_log: true
+
+- name: Extract the Radarr API key for local Recyclarr access
+  ansible.builtin.set_fact:
+    radarr_recyclarr_api_key: >-
+      {{
+        (
+          radarr_config_xml_content.content
+          | b64decode
+          | regex_findall('<ApiKey>([^<]+)</ApiKey>')
+          | first
+        )
+      }}
+  no_log: true
+
+- name: Validate the generated Radarr API key
+  ansible.builtin.assert:
+    that:
+      - radarr_recyclarr_api_key | length >= 20
+    fail_msg: Radarr config.xml does not contain a usable API key
+  no_log: true
+
+- name: Deploy the declarative Radarr profile configuration
+  ansible.builtin.template:
+    src: recyclarr.yml.j2
+    dest: "{{ radarr_recyclarr_config_folder }}/recyclarr.yml"
+    owner: "{{ username }}"
+    group: users
+    mode: "0640"
+
+- name: Deploy the local Recyclarr secrets file
+  ansible.builtin.template:
+    src: recyclarr-secrets.yml.j2
+    dest: "{{ radarr_recyclarr_config_folder }}/secrets.yml"
+    owner: "{{ username }}"
+    group: users
+    mode: "0600"
+  no_log: true
+
 - name: Deploy Radarr
   community.docker.docker_compose_v2:
     project_name: radarr
     pull: always
     state: present
     definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+
+- name: Preview the Radarr profile synchronization
+  ansible.builtin.command:
+    cmd: docker exec recyclarr-radarr recyclarr sync radarr --preview --log info
+  register: radarr_recyclarr_preview
+  changed_when: false
+
+- name: Synchronize the Radarr quality profiles
+  ansible.builtin.command:
+    cmd: docker exec recyclarr-radarr recyclarr sync radarr --log info
+  register: radarr_recyclarr_sync
+  changed_when: true

@@ -20,3 +20,23 @@ services:
       homepage.icon: "{{ services.radarr.icon }}"
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: radarr
+{% if radarr_include_recyclarr | default(true) %}
+
+  recyclarr:
+    image: "{{ radarr_recyclarr_image }}"
+    container_name: recyclarr-radarr
+    restart: unless-stopped
+    user: "{{ uid }}:{{ qbittorrent_gid }}"
+    depends_on:
+      - radarr
+    environment:
+      TZ: Europe/Berlin
+      CRON_SCHEDULE: "{{ radarr_recyclarr_cron_schedule }}"
+    volumes:
+      - "{{ radarr_recyclarr_config_folder }}:/config"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+{% endif %}
