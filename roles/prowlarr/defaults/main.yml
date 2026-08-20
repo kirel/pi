@@ -1,0 +1,5 @@
+---
+prowlarr_byparr_image: ghcr.io/thephaseless/byparr:2.1.0
+prowlarr_byparr_url: http://byparr:8191/
+prowlarr_byparr_request_timeout: 120
+prowlarr_byparr_tag: byparr

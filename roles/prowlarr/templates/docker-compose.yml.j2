@@ -1,5 +1,12 @@
 ---
 services:
+  byparr:
+    image: "{{ prowlarr_byparr_image }}"
+    container_name: byparr
+    restart: unless-stopped
+    environment:
+      BROWSER_LOCALE: de-DE
+
   prowlarr:
     image: "{{ prowlarr_image }}"
     container_name: prowlarr

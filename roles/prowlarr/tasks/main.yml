@@ -13,3 +13,156 @@
     pull: always
     state: present
     definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+
+- name: Wait for Byparr from the Prowlarr network
+  community.docker.docker_container_exec:
+    container: prowlarr
+    command: curl --fail --silent --show-error http://byparr:8191/docs
+  register: prowlarr_byparr_readiness
+  changed_when: false
+  retries: 24
+  delay: 5
+  until: prowlarr_byparr_readiness.rc == 0
+
+- name: Read Prowlarr configuration
+  ansible.builtin.slurp:
+    src: "{{ prowlarr_config_folder }}/config.xml"
+  register: prowlarr_config_xml
+  no_log: true
+
+- name: Extract Prowlarr API key
+  ansible.builtin.set_fact:
+    prowlarr_api_key: >-
+      {{
+        (prowlarr_config_xml.content | b64decode
+        | regex_findall('<ApiKey>([^<]+)</ApiKey>')) | first
+      }}
+  no_log: true
+
+- name: Read Prowlarr tags
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ prowlarr_http_port }}/api/v1/tag"
+    headers:
+      X-Api-Key: "{{ prowlarr_api_key }}"
+    return_content: true
+  register: prowlarr_tags
+  no_log: true
+
+- name: Find existing Byparr tag
+  ansible.builtin.set_fact:
+    prowlarr_byparr_existing_tag: >-
+      {{
+        prowlarr_tags.json
+        | selectattr('label', 'equalto', prowlarr_byparr_tag)
+        | list
+        | first
+        | default({})
+      }}
+
+- name: Create Byparr tag
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ prowlarr_http_port }}/api/v1/tag"
+    method: POST
+    headers:
+      X-Api-Key: "{{ prowlarr_api_key }}"
+    body_format: json
+    body:
+      label: "{{ prowlarr_byparr_tag }}"
+    return_content: true
+    status_code: 201
+  register: prowlarr_byparr_created_tag
+  when: not prowlarr_byparr_existing_tag.id | default(false)
+  no_log: true
+
+- name: Select Byparr tag ID
+  ansible.builtin.set_fact:
+    prowlarr_byparr_tag_id: >-
+      {{
+        prowlarr_byparr_existing_tag.id
+        | default(prowlarr_byparr_created_tag.json.id)
+        | int
+      }}
+
+- name: Read Prowlarr indexer proxies
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ prowlarr_http_port }}/api/v1/indexerproxy"
+    headers:
+      X-Api-Key: "{{ prowlarr_api_key }}"
+    return_content: true
+  register: prowlarr_indexer_proxies
+  no_log: true
+
+- name: Find existing Byparr indexer proxy
+  ansible.builtin.set_fact:
+    prowlarr_byparr_existing_proxy: >-
+      {{
+        prowlarr_indexer_proxies.json
+        | selectattr('name', 'equalto', 'Byparr')
+        | list
+        | first
+        | default({})
+      }}
+
+- name: Configure Byparr indexer proxy
+  ansible.builtin.uri:
+    url: >-
+      http://127.0.0.1:{{ prowlarr_http_port }}/api/v1/indexerproxy{{
+        '/' ~ prowlarr_byparr_existing_proxy.id
+        if prowlarr_byparr_existing_proxy.id | default(false)
+        else ''
+      }}
+    method: "{{ 'PUT' if prowlarr_byparr_existing_proxy.id | default(false) else 'POST' }}"
+    headers:
+      X-Api-Key: "{{ prowlarr_api_key }}"
+    body_format: json
+    body:
+      id: "{{ prowlarr_byparr_existing_proxy.id | default(omit) }}"
+      name: Byparr
+      fields:
+        - name: host
+          value: "{{ prowlarr_byparr_url }}"
+        - name: requestTimeout
+          value: "{{ prowlarr_byparr_request_timeout }}"
+      implementationName: FlareSolverr
+      implementation: FlareSolverr
+      configContract: FlareSolverrSettings
+      infoLink: https://wiki.servarr.com/prowlarr/supported#flaresolverr
+      tags:
+        - "{{ prowlarr_byparr_tag_id }}"
+    status_code: "{{ 202 if prowlarr_byparr_existing_proxy.id | default(false) else 201 }}"
+  no_log: true
+
+- name: Read Prowlarr indexers
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ prowlarr_http_port }}/api/v1/indexer"
+    headers:
+      X-Api-Key: "{{ prowlarr_api_key }}"
+    return_content: true
+  register: prowlarr_indexers
+  no_log: true
+
+- name: Enable Byparr fallback for configured indexers
+  ansible.builtin.uri:
+    url: >-
+      http://127.0.0.1:{{ prowlarr_http_port }}/api/v1/indexer/{{ item.id
+      }}?forceSave=true
+    method: PUT
+    headers:
+      X-Api-Key: "{{ prowlarr_api_key }}"
+    body_format: json
+    body: >-
+      {{
+        item
+        | combine({
+          'tags': (item.tags + [prowlarr_byparr_tag_id]) | unique | list
+        })
+      }}
+    timeout: "{{ prowlarr_byparr_request_timeout + 30 }}"
+    status_code: 202
+  loop: "{{ prowlarr_indexers.json }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - item.enable
+    - prowlarr_byparr_tag_id not in item.tags
+  no_log: true
