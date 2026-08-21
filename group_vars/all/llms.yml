@@ -263,11 +263,11 @@ llamaswap_models:
 
   - alias: Qwen3.8-27B-Instruct
     # Use the same dynamic three-sequence layout and total KV budget as the 35B
-    # model. Q6_K preserves more runtime headroom than Q6 XL alongside the
-    # resident GPU services.
+    # model. Dynamic 3.0 UD-Q6_K_M is the closest size match to the previous
+    # Q6_K and preserves its runtime headroom alongside the resident services.
     cmd: >-
       /app/llama-server
-      -hf unsloth/Qwen3.8-27B-GGUF:Q6_K
+      -hf unsloth/Qwen3.8-27B-GGUF:UD-Q6_K_M
       --port ${PORT}
       --ctx-size {{ llama_ctx_size_qwen27_3090 }}
       --parallel {{ llama_parallel_slots }}
