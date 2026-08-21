@@ -23,6 +23,9 @@ models:
 {% if model.check_endpoint is defined %}
     checkEndpoint: "{{ model.check_endpoint }}"
 {% endif %}
+{% if model.ttl is defined %}
+    ttl: {{ model.ttl }}
+{% endif %}
 {% if model.cmd_stop is defined %}
     cmdStop: |
       {{ model.cmd_stop }}

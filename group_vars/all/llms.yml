@@ -719,11 +719,13 @@ llamaswap_models:
     supports_reasoning: false
     mode: audio_speech
     group: "tts"
+    ttl: 0
 
   - alias: qwen3-tts-design
     # VoiceDesign is a separate Qwen3-TTS checkpoint. It shares GPU1 and the
-    # model cache with the Base backend, and LlamaSwap swaps the two members of
-    # the exclusive tts group according to the requested model.
+    # model cache with the Base backend. LlamaSwap swaps the two TTS members
+    # without evicting the active 3090 LLM, then unloads VoiceDesign after its
+    # short idle TTL.
     aliases:
       - home-tts-design
     use_model_name: qwen3-tts-design
@@ -760,6 +762,7 @@ llamaswap_models:
     supports_reasoning: false
     mode: audio_speech
     group: "tts"
+    ttl: 60
 
 llamaswap_model_groups:
   forever:
@@ -772,7 +775,7 @@ llamaswap_model_groups:
     exclusive: false
   tts:
     swap: true
-    exclusive: true
+    exclusive: false
   "3090":
     swap: true
     exclusive: false
