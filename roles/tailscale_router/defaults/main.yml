@@ -6,3 +6,7 @@ tailscale_router_lan_cidr: "{{ tailscale_lan_cidr }}"
 tailscale_router_tailnet_cidr: "{{ tailscale_cgnat_cidr }}"
 tailscale_router_interface: tailscale0
 tailscale_router_nat_service_name: tailscale-lan-to-tailnet-nat.service
+
+# Keep the directly attached LAN ahead of accepted Tailscale subnet routes.
+tailscale_router_lan_rule_priority: 5000
+tailscale_router_lan_rule_service_name: tailscale-local-lan-route.service

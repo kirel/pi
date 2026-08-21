@@ -77,6 +77,14 @@
     owner: "{{ username }}"
   notify: Reload pihole dns
 
+- name: Configure dnsmasq offline resilience
+  ansible.builtin.template:
+    src: offline-resilience.conf.j2
+    dest: "{{ dnsmasq_config_folder }}/05-offline-resilience.conf"
+    owner: "{{ username }}"
+    mode: "0644"
+  notify: Reload pihole dns
+
 - name: Remove legacy wildcard DNS config
   ansible.builtin.file:
     path: "{{ dnsmasq_config_folder }}/05-wildcard-dns.conf"
@@ -192,8 +200,9 @@
             FTLCONF_dhcp_hosts: "{{ static_dhcp_list }}"
             # DNS Cache Optimization
             FTLCONF_dns_cache_size: "{{ pihole_cache_size | default(10000) }}"
+            FTLCONF_dns_cache_optimizer: "{{ pihole_stale_cache_ttl }}"
             # Rate limiting to prevent self-query issues
-            FTLCONF_dns_rateLimit_count: "{{ pihole_rate_limit | default('1000') }}"
+            FTLCONF_dns_rateLimit_count: "{{ pihole_rate_limit_count }}"
             FTLCONF_dns_rateLimit_interval: "{{ pihole_rate_limit_interval | default('60') }}"
           # Volumes store your data between container upgrades
           volumes:
@@ -255,6 +264,11 @@
             homepage.container: dnsmasq_leases_ui
 
   register: output
+
+- name: Validate Pi-hole DNS configuration
+  ansible.builtin.command:
+    cmd: docker exec pihole pihole-FTL dnsmasq-test
+  changed_when: false
 
 - name: Assert pihole container is running
   ansible.builtin.assert:

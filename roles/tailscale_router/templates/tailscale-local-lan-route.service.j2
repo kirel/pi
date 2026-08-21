@@ -1,0 +1,13 @@
+[Unit]
+Description=Prefer the directly attached LAN over accepted Tailscale subnet routes
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'ip rule show priority {{ tailscale_router_lan_rule_priority }} | grep -Fq "to {{ tailscale_router_lan_cidr }} lookup main" || ip rule add priority {{ tailscale_router_lan_rule_priority }} to {{ tailscale_router_lan_cidr }} lookup main'
+ExecStop=/bin/sh -c 'while ip rule show priority {{ tailscale_router_lan_rule_priority }} | grep -Fq "to {{ tailscale_router_lan_cidr }} lookup main"; do ip rule del priority {{ tailscale_router_lan_rule_priority }} to {{ tailscale_router_lan_cidr }} lookup main; done'
+
+[Install]
+WantedBy=multi-user.target

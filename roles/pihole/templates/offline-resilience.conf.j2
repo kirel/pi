@@ -1,0 +1,4 @@
+# Managed by Ansible: keep DNS responsive while WAN upstreams are unavailable.
+# Allow more outstanding upstream requests than dnsmasq's default of 150 so
+# external-query backlogs do not exhaust forwarding capacity for LAN clients.
+dns-forward-max={{ pihole_dns_forward_max }}

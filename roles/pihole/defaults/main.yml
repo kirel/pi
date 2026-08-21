@@ -4,7 +4,11 @@ google_dns_servers:
   - 8.8.8.8
   - 8.8.4.4
 
-# Pi-hole cache optimization settings
+# Pi-hole cache and offline-resilience settings
 pihole_cache_size: 10000
-pihole_rate_limit_count: 10000
+pihole_dns_forward_max: 1000
+pihole_stale_cache_ttl: 43200
+
+# Limit per-client query floods without reducing the global forwarding capacity.
+pihole_rate_limit_count: 1000
 pihole_rate_limit_interval: 60

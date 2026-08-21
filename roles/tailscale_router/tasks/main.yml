@@ -1,4 +1,24 @@
 ---
+- name: Install local LAN route-priority service
+  ansible.builtin.template:
+    src: tailscale-local-lan-route.service.j2
+    dest: "/etc/systemd/system/{{ tailscale_router_lan_rule_service_name }}"
+    owner: root
+    group: root
+    mode: '0644'
+  register: tailscale_router_lan_rule_service
+
+- name: Reload systemd for local LAN route-priority service
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: tailscale_router_lan_rule_service is changed
+
+- name: Enable and apply local LAN route priority
+  ansible.builtin.systemd:
+    name: "{{ tailscale_router_lan_rule_service_name }}"
+    enabled: true
+    state: "{{ 'restarted' if tailscale_router_lan_rule_service is changed else 'started' }}"
+
 - name: Enable IPv4 forwarding for Tailscale subnet routing
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
