@@ -1,12 +1,12 @@
 llamaswap_enabled: true
 
 model_group_alias:
-  home: "Qwen3.6-35B-A3B-Instruct-nothink"
-  home-fast: "Qwen3.8-27B-Instruct-nothink"
-  home-smart: "Qwen3.8-27B-Instruct"
-  home-vision: "Qwen3.8-27B-Instruct"
-  home-ha: "Qwen3.8-27B-Instruct-nothink"
-  home-hermes: "Qwen3.8-27B-Instruct-nothink"
+  home: "Qwen3.8-27B-Instruct-AutoRound-vLLM-nothink"
+  home-fast: "Qwen3.8-27B-Instruct-AutoRound-vLLM-nothink"
+  home-smart: "Qwen3.8-27B-Instruct-AutoRound-vLLM"
+  home-vision: "Qwen3.8-27B-Instruct-AutoRound-vLLM"
+  home-ha: "Qwen3.8-27B-Instruct-AutoRound-vLLM-nothink"
+  home-hermes: "Qwen3.8-27B-Instruct-AutoRound-vLLM-nothink"
   home-embed: "qwen3-embedding"
   home-asr: "whisper-large-v3-turbo-q8-crispasr"
   home-tts: "qwen3-tts"
@@ -318,6 +318,80 @@ llamaswap_models:
         presence_penalty: 1.5
         extra_body:
           cache_prompt: true
+          chat_template_kwargs:
+            enable_thinking: false
+
+  - alias: Qwen3.8-27B-Instruct-AutoRound-vLLM
+    # Production winner from the club-3090 comparison: vLLM 0.27.1 with its
+    # pinned W4A8 AutoRound patch, no MTP, three sequences, and the existing
+    # 0.755 per-GPU budget. On real 16K Phoenix/Home Assistant requests this kept
+    # the 73.5% prefix-cache hit ratio while improving warm TTFT to 0.32-0.34s;
+    # MTP4 reduced cache hits to 45.5%, took 2.8-3.8s warm, and lost a tool call.
+    cmd: >-
+      docker run --rm --init --name ${MODEL_ID}
+      --runtime nvidia
+      --gpus '"device={{ gpu_3090_0_uuid }},{{ gpu_3090_1_uuid }}"'
+      --network container:llama-swap
+      -v {{ llamaswap_config_path }}/cache:/root/.cache
+      -v {{ llamaswap_config_path }}/vllm-club3090:/etc/club3090:ro
+      --ipc=host
+      -e HF_HOME=/root/.cache/huggingface
+      -e VLLM_MARLIN_INPUT_DTYPE=int8
+      -e VLLM_WORKER_MULTIPROC_METHOD=spawn
+      -e NCCL_CUMEM_ENABLE=0
+      -e NCCL_P2P_DISABLE=1
+      -e VLLM_NO_USAGE_STATS=1
+      -e VLLM_USE_FLASHINFER_SAMPLER=0
+      -e OMP_NUM_THREADS=1
+      -e PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+      --entrypoint /bin/bash
+      vllm/vllm-openai:v0.27.1
+      /etc/club3090/run-vllm.sh
+      Frozenlock/Qwen3.8-27B-int4-AutoRound
+      --served-model-name ${MODEL_ID}
+      --host 0.0.0.0
+      --port ${PORT}
+      --quantization auto_round
+      --dtype bfloat16
+      --tensor-parallel-size 2
+      --gpu-memory-utilization 0.755
+      --max-model-len {{ llama_native_context_qwen38 }}
+      --max-num-seqs {{ llama_parallel_slots }}
+      --max-num-batched-tokens 8192
+      --long-prefill-token-threshold 4096
+      --kv-cache-dtype fp8_e4m3
+      --enable-prefix-caching
+      --enable-chunked-prefill
+      --disable-custom-all-reduce
+      --reasoning-parser qwen3
+      --enable-auto-tool-choice
+      --tool-call-parser qwen3_coder
+      --default-chat-template-kwargs '{"enable_thinking":false,"reasoning_effort":"low"}'
+      --override-generation-config '{"temperature":0.7,"top_p":0.8,"top_k":20,"min_p":0.0,"presence_penalty":1.5}'
+    cmd_stop: docker stop --timeout 15 ${MODEL_ID}
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    context_window: "{{ llama_native_context_qwen38 }}"
+    max_input_tokens: "{{ llama_native_context_qwen38 }}"
+    max_output_tokens: "{{ llama_n_predict_3090 }}"
+    allowed_openai_params:
+      - extra_body
+    group: "3090"
+    variants:
+      low:
+        extra_body:
+          chat_template_kwargs:
+            reasoning_effort: low
+      medium:
+        extra_body:
+          chat_template_kwargs:
+            reasoning_effort: medium
+      nothink:
+        temperature: 0.7
+        top_p: 0.8
+        presence_penalty: 1.5
+        extra_body:
           chat_template_kwargs:
             enable_thinking: false
 
@@ -777,6 +851,7 @@ llamaswap_model_groups:
     swap: true
     exclusive: false
   "3090":
+    persistent: true
     swap: true
     exclusive: false
 

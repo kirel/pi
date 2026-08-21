@@ -26,6 +26,43 @@
   become: true
   when: llamaswap_enabled | bool
 
+- name: Ensure pinned club-3090 vLLM patch directories exist
+  ansible.builtin.file:
+    path: "{{ llamaswap_config_path }}/vllm-club3090/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - ""
+    - w4a8
+    - pr48375
+    - gdn-async-order
+  become: true
+  when: llamaswap_enabled | bool
+
+- name: Install pinned club-3090 vLLM runtime patches
+  ansible.builtin.copy:
+    src: "vllm-club3090/{{ item.path }}"
+    dest: "{{ llamaswap_config_path }}/vllm-club3090/{{ item.path }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: "README.md", mode: "0644" }
+    - { path: "LICENSE", mode: "0644" }
+    - { path: "run-vllm.sh", mode: "0755" }
+    - { path: "w4a8/install.sh", mode: "0755" }
+    - { path: "w4a8/patch-inc-w4a8.py", mode: "0644" }
+    - { path: "w4a8/patch-negscale-fold.py", mode: "0644" }
+    - { path: "pr48375/install.sh", mode: "0755" }
+    - { path: "pr48375/patch_mamba_drop_eagle_block.py", mode: "0644" }
+    - { path: "gdn-async-order/install.sh", mode: "0755" }
+    - { path: "gdn-async-order/patch_gdn_mtp_async_spec_order.py", mode: "0644" }
+  become: true
+  notify: Restart llama-swap
+  when: llamaswap_enabled | bool
+
 - name: Ensure CrispASR model cache directory exists
   ansible.builtin.file:
     path: "{{ llamaswap_crispasr_cache_path }}"
