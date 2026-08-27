@@ -24,7 +24,9 @@
     dest: "{{ mosquitto_config_folder }}/mosquitto.conf"
     owner: "{{ username }}"
     group: users
-# notify: reload mosquitto
+    mode: "0664"
+  notify: Restart Mosquitto
+  tags: [mosquitto]
 
 - name: Create TeddyCloud subfolders
   ansible.builtin.file:
@@ -172,7 +174,7 @@
         #   restart: unless-stopped
         mosquitto:
           container_name: mosquitto
-          image: eclipse-mosquitto:latest
+          image: "{{ homeassistant_mosquitto_image }}"
           user: "{{ uid }}:{{ uid }}"
           ports:
             - "{{ mosquitto_port }}:1883"
