@@ -215,6 +215,28 @@
   notify: Restart llama-swap
   when: llamaswap_enabled | bool
 
+- name: Render commit-pinned Qwen3.8 Flash-Next canary image
+  ansible.builtin.template:
+    src: Dockerfile.qwen38-flash-next.j2
+    dest: "{{ llamaswap_build_path }}/Dockerfile.qwen38-flash-next"
+    mode: "0644"
+  become: true
+  register: llamaswap_qwen38_flash_next_dockerfile
+  when: llamaswap_enabled | bool
+
+- name: Build commit-pinned Qwen3.8 Flash-Next canary image
+  community.docker.docker_image:
+    name: "{{ llamaswap_qwen38_flash_next_image }}"
+    source: build
+    force_source: "{{ llamaswap_qwen38_flash_next_dockerfile.changed }}"
+    build:
+      path: "{{ llamaswap_build_path }}"
+      dockerfile: Dockerfile.qwen38-flash-next
+    state: present
+  become: true
+  notify: Restart llama-swap
+  when: llamaswap_enabled | bool
+
 - name: Remove stale llama-swap-managed audio containers before restart
   community.docker.docker_container:
     name: "{{ item }}"

@@ -1,0 +1,46 @@
+FROM node:24 AS source
+
+ARG LLAMA_CPP_REPOSITORY={{ llamaswap_qwen38_flash_next_repository }}
+ARG LLAMA_CPP_REVISION={{ llamaswap_qwen38_flash_next_revision }}
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git ca-certificates \
+    && git init /src \
+    && git -C /src remote add origin "${LLAMA_CPP_REPOSITORY}" \
+    && git -C /src fetch --depth 1 origin "${LLAMA_CPP_REVISION}" \
+    && git -C /src checkout --detach FETCH_HEAD \
+    && git -C /src rev-parse HEAD > /src/llama-cpp-revision \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src/tools/ui
+RUN npm ci \
+    && LLAMA_BUILD_NUMBER="${LLAMA_CPP_REVISION}" npm run build
+
+FROM nvidia/cuda:12.8.1-devel-ubuntu24.04 AS build
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential ca-certificates cmake gcc-14 g++-14 libssl-dev libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CC=gcc-14 CXX=g++-14 CUDAHOSTCXX=g++-14
+
+COPY --from=source /src /src
+WORKDIR /src
+RUN cmake -B build \
+        -DGGML_NATIVE=OFF \
+        -DGGML_CUDA=ON \
+        -DCMAKE_CUDA_ARCHITECTURES="86;120" \
+        -DGGML_BACKEND_DL=ON \
+        -DGGML_CPU_ALL_VARIANTS=ON \
+        -DLLAMA_BUILD_TESTS=OFF \
+        -DCMAKE_EXE_LINKER_FLAGS=-Wl,--allow-shlib-undefined \
+    && cmake --build build --config Release --target llama-server -j"$(nproc)" \
+    && mkdir /out \
+    && find build -name '*.so*' -exec cp -P {} /out/ \; \
+    && cp build/bin/llama-server /out/ \
+    && cp llama-cpp-revision /out/
+
+FROM {{ llamaswap_base_image }}
+
+COPY --from=build /out/ /app/

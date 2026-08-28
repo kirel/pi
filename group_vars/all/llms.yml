@@ -27,17 +27,13 @@ llama_native_context_muse_glimmer: 131072
 # uses the same conservative pool so GPU1 keeps its reserve after TTS JIT.
 llama_ctx_size_qwen35_3090: 376832
 llama_ctx_size_qwen27_3090: 376832
-llama_ctx_size_laguna_s_3090: 16384
-# Conservative advertised context for the 3-GPU IQ3_S profile. Runtime --fit
-# selected 120320-133120 across tested starts while keeping all services resident.
-llama_ctx_size_laguna_s_3gpu: 120320
+llama_ctx_size_qwen38_flash_next_canary: 262144
 llama_ctx_size_gemma4_12b_3090: 140000
 llama_ctx_size_gemma4_26b_3090: 376832
 # The dense 31B plus its MTP/mmproj only preserves the required resident-service
 # headroom at 128K. 262K leaves GPU0 effectively full; 376832 fails to start.
 llama_ctx_size_gemma4_31b_3090: 131072
 llama_n_predict_3090: 32768
-llama_n_predict_laguna_s_3090: 8192
 
 litellm_fallbacks:
   - home: ["home-remote"]
@@ -327,6 +323,11 @@ llamaswap_models:
     # 0.755 per-GPU budget. On real 16K Phoenix/Home Assistant requests this kept
     # the 73.5% prefix-cache hit ratio while improving warm TTFT to 0.32-0.34s;
     # MTP4 reduced cache hits to 45.5%, took 2.8-3.8s warm, and lost a tool call.
+    # A cache-empty 64927-64933-token single-request sweep kept the 8192-token
+    # scheduler budget and compared long-prefill chunks 2048/4096/6144/8192.
+    # First-run times were 34.41s, 33.17-34.18s, 33.49s, and 33.58s. The larger
+    # chunks showed no gain beyond run variance and reduced transient free VRAM,
+    # so retain the 4096-token production threshold.
     cmd: >-
       docker run --rm --init --name ${MODEL_ID}
       --runtime nvidia
@@ -395,6 +396,85 @@ llamaswap_models:
           chat_template_kwargs:
             enable_thinking: false
 
+  - alias: Qwen3.8-Flash-Next-Q3-3GPU-Canary
+    # Official llama.cpp PR #27742 merge, pinned by commit. Keep the 51B PLE
+    # lookup table in mmap-backed host memory and layer-split the remaining Q3
+    # model across both 3090s plus the 5060 Ti. This path cannot combine --fit
+    # with a tensor override. For the native 262144-token context, keep all 48
+    # blocks on GPU as 28/12/8 and move the first twenty blocks' experts to CPU.
+    # This compensates for Q3's larger expert weights plus the Q8 KV/indexer
+    # caches. Preserve room for embedding/ASR on GPU0, TTS on GPU1, and Wolf on
+    # GPU2. The earlier Q2 baseline needed ten CPU-MoE blocks. Q3 keeps the
+    # first twenty expert blocks on CPU and moves one additional expert block
+    # from each GPU (20/40/47) to CPU so UBatch 1024 remains service-safe.
+    # Over a 64907-token prompt this reached 359.60 prompt tok/s and 27.94
+    # steady-state decode tok/s; concurrent LLM, ASR, TTS, and embedding left
+    # 2112/1510/2046 MiB free. UBatch 2048 required four extra expert blocks
+    # per GPU: 391.37 prompt tok/s but only 23.69 decode tok/s, so 1024 is the
+    # better mixed-workload setting.
+    cmd: >-
+      docker run --rm --init --name ${MODEL_ID}
+      --runtime nvidia
+      --gpus '"device={{ gpu_3090_0_uuid }},{{ gpu_3090_1_uuid }},{{ gpu_5060ti_uuid }}"'
+      --network container:llama-swap
+      -v {{ llamaswap_config_path }}/cache:/root/.cache
+      --ipc=host
+      -e HF_HOME=/root/.cache/huggingface
+      --entrypoint /app/llama-server
+      {{ llamaswap_qwen38_flash_next_image }}
+      -hf unsloth/Qwen3.8-Flash-Next-GGUF:UD-Q3_K_XL
+      --port ${PORT}
+      --ctx-size {{ llama_ctx_size_qwen38_flash_next_canary }}
+      --parallel 1
+      --n-predict {{ llama_n_predict_3090 }}
+      --batch-size 2048
+      --ubatch-size 1024
+      --split-mode layer
+      --n-gpu-layers 48
+      --tensor-split 28,12,8
+      --n-cpu-moe 20
+      --fit off
+      -ot 'per_layer_token_embd=CPU,blk\.(20|40|47)\.ffn_(down|gate|up)_exps\.weight=CPU'
+      -fa on
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --temp 1.0
+      --top-p 0.95
+      --top-k 20
+      --min-p 0.0
+      --presence-penalty 0.0
+      --chat-template-kwargs '{"preserve_thinking":true}'
+      --jinja
+    cmd_stop: docker stop --timeout 15 ${MODEL_ID}
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    context_window: "{{ llama_ctx_size_qwen38_flash_next_canary }}"
+    max_input_tokens: "{{ llama_ctx_size_qwen38_flash_next_canary }}"
+    max_output_tokens: "{{ llama_n_predict_3090 }}"
+    allowed_openai_params:
+      - extra_body
+    group: "3090"
+    variants:
+      low:
+        extra_body:
+          cache_prompt: true
+          chat_template_kwargs:
+            reasoning_effort: low
+      medium:
+        extra_body:
+          cache_prompt: true
+          chat_template_kwargs:
+            reasoning_effort: medium
+      nothink:
+        temperature: 0.7
+        top_p: 0.8
+        presence_penalty: 1.5
+        extra_body:
+          cache_prompt: true
+          chat_template_kwargs:
+            enable_thinking: false
+
   - alias: Muse-Glimmer-30B
     # Use Meta's matched target, vision projector, and DFlash sidecar. Current
     # llama.cpp resolves mmproj-kquant.gguf and dflash-kquant.gguf from this HF
@@ -450,99 +530,6 @@ llamaswap_models:
         extra_body:
           chat_template_kwargs:
             reasoning_strength: xhigh
-
-  - alias: Laguna-S-2.1
-    # Laguna S 2.1 is a 118B-A8B MoE. IQ2_M leaves only a few GiB beyond
-    # its weights while embedding, ASR, and TTS remain resident, so start
-    # with one slot, a 16K KV pool, and conservative compute batches.
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Laguna-S-2.1-GGUF:UD-IQ2_M
-      --port ${PORT}
-      --ctx-size {{ llama_ctx_size_laguna_s_3090 }}
-      --parallel 1
-      --n-predict {{ llama_n_predict_laguna_s_3090 }}
-      --batch-size 512
-      --ubatch-size 256
-      --n-gpu-layers 99
-      -sm tensor
-      --fit off
-      -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --temp 1.0
-      --top-p 0.95
-      --top-k 40
-      --chat-template-kwargs '{"preserve_thinking": true}'
-      --jinja
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: true
-    context_window: "{{ llama_ctx_size_laguna_s_3090 }}"
-    max_input_tokens: "{{ llama_ctx_size_laguna_s_3090 }}"
-    max_output_tokens: "{{ llama_n_predict_laguna_s_3090 }}"
-    allowed_openai_params:
-      - extra_body
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}},{{gpu_3090_1_uuid}}"
-    variants:
-      nothink:
-        temperature: 0.7
-        top_p: 0.8
-        extra_body:
-          cache_prompt: true
-          chat_template_kwargs:
-            enable_thinking: false
-
-  - alias: Laguna-S-2.1-3GPU
-    # Higher-quality Laguna profile using the 5060 Ti as a smaller layer
-    # segment. Layer split avoids tensor-parallel synchronization over the
-    # eGPU link. The updated IQ3_S GGUF requires 4096 MiB target headroom on
-    # GPU1 for concurrent TTS and fits 99072 tokens; this passed two parallel
-    # LLM/TTS/ASR/embedding runs. Leave the layer count unset so llama.cpp can
-    # account for the large fixed tensors.
-    cmd: >-
-      /app/llama-server
-      -hf unsloth/Laguna-S-2.1-GGUF:UD-IQ3_S
-      --port ${PORT}
-      --parallel 1
-      --n-predict {{ llama_n_predict_laguna_s_3090 }}
-      --batch-size 512
-      --ubatch-size 256
-      --split-mode layer
-      --fit on
-      --fit-target 1024,4096,512
-      --fit-ctx {{ llama_ctx_size_laguna_s_3090 }}
-      -fa on
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --temp 1.0
-      --top-p 0.95
-      --top-k 40
-      --chat-template-kwargs '{"preserve_thinking": true}'
-      --jinja
-    supports_function_calling: true
-    supports_vision: false
-    supports_reasoning: true
-    context_window: "{{ llama_ctx_size_laguna_s_3gpu }}"
-    max_input_tokens: "{{ llama_ctx_size_laguna_s_3gpu }}"
-    max_output_tokens: "{{ llama_n_predict_laguna_s_3090 }}"
-    allowed_openai_params:
-      - extra_body
-    # Share the existing swap group so starting this profile stops any
-    # two-GPU LLM before the 3-GPU process allocates its weights.
-    group: "3090"
-    env:
-      - "CUDA_VISIBLE_DEVICES={{gpu_3090_0_uuid}},{{gpu_3090_1_uuid}},{{gpu_5060ti_uuid}}"
-    variants:
-      nothink:
-        temperature: 0.7
-        top_p: 0.8
-        extra_body:
-          cache_prompt: true
-          chat_template_kwargs:
-            enable_thinking: false
 
   - alias: Gemma-4-12B-it
     # Audio-capable Gemma 4 test profile. The same llama-server handles normal
