@@ -2,7 +2,6 @@
 hermes_litellm_model_profiles:
   local_hermes:
     - home-hermes
-    - Muse-Glimmer-30B-low
     - Qwen3.8-27B-Instruct
     - Qwen3.8-27B-Instruct-low
     - Qwen3.8-27B-Instruct-medium
