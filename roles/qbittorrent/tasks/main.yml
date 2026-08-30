@@ -104,10 +104,24 @@
     - not ansible_check_mode
     - qbittorrent_localhost_auth.rc == 1
 
-- name: Wait for ProtonVPN port forwarding
-  ansible.builtin.wait_for:
-    path: "{{ qbittorrent_gluetun_config_folder }}/forwarded_port"
-    timeout: 180
+- name: Wait for a valid ProtonVPN forwarded port
+  ansible.builtin.command:
+    argv:
+      - /bin/sh
+      - -c
+      - >-
+        port=$(cat "$1" 2>/dev/null) &&
+        case "$port" in
+          ''|*[!0-9]*) exit 1 ;;
+        esac &&
+        [ "$port" -ge 1 ] && [ "$port" -le 65535 ]
+      - sh
+      - "{{ qbittorrent_gluetun_config_folder }}/forwarded_port"
+  register: qbittorrent_forwarded_port_ready
+  changed_when: false
+  retries: 90
+  delay: 2
+  until: qbittorrent_forwarded_port_ready.rc == 0
   when: not ansible_check_mode
 
 - name: Synchronize qBittorrent with the ProtonVPN forwarded port

@@ -19,6 +19,7 @@ services:
       SERVER_COUNTRIES: "{{ qbittorrent_vpn_server_countries }}"
       PORT_FORWARD_ONLY: "on"
       VPN_PORT_FORWARDING: "on"
+      FIREWALL_INPUT_PORTS: "{{ qbittorrent_http_port }}"
       VPN_PORT_FORWARDING_STATUS_FILE: /gluetun/forwarded_port
       VPN_PORT_FORWARDING_UP_COMMAND: >-
         /bin/sh /gluetun/update-qbittorrent-port.sh
@@ -37,6 +38,17 @@ services:
     container_name: qbittorrent
     restart: unless-stopped
     stop_grace_period: 30m
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          curl --silent --show-error --max-time 5
+          --output /dev/null
+          http://127.0.0.1:{{ qbittorrent_http_port }}/api/v2/app/version
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     network_mode: service:gluetun
     depends_on:
       gluetun:
@@ -52,6 +64,7 @@ services:
       - "{{ qbittorrent_config_folder }}:/config"
       - "{{ qbittorrent_data_folder }}:/data"
     labels:
+      autoheal.stop.timeout: "120"
       homepage.group: "{{ services.qbittorrent.group }}"
       homepage.name: "{{ services.qbittorrent.name }}"
       homepage.href: "https://{{ services.qbittorrent.domain }}"
