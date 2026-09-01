@@ -129,6 +129,7 @@
       infoLink: https://wiki.servarr.com/prowlarr/supported#flaresolverr
       tags:
         - "{{ prowlarr_byparr_tag_id }}"
+    timeout: "{{ prowlarr_byparr_request_timeout + 30 }}"
     status_code: "{{ 202 if prowlarr_byparr_existing_proxy.id | default(false) else 201 }}"
   no_log: true
 
