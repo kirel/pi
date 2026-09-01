@@ -1,24 +1,12 @@
 ---
-- name: Create folder config folders
+- name: Create Caddy config directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "{{ username }}"
-    group: "{{ username }}"
-    mode: "0755"
-  with_items:
-    - "{{ caddy_folder }}"
-    - "{{ caddy_data_folder }}"
-    - "{{ caddy_config_folder }}"
-
-- name: Reposess config folders
-  ansible.builtin.file:
-    path: "{{ item }}"
-    owner: "{{ username }}"
     group: users
-    mode: u=rwx,g=rwxs
-    recurse: true
-  with_items:
+    mode: "2775"
+  loop:
     - "{{ caddy_folder }}"
     - "{{ caddy_data_folder }}"
     - "{{ caddy_config_folder }}"
@@ -29,8 +17,7 @@
     dest: "{{ caddy_folder }}/Caddyfile"
     owner: "{{ username }}"
     mode: "0644"
-  register: caddyfile
-  notify: Reload Caddy
+  register: caddy_config_template
 
 - name: Copy Dockerfile
   ansible.builtin.template:
@@ -38,14 +25,46 @@
     dest: "{{ caddy_folder }}/Dockerfile"
     owner: "{{ username }}"
     mode: "0644"
-  register: dockerfile
+  register: caddy_dockerfile_template
+
+- name: Inspect rendered Caddy Dockerfile
+  ansible.builtin.stat:
+    path: "{{ caddy_folder }}/Dockerfile"
+    checksum_algorithm: sha256
+  register: caddy_dockerfile_stat
+
+- name: Read successful Caddy build checksum
+  ansible.builtin.slurp:
+    src: "{{ caddy_folder }}/.dockerfile-build.sha256"
+  register: caddy_build_checksum
+  failed_when: false
+  changed_when: false
+
+- name: Inspect local Caddy image
+  community.docker.docker_image_info:
+    name: caddy-caddy:latest
+  register: caddy_image_info
+
+- name: Determine whether Caddy needs an image rebuild
+  ansible.builtin.set_fact:
+    caddy_build_required: >-
+      {{
+        caddy_force_rebuild | bool
+        or caddy_dockerfile_template.changed
+        or caddy_image_info.images | length == 0
+        or (
+          caddy_build_checksum.content | default('') | b64decode | trim | length > 0
+          and caddy_build_checksum.content | default('') | b64decode | trim
+            != caddy_dockerfile_stat.stat.checksum
+        )
+      }}
 
 - name: Start caddy
   community.docker.docker_compose_v2:
     project_name: caddy
-    pull: always # or "missing", "never", "policy" based on your needs
-    build: always # or "always", "never"
-    state: present # Ensure the services are started
+    pull: "{{ 'always' if caddy_build_required else 'never' }}"
+    build: "{{ 'always' if caddy_build_required else 'never' }}"
+    state: present
     definition:
       # Networks are not used in host network mode for this service
       services:
@@ -78,17 +97,40 @@
             - homepage.widget.type=caddy
             - homepage.widget.url=http://homelab-nuc.lan:2019 # Use host-resolvable name as Caddy is in host network mode
 
-  register: output
+  register: caddy_compose
 
 - name: Debug docker compose output
   ansible.builtin.debug:
-    var: output
+    msg:
+      rebuild_image: "{{ caddy_build_required }}"
+      actions: "{{ caddy_compose.actions | default([]) }}"
 
 - name: Assert caddy container is running
   ansible.builtin.assert:
     that:
-      - output.containers | selectattr('Name', 'equalto', 'caddy') | list | length > 0
-      - output.containers | selectattr('Name', 'equalto', 'caddy') | map(attribute='State') | list | first == 'running'
+      - caddy_compose.containers | selectattr('Name', 'equalto', 'caddy') | list | length > 0
+      - caddy_compose.containers | selectattr('Name', 'equalto', 'caddy') | map(attribute='State') | list | first == 'running'
+
+- name: Record successful Caddy build checksum
+  ansible.builtin.copy:
+    content: "{{ caddy_dockerfile_stat.stat.checksum }}\n"
+    dest: "{{ caddy_folder }}/.dockerfile-build.sha256"
+    owner: "{{ username }}"
+    group: users
+    mode: "0644"
+
+- name: Validate Caddy configuration
+  community.docker.docker_container_exec:
+    container: caddy
+    argv:
+      - caddy
+      - validate
+      - --config
+      - /etc/caddy/Caddyfile
+      - --adapter
+      - caddyfile
+  changed_when: caddy_config_template.changed
+  notify: Reload Caddy
 
 - name: Create symlink to root certificate from mounted data volume
   ansible.builtin.file:

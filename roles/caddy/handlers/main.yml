@@ -1,8 +1,9 @@
 ---
-# handlers file for caddy
 - name: Restart Caddy container
   community.docker.docker_container:
     name: caddy
     state: started
     restart: true
   listen: Reload Caddy
+  changed_when: true
+  no_log: true
