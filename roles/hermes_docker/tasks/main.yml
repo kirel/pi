@@ -151,10 +151,6 @@
         hermes_docker_effective_agent_names |
         select('match', '^[A-Za-z0-9][A-Za-z0-9_.-]*$') | list | length == hermes_docker_effective_agent_names | length
       - >-
-        not (hermes_docker_require_minimax_api_key | bool) or
-        (hermes_docker_effective_global_env.MINIMAX_API_KEY is defined and
-        hermes_docker_effective_global_env.MINIMAX_API_KEY | string | length > 0)
-      - >-
         not (hermes_docker_tailscale_enabled | bool) or
         (hermes_docker_tailscale_authkey is defined and
         hermes_docker_tailscale_authkey | string | length > 0)
@@ -173,11 +169,10 @@
         hermes_docker_webui_password | string | length > 0)
     fail_msg: >-
       Define Hermes Docker agents with valid Docker-safe agent names, valid
-      per-agent external skill directories, provide MINIMAX_API_KEY in
-      hermes_docker_global_env or hermes_docker_global_env_secret, provide
-      hermes_docker_tailscale_authkey when Tailscale sidecars are enabled,
-      provide regfish_token when per-agent Caddy is enabled, and set
-      hermes_docker_webui_password when any Hermes WebUI is enabled.
+      per-agent external skill directories, provide hermes_docker_tailscale_authkey
+      when Tailscale sidecars are enabled, provide regfish_token when per-agent
+      Caddy is enabled, and set hermes_docker_webui_password when any Hermes WebUI
+      is enabled.
 
 - name: Validate Hermes Docker shared workspaces
   ansible.builtin.assert:
@@ -481,16 +476,6 @@
     mode: '0755'
   when: hermes_docker_build_enabled | bool
 
-- name: Copy Hermes Telegram HTTPXRequest slots patch script
-  ansible.builtin.copy:
-    src: patch-hermes-telegram-httpxrequest-slots.py
-    dest: "{{ hermes_docker_base_dir }}/hermes-image/patch-hermes-telegram-httpxrequest-slots.py"
-    owner: root
-    group: root
-    mode: '0644'
-  notify: Recreate Hermes Docker agents
-  when: hermes_docker_build_enabled | bool
-
 - name: Copy Hermes Docker service publisher
   ansible.builtin.copy:
     src: hermes-service
@@ -546,8 +531,6 @@
         {'path': base ~ '/caddy/sites', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
         {'path': base ~ '/caddy/static', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
         {'path': base ~ '/caddy/logs', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
-        {'path': base ~ '/supervisor', 'owner': 'root', 'group': 'root', 'mode': '0755'},
-        {'path': base ~ '/supervisor/conf.d', 'owner': hermes_docker_data_uid, 'group': hermes_docker_data_gid, 'mode': '0755'},
         {'path': base ~ '/caddy/data', 'owner': 'root', 'group': 'root', 'mode': '0700'},
         {'path': base ~ '/caddy/config', 'owner': 'root', 'group': 'root', 'mode': '0700'},
         {'path': base ~ '/skills', 'owner': 'root', 'group': 'root', 'mode': '0755'},
@@ -815,45 +798,6 @@
     recreate: never
     remove_orphans: true
   when: hermes_docker_ensure_running | bool
-
-- name: Ensure Hermes WebUI agent source volumes are readable
-  ansible.builtin.command:
-    argv:
-      - docker
-      - exec
-      - hermes-{{ agent_name }}
-      - sh
-      - -lc
-      - >-
-        if find /opt/hermes \( -type d ! -perm -005 -o -type f ! -perm -004 \) -print -quit | grep -q .; then
-        find /opt/hermes -type d -exec chmod a+rx {} + &&
-        find /opt/hermes -type f -exec chmod a+r {} + &&
-        echo changed;
-        else echo ok;
-        fi
-  loop: "{{ hermes_docker_webui_agent_names }}"
-  loop_control:
-    loop_var: agent_name
-    label: "{{ agent_name }}"
-  register: hermes_docker_webui_source_permissions
-  changed_when: "'changed' in hermes_docker_webui_source_permissions.stdout"
-  when:
-    - hermes_docker_ensure_running | bool
-    - hermes_docker_webui_agent_names | length > 0
-
-- name: Restart Hermes WebUI containers after source permission repair
-  ansible.builtin.command:
-    argv:
-      - docker
-      - restart
-      - webui-hermes-{{ item.agent_name }}
-  loop: "{{ hermes_docker_webui_source_permissions.results | default([]) }}"
-  loop_control:
-    label: "{{ item.agent_name | default('unknown') }}"
-  changed_when: false
-  when:
-    - item is not skipped
-    - "'changed' in item.stdout"
 
 - name: Apply Hermes config overrides
   ansible.builtin.command:

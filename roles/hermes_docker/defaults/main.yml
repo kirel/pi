@@ -18,15 +18,17 @@ hermes_docker_base_image: nousresearch/hermes-agent:main
 hermes_docker_image: hermes-agent-supervisor:latest
 hermes_docker_build_enabled: true
 hermes_docker_project_name: hermes-agents
-# The current s6-based Hermes image must start the gateway through with-contenv;
-# plain `gateway run` can miss env_file variables and leave gateway-default down.
-# Start supervisord first so agent-managed services in /opt/data/supervisor/conf.d
+# The upstream s6 main wrapper restores the container environment and redirects
+# `gateway run` into the supervised per-profile gateway service. Start
+# supervisord first so agent-managed services in /opt/data/supervisor/conf.d
 # survive container restarts.
 hermes_docker_command:
-  - /command/with-contenv
   - sh
-  - -lc
-  - mkdir -p /opt/data/logs/services; find /opt/hermes -type d -exec chmod a+rx {} +; find /opt/hermes -type f -exec chmod a+r {} +; /opt/hermes/.venv/bin/supervisord -c /etc/supervisor/supervisord.conf; rm -f /run/service/gateway-default/down; /opt/hermes/.venv/bin/hermes gateway start; exec sleep infinity
+  - -c
+  - >-
+    mkdir -p /opt/data/logs/services;
+    /opt/hermes/.venv/bin/supervisord -c /etc/supervisor/supervisord.conf;
+    exec /opt/hermes/.venv/bin/hermes gateway run
 hermes_docker_pull_policy: build
 hermes_docker_compose_pull: policy
 hermes_docker_ensure_running: true
@@ -276,8 +278,6 @@ hermes_docker_litellm_manage_keys: false
 hermes_docker_litellm_api_base_url: "https://litellm.kirelabs.org"
 hermes_docker_litellm_team: {}
 hermes_docker_litellm_keys: {}
-
-hermes_docker_require_minimax_api_key: true
 
 # Non-secret runtime defaults needed for the built-in dashboard side-process.
 hermes_docker_runtime_env:

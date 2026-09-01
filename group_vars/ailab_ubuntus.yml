@@ -65,10 +65,10 @@ beszel_agent_smart_devices:
 
 # Local Hermes dashboard on ailab. This uses the host-published dashboard port
 # and the central homelab Caddy service, not per-agent Caddy/Tailscale sidecars.
-hermes_docker_base_image: nousresearch/hermes-agent:v2026.7.20
+hermes_docker_base_image: nousresearch/hermes-agent:v2026.8.27
+hermes_docker_webui_image: ghcr.io/nesquena/hermes-webui@sha256:1cbd42331e2046706230310e5fa0db537860536b87e7011630d4d4b6eebab2e2
 hermes_docker_tailscale_enabled: false
 hermes_docker_agent_caddy_enabled: false
-hermes_docker_require_minimax_api_key: false
 hermes_dashboard_base_port: 18080
 hermes_docker_webui_enabled: true
 hermes_docker_webui_agents_enabled:
@@ -94,7 +94,6 @@ hermes_docker_agents_env_secret:
     HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: "{{ vault_hermes_ailab_dashboard_password }}"
     LITELLM_API_KEY: "{{ vault_hermes_ailab_local_litellm_api_key }}"
     API_SERVER_KEY: "{{ vault_hermes_ailab_local_litellm_api_key }}"
-    GLM_API_KEY: "{{ GLM_API_KEY }}"
 
 hermes_docker_litellm_manage_keys: true
 hermes_docker_litellm_team:
