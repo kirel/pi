@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://schemas.recyclarr.dev/v8/config-schema.json
+---
+sonarr:
+  sonarr:
+    base_url: !secret sonarr_url
+    api_key: !secret sonarr_apikey
+
+    quality_definition:
+      type: series
+
+    media_management:
+      propers_and_repacks: do_not_prefer
+
+    quality_profiles:
+      # Default for series watched in English. Both resolutions are treated as
+      # one WEB group so language and release-group scores control upgrades.
+      - trash_id: 72dae194fc92bf828f32cde7744e51a1
+        name: HD - 720p/1080p
+        reset_unmatched_scores:
+          enabled: true
+        qualities:
+          - name: WEB 720p/1080p
+            qualities:
+              - WEBDL-1080p
+              - WEBRip-1080p
+              - WEBDL-720p
+              - WEBRip-720p
+
+      # Select this per series when German or German dual-language audio should
+      # be preferred. English remains an allowed fallback until German exists.
+      - trash_id: dca7e5e9e99c703bcbdaaa471dd40e98
+        name: HD - 720p/1080p - German
+        reset_unmatched_scores:
+          enabled: true
+        qualities:
+          - name: WEB 720p/1080p
+            qualities:
+              - WEBDL-1080p
+              - WEBRip-1080p
+              - WEBDL-720p
+              - WEBRip-720p
+
+    custom_formats:
+      # Reject releases without an English audio track in the English profile.
+      # German dual-language releases still qualify because they contain English.
+      - trash_ids:
+          - 69aa1e159f97d860440b04cd6d590c4f
+        assign_scores_to:
+          - name: HD - 720p/1080p
+            score: -35000

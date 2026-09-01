@@ -20,3 +20,23 @@ services:
       homepage.icon: "{{ services.sonarr.icon }}"
       homepage.server: "{{ inventory_hostname }}"
       homepage.container: sonarr
+{% if sonarr_include_recyclarr | default(true) %}
+
+  recyclarr:
+    image: "{{ sonarr_recyclarr_image }}"
+    container_name: recyclarr-sonarr
+    restart: unless-stopped
+    user: "{{ uid }}:{{ qbittorrent_gid }}"
+    depends_on:
+      - sonarr
+    environment:
+      TZ: Europe/Berlin
+      CRON_SCHEDULE: "{{ sonarr_recyclarr_cron_schedule }}"
+    volumes:
+      - "{{ sonarr_recyclarr_config_folder }}:/config"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+{% endif %}

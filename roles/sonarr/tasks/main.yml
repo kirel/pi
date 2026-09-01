@@ -7,9 +7,93 @@
     group: users
     mode: "2775"
 
+- name: Check whether Sonarr has generated its configuration
+  ansible.builtin.stat:
+    path: "{{ sonarr_config_folder }}/config.xml"
+  register: sonarr_config_xml
+
+- name: Bootstrap Sonarr before configuring Recyclarr
+  community.docker.docker_compose_v2:
+    project_name: sonarr
+    pull: always
+    state: present
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+  vars:
+    sonarr_include_recyclarr: false
+  when: not sonarr_config_xml.stat.exists
+
+- name: Wait for Sonarr to generate its configuration
+  ansible.builtin.wait_for:
+    path: "{{ sonarr_config_folder }}/config.xml"
+    timeout: 60
+  when: not sonarr_config_xml.stat.exists
+
+- name: Create Recyclarr config directory
+  ansible.builtin.file:
+    path: "{{ sonarr_recyclarr_config_folder }}"
+    state: directory
+    owner: "{{ username }}"
+    group: users
+    mode: "2770"
+
+- name: Read the generated Sonarr configuration
+  ansible.builtin.slurp:
+    src: "{{ sonarr_config_folder }}/config.xml"
+  register: sonarr_config_xml_content
+  no_log: true
+
+- name: Extract the Sonarr API key for local Recyclarr access
+  ansible.builtin.set_fact:
+    sonarr_recyclarr_api_key: >-
+      {{
+        (
+          sonarr_config_xml_content.content
+          | b64decode
+          | regex_findall('<ApiKey>([^<]+)</ApiKey>')
+          | first
+        )
+      }}
+  no_log: true
+
+- name: Validate the generated Sonarr API key
+  ansible.builtin.assert:
+    that:
+      - sonarr_recyclarr_api_key | length >= 20
+    fail_msg: Sonarr config.xml does not contain a usable API key
+  no_log: true
+
+- name: Deploy the declarative Sonarr profile configuration
+  ansible.builtin.template:
+    src: recyclarr.yml.j2
+    dest: "{{ sonarr_recyclarr_config_folder }}/recyclarr.yml"
+    owner: "{{ username }}"
+    group: users
+    mode: "0640"
+
+- name: Deploy the local Recyclarr secrets file
+  ansible.builtin.template:
+    src: recyclarr-secrets.yml.j2
+    dest: "{{ sonarr_recyclarr_config_folder }}/secrets.yml"
+    owner: "{{ username }}"
+    group: users
+    mode: "0600"
+  no_log: true
+
 - name: Deploy Sonarr
   community.docker.docker_compose_v2:
     project_name: sonarr
     pull: always
     state: present
     definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+
+- name: Preview the Sonarr profile synchronization
+  ansible.builtin.command:
+    cmd: docker exec recyclarr-sonarr recyclarr sync sonarr --preview --log info
+  register: sonarr_recyclarr_preview
+  changed_when: false
+
+- name: Synchronize the Sonarr quality profiles
+  ansible.builtin.command:
+    cmd: docker exec recyclarr-sonarr recyclarr sync sonarr --log info
+  register: sonarr_recyclarr_sync
+  changed_when: true

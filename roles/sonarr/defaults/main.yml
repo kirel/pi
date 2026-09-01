@@ -1,0 +1,4 @@
+---
+sonarr_recyclarr_image: ghcr.io/recyclarr/recyclarr:8
+sonarr_recyclarr_config_folder: "{{ config_root }}/recyclarr-sonarr"
+sonarr_recyclarr_cron_schedule: "@daily"
