@@ -1,0 +1,77 @@
+Offline resilience test summary
+Started:  2026-08-21T20:15:45+0200
+Finished: 2026-08-21T20:32:24+0200
+Cycles:   2
+
+PROBE                    LABEL                                          OK   FAIL   SKIP    OK RATE
+gateway_ping             Gateway 192.168.50.1                            2      0      0     100.0%
+dns1_ha                  DNS .4: Home Assistant                          2      0      0     100.0%
+dns1_ma                  DNS .4: Music Assistant                         2      0      0     100.0%
+dns1_litellm             DNS .4: LiteLLM                                 2      0      0     100.0%
+dns1_llamaswap           DNS .4: LlamaSwap                               2      0      0     100.0%
+dns1_hermes              DNS .4: Local Hermes                            2      0      0     100.0%
+dns1_external            DNS .4: external domain                         2      0      0     100.0%
+dns2_ha                  DNS .5: Home Assistant                          2      0      0     100.0%
+dns2_ma                  DNS .5: Music Assistant                         2      0      0     100.0%
+dns2_litellm             DNS .5: LiteLLM                                 2      0      0     100.0%
+dns2_llamaswap           DNS .5: LlamaSwap                               2      0      0     100.0%
+dns2_hermes              DNS .5: Local Hermes                            2      0      0     100.0%
+dns2_external            DNS .5: external domain                         2      0      0     100.0%
+caddy_tls                Caddy HTTPS/TLS forced to .5                    2      0      0     100.0%
+ha_direct                Home Assistant direct :8123                     2      0      0     100.0%
+ha_domain                Home Assistant via domain                       2      0      0     100.0%
+ha_forced                Home Assistant domain forced to .5              2      0      0     100.0%
+ma_direct                Music Assistant direct :8095                    2      0      0     100.0%
+ma_domain                Music Assistant via domain                      2      0      0     100.0%
+ma_forced                Music Assistant domain forced to .5             2      0      0     100.0%
+ma_websocket             Music Assistant /ws endpoint                    2      0      0     100.0%
+homepage_domain          Homepage via domain                             2      0      0     100.0%
+authelia_domain          Authelia via domain                             2      0      0     100.0%
+z2m_domain               Zigbee2MQTT via domain                          2      0      0     100.0%
+evcc_domain              evcc via domain                                 2      0      0     100.0%
+immich_domain            Immich via domain                               2      0      0     100.0%
+jellyfin_domain          Jellyfin via domain                             2      0      0     100.0%
+seerr_domain             Seerr via domain                                2      0      0     100.0%
+pihole1_domain           Pi-hole homelab UI via domain                   2      0      0     100.0%
+pihole2_domain           Pi-hole nameserver UI via domain                2      0      0     100.0%
+litellm_direct           LiteLLM direct :4000 readiness                  2      0      0     100.0%
+litellm_domain           LiteLLM domain readiness                        2      0      0     100.0%
+litellm_forced           LiteLLM forced to Caddy .5                      2      0      0     100.0%
+llamaswap_direct         LlamaSwap direct :9292 running                  2      0      0     100.0%
+llamaswap_domain         LlamaSwap domain /running                       2      0      0     100.0%
+llamaswap_forced         LlamaSwap forced to Caddy .5                    2      0      0     100.0%
+llamaswap_qwen           LlamaSwap Qwen backend ready                    1      1      0      50.0%
+llamaswap_embed          LlamaSwap embedding ready                       2      0      0     100.0%
+llamaswap_asr            LlamaSwap ASR ready                             2      0      0     100.0%
+llamaswap_tts            LlamaSwap TTS ready                             2      0      0     100.0%
+hermes_api               Local Hermes API /health                        2      0      0     100.0%
+hermes_domain            Local Hermes dashboard via domain               2      0      0     100.0%
+hermes_forced            Local Hermes forced to Caddy .5                 2      0      0     100.0%
+t3_direct                T3 Code direct :8093 environment                2      0      0     100.0%
+t3_domain                T3 Code via domain                              2      0      0     100.0%
+mqtt_tcp                 Mosquitto 192.168.50.5:1883                     2      0      0     100.0%
+smb_tcp                  SMB 192.168.50.5:445                            2      0      0     100.0%
+tapo_tcp                 Tapo camera 192.168.50.70:443                   0      2      0       0.0%
+nesthub_tcp              Nest Hub 192.168.50.182:8009                    0      2      0       0.0%
+bathroom_cast_tcp        Bathroom Cast 192.168.50.215:8009               2      0      0     100.0%
+bedroom_cast_tcp         Bedroom Cast 192.168.50.219:8009                2      0      0     100.0%
+wan_ping                 WAN IP 1.1.1.1                                  0      2      0       0.0%
+wan_https                WAN HTTPS example.com                           0      2      0       0.0%
+litellm_catalog          Pi agent LiteLLM local model catalog            2      0      0     100.0%
+litellm_model_1          LiteLLM completion: Muse-Glimmer-30B-low        0      2      0       0.0%
+litellm_model_2          LiteLLM completion: Qwen3.8-27B-Instruct-medium      0      2      0       0.0%
+litellm_model_3          LiteLLM completion: home-hermes                 0      2      0       0.0%
+
+Interpretation
+--------------
+- One or more persistent Ailab runtimes (Qwen, embedding, ASR, TTS) were not ready.
+- Pi-agent LiteLLM catalog or real local model completions failed.
+- Optional IoT/Cast probes failed. These devices may be asleep/off; inspect them if WLAN resilience is part of this run.
+- External DNS/HTTPS failures are expected after disconnecting WAN and do not count as a local resilience failure.
+
+OVERALL: FAIL — see failed probes and interpretation above.
+
+Files
+-----
+CSV:     /home/daniel/code/pi/offline-test-results/20260821-201544/results.csv
+Raw log: /home/daniel/code/pi/offline-test-results/20260821-201544/raw.log

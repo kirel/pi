@@ -1,0 +1,19 @@
+Pi-hole WAN resilience summary
+Started:                         2026-08-21T22:03:07+0200
+Finished:                        2026-08-21T22:22:27+0200
+Offline cycles:                  89
+Offline required-local failures: 0
+Unexpected offline WAN successes:0
+Max-concurrent DNS warnings:     0
+Configuration errors:            0
+iPad services passed:            1
+WAN recovered:                   0
+
+OVERALL: FAIL
+
+Files:
+  Probe CSV:          /home/daniel/code/pi/offline-test-results/pihole-wan-20260821-220307/probes.csv
+  Session log:        /home/daniel/code/pi/offline-test-results/pihole-wan-20260821-220307/session.log
+  Baseline Pi-hole:   /home/daniel/code/pi/offline-test-results/pihole-wan-20260821-220307/pihole-baseline.log
+  Offline Pi-hole:    /home/daniel/code/pi/offline-test-results/pihole-wan-20260821-220307/pihole-offline.log
+  Recovery Pi-hole:   /home/daniel/code/pi/offline-test-results/pihole-wan-20260821-220307/pihole-recovery.log

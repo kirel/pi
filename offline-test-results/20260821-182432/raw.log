@@ -1,0 +1,1027 @@
+Offline resilience test started: 2026-08-21T18:24:32+0200
+Duration: 600s; interval: 5s
+Host: ailab-ubuntu
+Tools: curl=1 dig=1 ping=1 nc=1 openssl=1
+Result directory: /home/daniel/code/pi/offline-test-results/20260821-182432
+
+[2026-08-21T18:24:32+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.585 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.585/0.585/0.585/0.000 ms
+
+[2026-08-21T18:24:32+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:24:32 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:24:32+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:24:32 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:24:33+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:24:33 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:24:33+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:24:33 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:24:33+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:24:33 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:24:33+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:24:33 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:24:33+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:33+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:33+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:33+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:33+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:33+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:33+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:24:36+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:24:38+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:24:40+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:24:40+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:24:40+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:24:42+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2002 ms: Timeout was reached
+[2026-08-21T18:24:44+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:24:49+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.581 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.581/0.581/0.581/0.000 ms
+
+[2026-08-21T18:24:49+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:24:49 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:24:49+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:24:49 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:24:49+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	172.66.147.243
+example.com.		0	IN	A	104.20.23.154
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:24:49 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:24:49+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:24:49 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:24:49+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:24:49 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:24:49+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:24:49 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:24:49+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:49+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:50+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:50+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:50+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:50+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:24:50+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:24:54+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:24:56+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:24:58+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:24:58+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:24:58+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:25:00+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2001 ms: Timeout was reached
+[2026-08-21T18:25:02+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:25:07+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.636 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.636/0.636/0.636/0.000 ms
+
+[2026-08-21T18:25:07+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:07 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:25:07+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:07 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:25:07+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:07 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:25:07+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:07 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:25:07+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:07 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:25:07+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:07 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:25:07+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:07+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:07+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:07+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:07+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:07+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:07+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3001 milliseconds with 249 bytes received
+[2026-08-21T18:25:10+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:25:12+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:25:14+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:25:14+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:25:15+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:25:17+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2002 ms: Timeout was reached
+[2026-08-21T18:25:19+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:25:24+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.634 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.634/0.634/0.634/0.000 ms
+
+[2026-08-21T18:25:24+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:24 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:25:24+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:24 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:25:24+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	172.66.147.243
+example.com.		0	IN	A	104.20.23.154
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:24 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:25:24+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:24 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:25:24+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 4 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:24 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:25:24+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:24 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:25:24+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:24+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:24+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:24+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:24+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:24+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:24+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:25:27+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:25:29+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:25:31+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:25:31+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:25:31+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:25:33+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2002 ms: Timeout was reached
+[2026-08-21T18:25:35+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:25:40+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.576 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.576/0.576/0.576/0.000 ms
+
+[2026-08-21T18:25:40+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:40 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:25:41+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 4 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:41 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:25:41+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:41 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:25:41+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:41 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:25:41+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:41 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:25:41+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:41 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:25:41+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:41+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:41+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:41+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:41+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:41+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:41+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:25:44+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:25:46+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:25:48+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:25:48+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:25:48+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:25:50+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2001 ms: Timeout was reached
+[2026-08-21T18:25:52+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:25:57+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.603 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.603/0.603/0.603/0.000 ms
+
+[2026-08-21T18:25:57+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:57 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:25:57+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:57 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:25:57+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	172.66.147.243
+example.com.		0	IN	A	104.20.23.154
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:25:57 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:25:57+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:57 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:25:57+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:57 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:25:57+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:25:57 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:25:57+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:57+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:57+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:57+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:58+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:58+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:25:58+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:26:01+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:26:03+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:26:05+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:26:05+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:26:05+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:26:05+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+From 192.168.50.1 icmp_seq=1 Destination Net Unreachable
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, +1 errors, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2002 ms: Timeout was reached
+[2026-08-21T18:26:07+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:26:12+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.630 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.630/0.630/0.630/0.000 ms
+
+[2026-08-21T18:26:12+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 6 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:26:12 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:26:12+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:26:12 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:26:12+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 4 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:26:12 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:26:12+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:26:12 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:26:12+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:26:12 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:26:12+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:26:12 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:26:12+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:12+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:12+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:12+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:12+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:12+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:12+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:26:15+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:26:17+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:26:19+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:26:19+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:26:19+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:26:21+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2001 ms: Timeout was reached
+[2026-08-21T18:26:24+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:26:29+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.614 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.614/0.614/0.614/0.000 ms
+
+[2026-08-21T18:26:29+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:26:29 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:26:29+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:26:29 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:26:29+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	172.66.147.243
+example.com.		0	IN	A	104.20.23.154
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:26:29 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:26:29+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:26:29 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:26:29+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:26:29 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:26:29+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:26:29 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:26:29+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:29+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:29+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:29+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:29+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:29+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:29+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:26:32+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:26:34+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:26:36+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:26:36+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:26:36+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:26:38+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2001 ms: Timeout was reached
+[2026-08-21T18:26:41+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:26:46+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.556 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.556/0.556/0.556/0.000 ms
+
+[2026-08-21T18:26:46+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:26:46 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:26:46+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:26:46 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:26:46+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:26:46 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:26:46+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:26:46 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:26:46+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:26:46 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:26:46+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:26:46 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:26:46+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:46+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:46+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:46+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:46+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:46+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:26:46+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:26:49+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:26:51+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:26:53+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:26:53+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:26:53+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:26:55+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2001 ms: Timeout was reached
+[2026-08-21T18:26:57+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:27:02+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.638 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.638/0.638/0.638/0.000 ms
+
+[2026-08-21T18:27:02+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:27:02 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:27:02+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:27:02 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:27:02+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	172.66.147.243
+example.com.		0	IN	A	104.20.23.154
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:27:02 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:27:02+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:27:02 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:27:02+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:27:02 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:27:02+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:27:02 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:27:03+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:03+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:03+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:03+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:03+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:03+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:03+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:27:06+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:27:08+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:27:10+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:27:10+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:27:10+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:27:12+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2002 ms: Timeout was reached
+[2026-08-21T18:27:14+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:27:19+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.618 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.618/0.618/0.618/0.000 ms
+
+[2026-08-21T18:27:19+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:27:19 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:27:19+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:27:19 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:27:19+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:27:19 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:27:19+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:27:19 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:27:19+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:27:19 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:27:20+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:27:20 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:27:20+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:20+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:20+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:20+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:20+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:20+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:20+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:27:23+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:27:25+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:27:27+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:27:27+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:27:27+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:27:29+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2002 ms: Timeout was reached
+[2026-08-21T18:27:31+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28
+[2026-08-21T18:27:36+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.589 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.589/0.589/0.589/0.000 ms
+
+[2026-08-21T18:27:36+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:27:36 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:27:36+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:27:36 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:27:36+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	172.66.147.243
+example.com.		0	IN	A	104.20.23.154
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 18:27:36 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:27:36+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:27:36 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T18:27:36+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:27:36 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T18:27:36+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 0 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 18:27:36 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T18:27:36+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:36+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:36+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:36+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:36+0200] curl http://192.168.50.5:8095/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:36+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T18:27:36+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3002 milliseconds with 249 bytes received
+[2026-08-21T18:27:39+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T18:27:41+0200] nc 192.168.50.70 443
+
+
+[2026-08-21T18:27:43+0200] nc 192.168.50.182 8009
+
+
+[2026-08-21T18:27:43+0200] nc 192.168.50.215 8009
+Connection to 192.168.50.215 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:27:43+0200] nc 192.168.50.219 8009
+Connection to 192.168.50.219 8009 port [tcp/*] succeeded!
+
+[2026-08-21T18:27:45+0200] ping 1.1.1.1
+PING 1.1.1.1 (1.1.1.1) 56(84) bytes of data.
+
+--- 1.1.1.1 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+curl: (28) Failed to connect to example.com port 443 after 2001 ms: Timeout was reached
+[2026-08-21T18:27:48+0200] curl https://example.com/ resolve=normal -> HTTP 000 remote=none curl_rc=28

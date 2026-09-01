@@ -1,0 +1,152 @@
+Offline resilience test started: 2026-08-21T20:14:52+0200
+Duration: 900s; interval: 5s
+Host: ailab-ubuntu
+Tools: curl=1 dig=1 ping=1 nc=1 openssl=1 jq=1
+LiteLLM credentials: Pi agent credential store profile=litellm
+LiteLLM URL: https://litellm.kirelabs.org
+Model interval: 300s; timeout per completion: 240s
+Completion models: Muse-Glimmer-30B-low Qwen3.8-27B-Instruct-medium home-hermes
+Result directory: /home/daniel/code/pi/offline-test-results/20260821-201452
+
+[2026-08-21T20:14:52+0200] ping 192.168.50.1
+PING 192.168.50.1 (192.168.50.1) 56(84) bytes of data.
+64 bytes from 192.168.50.1: icmp_seq=1 ttl=64 time=0.596 ms
+
+--- 192.168.50.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.596/0.596/0.596/0.000 ms
+
+[2026-08-21T20:14:52+0200] dig @192.168.50.4 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 20:14:52 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T20:14:52+0200] dig @192.168.50.4 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 20:14:52 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.4 litellm.kirelabs.org A
+litellm.kirelabs.org.	0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 20:14:52 CEST 2026
+;; MSG SIZE  rcvd: 94
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.4 llama-swap.kirelabs.org A
+llama-swap.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 20:14:53 CEST 2026
+;; MSG SIZE  rcvd: 97
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.4 hermes-local.kirelabs.org A
+hermes-local.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 3 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 20:14:53 CEST 2026
+;; MSG SIZE  rcvd: 99
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.4 example.com A
+example.com.		0	IN	A	172.66.147.243
+example.com.		0	IN	A	104.20.23.154
+;; Query time: 2 msec
+;; SERVER: 192.168.50.4#53(192.168.50.4) (UDP)
+;; WHEN: Fri Aug 21 20:14:53 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.5 homeassistant.kirelabs.org A
+homeassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 20:14:53 CEST 2026
+;; MSG SIZE  rcvd: 100
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.5 musicassistant.kirelabs.org A
+musicassistant.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 20:14:53 CEST 2026
+;; MSG SIZE  rcvd: 101
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.5 litellm.kirelabs.org A
+litellm.kirelabs.org.	0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 20:14:53 CEST 2026
+;; MSG SIZE  rcvd: 94
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.5 llama-swap.kirelabs.org A
+llama-swap.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 20:14:53 CEST 2026
+;; MSG SIZE  rcvd: 97
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.5 hermes-local.kirelabs.org A
+hermes-local.kirelabs.org. 0	IN	CNAME	homelab-nuc.lan.
+homelab-nuc.lan.	0	IN	A	192.168.50.5
+;; Query time: 2 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 20:14:53 CEST 2026
+;; MSG SIZE  rcvd: 99
+
+[2026-08-21T20:14:53+0200] dig @192.168.50.5 example.com A
+example.com.		0	IN	A	104.20.23.154
+example.com.		0	IN	A	172.66.147.243
+;; Query time: 1 msec
+;; SERVER: 192.168.50.5#53(192.168.50.5) (UDP)
+;; WHEN: Fri Aug 21 20:14:53 CEST 2026
+;; MSG SIZE  rcvd: 78
+
+[2026-08-21T20:14:53+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:53+0200] curl http://192.168.50.5:8123/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:53+0200] curl https://homeassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:53+0200] curl https://homeassistant.kirelabs.org/ resolve=homeassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:53+0200] curl-keyword http://192.168.50.5:8095/info resolve=normal -> HTTP 200 remote=192.168.50.5 keyword="status": "running" curl_rc=0
+[2026-08-21T20:14:53+0200] curl https://musicassistant.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:54+0200] curl https://musicassistant.kirelabs.org/ resolve=musicassistant.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 curl_rc=0
+curl: (28) Operation timed out after 3001 milliseconds with 249 bytes received
+[2026-08-21T20:14:57+0200] websocket https://musicassistant.kirelabs.org/ws -> HTTP 101 remote=192.168.50.5 curl_rc=28
+[2026-08-21T20:14:57+0200] curl https://homepage.kirelabs.org/ resolve=normal -> HTTP 302 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:57+0200] curl https://auth.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:57+0200] curl https://z2m.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:57+0200] curl https://evcc.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:57+0200] curl https://immich.kirelabs.org/ resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:57+0200] curl https://jellyfin.kirelabs.org/ resolve=normal -> HTTP 302 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:57+0200] curl https://seerr.kirelabs.org/ resolve=normal -> HTTP 307 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:57+0200] curl https://pihole-homelab.kirelabs.org/admin/ resolve=normal -> HTTP 302 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:57+0200] curl https://pihole-nameserver.kirelabs.org/admin/ resolve=normal -> HTTP 302 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:57+0200] curl-keyword http://192.168.50.5:4000/health/readiness resolve=normal -> HTTP 200 remote=192.168.50.5 keyword="db":"connected" curl_rc=0
+[2026-08-21T20:14:57+0200] curl-keyword https://litellm.kirelabs.org/health/readiness resolve=normal -> HTTP 200 remote=192.168.50.5 keyword="db":"connected" curl_rc=0
+[2026-08-21T20:14:58+0200] curl-keyword https://litellm.kirelabs.org/health/readiness resolve=litellm.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 keyword="db":"connected" curl_rc=0
+[2026-08-21T20:14:58+0200] curl-keyword http://192.168.50.10:9292/running resolve=normal -> HTTP 200 remote=192.168.50.10 keyword="state":"ready" curl_rc=0
+[2026-08-21T20:14:58+0200] curl-keyword https://llama-swap.kirelabs.org/running resolve=normal -> HTTP 200 remote=192.168.50.5 keyword="state":"ready" curl_rc=0
+[2026-08-21T20:14:58+0200] curl-keyword https://llama-swap.kirelabs.org/running resolve=llama-swap.kirelabs.org:443:192.168.50.5 -> HTTP 200 remote=192.168.50.5 keyword="state":"ready" curl_rc=0
+[2026-08-21T20:14:58+0200] llamaswap-running model=Qwen3.8-27B-Instruct-AutoRound-vLLM -> HTTP 200 model=Qwen3.8-27B-Instruct-AutoRound-vLLM state=ready curl_rc=0
+[2026-08-21T20:14:58+0200] llamaswap-running model=qwen3-embedding -> HTTP 200 model=qwen3-embedding state=ready curl_rc=0
+[2026-08-21T20:14:58+0200] llamaswap-running model=whisper-large-v3-turbo-q8-crispasr -> HTTP 200 model=whisper-large-v3-turbo-q8-crispasr state=ready curl_rc=0
+[2026-08-21T20:14:58+0200] llamaswap-running model=qwen3-tts -> HTTP 200 model=qwen3-tts state=ready curl_rc=0
+[2026-08-21T20:14:58+0200] curl-keyword http://127.0.0.1:8642/health resolve=normal -> HTTP 200 remote=127.0.0.1 keyword="status": "ok" curl_rc=0
+[2026-08-21T20:14:58+0200] curl https://hermes-local.kirelabs.org/ resolve=normal -> HTTP 302 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:58+0200] curl https://hermes-local.kirelabs.org/ resolve=hermes-local.kirelabs.org:443:192.168.50.5 -> HTTP 302 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:58+0200] curl http://192.168.50.10:8093/.well-known/t3/environment resolve=normal -> HTTP 200 remote=192.168.50.10 curl_rc=0
+[2026-08-21T20:14:58+0200] curl https://t3-ubuntu-ailab.kirelabs.org/.well-known/t3/environment resolve=normal -> HTTP 200 remote=192.168.50.5 curl_rc=0
+[2026-08-21T20:14:58+0200] nc 192.168.50.5 1883
+Connection to 192.168.50.5 1883 port [tcp/*] succeeded!
+
+[2026-08-21T20:14:58+0200] nc 192.168.50.5 445
+Connection to 192.168.50.5 445 port [tcp/microsoft-ds] succeeded!

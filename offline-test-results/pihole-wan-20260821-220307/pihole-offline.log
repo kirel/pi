@@ -1,0 +1,21 @@
+=== Pi-hole .5 / homelab-nuc ===
+host=nuc time=2026-08-21T22:19:09+02:00
+container=running health=healthy restarts=0
+dnsmasq: syntax check OK.
+cache_optimizer=43200
+rate_limit=dns.rateLimit.count = 1000,dns.rateLimit.interval = 60
+resilience_directives:
+use-stale-cache=43200
+dns-forward-max=1000
+filtered warnings since test start:
+
+=== Pi-hole .4 / nameserver-pi ===
+host=nameserver-pi time=2026-08-21T22:19:12+02:00
+container=running health=healthy restarts=0
+dnsmasq: syntax check OK.
+cache_optimizer=43200
+rate_limit=dns.rateLimit.count = 1000,dns.rateLimit.interval = 60
+resilience_directives:
+use-stale-cache=43200
+dns-forward-max=1000
+filtered warnings since test start:
