@@ -25,6 +25,18 @@
     - "{{ jellyfin_music_folder }}"
     - "{{ navidrome_data_folder }}"
 
+- name: Inspect Jellyfin Quick Sync render device
+  ansible.builtin.stat:
+    path: /dev/dri/renderD128
+  register: media_jellyfin_render_device
+
+- name: Require Jellyfin Quick Sync render device
+  ansible.builtin.assert:
+    that:
+      - media_jellyfin_render_device.stat.exists
+      - media_jellyfin_render_device.stat.ischr
+    fail_msg: Intel Quick Sync render device /dev/dri/renderD128 is unavailable
+
 - name: Start media services
   community.docker.docker_compose_v2:
     project_name: jellyfin
@@ -36,6 +48,10 @@
           image: jellyfin/jellyfin
           container_name: jellyfin
           user: "{{ uid }}:{{ uid }}"
+          group_add:
+            - "{{ media_jellyfin_render_device.stat.gid }}"
+          devices:
+            - /dev/dri/renderD128:/dev/dri/renderD128
           network_mode: host
           pull_policy: always
           volumes:
@@ -108,3 +124,37 @@
         fi
   register: jellyfin_transcode_cache
   changed_when: "'changed' in jellyfin_transcode_cache.stdout"
+
+- name: Read Jellyfin encoding configuration
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ jellyfin_http_port }}/System/Configuration/encoding"
+    method: GET
+    headers:
+      X-Emby-Token: "{{ jellyfin_api_key }}"
+    return_content: true
+    status_code:
+      - 200
+      - 503
+  register: media_jellyfin_encoding_configuration
+  until: media_jellyfin_encoding_configuration.status == 200
+  retries: 30
+  delay: 2
+  no_log: true
+
+- name: Enable Intel Quick Sync in Jellyfin
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ jellyfin_http_port }}/System/Configuration/encoding"
+    method: POST
+    headers:
+      X-Emby-Token: "{{ jellyfin_api_key }}"
+    body_format: json
+    body: "{{ media_jellyfin_encoding_configuration.json | combine(media_jellyfin_quicksync_configuration) }}"
+    status_code: 204
+  when: >-
+    media_jellyfin_encoding_configuration.json.HardwareAccelerationType != 'qsv' or
+    not media_jellyfin_encoding_configuration.json.EnableHardwareEncoding
+  no_log: true
+  vars:
+    media_jellyfin_quicksync_configuration:
+      HardwareAccelerationType: qsv
+      EnableHardwareEncoding: true
