@@ -136,7 +136,7 @@ hermes_docker_kirelabs_custom_providers:
 
 hermes_docker_fallback_providers:
   - provider: custom:kirelabs-litellm
-    model: glm-5.3
+    model: glm-5.3-flash
   - provider: custom:kirelabs-litellm
     model: minimax-m3
 
