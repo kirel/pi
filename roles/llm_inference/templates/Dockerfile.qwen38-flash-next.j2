@@ -9,6 +9,10 @@ RUN apt-get update \
     && git -C /src remote add origin "${LLAMA_CPP_REPOSITORY}" \
     && git -C /src fetch --depth 1 origin "${LLAMA_CPP_REVISION}" \
     && git -C /src checkout --detach FETCH_HEAD \
+{% for revision in llamaswap_qwen38_flash_next_cherry_picks | default([]) %}
+    && git -C /src fetch --depth 2 origin "{{ revision }}" \
+    && git -C /src -c user.name=Ansible -c user.email=ansible@localhost cherry-pick FETCH_HEAD \
+{% endfor %}
     && git -C /src rev-parse HEAD > /src/llama-cpp-revision \
     && rm -rf /var/lib/apt/lists/*
 
