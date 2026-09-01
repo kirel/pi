@@ -8,6 +8,15 @@ Guidance for AI agents working in this **Ansible-based homelab infrastructure**.
 - **MCP:** `litellm_mcp_servers` in `roles/llm_tools/defaults/main.yml` is the source of truth. LiteLLM config, Dockerfile npm/uv preinstalls, and stdio allowlist are rendered from it.
 - **DNS/SSL:** Pi-hole creates host A-records and service CNAMEs; Caddy terminates `*.kirelabs.org` TLS via Regfish DNS-01.
 
+## Secret Handover through 1Password
+
+- The 1Password vault `homelab` is the preferred secure handover channel when Daniel needs to provide an agent with a password, token, key, or other secret. Ask for or accept an `op://homelab/...` reference instead of asking Daniel to paste the resolved value into chat.
+- `ailab-ubuntu` has the 1Password CLI at `/usr/bin/op` and the authenticated service-account wrapper `/usr/local/bin/op-sa`. Verify availability before use; when the active execution environment lacks `op`, run the complete secret-consuming operation remotely on `ailab-ubuntu` rather than returning the secret over SSH.
+- Resolve and consume a secret within the same shell or process. Never run `op-sa read` in a way that emits the resolved value into tool output, logs, command arguments, diffs, facts, debug tasks, or the conversation context. Pass it directly through stdin, a narrowly scoped environment variable, or a temporary `0600` file that is removed immediately after use, according to what the target tool safely supports.
+- Secret references, item names, and field names may be handled declaratively; resolved secret values must not be inspected, repeated, summarized, compared, or copied into repository files. Use `no_log: true` and `diff: false` for Ansible tasks that may expose them.
+- Retrieve only the explicitly requested field and preserve the scope of the existing service account. If a target command cannot accept the secret without exposing it, stop and ask for a safer integration path.
+- The `op-sa` service account requires network access. It is a handover and runtime-secret mechanism, not the offline recovery path for Ansible Vault; controller-local Vault password files remain separate.
+
 ## Deployments
 
 ```bash
