@@ -87,6 +87,13 @@ services:
     domain: radarr.kirelabs.org
     group: Downloads
     icon: radarr
+  seerr:
+    name: Seerr
+    target: homelab-nuc.lan
+    http_port: "{{ seerr_http_port }}"
+    domain: seerr.kirelabs.org
+    group: Downloads
+    icon: seerr
   linkding:
     name: Linkding
     target: homelab-nuc.lan

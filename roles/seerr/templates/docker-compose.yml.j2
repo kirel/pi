@@ -1,0 +1,28 @@
+---
+services:
+  seerr:
+    image: "{{ seerr_image }}"
+    init: true
+    container_name: seerr
+    restart: unless-stopped
+    environment:
+      LOG_LEVEL: info
+      TZ: "{{ system_timezone }}"
+      PORT: "{{ seerr_http_port }}"
+    ports:
+      - "{{ seerr_http_port }}:{{ seerr_http_port }}"
+    volumes:
+      - "{{ seerr_config_folder }}:/app/config"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:{{ seerr_http_port }}/api/v1/settings/public || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    labels:
+      homepage.group: "{{ services.seerr.group }}"
+      homepage.name: "{{ services.seerr.name }}"
+      homepage.href: "https://{{ services.seerr.domain }}"
+      homepage.icon: "{{ services.seerr.icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: seerr

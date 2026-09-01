@@ -56,6 +56,7 @@ qbittorrent_gid: 100 # users
 prowlarr_http_port: 9696
 sonarr_http_port: 8989
 radarr_http_port: 7878
+seerr_http_port: 5055
 dozzle_agent_port: 7007
 immich_http_port: 2283
 immich_ml_http_port: 3003
@@ -161,9 +162,11 @@ qbittorrent_vpn_server_countries: Germany
 prowlarr_config_folder: "{{ config_root }}/prowlarr"
 sonarr_config_folder: "{{ config_root }}/sonarr"
 radarr_config_folder: "{{ config_root }}/radarr"
+seerr_config_folder: "{{ config_root }}/seerr"
 prowlarr_image: lscr.io/linuxserver/prowlarr:latest
 sonarr_image: lscr.io/linuxserver/sonarr:latest
 radarr_image: lscr.io/linuxserver/radarr:latest
+seerr_image: ghcr.io/seerr-team/seerr:latest
 readeck_domain_name: readeck.kirelabs.org
 dockhand_data_folder: "{{ config_root }}/dockhand"
 dozzle_data_folder: "{{ config_root }}/dozzle"

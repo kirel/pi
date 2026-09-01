@@ -1,0 +1,15 @@
+---
+- name: Create Seerr config directory
+  ansible.builtin.file:
+    path: "{{ seerr_config_folder }}"
+    state: directory
+    owner: "{{ uid }}"
+    group: "{{ uid }}"
+    mode: "0755"
+
+- name: Deploy Seerr
+  community.docker.docker_compose_v2:
+    project_name: seerr
+    pull: always
+    state: present
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"

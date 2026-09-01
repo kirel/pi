@@ -37,6 +37,7 @@
     - { role: prowlarr, become: true, tags: [prowlarr, media-automation] }
     - { role: sonarr, become: true, tags: [sonarr, media-automation] }
     - { role: radarr, become: true, tags: [radarr, media-automation] }
+    - { role: seerr, become: true, tags: [seerr, media-automation] }
     - { role: linkding, become: true, tags: [linkding] }
     - { role: changedetection, become: true, tags: [changedetection] }
     - { role: immich, become: true, tags: [immich] }
