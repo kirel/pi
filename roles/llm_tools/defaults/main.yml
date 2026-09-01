@@ -122,12 +122,10 @@ litellm_mcp_servers:
     install:
       manager: uv
       args:
-        - "--from"
-        - "git+https://github.com/kirel/immich-photo-manager.git@codex-uvx-mcp-server"
-        # The server still imports mcp.server.fastmcp, which MCP SDK 2.0 removed.
+        - "immich-photo-manager==1.4.0"
+        # The server requires MCP SDK 1.x; keep the validated version explicit.
         - "--with"
         - "mcp==1.29.0"
-        - "immich-photo-manager"
   n8n:
     transport: stdio
     command: n8n-mcp
