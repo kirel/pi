@@ -1,0 +1,55 @@
+---
+services:
+  hermes-assist:
+    image: "{{ hermes_assist_image }}"
+    container_name: "{{ hermes_assist_container_name }}"
+    restart: unless-stopped
+    environment:
+      TZ: "{{ hermes_assist_timezone }}"
+    ports:
+      - "{{ hermes_assist_bind_address }}:{{ hermes_assist_http_port }}:{{ hermes_assist_internal_http_port }}"
+    networks:
+      - hermes-assist
+    volumes:
+      - "{{ hermes_assist_config_folder }}:/config"
+      - /etc/localtime:/etc/localtime:ro
+    dns:
+      - "{{ nameserver_pi_ip }}"
+      - "{{ homelab_nuc_ip }}"
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - >-
+          import urllib.request;
+          urllib.request.urlopen("http://127.0.0.1:{{ hermes_assist_internal_http_port }}/", timeout=5)
+      start_period: 60s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    stop_grace_period: 60s
+    labels:
+      homepage.group: "{{ services['hermes-assist'].group }}"
+      homepage.name: "{{ services['hermes-assist'].name }}"
+      homepage.href: "https://{{ services['hermes-assist'].domain }}"
+      homepage.icon: "{{ services['hermes-assist'].icon }}"
+      homepage.server: "{{ inventory_hostname }}"
+      homepage.container: "{{ hermes_assist_container_name }}"
+      kuma.hermes-assist-web.http.name: Hermes Assist Web
+      kuma.hermes-assist-web.http.url: "https://{{ services['hermes-assist'].domain }}"
+      kuma.hermes-assist-web.http.interval: "60"
+      kuma.hermes-assist-container.docker.name: Hermes Assist Container
+      kuma.hermes-assist-container.docker.docker_container: "{{ hermes_assist_container_name }}"
+      kuma.hermes-assist-container.docker.docker_host_name: local
+      kuma.hermes-assist-container.docker.interval: "60"
+
+networks:
+  hermes-assist:
+    name: "{{ hermes_assist_network_name }}"
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "{{ hermes_assist_network_subnet }}"

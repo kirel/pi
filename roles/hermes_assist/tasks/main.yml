@@ -1,0 +1,227 @@
+---
+- name: Validate Hermes Assist variables
+  ansible.builtin.assert:
+    that:
+      - hermes_assist_project_name | length > 0
+      - hermes_assist_container_name | length > 0
+      - hermes_assist_config_folder | length > 0
+      - hermes_assist_bind_address in ['127.0.0.1', '::1']
+      - hermes_assist_http_port | int > 0
+      - hermes_assist_http_port | int < 65536
+      - hermes_assist_local_openai_checksum is match('^sha256:[0-9a-f]{64}$')
+      - hermes_assist_hermes_api_key | string | length > 0
+    fail_msg: Hermes Assist must remain loopback-only and use a checksummed Local OpenAI release.
+
+- name: Install Hermes Assist archive dependency
+  ansible.builtin.apt:
+    name: unzip
+    state: present
+
+- name: Create Hermes Assist directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - path: "{{ hermes_assist_config_folder }}"
+      owner: "{{ hermes_assist_config_owner }}"
+      group: "{{ hermes_assist_config_group }}"
+      mode: "0700"
+    - path: "{{ hermes_assist_config_folder }}/custom_components"
+      owner: "{{ hermes_assist_config_owner }}"
+      group: "{{ hermes_assist_config_group }}"
+      mode: "0700"
+    - path: "{{ hermes_assist_download_folder }}"
+      owner: root
+      group: root
+      mode: "0755"
+
+- name: Download checksummed Local OpenAI release
+  ansible.builtin.get_url:
+    url: "{{ hermes_assist_local_openai_url }}"
+    dest: >-
+      {{ hermes_assist_download_folder }}/local_openai-{{ hermes_assist_local_openai_version }}.zip
+    checksum: "{{ hermes_assist_local_openai_checksum }}"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Inspect installed Local OpenAI manifest
+  ansible.builtin.stat:
+    path: "{{ hermes_assist_config_folder }}/custom_components/local_openai/manifest.json"
+  register: hermes_assist_existing_local_openai_manifest
+
+- name: Read existing Local OpenAI manifest
+  ansible.builtin.slurp:
+    src: "{{ hermes_assist_config_folder }}/custom_components/local_openai/manifest.json"
+  register: hermes_assist_existing_local_openai_content
+  when: hermes_assist_existing_local_openai_manifest.stat.exists
+
+- name: Determine whether Local OpenAI installation is required
+  ansible.builtin.set_fact:
+    hermes_assist_local_openai_install_required: >-
+      {{
+        not hermes_assist_existing_local_openai_manifest.stat.exists or
+        (
+          (
+            hermes_assist_existing_local_openai_content.content
+            | default('e30=')
+            | b64decode
+            | from_json
+          ).version
+          | default('')
+        ) != hermes_assist_local_openai_version
+      }}
+
+- name: Remove superseded Local OpenAI integration
+  ansible.builtin.file:
+    path: "{{ hermes_assist_config_folder }}/custom_components/local_openai"
+    state: absent
+  when: hermes_assist_local_openai_install_required | bool
+
+- name: Create Local OpenAI integration directory
+  ansible.builtin.file:
+    path: "{{ hermes_assist_config_folder }}/custom_components/local_openai"
+    state: directory
+    owner: "{{ hermes_assist_config_owner }}"
+    group: "{{ hermes_assist_config_group }}"
+    mode: "0700"
+  when: hermes_assist_local_openai_install_required | bool
+
+- name: Install Local OpenAI custom integration
+  ansible.builtin.unarchive:
+    src: >-
+      {{ hermes_assist_download_folder }}/local_openai-{{ hermes_assist_local_openai_version }}.zip
+    dest: "{{ hermes_assist_config_folder }}/custom_components/local_openai"
+    remote_src: true
+    owner: "{{ hermes_assist_config_owner }}"
+    group: "{{ hermes_assist_config_group }}"
+    mode: "u=rwX,go="
+  register: hermes_assist_local_openai_install
+  when: hermes_assist_local_openai_install_required | bool
+
+- name: Read installed Local OpenAI manifest
+  ansible.builtin.slurp:
+    src: "{{ hermes_assist_config_folder }}/custom_components/local_openai/manifest.json"
+  register: hermes_assist_local_openai_manifest
+
+- name: Verify installed Local OpenAI release
+  ansible.builtin.assert:
+    that:
+      - >-
+        (hermes_assist_local_openai_manifest.content | b64decode | from_json).domain
+        == 'local_openai'
+      - >-
+        (hermes_assist_local_openai_manifest.content | b64decode | from_json).version
+        == hermes_assist_local_openai_version
+    fail_msg: The installed Local OpenAI manifest does not match the pinned release.
+
+- name: Configure Hermes Assist bootstrap
+  ansible.builtin.template:
+    src: configuration.yaml.j2
+    dest: "{{ hermes_assist_config_folder }}/configuration.yaml"
+    owner: "{{ hermes_assist_config_owner }}"
+    group: "{{ hermes_assist_config_group }}"
+    mode: "0600"
+    backup: true
+  register: hermes_assist_configuration
+
+- name: Validate Hermes Assist configuration
+  community.docker.docker_container:
+    name: hermes-assist-config-check
+    image: "{{ hermes_assist_image }}"
+    pull: "{{ hermes_assist_pull_policy }}"
+    state: started
+    detach: false
+    cleanup: true
+    command_handling: correct
+    entrypoint:
+      - python3
+    command:
+      - -m
+      - homeassistant
+      - --script
+      - check_config
+      - --config
+      - /config
+    volumes:
+      - "{{ hermes_assist_config_folder }}:/config"
+    network_mode: bridge
+    output_logs: true
+  changed_when: false
+
+- name: Verify Wyoming voice service connectivity
+  ansible.builtin.wait_for:
+    host: "{{ hermes_assist_wyoming_host }}"
+    port: "{{ hermes_assist_wyoming_port }}"
+    state: started
+    timeout: 10
+
+- name: Verify bare-metal Hermes API connectivity
+  ansible.builtin.uri:
+    url: >-
+      http://{{ hermes_assist_hermes_api_host }}:{{ hermes_assist_hermes_api_port }}/health
+    status_code: 200
+
+- name: Read bare-metal Hermes API models from homelab
+  ansible.builtin.uri:
+    url: >-
+      http://{{ hermes_assist_hermes_api_host }}:{{ hermes_assist_hermes_api_port }}/v1/models
+    headers:
+      Authorization: "Bearer {{ hermes_assist_hermes_api_key }}"
+    return_content: true
+    status_code: 200
+  register: hermes_assist_hermes_models
+  no_log: true
+
+- name: Assert required Hermes model is available from homelab
+  ansible.builtin.assert:
+    that:
+      - >-
+        hermes_assist_hermes_api_model
+        in (hermes_assist_hermes_models.json.data | map(attribute='id') | list)
+    fail_msg: The required Hermes API model is not available from homelab.
+  no_log: true
+
+- name: Deploy Hermes Assist
+  community.docker.docker_compose_v2:
+    project_name: "{{ hermes_assist_project_name }}"
+    pull: "{{ hermes_assist_pull_policy }}"
+    state: present
+    remove_orphans: true
+    recreate: >-
+      {{
+        'always'
+        if
+          (hermes_assist_local_openai_install.changed | default(false)) or
+          hermes_assist_configuration.changed
+        else 'auto'
+      }}
+    definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
+  register: hermes_assist_compose
+
+- name: Assert Hermes Assist container is running
+  ansible.builtin.assert:
+    that:
+      - >-
+        hermes_assist_compose.containers
+        | selectattr('Name', 'equalto', hermes_assist_container_name)
+        | selectattr('State', 'equalto', 'running')
+        | list
+        | length == 1
+    fail_msg: Hermes Assist container did not reach the running state.
+
+- name: Wait for Hermes Assist HTTP endpoint
+  ansible.builtin.uri:
+    url: >-
+      http://{{ hermes_assist_bind_address }}:{{ hermes_assist_http_port }}/
+    follow_redirects: none
+    status_code:
+      - 200
+      - 302
+  register: hermes_assist_http
+  until: hermes_assist_http.status in [200, 302]
+  retries: 30
+  delay: 2

@@ -225,6 +225,11 @@ hermes_baremetal_caddy_version: "{{ hermes_caddy_version }}"
 hermes_baremetal_publish_static_roots:
   - /home/daniel
 hermes_baremetal_env:
+  API_SERVER_ENABLED: "true"
+  API_SERVER_HOST: "{{ ansible_host }}"
+  API_SERVER_KEY: "{{ vault_hermes_baremetal_api_server_key | trim }}"
+  API_SERVER_MODEL_NAME: hermes-agent
+  API_SERVER_PORT: "8642"
   HERMES_DASHBOARD: "1"
   HERMES_DASHBOARD_HOST: "127.0.0.1"
   HERMES_DASHBOARD_PORT: "9119"

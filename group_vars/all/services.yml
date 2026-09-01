@@ -23,6 +23,13 @@ services:
     domain: homeassistant.kirelabs.org
     group: Smart Home
     icon: home-assistant.png
+  hermes-assist:
+    name: Hermes Assist
+    http_port: 8124
+    target: homelab-nuc.lan
+    domain: hermes-assist.kirelabs.org
+    group: AI
+    icon: hermes-icon.png
   musicassistant:
     name: Music Assistant
     http_port: "{{ music_assistant_http_port }}"

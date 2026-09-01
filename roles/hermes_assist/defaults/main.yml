@@ -1,0 +1,34 @@
+---
+hermes_assist_project_name: hermes-assist
+hermes_assist_container_name: hermes-assist
+hermes_assist_image: ghcr.io/home-assistant/home-assistant:2026.8.2
+hermes_assist_pull_policy: missing
+
+hermes_assist_config_folder: "{{ config_root }}/hermes-assist"
+hermes_assist_config_owner: "{{ username }}"
+hermes_assist_config_group: "{{ username }}"
+
+# Caddy runs in host network mode on homelab-nuc and reaches this listener via
+# localhost. Keeping it on loopback prevents direct LAN access around Caddy.
+hermes_assist_bind_address: 127.0.0.1
+hermes_assist_http_port: "{{ services['hermes-assist'].http_port }}"
+hermes_assist_internal_http_port: 8123
+hermes_assist_network_name: hermes-assist
+hermes_assist_network_subnet: 172.16.50.0/24
+
+hermes_assist_name: Hermes Assist
+hermes_assist_timezone: "{{ system_timezone }}"
+
+hermes_assist_local_openai_version: 1.11.1
+hermes_assist_local_openai_url: >-
+  https://github.com/skye-harris/hass_local_openai_llm/releases/download/{{ hermes_assist_local_openai_version }}/local_openai.zip
+hermes_assist_local_openai_checksum: >-
+  sha256:615a04ebcdf6d57dce060851e1cbf7416a232c039a9c46dbbf2fec03f86d62dd
+hermes_assist_download_folder: /var/cache/hermes-assist
+
+hermes_assist_wyoming_host: "{{ ailab_ubuntu_ip }}"
+hermes_assist_wyoming_port: 10300
+hermes_assist_hermes_api_host: "{{ hostvars['ubuntu-8gb-fsn1-1'].ansible_host }}"
+hermes_assist_hermes_api_port: 8642
+hermes_assist_hermes_api_model: hermes-agent
+hermes_assist_hermes_api_key: "{{ vault_hermes_baremetal_api_server_key | trim }}"

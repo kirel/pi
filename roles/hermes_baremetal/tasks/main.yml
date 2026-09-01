@@ -11,6 +11,10 @@
       - >-
         not (hermes_baremetal_publish_enabled | bool) or
         (hermes_baremetal_publish_static_roots | length > 0)
+      - >-
+        (hermes_baremetal_env.API_SERVER_ENABLED | default('false') | string | lower)
+        not in ['1', 'true', 'yes', 'on'] or
+        (hermes_baremetal_env.API_SERVER_KEY | default('') | string | length > 0)
     fail_msg: >-
       Configure at least one bare-metal Hermes user and, when publishing is
       enabled, provide regfish_token plus allowed static roots.
@@ -55,6 +59,7 @@
     owner: "{{ item }}"
     group: "{{ item }}"
     mode: '0600'
+    backup: true
     marker: "# {mark} ANSIBLE MANAGED HERMES ENV"
     block: |
       {% for key, value in (hermes_baremetal_env | dictsort) %}
@@ -62,6 +67,20 @@
       {% endfor %}
   loop: "{{ hermes_baremetal_users }}"
   register: hermes_baremetal_env_file
+  no_log: true
+  when: hermes_baremetal_env | length > 0
+
+- name: Remove legacy manual bare-metal API environment entries
+  ansible.builtin.replace:
+    path: "/home/{{ item }}/.hermes/.env"
+    regexp: >-
+      (?ms)(^# END ANSIBLE MANAGED HERMES ENV\n)(?:API_SERVER_(?:ENABLED|HOST|KEY|MODEL_NAME|PORT)=[^\n]*\n?)+
+    replace: '\1'
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0600'
+  loop: "{{ hermes_baremetal_users }}"
+  register: hermes_baremetal_legacy_api_env
   no_log: true
   when: hermes_baremetal_env | length > 0
 
@@ -133,7 +152,49 @@
   changed_when: true
   when:
     - hermes_baremetal_env | length > 0
-    - hermes_baremetal_env_file is changed or hermes_baremetal_service_env_dropin is changed
+    - >-
+      hermes_baremetal_env_file is changed or
+      hermes_baremetal_legacy_api_env is changed or
+      hermes_baremetal_service_env_dropin is changed
+
+- name: Wait for bare-metal Hermes API health
+  ansible.builtin.uri:
+    url: >-
+      http://{{ hermes_baremetal_env.API_SERVER_HOST }}:{{ hermes_baremetal_env.API_SERVER_PORT }}/health
+    status_code: 200
+  register: hermes_baremetal_api_health
+  until: hermes_baremetal_api_health.status == 200
+  retries: 30
+  delay: 2
+  when: >-
+    (hermes_baremetal_env.API_SERVER_ENABLED | default('false') | string | lower)
+    in ['1', 'true', 'yes', 'on']
+
+- name: Verify authenticated bare-metal Hermes API model
+  ansible.builtin.uri:
+    url: >-
+      http://{{ hermes_baremetal_env.API_SERVER_HOST }}:{{ hermes_baremetal_env.API_SERVER_PORT }}/v1/models
+    headers:
+      Authorization: "Bearer {{ hermes_baremetal_env.API_SERVER_KEY }}"
+    return_content: true
+    status_code: 200
+  register: hermes_baremetal_api_models
+  no_log: true
+  when: >-
+    (hermes_baremetal_env.API_SERVER_ENABLED | default('false') | string | lower)
+    in ['1', 'true', 'yes', 'on']
+
+- name: Assert configured bare-metal Hermes API model is advertised
+  ansible.builtin.assert:
+    that:
+      - >-
+        hermes_baremetal_env.API_SERVER_MODEL_NAME
+        in (hermes_baremetal_api_models.json.data | map(attribute='id') | list)
+    fail_msg: Bare-metal Hermes API did not advertise the configured model.
+  no_log: true
+  when: >-
+    (hermes_baremetal_env.API_SERVER_ENABLED | default('false') | string | lower)
+    in ['1', 'true', 'yes', 'on']
 
 - name: Enable and start bare-metal Hermes dashboard user service
   ansible.builtin.shell: >-
@@ -168,7 +229,10 @@
   when: (hermes_baremetal_env.HERMES_DASHBOARD | default('0') | string) in ['1', 'true', 'True', 'yes', 'on']
 
 - name: Check bare-metal Hermes installation
-  ansible.builtin.command: "/home/{{ item }}/.local/bin/hermes version"
+  ansible.builtin.command:
+    argv:
+      - "/home/{{ item }}/.local/bin/hermes"
+      - --version
   become: true
   become_user: "{{ item }}"
   environment:
