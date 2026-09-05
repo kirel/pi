@@ -13,7 +13,7 @@
 model_list:
 {% if local_llms_enabled %}
   # Local models via llama-swap - base models and behavioral variants
-  {% for model in llamaswap_models -%}
+  {% for model in llamaswap_models if model.enabled | default(true) | bool -%}
   # Base model
   - model_name: {{ model.alias }}
     litellm_params:

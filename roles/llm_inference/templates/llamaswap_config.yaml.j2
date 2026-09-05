@@ -6,7 +6,7 @@ sendLoadingState: true
 
 
 models:
-{% for model in llamaswap_models %}
+{% for model in llamaswap_models if model.enabled | default(true) | bool %}
   {{ model.alias }}:
 {% if model.aliases is defined and model.aliases %}
     aliases:
@@ -54,7 +54,7 @@ groups:
     exclusive: {{ group_config.exclusive | lower }}
 {% endif %}
     members:
-{% for model in llamaswap_models if group_name == model.group %}
+{% for model in llamaswap_models if group_name == model.group and model.enabled | default(true) | bool %}
       - "{{ model.alias }}"
 {% endfor %}
 {% endfor %}
@@ -74,7 +74,7 @@ hooks:
     preload:
 {% for model_alias in llamaswap_preload %}
 {% set found = namespace(base_alias=model_alias) %}
-{% for model in llamaswap_models %}
+{% for model in llamaswap_models if model.enabled | default(true) | bool %}
 {% if model.variants is defined %}
 {% for variant_name, _ in model.variants.items() %}
 {% if model.alias ~ '-' ~ variant_name == model_alias %}
