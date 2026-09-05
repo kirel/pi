@@ -1,13 +1,15 @@
 ---
 hermes_litellm_model_profiles:
   local_hermes:
+    - gpt-6-astra-cpa
+    - gemini-3.8-flash-high-cpa
+    - glm-5.3-flash
+    - glm-5.3-flash-openrouter
     - home-hermes
     - Qwen3.8-27B-Instruct
     - Qwen3.8-27B-Instruct-low
     - Qwen3.8-27B-Instruct-medium
     - Qwen3.8-27B-Instruct-nothink
-    - minimax-m3
-    - glm-5.2
     - gpt-5.6-sol-cpa
     - gpt-5.6-terra-cpa
     - gpt-5.6-luna-cpa
@@ -22,10 +24,15 @@ hermes_litellm_model_profiles:
     - home-tts
     - home-tts-design
   all_models:
-    - all-proxy-models
+    # This sentinel preserves explicit team models when LiteLLM expands the
+    # public model catalog; all-proxy-models would hide glm-5.3 in /v1/models.
+    - all-team-models
+    - glm-5.3
   docker_chat:
+    - gpt-6-astra-cpa
+    - gemini-3.8-flash-high-cpa
+    - glm-5.3-flash-openrouter
     - glm-5.3-flash
-    - minimax-m3
     - gpt-5.6-sol-cpa
     - gpt-5.6-terra-cpa
     - gpt-5.6-luna-cpa
@@ -89,3 +96,27 @@ litellm_managed_virtual_key_teams:
         - workflow_admin
         - code
         - media_generation
+
+# Shared routing defaults; session /reasoning takes precedence in Hermes.
+hermes_litellm_cloud_default_model: gpt-6-astra-cpa
+hermes_litellm_custom_providers:
+  - name: KireLabs LiteLLM
+    base_url: https://litellm.kirelabs.org/v1
+    key_env: LITELLM_API_KEY
+    api_mode: codex_responses
+    discover_models: true
+
+hermes_litellm_reasoning_defaults:
+  reasoning_effort: low
+  reasoning_overrides:
+    glm-5.3-flash: high
+    glm-5.3-flash-openrouter: high
+    glm-5.3: high
+
+hermes_litellm_cloud_fallbacks:
+  - provider: custom:kirelabs-litellm
+    model: gemini-3.8-flash-high-cpa
+  - provider: custom:kirelabs-litellm
+    model: glm-5.3-flash
+  - provider: custom:kirelabs-litellm
+    model: glm-5.3-flash-openrouter

@@ -127,23 +127,13 @@ hermes_docker_agents_external_skill_dirs:
       container_dir: /skills/global
     - host_dir: /home/daniel/projects/agent-skills/skills/family
       container_dir: /skills/family
-hermes_docker_kirelabs_custom_providers:
-  - name: KireLabs LiteLLM
-    base_url: https://litellm.kirelabs.org/v1
-    key_env: LITELLM_API_KEY
-    api_mode: codex_responses
-    discover_models: true
-
-hermes_docker_fallback_providers:
-  - provider: custom:kirelabs-litellm
-    model: glm-5.3-flash
-  - provider: custom:kirelabs-litellm
-    model: minimax-m3
+hermes_docker_kirelabs_custom_providers: "{{ hermes_litellm_custom_providers }}"
+hermes_docker_fallback_providers: "{{ hermes_litellm_cloud_fallbacks }}"
 
 hermes_docker_agents_config_overrides:
   multipurpose:
     model:
-      default: gpt-5.6-terra-cpa
+      default: "{{ hermes_litellm_cloud_default_model }}"
       provider: custom:kirelabs-litellm
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"
@@ -156,7 +146,7 @@ hermes_docker_agents_config_overrides:
         - /skills/caddy-proxy
   anna:
     model:
-      default: gpt-5.6-terra-cpa
+      default: "{{ hermes_litellm_cloud_default_model }}"
       provider: custom:kirelabs-litellm
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"
@@ -169,12 +159,23 @@ hermes_docker_agents_config_overrides:
         - /skills/caddy-proxy
   sabine:
     model:
-      default: gpt-5.6-terra-cpa
+      default: "{{ hermes_litellm_cloud_default_model }}"
       provider: custom:kirelabs-litellm
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     fallback_providers: "{{ hermes_docker_fallback_providers }}"
+    moa:
+      presets:
+        default:
+          reference_models:
+            - provider: custom:kirelabs-litellm
+              model: gpt-6-astra-cpa
+            - provider: custom:kirelabs-litellm
+              model: gemini-3.8-flash-high-cpa
+          aggregator:
+            provider: custom:kirelabs-litellm
+            model: gpt-6-astra-cpa
     skills:
       external_dirs:
         - /skills/global
@@ -187,7 +188,7 @@ hermes_docker_agents_config_overrides:
         connect_timeout: 60
   marian:
     model:
-      default: gpt-5.6-terra-cpa
+      default: "{{ hermes_litellm_cloud_default_model }}"
       provider: custom:kirelabs-litellm
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"
@@ -200,7 +201,7 @@ hermes_docker_agents_config_overrides:
         - /skills/caddy-proxy
   nele:
     model:
-      default: gpt-5.6-terra-cpa
+      default: "{{ hermes_litellm_cloud_default_model }}"
       provider: custom:kirelabs-litellm
       base_url: "{{ hermes_docker_config_delete_marker }}"
       api_key: "{{ hermes_docker_config_delete_marker }}"

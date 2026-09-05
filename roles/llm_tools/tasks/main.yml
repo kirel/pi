@@ -136,11 +136,6 @@
             GEMINI_API_KEY: "{{ GEMINI_API_KEY }}"
             OPENROUTER_API_KEY: "{{ OPENROUTER_API_KEY }}"
             CPA_API_KEY: "{{ vault_cpa_api_key }}"
-            MINIMAX_API_KEY: >-
-              {{
-                MINIMAX_API_KEY |
-                default(hermes_docker_global_env_secret.MINIMAX_API_KEY | default(''))
-              }}
             ZAI_API_KEY: "{{ ZAI_API_KEY | default(GLM_API_KEY | default('')) }}"
             NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
             LITELLM_MCP_STDIO_EXTRA_COMMANDS: >-

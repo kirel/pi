@@ -53,6 +53,32 @@ litellm_extra_models:
   # CLIProxyAPI is exposed to LiteLLM as an OpenAI-compatible upstream. Keep
   # the public aliases suffixed with -cpa so callers can select this quota pool
   # explicitly and usage remains attributable in both LiteLLM and Usage Keeper.
+  - model_name: gpt-6-astra-cpa
+    litellm_params:
+      model: openai/gpt-6-astra
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: gemini-3.8-flash-high-cpa
+    litellm_params:
+      model: openai/gemini-3.8-flash-high
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      supports_reasoning: true
+      supports_function_calling: true
+      supports_vision: true
+
+  - model_name: glm-5.3-flash-openrouter
+    litellm_params:
+      model: openrouter/z-ai/glm-5.3-flash
+      api_key: os.environ/OPENROUTER_API_KEY
+      use_chat_completions_api: true
+    model_info:
+      supports_reasoning: true
+      supports_function_calling: true
+      supports_vision: true
+
   - model_name: gpt-5.6-sol-cpa
     litellm_params:
       model: openai/gpt-5.6-sol
@@ -161,33 +187,24 @@ litellm_extra_models:
     model_info:
       mode: video_generation
 
-  - model_name: minimax-m3
+  - model_name: glm-5.3
     litellm_params:
-      model: minimax/MiniMax-M3
-      api_key: os.environ/MINIMAX_API_KEY
-      api_base: https://api.minimax.io/v1
-    # MiniMax-M3 is a reasoning-capable multimodal model (per pi-ai catalog);
-    # declare capabilities so LiteLLM reports them via /model/info and clients
-    # like pi-provider-litellm enable thinking/vision instead of falling back
-    # to supports_reasoning=false on /v1/models-only discovery.
-    model_info:
-      supports_reasoning: true
-      supports_vision: true
-
-  - model_name: glm-5.2
-    litellm_params:
-      model: openai/glm-5.2
+      model: openai/glm-5.3
+      allowed_openai_params: [reasoning_effort]
       api_key: os.environ/ZAI_API_KEY
       api_base: https://api.z.ai/api/coding/paas/v4
-    # GLM-5.2 supports extended thinking (zai thinkingFormat); LiteLLM's
-    # /v1/models fallback doesn't expose supports_reasoning, so declare it
-    # here. The zai compat/thinkingFormat is matched by pi via the catalog id.
+      use_chat_completions_api: true
+    # Restrict this deployment to Daniel's bare-metal Hermes team, including
+    # when other keys inherit all proxy models.
     model_info:
+      team_id: hermes-baremetal
+      team_public_model_name: glm-5.3
       supports_reasoning: true
 
   - model_name: glm-5.3-flash
     litellm_params:
       model: openai/glm-5.3-flash
+      allowed_openai_params: [reasoning_effort]
       api_key: os.environ/ZAI_API_KEY
       api_base: https://api.z.ai/api/coding/paas/v4
       # Hermes speaks the Responses API, while Z.AI's coding endpoint exposes

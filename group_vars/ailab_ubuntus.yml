@@ -132,10 +132,12 @@ hermes_docker_agents_config_overrides:
   local:
     model:
       default: home-hermes
-      provider: custom
-      base_url: https://litellm.kirelabs.org/v1
-      api_key: ${LITELLM_API_KEY}
+      provider: custom:kirelabs-litellm
+      base_url: "{{ hermes_docker_config_delete_marker }}"
+      api_key: "{{ hermes_docker_config_delete_marker }}"
       context_length: "{{ llama_native_context_qwen38 }}"
+    custom_providers: "{{ hermes_litellm_custom_providers }}"
+    fallback_providers: []
     platforms:
       api_server:
         enabled: true
