@@ -76,6 +76,13 @@
       ansible.builtin.debug:
         msg: "Failed to set up SSH key for user {{ ansible_user }} on {{ inventory_hostname }}"
 
+- name: Distribute additional source keys through the central key management
+  ansible.builtin.include_tasks: additional_source.yml
+  loop: "{{ ssh_keys_additional_sources | default([]) }}"
+  loop_control:
+    loop_var: ssh_keys_source
+    label: "{{ ssh_keys_source.user }}@{{ ssh_keys_source.host }}"
+
 - name: Display the public key for verification
   ansible.builtin.debug:
     msg: |

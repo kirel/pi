@@ -1,0 +1,31 @@
+---
+- name: Ensure the additional source SSH directory exists
+  ansible.builtin.file:
+    path: "{{ ssh_keys_source.home }}/.ssh"
+    state: directory
+    owner: "{{ ssh_keys_source.user }}"
+    mode: '0700'
+  delegate_to: "{{ ssh_keys_source.host }}"
+
+- name: Ensure an additional source key exists without replacing existing keys
+  community.crypto.openssh_keypair:
+    path: "{{ ssh_keys_source.key }}"
+    type: ed25519
+    regenerate: never
+    owner: "{{ ssh_keys_source.user }}"
+    mode: '0600'
+    comment: "{{ ssh_keys_source.user }}@{{ ssh_keys_source.host }} backupnas management"
+  delegate_to: "{{ ssh_keys_source.host }}"
+
+- name: Read only the additional source public key
+  ansible.builtin.slurp:
+    src: "{{ ssh_keys_source.key }}.pub"
+  register: ssh_keys_additional_public_key
+  delegate_to: "{{ ssh_keys_source.host }}"
+
+- name: Authorize the additional source key on the target
+  ansible.posix.authorized_key:
+    user: "{{ ssh_keys_source.target_user | default(ansible_user) }}"
+    key_options: "{{ ssh_keys_source.key_options | default(omit) }}"
+    key: "{{ ssh_keys_additional_public_key.content | b64decode }}"
+    exclusive: false

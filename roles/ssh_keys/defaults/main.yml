@@ -6,3 +6,6 @@ source_host: ailab-ubuntu
 
 # The user on the source host for whom the SSH key will be generated
 source_user: daniel
+
+# Optional extra sources for existing inventory-user access (e.g. the backup NAS).
+ssh_keys_additional_sources: []
