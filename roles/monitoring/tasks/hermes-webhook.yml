@@ -1,0 +1,32 @@
+---
+- name: Render the Hermes AutoKuma notification
+  ansible.builtin.copy:
+    content: "{{ monitoring_autokuma_static_entities['hermes-projects'] | to_nice_json }}\n"
+    dest: "{{ monitoring_autokuma_static_monitors_folder }}/hermes-projects.json"
+    owner: "{{ username }}"
+    mode: "0600"
+  no_log: true
+  diff: false
+
+- name: Preserve explicit notification selections alongside AutoKuma defaults
+  ansible.builtin.copy:
+    content: "{{ monitoring_autokuma_static_entities[item] | to_nice_json }}\n"
+    dest: "{{ monitoring_autokuma_static_monitors_folder }}/{{ item }}.json"
+    owner: "{{ username }}"
+    mode: "0600"
+  loop:
+    - borgmatic-homelab
+    - cpa-openai-quota
+    - cpa-google-quota
+  no_log: true
+  diff: false
+
+- name: Configure Hermes as the default AutoKuma notification
+  ansible.builtin.template:
+    src: autokuma.toml.j2
+    dest: "{{ monitoring_autokuma_secret_config_file }}"
+    owner: "{{ username }}"
+    mode: "0600"
+  no_log: true
+  diff: false
+  notify: Restart AutoKuma

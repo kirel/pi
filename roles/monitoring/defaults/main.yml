@@ -67,6 +67,34 @@ monitoring_autokuma_docker_hosts:
 # owned monitors live on their Docker services as labels. Infrastructure checks,
 # Docker-host objects and checks containing secrets use protected files here.
 monitoring_autokuma_static_entities:
+  hermes-projects:
+    type: notification
+    name: "{{ monitoring_hermes_notification_name }}"
+    active: true
+    is_default: true
+    config:
+      type: webhook
+      name: "{{ monitoring_hermes_notification_name }}"
+      isDefault: true
+      webhookURL: "{{ monitoring_hermes_webhook_url }}"
+      httpMethod: post
+      webhookContentType: custom
+      webhookAdditionalHeaders: >-
+        {{ {'Content-Type': 'application/json',
+            'X-Gitlab-Token': vault_monitoring_hermes_webhook_secret | trim} | to_json }}
+      # Only send the event fields. The complete monitor object can contain
+      # authorization headers, request bodies and other credentials.
+      # AutoKuma's Tera pass must leave Kuma's Liquid expressions untouched.
+      webhookCustomBody: !unsafe |
+        {% raw %}
+        {
+          "monitor_name": {{ name | json }},
+          "monitor_id": {{ monitorJSON.id | default: 0 | json }},
+          "status": {{ status | json }},
+          "time": {{ heartbeatJSON.time | default: "" | json }},
+          "message": {{ msg | json }}
+        }
+        {% endraw %}
   cpa-openai-quota:
     type: json-query
     name: CPA OpenAI Restquote (%)
@@ -160,6 +188,7 @@ monitoring_autokuma_static_entities:
   borgmatic-homelab:
     type: push
     name: Borgmatic Homelab
+    notification_id_list: '{"3": true}'
     interval: 90000
     retry_interval: 60
     max_retries: 0

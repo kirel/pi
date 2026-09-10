@@ -1,0 +1,6 @@
+---
+- name: Restart AutoKuma
+  community.docker.docker_container:
+    name: autokuma
+    state: started
+    restart: true

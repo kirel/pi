@@ -1,0 +1,46 @@
+---
+- name: Configure Bare Metal Hermes monitoring subscription
+  hosts: ubuntu-8gb-fsn1-1
+  gather_facts: false
+  become: true
+  become_user: daniel
+  tasks:
+    - name: Reconcile the dedicated Uptime Kuma webhook subscription
+      ansible.builtin.command:
+        argv:
+          - /home/daniel/.hermes/hermes-agent/venv/bin/python
+          - -c
+          - |
+            import json, sys, time
+            from hermes_cli.webhook import _load_subscriptions, _save_subscriptions
+            desired = json.load(sys.stdin)
+            name = desired.pop("name")
+            subscriptions = _load_subscriptions()
+            current = subscriptions.get(name, {})
+            desired["created_at"] = current.get("created_at", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+            if current != desired:
+                subscriptions[name] = desired
+                _save_subscriptions(subscriptions)
+                print("SUBSCRIPTION_CHANGED")
+        chdir: /home/daniel/.hermes/hermes-agent
+        stdin: >-
+          {{ {'name': monitoring_hermes_webhook_name,
+              'description': 'Uptime Kuma alerts to Projects topic 3',
+              'secret': vault_monitoring_hermes_webhook_secret | trim,
+              'events': [], 'skills': [],
+              'prompt': monitoring_hermes_prompt,
+              'deliver': 'telegram',
+              'deliver_extra': monitoring_hermes_delivery} | to_json }}
+      register: monitoring_hermes_subscription
+      changed_when: "'SUBSCRIPTION_CHANGED' in monitoring_hermes_subscription.stdout"
+      no_log: true
+      diff: false
+
+- name: Configure Kuma Hermes notifications
+  hosts: homelab
+  gather_facts: false
+  tasks:
+    - name: Deploy only the Hermes notification integration
+      ansible.builtin.import_role:
+        name: monitoring
+        tasks_from: hermes-webhook

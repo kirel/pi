@@ -16,15 +16,14 @@
       mode: "0750"
 
 - name: Write AutoKuma secret configuration
-  ansible.builtin.copy:
-    content: |
-      [kuma]
-      auth_token = "{{ uptime_kuma_auth_token | trim }}"
+  ansible.builtin.template:
+    src: autokuma.toml.j2
     dest: "{{ monitoring_autokuma_secret_config_file }}"
     owner: "{{ username }}"
     mode: "0600"
   register: monitoring_autokuma_auth_token_result
   no_log: true
+  diff: false
 
 - name: Remove obsolete AutoKuma token file
   ansible.builtin.file:
