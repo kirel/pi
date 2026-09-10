@@ -1,0 +1,35 @@
+---
+backup_offsite_host: backupnas.halfmoon-platy.ts.net
+backup_offsite_user: borg
+backup_offsite_key: /root/.ssh/borg_backupnas_ed25519
+backup_offsite_profiles:
+  important:
+    uuid: d47b4f30-8712-4368-8acf-574545ee6900
+    schedule: '*-*-* 03:00:00'
+    media: [Bilder, Videos, Sync, Musik]
+  full:
+    uuid: 2714e2f1-75fb-4395-b2f9-db68f4a6605a
+    schedule: '*-*-* 05:00:00'
+    media: [Bilder, Videos, Sync, Musik, Filme, Shows]
+backup_offsite_ssh_source:
+  host: homelab-nuc
+  user: root
+  home: /root
+  key: "{{ backup_offsite_key }}"
+  target_user: "{{ backup_offsite_user }}"
+  key_options: 'restrict,command="/usr/local/sbin/borg-offsite-serve"'
+backup_offsite_config_source: /home/nuc/config
+backup_offsite_stage: /tank/offsite-staging
+backup_offsite_postgres_containers: [immich_postgres, litellm-postgres, teslamate-db]
+backup_offsite_paused_sources:
+  music-assistant: music-assistant-server
+backup_offsite_excludes:
+  - cache
+  - logs
+  - temp
+  - .cache
+  - node_modules
+  - build
+  - dist
+  - /litellm/postgres
+zfs_additional_snapshot_datasets: [tank/immich/library]

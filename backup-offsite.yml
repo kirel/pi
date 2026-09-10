@@ -1,0 +1,13 @@
+---
+- name: Configure independent OMV backup repositories
+  hosts: backup_nas
+  become: true
+  roles:
+    - role: backup_repositories
+    - role: ssh_keys
+
+- name: Configure offsite backups on the source
+  hosts: homelab
+  become: true
+  roles:
+    - role: borgmatic_offsite

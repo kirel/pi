@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily {{ item.key }} offsite Borg backup
+
+[Timer]
+OnCalendar={{ item.value.schedule }}
+RandomizedDelaySec=30m
+Persistent=true
+Unit=borgmatic-offsite@{{ item.key }}.service
+
+[Install]
+WantedBy=timers.target

@@ -18,7 +18,7 @@ backupnas_wifi_profiles:
     priority: 5
 # The standard Ailab key and these additional keys are distributed exclusively
 # by the central ssh_keys role. The NAS role only configures SSH client aliases.
-ssh_keys_additional_sources: "{{ backupnas_ssh_sources | rejectattr('host', 'equalto', 'ailab-ubuntu') | list }}"
+ssh_keys_additional_sources: "{{ (backupnas_ssh_sources | rejectattr('host', 'equalto', 'ailab-ubuntu') | list) + [backup_offsite_ssh_source] }}"
 backupnas_ssh_sources:
   - host: ailab-ubuntu
     user: daniel

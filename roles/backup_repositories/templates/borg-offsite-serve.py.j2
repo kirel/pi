@@ -1,0 +1,27 @@
+#!/usr/bin/python3
+"""Forced SSH command: only serve one of the two independently mounted repos."""
+import os
+import shlex
+import subprocess
+import sys
+
+REPOS = {
+{% for label, profile in backup_offsite_profiles.items() %}
+    '/srv/dev-disk-by-uuid-{{ profile.uuid }}/borg/{{ label }}': '{{ profile.uuid }}',
+{% endfor %}
+}
+command = shlex.split(os.environ.get('SSH_ORIGINAL_COMMAND', ''))
+if len(command) < 2 or os.path.basename(command[0]) != 'borg' or command[1] != 'serve':
+    sys.exit('Only Borg repository access is permitted')
+
+# One failed disk must not block the independent repository on the other disk.
+args = ['/usr/bin/borg', 'serve']
+for repo, uuid in REPOS.items():
+    mount = os.path.dirname(os.path.dirname(repo))
+    result = subprocess.run(['findmnt', '-n', '-M', mount, '-o', 'UUID,FSTYPE'],
+                            capture_output=True, text=True)
+    if result.returncode == 0 and result.stdout.split() == [uuid, 'ext4']:
+        args += ['--restrict-to-repository', repo]
+if len(args) == 2:
+    sys.exit('No expected repository disk is mounted')
+os.execv(args[0], args)

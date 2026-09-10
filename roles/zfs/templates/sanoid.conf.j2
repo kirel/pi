@@ -8,6 +8,17 @@
 
 {% endfor %}
 
+# BEGIN ANSIBLE ADDITIONAL SNAPSHOT DATASETS
+{% for dataset in zfs_additional_snapshot_datasets | default([]) %}
+{% if dataset not in (zfs_datasets | map(attribute='name') | list) %}
+[{{ dataset }}]
+  use_template = production
+  recursive = no
+
+{% endif %}
+{% endfor %}
+# END ANSIBLE ADDITIONAL SNAPSHOT DATASETS
+
 [template_production]
   frequently = 0
   hourly = {{ zfs_snapshot_schedule.hourly }}

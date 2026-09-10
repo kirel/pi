@@ -1,0 +1,28 @@
+# Managed by Ansible. Run through borg-offsite to prepare consistent sources.
+working_directory: {{ backup_offsite_stage }}/{{ item.key }}/view
+source_directories:
+  - ./home/nuc/config
+  - ./database-dumps
+  - ./tank/immich/library
+{% for directory in item.value.media %}
+  - ./tank/medien/{{ directory }}
+{% endfor %}
+repositories:
+  - path: ssh://{{ backup_offsite_user }}@{{ backup_offsite_host }}/srv/dev-disk-by-uuid-{{ item.value.uuid }}/borg/{{ item.key }}
+    label: offsite-{{ item.key }}
+encryption_passphrase: {{ vault_borg_passphrase | to_json }}
+ssh_command: ssh -F /dev/null -i {{ backup_offsite_key }} -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 -o ServerAliveInterval=30 -o ServerAliveCountMax=6
+compression: lz4
+archive_name_format: 'homelab-offsite-{{ item.key }}-{now:%Y-%m-%dT%H:%M:%S}'
+match_archives: 'sh:homelab-offsite-{{ item.key }}-*'
+keep_daily: 14
+keep_weekly: 8
+keep_monthly: 12
+keep_yearly: 2
+checks:
+  - name: repository
+    frequency: 1 week
+  - name: archives
+    frequency: 1 week
+  - name: data
+    frequency: 4 weeks

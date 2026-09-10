@@ -1,0 +1,17 @@
+[Unit]
+Description=Independent offsite Borg backup (%i)
+Wants=network-online.target
+After=network-online.target docker.service
+RequiresMountsFor=/tank/offsite-staging /tank/immich/library /tank/medien
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=2d
+ExecStart=/usr/local/sbin/borg-offsite run %i
+ExecStopPost=/usr/local/sbin/borg-offsite cleanup %i

@@ -1,0 +1,146 @@
+---
+- name: Verify existing backup tools
+  ansible.builtin.command: "{{ item }} --version"
+  changed_when: false
+  loop: [borg, borgmatic, rsync]
+
+- name: Check the staging dataset
+  ansible.builtin.command: zfs list -H -o name tank/offsite-staging
+  register: borgmatic_offsite_staging_dataset
+  changed_when: false
+  failed_when: borgmatic_offsite_staging_dataset.rc not in [0, 1]
+
+- name: Create a staging dataset outside the existing backup source directories
+  ansible.builtin.command:
+    argv: [zfs, create, -o, "mountpoint={{ backup_offsite_stage }}", -o, compression=lz4, tank/offsite-staging]
+  when: borgmatic_offsite_staging_dataset.rc == 1
+  changed_when: true
+
+- name: Protect backup staging and status directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+  loop:
+    - "{{ backup_offsite_stage }}"
+    - /var/lib/borg-offsite
+    - /var/lib/borg-offsite/status
+    - /root/.config/borg/offsite-key-exports
+
+- name: Install offsite runner
+  ansible.builtin.copy:
+    src: borg_offsite.py
+    dest: /usr/local/sbin/borg-offsite
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: Configure offsite source selection
+  ansible.builtin.copy:
+    content: >-
+      {{ {'stage': backup_offsite_stage, 'config_source': backup_offsite_config_source,
+           'postgres': backup_offsite_postgres_containers, 'excludes': backup_offsite_excludes,
+           'paused_sources': backup_offsite_paused_sources,
+           'profiles': backup_offsite_profiles} | to_nice_json }}
+    dest: /etc/borg-offsite.json
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Pin the existing NAS host key for the backup transport
+  ansible.builtin.slurp:
+    src: /etc/ssh/ssh_host_ed25519_key.pub
+  delegate_to: backupnas
+  register: borgmatic_offsite_nas_public_key
+
+- name: Add the verified NAS host key to the NUC known hosts
+  ansible.builtin.known_hosts:
+    path: /root/.ssh/known_hosts
+    name: "{{ backup_offsite_host }}"
+    key: "{{ backup_offsite_host }} {{ borgmatic_offsite_nas_public_key.content | b64decode | trim }}"
+
+- name: Configure independently encrypted offsite repositories
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "/etc/borgmatic.d/offsite-{{ item.key }}.yaml"
+    owner: root
+    group: root
+    mode: '0600'
+  loop: "{{ backup_offsite_profiles | dict2items }}"
+  no_log: true
+  diff: false
+
+- name: Validate the offsite configurations
+  ansible.builtin.command:
+    argv: [borgmatic, --config, "/etc/borgmatic.d/offsite-{{ item.key }}.yaml", config, validate]
+  loop: "{{ backup_offsite_profiles | dict2items }}"
+  changed_when: false
+  no_log: true
+
+- name: Check repository creation without locking a running backup
+  ansible.builtin.stat:
+    path: "/srv/dev-disk-by-uuid-{{ item.value.uuid }}/borg/{{ item.key }}/config"
+  delegate_to: backupnas
+  loop: "{{ backup_offsite_profiles | dict2items }}"
+  register: borgmatic_offsite_repository_files
+
+- name: Check encrypted recovery key exports
+  ansible.builtin.stat:
+    path: "/root/.config/borg/offsite-key-exports/{{ item.key }}.key"
+  loop: "{{ backup_offsite_profiles | dict2items }}"
+  register: borgmatic_offsite_key_files
+
+- name: Initialize missing offsite repositories and export encrypted recovery keys
+  ansible.builtin.command:
+    argv: [/usr/local/sbin/borg-offsite, init, "{{ item.key }}"]
+  loop: "{{ backup_offsite_profiles | dict2items }}"
+  loop_control:
+    index_var: borgmatic_offsite_profile_index
+  when: >-
+    not borgmatic_offsite_repository_files.results[borgmatic_offsite_profile_index].stat.exists
+    or not borgmatic_offsite_key_files.results[borgmatic_offsite_profile_index].stat.exists
+  register: borgmatic_offsite_init
+  changed_when: "'created' in borgmatic_offsite_init.stdout"
+  no_log: true
+  diff: false
+
+- name: Close the local Immich library snapshot gap
+  ansible.builtin.blockinfile:
+    path: /etc/sanoid/sanoid.conf
+    marker: '# {mark} ANSIBLE ADDITIONAL SNAPSHOT DATASETS'
+    block: |
+      {% for dataset in zfs_additional_snapshot_datasets %}
+      [{{ dataset }}]
+        use_template = production
+        recursive = no
+
+      {% endfor %}
+
+- name: Install offsite backup service
+  ansible.builtin.copy:
+    src: borgmatic-offsite@.service
+    dest: /etc/systemd/system/borgmatic-offsite@.service
+    mode: '0644'
+  register: borgmatic_offsite_service
+
+- name: Install independent offsite schedules
+  ansible.builtin.template:
+    src: timer.j2
+    dest: "/etc/systemd/system/borgmatic-offsite-{{ item.key }}.timer"
+    mode: '0644'
+  loop: "{{ backup_offsite_profiles | dict2items }}"
+  register: borgmatic_offsite_timers
+
+- name: Reload offsite systemd units
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when: borgmatic_offsite_service is changed or borgmatic_offsite_timers is changed
+
+- name: Enable scheduled offsite backups
+  ansible.builtin.systemd_service:
+    name: "borgmatic-offsite-{{ item.key }}.timer"
+    enabled: true
+    state: started
+  loop: "{{ backup_offsite_profiles | dict2items }}"

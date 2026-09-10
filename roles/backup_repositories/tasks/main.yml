@@ -1,0 +1,59 @@
+---
+- name: Verify that each repository disk is mounted as the expected filesystem
+  ansible.builtin.command:
+    argv: [findmnt, --noheadings, --mountpoint, "/srv/dev-disk-by-uuid-{{ item.value.uuid }}", --output, "UUID,FSTYPE"]
+  register: backup_repositories_mount
+  changed_when: false
+  failed_when: backup_repositories_mount.stdout.split() != [item.value.uuid, 'ext4']
+  loop: "{{ backup_offsite_profiles | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Install Borg repository server
+  ansible.builtin.apt:
+    name: borgbackup
+    state: present
+    lock_timeout: 300
+
+- name: Install OMV repository configuration helper
+  ansible.builtin.copy:
+    src: configure_omv.py
+    dest: /usr/local/sbin/configure-omv-borg
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Configure separate disks and the backup account through OMV
+  ansible.builtin.command:
+    argv: [/usr/local/sbin/configure-omv-borg, "{{ backup_offsite_user }}"]
+  register: backup_repositories_omv_configuration
+  changed_when: "'changed' in backup_repositories_omv_configuration.stdout_lines"
+  no_log: true
+  diff: false
+
+- name: Create the backup account home
+  ansible.builtin.file:
+    path: "/home/{{ backup_offsite_user }}"
+    state: directory
+    owner: "{{ backup_offsite_user }}"
+    group: users
+    mode: '0700'
+
+- name: Create repository parent directories on the mounted HDDs
+  ansible.builtin.file:
+    path: "/srv/dev-disk-by-uuid-{{ item.value.uuid }}/borg"
+    state: directory
+    owner: "{{ backup_offsite_user }}"
+    group: users
+    mode: '0700'
+  loop: "{{ backup_offsite_profiles | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Install restricted Borg server with mount validation
+  ansible.builtin.template:
+    src: borg-offsite-serve.py.j2
+    dest: /usr/local/sbin/borg-offsite-serve
+    owner: root
+    group: root
+    mode: '0755'
