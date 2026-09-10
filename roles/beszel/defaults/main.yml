@@ -11,12 +11,9 @@ beszel_public_url: "https://{{ services.beszel.domain }}"
 beszel_data_folder: "{{ config_root }}/beszel"
 beszel_agent_data_folder: "{{ config_root }}/beszel-agent"
 
-beszel_superuser_email: "{{ authelia_email | default('danishkirel@gmail.com') }}"
+beszel_superuser_email: danishkirel@gmail.com
 beszel_superuser_password: "{{ vault_beszel_superuser_password }}"
-beszel_oidc_client_id: "{{ authelia_oidc_beszel_client_id | default('beszel-kirelabs') }}"
-# ansible-vault encrypt_string commonly preserves the input newline. PocketBase
-# must receive the exact secret bytes that were hashed for Authelia.
-beszel_oidc_client_secret: "{{ vault_authelia_oidc_beszel_client_secret | trim }}"
+beszel_oidc_client_id: beszel-pocket-id
 beszel_user_creation: true
 # Set this to true only after the documented OIDC login test succeeded.
 beszel_disable_password_auth: false

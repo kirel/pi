@@ -1,0 +1,20 @@
+---
+- name: Install Dockhand OIDC reconciler
+  ansible.builtin.copy:
+    src: dockhand-oidc.py
+    dest: "{{ config_root }}/pocket-id/dockhand-oidc.py"
+    mode: '0700'
+
+- name: Configure Dockhand Pocket ID authentication
+  ansible.builtin.command:
+    argv:
+      - python3
+      - "{{ config_root }}/pocket-id/dockhand-oidc.py"
+      - "{{ config_root }}/pocket-id"
+      - "https://{{ services.dockhand.domain }}"
+      - "https://{{ services.pocket_id.domain }}"
+  register: dockhand_oidc_result
+  until: dockhand_oidc_result.rc == 0
+  retries: 5
+  delay: 3
+  changed_when: "'OIDC_CHANGED' in dockhand_oidc_result.stdout"

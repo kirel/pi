@@ -1,0 +1,20 @@
+---
+# Targeted API-only auth reconciliation; does not redeploy app stacks.
+- name: Reconcile application OIDC settings
+  hosts: homelab
+  become: true
+  tasks:
+    - name: Configure Immich Pocket ID login
+      ansible.builtin.include_role:
+        name: immich
+        tasks_from: pocket-id
+        apply:
+          tags: [immich, pocket-id-apps]
+      tags: [immich, pocket-id-apps]
+    - name: Configure Dockhand Pocket ID login
+      ansible.builtin.include_role:
+        name: monitoring
+        tasks_from: pocket-id
+        apply:
+          tags: [dockhand, pocket-id-apps]
+      tags: [dockhand, pocket-id-apps]

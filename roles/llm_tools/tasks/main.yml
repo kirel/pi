@@ -35,12 +35,34 @@
     group: "{{ uid }}"
   become: true
 
+- name: Read Pocket ID Open WebUI client secret
+  ansible.builtin.slurp:
+    src: "{{ config_root }}/pocket-id/secrets/open-webui-client-secret"
+  register: open_webui_pocket_secret
+  no_log: true
+
+- name: Read persistent Open WebUI session signing key
+  ansible.builtin.slurp:
+    src: "{{ config_root }}/pocket-id/secrets/open-webui-session-key"
+  register: open_webui_session_key
+  no_log: true
+
+- name: Read Pocket ID LiteLLM client secret
+  ansible.builtin.slurp:
+    src: "{{ config_root }}/pocket-id/secrets/litellm-client-secret"
+  register: litellm_pocket_id_secret
+  no_log: true
+  diff: false
+
 - name: Deploy all LiteLLM services using Docker Compose
+  no_log: true
   community.docker.docker_compose_v2:
     project_name: litellm
     state: present
     build: always
     recreate: always
+    services: "{{ llm_tools_compose_services | default(omit) }}"
+    dependencies: "{{ llm_tools_compose_services is not defined }}"
     definition:
       services:
         postgres:
@@ -128,6 +150,17 @@
             - "{{ caddy_data_folder }}/caddy/pki/authorities/local:/opt/custom-certificates:ro"
           environment:
             PROXY_BASE_URL: "https://{{ services['litellm'].domain }}"
+            GENERIC_CLIENT_ID: litellm-pocket-id
+            GENERIC_CLIENT_SECRET: "{{ litellm_pocket_id_secret.content | b64decode | trim }}"
+            GENERIC_AUTHORIZATION_ENDPOINT: "https://{{ services.pocket_id.domain }}/authorize"
+            GENERIC_TOKEN_ENDPOINT: "https://{{ services.pocket_id.domain }}/api/oidc/token"
+            GENERIC_USERINFO_ENDPOINT: "https://{{ services.pocket_id.domain }}/api/oidc/userinfo"
+            GENERIC_CLIENT_USE_PKCE: "true"
+            GENERIC_SCOPE: "openid profile email"
+            GENERIC_USER_ID_ATTRIBUTE: sub
+            GENERIC_USER_DISPLAY_NAME_ATTRIBUTE: name
+            GENERIC_USER_FIRST_NAME_ATTRIBUTE: given_name
+            GENERIC_USER_LAST_NAME_ATTRIBUTE: family_name
             PHOENIX_COLLECTOR_ENDPOINT: "{{ phoenix_host_for_litellm }}"
             LITELLM_MASTER_KEY: "{{ litellm_master_key }}"
             DATABASE_URL: "{{ litellm_database_url }}"
@@ -202,7 +235,16 @@
           ports:
             - "{{ open_webui_http_port }}:8080"
           environment:
-            WEBUI_SECRET_KEY: t0p-s3cr3t
+            WEBUI_SECRET_KEY: "{{ open_webui_session_key.content | b64decode | trim }}"
+            WEBUI_URL: "https://{{ services['open-webui'].domain }}"
+            ENABLE_OAUTH_SIGNUP: 'true'
+            OAUTH_MERGE_ACCOUNTS_BY_EMAIL: 'true'
+            OAUTH_CLIENT_ID: open-webui-pocket-id
+            OAUTH_CLIENT_SECRET: "{{ open_webui_pocket_secret.content | b64decode }}"
+            OPENID_PROVIDER_URL: "https://{{ services.pocket_id.domain }}/.well-known/openid-configuration"
+            OAUTH_PROVIDER_NAME: Pocket ID
+            OAUTH_SCOPES: openid email profile
+            OPENID_REDIRECT_URI: "https://{{ services['open-webui'].domain }}/oauth/oidc/callback"
             SSL_CERT_FILE: "/etc/ssl/certs/ca-certificates.crt"
             PUID: "{{ uid }}"
             PGID: "{{ uid }}"

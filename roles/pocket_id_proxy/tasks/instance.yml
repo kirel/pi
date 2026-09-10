@@ -1,0 +1,68 @@
+---
+- name: Create auth proxy directory
+  ansible.builtin.file:
+    path: "{{ pocket_id_proxy_folder }}/{{ auth_service.key }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Generate persistent auth cookie key
+  ansible.builtin.command:
+    argv: [openssl, rand, -out, "{{ pocket_id_proxy_folder }}/{{ auth_service.key }}/cookie-key", '32']
+    creates: "{{ pocket_id_proxy_folder }}/{{ auth_service.key }}/cookie-key"
+  no_log: true
+
+- name: Restrict auth cookie key
+  ansible.builtin.file:
+    path: "{{ pocket_id_proxy_folder }}/{{ auth_service.key }}/cookie-key"
+    mode: '0400'
+    owner: '65532'
+    group: '65532'
+
+- name: Make client secret readable only by auth proxy user
+  ansible.builtin.copy:
+    src: "{{ config_root }}/pocket-id/secrets/{{ auth_service.value.auth.client }}-client-secret"
+    remote_src: true
+    dest: "{{ pocket_id_proxy_folder }}/{{ auth_service.key }}/client-secret"
+    owner: '65532'
+    group: '65532'
+    mode: '0400'
+  no_log: true
+  diff: false
+
+- name: Render auth proxy configuration
+  ansible.builtin.template:
+    src: oauth2-proxy.cfg.j2
+    dest: "{{ pocket_id_proxy_folder }}/{{ auth_service.key }}/oauth2-proxy.cfg"
+    mode: '0600'
+    owner: '65532'
+    group: '65532'
+  register: auth_proxy_config
+
+- name: Run service auth proxy
+  community.docker.docker_container:
+    name: "auth-proxy-{{ auth_service.key }}"
+    image: "{{ pocket_id_proxy_image }}"
+    user: '65532:65532'
+    network_mode: host
+    restart_policy: unless-stopped
+    state: started
+    restart: "{{ auth_proxy_config.changed }}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opts: ['no-new-privileges:true']
+    command: ['--config=/etc/oauth2-proxy.cfg']
+    volumes:
+      - "{{ pocket_id_proxy_folder }}/{{ auth_service.key }}/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro"
+      - "{{ pocket_id_proxy_folder }}/{{ auth_service.key }}/cookie-key:/run/cookie-key:ro"
+      - "{{ pocket_id_proxy_folder }}/{{ auth_service.key }}/client-secret:/run/client-secret:ro"
+
+- name: Check auth proxy readiness
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ auth_service.value.auth.proxy_port }}/ready"
+    timeout: 5
+  register: auth_proxy_health
+  until: auth_proxy_health.status == 200
+  retries: 10
+  delay: 3

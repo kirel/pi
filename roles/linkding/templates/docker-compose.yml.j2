@@ -22,10 +22,10 @@ services:
       - OIDC_RP_CLIENT_SECRET={{ linkding_oidc_client_secret }}
       - OIDC_RP_SCOPES=openid email profile
       - OIDC_USERNAME_CLAIM=preferred_username
-      - OIDC_OP_AUTHORIZATION_ENDPOINT={{ linkding_oidc_provider_url }}/api/oidc/authorization
-      - OIDC_OP_TOKEN_ENDPOINT={{ linkding_oidc_provider_url }}/api/oidc/token
-      - OIDC_OP_USER_ENDPOINT={{ linkding_oidc_provider_url }}/api/oidc/userinfo
-      - OIDC_OP_JWKS_ENDPOINT={{ linkding_oidc_provider_url }}/jwks.json
+      - OIDC_OP_AUTHORIZATION_ENDPOINT={{ linkding_oidc_authorization_endpoint }}
+      - OIDC_OP_TOKEN_ENDPOINT={{ linkding_oidc_token_endpoint }}
+      - OIDC_OP_USER_ENDPOINT={{ linkding_oidc_user_endpoint }}
+      - OIDC_OP_JWKS_ENDPOINT={{ linkding_oidc_jwks_endpoint }}
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
       - CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
     labels:

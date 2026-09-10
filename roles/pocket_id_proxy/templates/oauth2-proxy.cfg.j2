@@ -1,0 +1,30 @@
+provider = "oidc"
+provider_display_name = "Pocket ID"
+oidc_issuer_url = "https://{{ services.pocket_id.domain }}"
+client_id = "{{ auth_service.value.auth.client }}-pocket-id"
+client_secret_file = "/run/client-secret"
+cookie_secret_file = "/run/cookie-key"
+cookie_name = "__Host-kirelabs-{{ auth_service.value.auth.client }}"
+cookie_secure = true
+cookie_httponly = true
+cookie_samesite = "lax"
+cookie_expire = "1h"
+cookie_refresh = "5m"
+redirect_url = "https://{{ auth_service.value.domain }}/oauth2/callback"
+http_address = "127.0.0.1:{{ auth_service.value.auth.proxy_port }}"
+upstreams = ["http://127.0.0.1:{{ auth_service.value.http_port }}"]
+email_domains = ["*"]
+allowed_groups = {{ auth_service.value.auth.groups | to_json }}
+scope = "openid email profile groups"
+code_challenge_method = "S256"
+reverse_proxy = true
+skip_provider_button = true
+pass_basic_auth = false
+pass_user_headers = true
+pass_access_token = false
+pass_authorization_header = false
+request_logging = false
+{% if auth_service.value.auth.native_api_routes is defined %}
+# These routes must enforce the application's own API authentication.
+skip_auth_routes = {{ auth_service.value.auth.native_api_routes | to_json }}
+{% endif %}

@@ -7,8 +7,15 @@
     group: "{{ gid | default(1000) }}"
     mode: '0755'
 
+- name: Read Pocket ID Readeck client secret
+  ansible.builtin.slurp:
+    src: "{{ config_root }}/pocket-id/secrets/readeck-client-secret"
+  register: readeck_pocket_secret
+  no_log: true
+
 - name: Deploy Readeck stack
   community.docker.docker_compose_v2:
     project_name: readeck
     definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
   become: true
+  no_log: true

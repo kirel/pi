@@ -1,0 +1,34 @@
+---
+- name: Read Pocket ID Immich client secret
+  ansible.builtin.slurp:
+    src: "{{ config_root }}/pocket-id/secrets/immich-client-secret"
+  register: immich_pocket_secret
+  no_log: true
+
+- name: Read current Immich configuration
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ immich_http_port }}/api/system-config"
+    headers:
+      x-api-key: "{{ immich_mcp_api_key }}"
+  register: immich_current_config
+  until: immich_current_config.status == 200
+  retries: 20
+  delay: 3
+  no_log: true
+
+- name: Enable Pocket ID while preserving other Immich settings
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ immich_http_port }}/api/system-config"
+    method: PUT
+    headers:
+      x-api-key: "{{ immich_mcp_api_key }}"
+    body_format: json
+    body: >-
+      {{ immich_current_config.json | combine({'oauth': {
+        'enabled': true, 'autoLaunch': false, 'autoRegister': false,
+        'buttonText': 'Login with Pocket ID', 'clientId': 'immich-pocket-id',
+        'clientSecret': immich_pocket_secret.content | b64decode,
+        'issuerUrl': 'https://' ~ services.pocket_id.domain,
+        'scope': 'openid email profile', 'tokenEndpointAuthMethod': 'client_secret_post'
+      }}, recursive=True) }}
+  no_log: true

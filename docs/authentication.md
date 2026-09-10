@@ -1,4 +1,58 @@
-# Authentifizierung mit Authelia
+# Authentifizierung
+
+Aktueller Stand: **Pocket ID ist für 13 Dienste ausgerollt.** Die aktuelle
+Service-Liste, Zuständigkeiten, Deployments, Grenzen und Prüfergebnisse stehen
+in [Pocket ID](pocket-id.md). Die folgenden Abschnitte dokumentieren den
+vorherigen Authelia-Aufbau und den ersten Linkding-Piloten ausschließlich als
+Historie, nicht als aktuelle Anleitung. Authelia ist stillgelegt; Rolle,
+Service-Eintrag und Container wurden entfernt. Persistente Daten bleiben erhalten.
+
+## Pocket ID pilot (2026-09-05)
+
+Linkding now uses Pocket ID at `https://id.kirelabs.org`.
+Beszel and the three Forward Auth services continue to use Authelia.
+Daniel has registered a passkey and was added to `admins` during bootstrap.
+The first real Linkding passkey login remains a manual acceptance step.
+Both containers are healthy; HTTPS discovery and the Linkding OIDC redirect
+were verified. A token request with the real client credentials and an invalid
+authorization code returned `invalid_grant`, confirming client authentication.
+The existing Linkding admin (ID 1) and two bookmarks were retained.
+
+- Bootstrap: open `https://id.kirelabs.org/setup`, create `daniel` using the
+  existing Linkding email `danishkirel@gmail.com`, and register a passkey.
+- In Pocket ID, add that user to the `admins` group. Linkding is restricted
+  to this group; Pocket ID administrator status alone is not group membership.
+- In a private browser window, open Linkding and use its OIDC login. Verify
+  that the existing account and bookmarks are retained.
+- Infrastructure and the Linkding client are managed by `roles/pocket_id`.
+  Users, memberships and passkeys are managed in the Pocket ID UI.
+- Encryption and automation keys are generated once on the NUC, under
+  `{{ config_root }}/pocket-id/secrets`, with restricted permissions. The
+  Linkding client secret stays on that host and is injected with `no_log`.
+  No 1Password bootstrap item is required. These host-local secrets are
+  persistent state, not recoverable from Git alone. No auth backups were
+  created for this pilot, as requested.
+- The automation key has full Pocket ID admin access; it is reserved for
+  Ansible and is not an agent/API consumer credential.
+- Pocket ID uses a dedicated `10.205.0.0/24` Docker network to avoid the
+  NUC's Tailscale routes, and publishes only on loopback port 1411.
+
+Deployment:
+
+```bash
+uv run ansible-playbook setup.yml --tags pocket-id,caddy,linkding --limit homelab
+uv run ansible-playbook setup.yml --tags pihole --limit nameserver,homelab
+```
+
+Rollback Linkding without reverting its database:
+
+```bash
+uv run ansible-playbook setup.yml --tags linkding --limit homelab -e linkding_oidc_provider=authelia
+```
+
+For persistent rollback, also change `group_vars/all/pocket_id.yml` back to
+`authelia`. The old Authelia client and encrypted secret remain available.
+The following sections describe the original Authelia setup.
 
 Authelia ist der zentrale Identity Provider für die Webdienste im Homelab. Es
 stellt zwei unterschiedliche Integrationen bereit:

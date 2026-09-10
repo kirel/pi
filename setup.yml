@@ -16,7 +16,8 @@
     - { role: storage, become: true, tags: [storage] }
     - { role: syncthing_folders, become: true, tags: [storage, syncthing, syncthing-config] }
     - { role: borgmatic, become: true, tags: [borgmatic, backup] }
-    - { role: authelia, become: true, tags: [authelia] }
+    - { role: pocket_id, become: true, tags: [pocket-id] }
+    - { role: pocket_id_proxy, become: true, tags: [pocket-id-proxy] }
     - { role: beszel, become: true, tags: [beszel, monitoring] }
     - { role: caddy, become: true, tags: [caddy] }
     - { role: trust_internal_ca, become: true, tags: [caddy, ca] }

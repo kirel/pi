@@ -175,3 +175,6 @@
       - monitoring_compose_result.containers | selectattr('Name', 'equalto', 'uptime_kuma') | map(attribute='State') | list | first == 'running'
       - monitoring_autokuma_container.container.State.Running
       - monitoring_compose_result.containers | selectattr('Name', 'equalto', 'dockhand') | map(attribute='State') | list | first == 'running'
+
+- name: Configure Dockhand native Pocket ID login
+  ansible.builtin.import_tasks: pocket-id.yml

@@ -6,16 +6,17 @@ services:
     domain: homepage.kirelabs.org
     group: Smart Home
     auth:
-      provider: authelia
-      policy: two_factor
+      provider: pocket_id
+      client: homepage
+      proxy_port: 14201
       groups: [admins]
-  authelia:
-    name: Authelia
+  pocket_id:
+    name: Pocket ID
     target: homelab-nuc.lan
-    http_port: "{{ authelia_http_port }}"
-    domain: auth.kirelabs.org
+    http_port: 1411
+    domain: id.kirelabs.org
     group: Network
-    icon: authelia.png
+    icon: pocket-id.png
   homeassistant:
     name: Home Assistant
     http_port: "{{ homeassistant_http_port }}"
@@ -108,6 +109,12 @@ services:
     domain: changedetection.kirelabs.org
     group: Monitoring
     icon: changedetection.png
+    auth:
+      provider: pocket_id
+      client: changedetection
+      proxy_port: 14205
+      groups: [admins]
+      native_api_routes: ['^/api/v1/']
   dockhand:
     name: Dockhand
     target: homelab-nuc.lan
@@ -122,6 +129,11 @@ services:
     domain: dozzle.kirelabs.org
     group: Monitoring
     icon: dozzle
+    auth:
+      provider: pocket_id
+      client: dozzle
+      proxy_port: 14204
+      groups: [admins]
   prunemate:
     name: PruneMate
     target: homelab-nuc.lan
@@ -130,8 +142,9 @@ services:
     group: Monitoring
     icon: prunemate.png
     auth:
-      provider: authelia
-      policy: two_factor
+      provider: pocket_id
+      client: prunemate
+      proxy_port: 14202
       groups: [admins]
   beszel:
     name: Beszel
@@ -168,6 +181,11 @@ services:
     domain: teslamate.kirelabs.org
     group: Smart Home
     icon: teslamate
+    auth:
+      provider: pocket_id
+      client: teslamate
+      proxy_port: 14206
+      groups: [admins]
   teslamate-grafana:
     name: TeslaMate Grafana
     target: homelab-nuc.lan
@@ -246,8 +264,9 @@ services:
     target: homelab-nuc.lan
     http_port: 5005
     auth:
-      provider: authelia
-      policy: two_factor
+      provider: pocket_id
+      client: leases
+      proxy_port: 14203
       groups: [admins]
   # nameserver
   pihole-nameserver-pi:

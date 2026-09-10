@@ -254,7 +254,7 @@
           image: kirel/dnsmasq-leases-ui:latest
           container_name: dnsmasq_leases_ui
           ports:
-            - "{{ leases_service.http_port }}:5000"
+            - "{{ '127.0.0.1:' if inventory_hostname == 'homelab-nuc' else '' }}{{ leases_service.http_port }}:5000"
           volumes:
             - "{{ pihole_config_folder }}/dhcp.leases:/var/lib/misc/dnsmasq.leases:ro"
           restart: unless-stopped

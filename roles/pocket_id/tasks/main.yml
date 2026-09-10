@@ -1,0 +1,115 @@
+---
+- name: Create Pocket ID directories
+  ansible.builtin.file:
+    path: "{{ pocket_id_config_folder }}/{{ item }}"
+    state: directory
+    owner: "{{ uid }}"
+    group: "{{ uid }}"
+    mode: '0700'
+  loop: [data, secrets]
+
+- name: Generate persistent Pocket ID keys on the service host
+  ansible.builtin.command:
+    argv: [openssl, rand, -out, "{{ pocket_id_config_folder }}/secrets/{{ item }}", -hex, '32']
+    creates: "{{ pocket_id_config_folder }}/secrets/{{ item }}"
+  loop: [encryption-key, automation-key, open-webui-session-key]
+  no_log: true
+
+- name: Restrict Pocket ID key permissions
+  ansible.builtin.file:
+    path: "{{ pocket_id_config_folder }}/secrets/{{ item }}"
+    owner: "{{ uid }}"
+    group: "{{ uid }}"
+    mode: '0400'
+  loop: [encryption-key, automation-key, open-webui-session-key]
+
+- name: Start Pocket ID
+  community.docker.docker_compose_v2:
+    project_name: pocket-id
+    definition:
+      networks:
+        pocket_id:
+          ipam:
+            config:
+              - subnet: 10.205.0.0/24
+      services:
+        pocket-id:
+          networks: [pocket_id]
+          image: "{{ pocket_id_image }}"
+          container_name: pocket-id
+          restart: unless-stopped
+          ports:
+            - "127.0.0.1:{{ pocket_id_http_port }}:1411"
+          volumes:
+            - "{{ pocket_id_config_folder }}/data:/app/data"
+            - "{{ pocket_id_config_folder }}/secrets:/run/secrets:ro"
+          environment:
+            APP_URL: "https://{{ pocket_id_domain }}"
+            PUID: "{{ uid | string }}"
+            PGID: "{{ uid | string }}"
+            ENCRYPTION_KEY_FILE: /run/secrets/encryption-key
+            STATIC_API_KEY_FILE: /run/secrets/automation-key
+            TRUST_PROXY: '10.205.0.1'
+            ALLOW_INSECURE_CALLBACK_URLS: 'false'
+            ANALYTICS_DISABLED: 'true'
+          healthcheck:
+            test: [CMD, /app/pocket-id, healthcheck]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 15s
+
+- name: Wait for Pocket ID health
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ pocket_id_http_port }}/healthz"
+    timeout: 5
+    status_code: [200, 204]
+  register: pocket_id_health
+  until: pocket_id_health.status in [200, 204]
+  retries: 20
+  delay: 3
+
+- name: Install Pocket ID pilot client reconciler
+  ansible.builtin.copy:
+    src: linkding-client.py
+    dest: "{{ pocket_id_config_folder }}/linkding-client.py"
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Collect native OIDC client definitions
+  ansible.builtin.set_fact:
+    pocket_id_effective_clients: "{{ pocket_id_clients }}"
+
+- name: Derive proxy clients from the service registry
+  ansible.builtin.set_fact:
+    pocket_id_effective_clients: >-
+      {{ pocket_id_effective_clients | combine({item.value.auth.client: {
+        'name': item.value.name | default(item.key),
+        'url': 'https://' ~ item.value.domain,
+        'callbacks': ['https://' ~ item.value.domain ~ '/oauth2/callback'],
+        'groups': item.value.auth.groups,
+        'pkce': true
+      }}) }}
+  loop: "{{ services | dict2items | selectattr('value.auth', 'defined') | selectattr('value.auth.provider', 'equalto', 'pocket_id') | list }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Render managed OIDC client manifest
+  ansible.builtin.copy:
+    content: "{{ pocket_id_effective_clients | to_nice_json }}"
+    dest: "{{ pocket_id_config_folder }}/clients.json"
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Reconcile OIDC clients and admins group
+  ansible.builtin.command:
+    argv:
+      - python3
+      - "{{ pocket_id_config_folder }}/linkding-client.py"
+      - "{{ pocket_id_config_folder }}"
+      - "http://127.0.0.1:{{ pocket_id_http_port }}"
+      - "{{ pocket_id_config_folder }}/clients.json"
+  register: pocket_id_client_result
+  changed_when: "'CLIENT_CHANGED' in pocket_id_client_result.stdout"

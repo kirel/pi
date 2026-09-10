@@ -1,0 +1,5 @@
+---
+pocket_id_image: ghcr.io/pocket-id/pocket-id:v2.14.0
+pocket_id_http_port: 1411
+pocket_id_config_folder: "{{ config_root }}/pocket-id"
+pocket_id_domain: "{{ services.pocket_id.domain }}"

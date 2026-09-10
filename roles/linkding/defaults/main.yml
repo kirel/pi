@@ -5,8 +5,14 @@ linkding_gid: 33
 linkding_superuser_name: "admin"
 linkding_superuser_email: "admin@example.com"
 linkding_superuser_password: "password"
-linkding_oidc_client_id: linkding
-linkding_oidc_client_secret: "{{ vault_authelia_oidc_linkding_client_secret }}"
-linkding_oidc_provider_url: "https://{{ services.authelia.domain }}"
-linkding_oidc_username: "{{ authelia_username | default('daniel') }}"
-linkding_oidc_email: "{{ authelia_email | default('danishkirel@gmail.com') }}"
+linkding_oidc_provider: pocket_id
+linkding_oidc_client_id: linkding-pocket-id
+linkding_oidc_provider_url: "https://{{ services[linkding_oidc_provider].domain }}"
+linkding_oidc_authorization_endpoint: >-
+  {{ linkding_oidc_provider_url }}/authorize
+linkding_oidc_token_endpoint: "{{ linkding_oidc_provider_url }}/api/oidc/token"
+linkding_oidc_user_endpoint: "{{ linkding_oidc_provider_url }}/api/oidc/userinfo"
+linkding_oidc_jwks_endpoint: >-
+  {{ linkding_oidc_provider_url }}/.well-known/jwks.json
+linkding_oidc_username: daniel
+linkding_oidc_email: danishkirel@gmail.com

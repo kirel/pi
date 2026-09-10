@@ -121,3 +121,6 @@
     definition: "{{ lookup('template', 'docker-compose.yml.j2') | from_yaml }}"
   become: true
   register: immich_deployment
+
+- name: Configure Immich Pocket ID login
+  ansible.builtin.import_tasks: pocket-id.yml

@@ -7,6 +7,10 @@ services:
     restart: unless-stopped
     pull_policy: always
     environment:
+      - READECK_AUTH_OIDC_PROVIDERS_1_NAME=Pocket ID
+      - READECK_AUTH_OIDC_PROVIDERS_1_URL=https://{{ services.pocket_id.domain }}
+      - READECK_AUTH_OIDC_PROVIDERS_1_CLIENT_ID=readeck-pocket-id
+      - READECK_AUTH_OIDC_PROVIDERS_1_CLIENT_SECRET={{ readeck_pocket_secret.content | b64decode }}
       # Defines the application log level. Can be error, warn, info, debug.
       - READECK_LOG_LEVEL=info
       # The IP address on which Readeck listens.

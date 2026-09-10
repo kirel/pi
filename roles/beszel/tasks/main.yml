@@ -106,11 +106,18 @@
         )
     fail_msg: >-
       Beszel already has a different OAuth2 provider. Preserve it and add
-      Authelia manually using docs/beszel-oidc-one-time-setup.md.
+      Pocket ID manually using docs/pocket-id.md.
   when: inventory_hostname == beszel_hub_inventory_hostname
   no_log: true
 
-- name: Reconcile Authelia OIDC provider in Beszel
+- name: Read Pocket ID Beszel client secret
+  ansible.builtin.slurp:
+    src: "{{ config_root }}/pocket-id/secrets/beszel-client-secret"
+  register: beszel_pocket_secret
+  delegate_to: "{{ beszel_hub_inventory_hostname }}"
+  no_log: true
+
+- name: Reconcile Pocket ID OIDC provider in Beszel
   ansible.builtin.uri:
     url: "{{ beszel_hub_url }}/api/collections/users"
     method: PATCH
@@ -128,18 +135,18 @@
         providers:
           - name: oidc
             clientId: "{{ beszel_oidc_client_id }}"
-            clientSecret: "{{ beszel_oidc_client_secret }}"
-            authURL: "https://{{ services.authelia.domain }}/api/oidc/authorization"
-            tokenURL: "https://{{ services.authelia.domain }}/api/oidc/token"
-            userInfoURL: "https://{{ services.authelia.domain }}/api/oidc/userinfo"
-            displayName: Authelia
+            clientSecret: "{{ beszel_pocket_secret.content | b64decode }}"
+            authURL: "https://{{ services.pocket_id.domain }}/authorize"
+            tokenURL: "https://{{ services.pocket_id.domain }}/api/oidc/token"
+            userInfoURL: "https://{{ services.pocket_id.domain }}/api/oidc/userinfo"
+            displayName: Pocket ID
             pkce: true
             extra: {}
     status_code: 200
   when: inventory_hostname == beszel_hub_inventory_hostname
   no_log: true
 
-- name: Verify Beszel advertises the Authelia OIDC provider
+- name: Verify Beszel advertises the Pocket ID OIDC provider
   ansible.builtin.uri:
     url: "{{ beszel_hub_url }}/api/collections/users/auth-methods"
     method: GET
@@ -156,7 +163,7 @@
         | selectattr('name', 'equalto', 'oidc')
         | list
         | length == 1
-    fail_msg: Beszel does not advertise the configured Authelia OIDC provider.
+    fail_msg: Beszel does not advertise the configured Pocket ID OIDC provider.
 
 - name: Check Beszel bootstrap user login
   ansible.builtin.uri:

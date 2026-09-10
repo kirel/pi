@@ -59,7 +59,7 @@
           container_name: dozzle
           restart: unless-stopped
           ports:
-            - "{{ dozzle_http_port }}:8080"
+            - "127.0.0.1:{{ dozzle_http_port }}:8080"
           volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro
             - "{{ dozzle_data_folder }}:/data"
@@ -79,7 +79,7 @@
   vars:
     _dozzle_auth_environment: >-
       {{ {'DOZZLE_AUTH_PROVIDER': dozzle_auth_provider}
-         if dozzle_auth_provider | length > 0 and dozzle_users | length > 0 else {} }}
+         if dozzle_auth_provider | length > 0 else {} }}
     _dozzle_ui_environment: >-
       {{
         {
@@ -87,7 +87,10 @@
           'DOZZLE_REMOTE_AGENT': dozzle_remote_agents | default([]) | join(','),
           'DOZZLE_ENABLE_ACTIONS': dozzle_enable_actions | string | lower,
           'DOZZLE_ENABLE_SHELL': dozzle_enable_shell | string | lower,
-          'DOZZLE_NO_ANALYTICS': dozzle_no_analytics | string | lower
+          'DOZZLE_NO_ANALYTICS': dozzle_no_analytics | string | lower,
+          'DOZZLE_AUTH_HEADER_USER': 'X-Forwarded-User',
+          'DOZZLE_AUTH_HEADER_EMAIL': 'X-Forwarded-Email',
+          'DOZZLE_AUTH_HEADER_NAME': 'X-Forwarded-Preferred-Username'
         } | combine(_dozzle_auth_environment)
       }}
   register: dozzle_ui_output

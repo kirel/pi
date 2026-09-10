@@ -20,7 +20,14 @@
     name: teslamate
     state: present
 
+- name: Read Pocket ID Grafana client secret
+  ansible.builtin.slurp:
+    src: "{{ config_root }}/pocket-id/secrets/grafana-client-secret"
+  register: grafana_pocket_secret
+  no_log: true
+
 - name: Start TeslaMate stack
+  no_log: true
   community.docker.docker_compose_v2:
     project_name: teslamate
     pull: always
@@ -52,6 +59,19 @@
           restart: unless-stopped
           environment:
             - GF_SECURITY_ADMIN_USER=admin
+            - GF_SERVER_ROOT_URL=https://{{ services['teslamate-grafana'].domain }}
+            - GF_AUTH_GENERIC_OAUTH_ENABLED=true
+            - GF_AUTH_GENERIC_OAUTH_NAME=Pocket ID
+            - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=grafana-pocket-id
+            - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET={{ grafana_pocket_secret.content | b64decode }}
+            - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://{{ services.pocket_id.domain }}/authorize
+            - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://{{ services.pocket_id.domain }}/api/oidc/token
+            - GF_AUTH_GENERIC_OAUTH_API_URL=https://{{ services.pocket_id.domain }}/api/oidc/userinfo
+            - GF_AUTH_GENERIC_OAUTH_SCOPES=openid email profile groups
+            - GF_AUTH_GENERIC_OAUTH_USE_PKCE=true
+            - GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP=true
+            - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], 'admins') && 'Admin' || 'Viewer'
+            - GF_AUTH_ANONYMOUS_ENABLED=false
             - GF_SECURITY_ADMIN_PASSWORD={{ teslamate_database_password }}
             - DATABASE_USER={{ teslamate_db_user }}
             - DATABASE_PASS={{ teslamate_database_password }}
@@ -84,7 +104,7 @@
           volumes:
             - "{{ teslamate_data_folder }}:/opt/teslamate/data"
           ports:
-            - "{{ teslamate_http_port }}:4000"
+            - "127.0.0.1:{{ teslamate_http_port }}:4000"
           networks:
             - teslamate
           depends_on:

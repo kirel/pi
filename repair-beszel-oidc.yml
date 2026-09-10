@@ -1,0 +1,82 @@
+---
+# One-time retirement of Daniel's old Authelia identity link. No user deletion.
+- name: Remove obsolete Beszel OIDC identity link
+  hosts: homelab
+  gather_facts: false
+  vars:
+    beszel_repair_url: https://beszel.kirelabs.org
+    beszel_repair_user: 6n4k6j1iawk2ylj
+    beszel_repair_old_subject: 1024b7a6-aa3a-4222-b8ad-fb9357ade085
+  tasks:
+    - name: Authenticate and remove only the verified obsolete link
+      no_log: true
+      block:
+        - name: Authenticate Beszel administrator
+          ansible.builtin.uri:
+            url: "{{ beszel_repair_url }}/api/collections/_superusers/auth-with-password"
+            method: POST
+            body_format: json
+            body:
+              identity: danishkirel@gmail.com
+              password: "{{ vault_beszel_superuser_password }}"
+          register: beszel_repair_auth
+
+        - name: Read existing user
+          ansible.builtin.uri:
+            url: "{{ beszel_repair_url }}/api/collections/users/records/{{ beszel_repair_user }}"
+            headers:
+              Authorization: "{{ beszel_repair_auth.json.token }}"
+          register: beszel_repair_before
+
+        - name: Verify user identity
+          ansible.builtin.assert:
+            that:
+              - beszel_repair_before.json.email == 'danishkirel@gmail.com'
+
+        - name: Read external identity links
+          ansible.builtin.uri:
+            url: "{{ beszel_repair_url }}/api/collections/_externalAuths/records?perPage=100"
+            headers:
+              Authorization: "{{ beszel_repair_auth.json.token }}"
+          register: beszel_repair_links
+
+        - name: Select exact obsolete identity
+          ansible.builtin.set_fact:
+            beszel_repair_targets: >-
+              {{ beszel_repair_links.json['items']
+                 | selectattr('recordRef', 'equalto', beszel_repair_user)
+                 | selectattr('provider', 'equalto', 'oidc')
+                 | selectattr('providerId', 'equalto', beszel_repair_old_subject)
+                 | list }}
+
+        - name: Guard against ambiguous deletion
+          ansible.builtin.assert:
+            that:
+              - beszel_repair_targets | length <= 1
+              - beszel_repair_links.json.totalItems <= 100
+
+        - name: Delete obsolete identity link only
+          ansible.builtin.uri:
+            url: "{{ beszel_repair_url }}/api/collections/_externalAuths/records/{{ item.id }}"
+            method: DELETE
+            headers:
+              Authorization: "{{ beszel_repair_auth.json.token }}"
+            status_code: 204
+          loop: "{{ beszel_repair_targets }}"
+          changed_when: true
+
+        - name: Read user after unlinking
+          ansible.builtin.uri:
+            url: "{{ beszel_repair_url }}/api/collections/users/records/{{ beszel_repair_user }}"
+            headers:
+              Authorization: "{{ beszel_repair_auth.json.token }}"
+          register: beszel_repair_after
+
+        - name: Verify user record unchanged
+          ansible.builtin.assert:
+            that:
+              - beszel_repair_before.json == beszel_repair_after.json
+
+    - name: Report identity unlink result
+      ansible.builtin.debug:
+        msg: "Removed {{ beszel_repair_targets | length }} obsolete OIDC link(s); user record unchanged."

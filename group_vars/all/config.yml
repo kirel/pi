@@ -123,8 +123,6 @@ dnsmasq_config_folder: "{{ config_root }}/dnsmasq"
 caddy_folder: "{{ config_root }}/caddy"
 caddy_data_folder: "{{ config_root }}/caddy/data"
 caddy_config_folder: "{{ config_root }}/caddy/config"
-authelia_http_port: 9092
-authelia_config_folder: "{{ config_root }}/authelia"
 beszel_data_folder: "{{ config_root }}/beszel"
 beszel_agent_data_folder: "{{ config_root }}/beszel-agent"
 uptime_kuma_data_folder: "{{ config_root }}/uptime-kuma/data"

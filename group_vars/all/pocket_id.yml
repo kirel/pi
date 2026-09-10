@@ -1,0 +1,77 @@
+---
+# Pocket ID is the active identity provider.
+linkding_oidc_provider: pocket_id
+dozzle_auth_provider: forward-proxy
+pocket_id_clients:
+  litellm:
+    name: LiteLLM
+    url: https://litellm.kirelabs.org/ui
+    callbacks: [https://litellm.kirelabs.org/sso/callback]
+    groups: [admins]
+    pkce: true
+  linkding:
+    name: Linkding
+    url: https://linkding.kirelabs.org
+    callbacks: [https://linkding.kirelabs.org/oidc/callback/]
+  beszel:
+    name: Beszel
+    url: https://beszel.kirelabs.org
+    callbacks:
+      - https://beszel.kirelabs.org/api/oauth2-redirect
+      # Required by Beszel's OAUTH_DISABLE_POPUP redirect flow.
+      - https://beszel.kirelabs.org
+    pkce: true
+  readeck:
+    name: Readeck
+    url: https://readeck.kirelabs.org
+    callbacks: [https://readeck.kirelabs.org/login/oidc]
+  grafana:
+    name: TeslaMate Grafana
+    url: https://teslamate-grafana.kirelabs.org
+    callbacks: [https://teslamate-grafana.kirelabs.org/login/generic_oauth]
+    pkce: true
+  open-webui:
+    name: Open WebUI
+    url: https://open-webui.kirelabs.org
+    callbacks: [https://open-webui.kirelabs.org/oauth/oidc/callback]
+  immich:
+    name: Immich
+    url: https://immich.kirelabs.org
+    callbacks:
+      - https://immich.kirelabs.org/auth/login
+      - https://immich.kirelabs.org/user-settings
+      - app.immich:///oauth-callback
+  dockhand:
+    name: Dockhand
+    url: https://dockhand.kirelabs.org
+    callbacks: [https://dockhand.kirelabs.org/api/auth/oidc/callback]
+  homepage:
+    name: Homepage
+    url: https://homepage.kirelabs.org
+    callbacks: [https://homepage.kirelabs.org/oauth2/callback]
+    pkce: true
+  prunemate:
+    name: PruneMate
+    url: https://prunemate.kirelabs.org
+    callbacks: [https://prunemate.kirelabs.org/oauth2/callback]
+    pkce: true
+  leases:
+    name: DHCP Leases
+    url: https://leases-homelab.kirelabs.org
+    callbacks: [https://leases-homelab.kirelabs.org/oauth2/callback]
+    pkce: true
+  dozzle:
+    name: Dozzle
+    url: https://dozzle.kirelabs.org
+    callbacks: [https://dozzle.kirelabs.org/oauth2/callback]
+    pkce: true
+  teslamate:
+    name: TeslaMate
+    url: https://teslamate.kirelabs.org
+    callbacks: [https://teslamate.kirelabs.org/oauth2/callback]
+    pkce: true
+  changedetection:
+    name: ChangeDetection
+    url: https://changedetection.kirelabs.org
+    callbacks: [https://changedetection.kirelabs.org/oauth2/callback]
+    pkce: true

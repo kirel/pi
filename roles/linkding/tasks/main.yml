@@ -7,6 +7,19 @@
     group: "{{ linkding_gid }}"
     mode: '0750'
 
+- name: Read locally provisioned Pocket ID client secret
+  ansible.builtin.slurp:
+    src: "{{ config_root }}/pocket-id/secrets/linkding-client-secret"
+  register: linkding_pocket_id_secret
+  when: linkding_oidc_provider == 'pocket_id'
+  no_log: true
+
+- name: Select Pocket ID client secret
+  ansible.builtin.set_fact:
+    linkding_oidc_client_secret: "{{ linkding_pocket_id_secret.content | b64decode }}"
+  when: linkding_oidc_provider == 'pocket_id'
+  no_log: true
+
 - name: Deploy Linkding stack
   community.docker.docker_compose_v2:
     project_name: linkding
@@ -14,7 +27,7 @@
   become: true
   no_log: true
 
-- name: Link the existing Linkding user to the Authelia identity
+- name: Link the existing Linkding user to the OIDC identity
   community.docker.docker_container_exec:
     container: linkding
     command: >-

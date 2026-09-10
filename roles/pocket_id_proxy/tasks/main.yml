@@ -1,0 +1,7 @@
+---
+- name: Configure Pocket ID proxies
+  ansible.builtin.include_tasks: instance.yml
+  loop: "{{ services | dict2items | selectattr('value.auth', 'defined') | selectattr('value.auth.provider', 'equalto', 'pocket_id') | list }}"
+  loop_control:
+    loop_var: auth_service
+    label: "{{ auth_service.key }}"

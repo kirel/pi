@@ -259,7 +259,7 @@ add_probe ma_domain          "Music Assistant via domain"               "local_d
 add_probe ma_forced          "Music Assistant domain forced to .5"      "local_proxy"
 add_probe ma_websocket       "Music Assistant /ws endpoint"             "local_websocket"
 add_probe homepage_domain    "Homepage via domain"                      "local_service"
-add_probe authelia_domain    "Authelia via domain"                      "local_service"
+add_probe pocket_id_domain   "Pocket ID via domain"                     "local_service"
 add_probe z2m_domain         "Zigbee2MQTT via domain"                   "local_service"
 add_probe evcc_domain        "evcc via domain"                          "local_service"
 add_probe immich_domain      "Immich via domain"                        "local_service"
@@ -604,7 +604,7 @@ while [ "$(date '+%s')" -lt "$END_EPOCH" ] && [ "$STOP_REQUESTED" -eq 0 ]; do
   run_probe ma_forced         http "https://${MA_DOMAIN}/" "${MA_DOMAIN}:443:${HOMELAB}"
   run_probe ma_websocket      websocket "https://${MA_DOMAIN}/ws" "${MA_DOMAIN}:443:${HOMELAB}"
   run_probe homepage_domain   http "https://homepage.kirelabs.org/" ""
-  run_probe authelia_domain   http "https://auth.kirelabs.org/" ""
+  run_probe pocket_id_domain  http "https://id.kirelabs.org/" ""
   run_probe z2m_domain        http "https://z2m.kirelabs.org/" ""
   run_probe evcc_domain       http "https://evcc.kirelabs.org/" ""
   run_probe immich_domain     http "https://immich.kirelabs.org/" ""
@@ -715,7 +715,7 @@ sum_ok_counts() {
   BACKEND_FAILS="$(sum_fail_counts \
     ha_direct ma_direct litellm_direct llamaswap_direct hermes_api t3_direct)"
   SERVICE_FAILS="$(sum_fail_counts \
-    homepage_domain authelia_domain z2m_domain evcc_domain immich_domain \
+    homepage_domain pocket_id_domain z2m_domain evcc_domain immich_domain \
     jellyfin_domain seerr_domain pihole1_domain pihole2_domain mqtt_tcp smb_tcp)"
   AI_RUNTIME_FAILS="$(sum_fail_counts \
     llamaswap_qwen llamaswap_embed llamaswap_asr llamaswap_tts)"
