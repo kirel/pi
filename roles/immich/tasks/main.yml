@@ -43,7 +43,8 @@
   failed_when: false
 
 - name: Create Immich postgres ZFS dataset
-  ansible.builtin.command: zfs create -o mountpoint={{ immich_postgres_path }} -o compression=lz4 -o recordsize=16K {{ zfs_pool_name }}/immich/postgres
+  ansible.builtin.command: zfs create -o mountpoint={{ immich_postgres_path }} -o compression=lz4 -o recordsize=16K {{ zfs_pool_name
+    }}/immich/postgres
   when: postgres_dataset_check.rc != 0
   notify: Verify ZFS datasets
   become: true
@@ -64,7 +65,7 @@
     state: directory
     owner: "{{ immich_uid }}"
     group: "{{ immich_gid }}"
-    mode: '0755'
+    mode: "0755"
     recurse: true
 
 - name: Set ownership for postgres directory
@@ -73,7 +74,7 @@
     state: directory
     owner: "999"
     group: "999"
-    mode: '0755'
+    mode: "0755"
     recurse: true
 
 - name: Ensure Immich AI-generated external library directory exists
@@ -91,7 +92,7 @@
     state: directory
     owner: "{{ uid | default(1000) }}"
     group: "{{ gid | default(1000) }}"
-    mode: '0755'
+    mode: "0755"
 
 # Ensure shared credentials and endpoints are defined
 - name: Validate Immich shared variables
@@ -110,7 +111,7 @@
     dest: "{{ immich_config_folder }}/db_password"
     owner: "{{ uid | default(1000) }}"
     group: "{{ gid | default(1000) }}"
-    mode: '0600'
+    mode: "0600"
     backup: true
 
 # Deploy Docker Compose stack

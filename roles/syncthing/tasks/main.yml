@@ -16,14 +16,14 @@
   ansible.builtin.file:
     path: /etc/apt/keyrings
     state: directory
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: Add syncthing repository GPG key
   ansible.builtin.get_url:
     url: https://syncthing.net/release-key.gpg
     dest: /etc/apt/keyrings/syncthing-archive-keyring.gpg
-    mode: '0644'
+    mode: "0644"
   become: true
 
 - name: Add syncthing repository
@@ -40,7 +40,7 @@
       Pin: origin apt.syncthing.net
       Pin-Priority: 990
     dest: /etc/apt/preferences.d/syncthing.pref
-    mode: '0644'
+    mode: "0644"
   become: true
 
 - name: Install syncthing
@@ -64,7 +64,7 @@
   become: true
 
 - name: Configure Syncthing GUI to listen on all interfaces
-  ansible.builtin.xml:
+  community.general.xml:
     path: "/home/{{ syncthing_user }}/.local/state/syncthing/config.xml"
     xpath: /configuration/gui/address
     value: "0.0.0.0:8384"

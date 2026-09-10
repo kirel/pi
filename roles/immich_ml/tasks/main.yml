@@ -6,7 +6,7 @@
     state: directory
     owner: "{{ uid | default(1000) }}"
     group: "{{ gid | default(1000) }}"
-    mode: '0755'
+    mode: "0755"
 
 # Deploy Immich ML stack using shared config from group_vars/all/config.yml
 - name: Deploy Immich ML stack

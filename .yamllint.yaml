@@ -30,6 +30,12 @@ rules:
   comments:
     require-starting-space: true
     min-spaces-from-content: 1
+  comments-indentation: false
+
+  # Match ansible-lint's YAML safety requirements.
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
 
   # Allow empty lines at the end of the file
   new-line-at-end-of-file: enable

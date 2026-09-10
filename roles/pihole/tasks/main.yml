@@ -1,14 +1,17 @@
 ---
-- ansible.builtin.set_fact:
+- name: Define Pi-hole service metadata
+  ansible.builtin.set_fact:
     pihole_service: "{{ services['pihole-'~inventory_hostname] }}"
     leases_service: "{{ services['dnsmasq-leases-ui-'~inventory_hostname] }}"
     pihole_monitor_id_prefix: "{{ 'pihole-homelab' if inventory_hostname == 'homelab-nuc' else 'pihole-nameserver' }}"
     pihole_monitor_name_prefix: "{{ 'Pihole Homelab' if inventory_hostname == 'homelab-nuc' else 'Pihole Nameserver' }}"
     pihole_monitor_docker_host: "{{ 'local' if inventory_hostname == 'homelab-nuc' else 'nameserver' }}"
 
-- ansible.builtin.debug:
+- name: Show Pi-hole service metadata
+  ansible.builtin.debug:
     var: pihole_service
-- ansible.builtin.debug:
+- name: Show lease service metadata
+  ansible.builtin.debug:
     var: leases_service
 
 # =============================================================================
@@ -19,25 +22,25 @@
   ansible.builtin.systemd:
     name: systemd-resolved
   register: systemd_resolved_status
-  become: yes
+  become: true
 
 - name: Stop and disable systemd-resolved to prevent self-query loops
   ansible.builtin.systemd:
     name: systemd-resolved
     state: stopped
-    enabled: no
-    masked: yes
+    enabled: false
+    masked: true
   when: systemd_resolved_status.status.ActiveState == "active"
-  become: yes
+  become: true
 
 - name: Backup original resolv.conf
   ansible.builtin.copy:
     src: /etc/resolv.conf
     dest: "/etc/resolv.conf.backup.{{ ansible_date_time.epoch }}"
-    remote_src: yes
-    force: yes
+    remote_src: true
+    force: true
   when: inventory_hostname == "nameserver-pi" or inventory_hostname == "homelab-nuc"
-  become: yes
+  become: true
 
 - name: Configure resolv.conf to use Pi-hole
   ansible.builtin.template:
@@ -45,18 +48,18 @@
     dest: /etc/resolv.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   when: inventory_hostname == "nameserver-pi" or inventory_hostname == "homelab-nuc"
   notify: Reload pihole dns
-  become: yes
+  become: true
 
 - name: Make resolv.conf immutable to prevent modifications
   ansible.builtin.command: chattr +i /etc/resolv.conf
   args:
     creates: /etc/resolv.conf
   when: inventory_hostname == "nameserver-pi" or inventory_hostname == "homelab-nuc"
-  ignore_errors: yes
-  become: yes
+  ignore_errors: true
+  become: true
 
 # =============================================================================
 # End Host DNS Configuration

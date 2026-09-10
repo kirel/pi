@@ -149,7 +149,9 @@
                  | join(',') }}
           command: ["--config", "/app/config.yaml", "--port", "{{ litellm_proxy_port_container }}"]
           healthcheck:
-            test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:{{ litellm_proxy_port_container }}/health/readiness')\""]
+            test:
+              - "CMD-SHELL"
+              - "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:{{ litellm_proxy_port_container }}/health/readiness')\""
             interval: 30s
             timeout: 10s
             retries: 3

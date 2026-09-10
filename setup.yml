@@ -105,8 +105,6 @@
 - name: Setup ailabs
   hosts: ailab_ubuntus
   ignore_unreachable: true
-  collections:
-    - community.docker
   roles:
     - { role: basic, become: true, tags: [basic] }
     - { role: onepassword_cli, become: true, tags: [onepassword, onepassword-cli] }

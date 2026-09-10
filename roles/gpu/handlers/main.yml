@@ -1,10 +1,10 @@
 ---
 # handlers file for gpu
-- name: update initramfs
+- name: Update initramfs
   ansible.builtin.command: update-initramfs -u
   become: true
 
-- name: reboot system
+- name: Reboot system
   ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible for nvidia driver installation"
     connect_timeout: 5
@@ -14,7 +14,7 @@
     test_command: uptime
   become: true
 
-- name: debug installed driver after reboot
+- name: Debug installed driver after reboot
   ansible.builtin.shell: |
     echo "=== NVIDIA Driver Information After Reboot ==="
     nvidia-smi --version || echo "nvidia-smi not available"
@@ -26,11 +26,11 @@
   changed_when: false
   failed_when: false
 
-- name: show post-reboot nvidia info
+- name: Show post-reboot nvidia info
   ansible.builtin.debug:
     msg: "{{ post_reboot_nvidia_info.stdout_lines }}"
 
-- name: restart docker
+- name: Restart docker
   ansible.builtin.service:
     name: docker
     state: restarted

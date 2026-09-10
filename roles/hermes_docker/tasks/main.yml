@@ -269,7 +269,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
 
 - name: Ensure external Hermes skills repository parent directory exists
   ansible.builtin.file:
@@ -277,7 +277,7 @@
     state: directory
     owner: "{{ hermes_external_skills_host_owner }}"
     group: "{{ hermes_external_skills_host_group }}"
-    mode: '0755'
+    mode: "0755"
 
 - name: Check external Hermes skills repository exists
   ansible.builtin.stat:
@@ -372,7 +372,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -384,7 +384,7 @@
     state: directory
     owner: "{{ hermes_docker_data_uid }}"
     group: "{{ hermes_docker_data_gid }}"
-    mode: '0700'
+    mode: "0700"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -430,7 +430,7 @@
     state: directory
     owner: "{{ hermes_docker_data_uid }}"
     group: "{{ hermes_docker_data_gid }}"
-    mode: '0755'
+    mode: "0755"
   loop: "{{ hermes_docker_webui_effective_workspace_host_dirs | dict2items }}"
   loop_control:
     label: "{{ item.key }} -> {{ item.value }}"
@@ -473,7 +473,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   when: hermes_docker_build_enabled | bool
 
 - name: Copy Hermes Docker service publisher
@@ -482,7 +482,7 @@
     dest: "{{ hermes_docker_base_dir }}/hermes-image/hermes-service"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   notify: Recreate Hermes Docker agents
   when: hermes_docker_build_enabled | bool
 
@@ -492,7 +492,7 @@
     dest: "{{ hermes_docker_base_dir }}/hermes-image/Dockerfile"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify: Recreate Hermes Docker agents
   when: hermes_docker_build_enabled | bool
 
@@ -502,7 +502,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   when: hermes_docker_agent_caddy_enabled | bool
 
 - name: Render Hermes Caddy image Dockerfile
@@ -511,7 +511,7 @@
     dest: "{{ hermes_docker_base_dir }}/caddy-image/Dockerfile"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify: Recreate Hermes Docker agents
   when: hermes_docker_agent_caddy_enabled | bool
 
@@ -543,7 +543,12 @@
   when: hermes_docker_agent_caddy_enabled | bool
 
 - name: Allow Hermes user to read per-agent Caddy logs
-  ansible.builtin.command: "setfacl -R -m u:{{ hermes_docker_data_uid }}:rX -m d:u:{{ hermes_docker_data_uid }}:rX {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/logs"
+  ansible.builtin.command:
+    cmd: >-
+      setfacl -R
+      -m u:{{ hermes_docker_data_uid }}:rX
+      -m d:u:{{ hermes_docker_data_uid }}:rX
+      {{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/logs
   changed_when: false
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
@@ -557,7 +562,7 @@
     dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/supervisor/supervisord.conf"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -570,7 +575,7 @@
     dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/Caddyfile"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -584,7 +589,7 @@
     content: "# Placeholder so the managed Caddy import glob always matches.\n"
     owner: "{{ hermes_docker_data_uid }}"
     group: "{{ hermes_docker_data_gid }}"
-    mode: '0644'
+    mode: "0644"
     force: false
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
@@ -598,7 +603,7 @@
     state: touch
     owner: "{{ hermes_docker_data_uid }}"
     group: "{{ hermes_docker_data_gid }}"
-    mode: '0660'
+    mode: "0660"
     access_time: preserve
     modification_time: preserve
   loop: "{{ hermes_docker_effective_agent_names }}"
@@ -613,7 +618,7 @@
     dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/caddy/caddy.env"
     owner: root
     group: root
-    mode: '0600'
+    mode: "0600"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -628,7 +633,7 @@
     dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/skills/caddy-proxy/SKILL.md"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -641,7 +646,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0700'
+    mode: "0700"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -654,7 +659,7 @@
     dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/tailscale.env"
     owner: root
     group: root
-    mode: '0600'
+    mode: "0600"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -669,7 +674,7 @@
     dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/data/.env"
     owner: "{{ hermes_docker_data_uid }}"
     group: "{{ hermes_docker_data_gid }}"
-    mode: '0600'
+    mode: "0600"
   loop: "{{ hermes_docker_effective_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -683,7 +688,7 @@
     dest: "{{ hermes_docker_base_dir }}/{{ agent_name }}/webui.env"
     owner: root
     group: root
-    mode: '0600'
+    mode: "0600"
   loop: "{{ hermes_docker_webui_agent_names }}"
   loop_control:
     loop_var: agent_name
@@ -698,7 +703,7 @@
     dest: "{{ hermes_docker_firewall_script_path }}"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   when: hermes_docker_isolate_agents | bool
 
 - name: Render Hermes Docker firewall systemd service
@@ -707,7 +712,7 @@
     dest: "/etc/systemd/system/{{ hermes_docker_firewall_service_name }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   when: hermes_docker_isolate_agents | bool
   register: hermes_docker_firewall_service
 
@@ -731,7 +736,7 @@
     dest: "{{ hermes_docker_watchdog_script_path }}"
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   when:
     - hermes_docker_tailscale_enabled | bool
     - hermes_docker_watchdog_enabled | bool
@@ -742,7 +747,7 @@
     dest: "/etc/systemd/system/{{ item.dest }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   loop:
     - src: hermes-docker-watchdog.service.j2
       dest: "{{ hermes_docker_watchdog_service_name }}"
@@ -777,7 +782,7 @@
     dest: "{{ hermes_docker_base_dir }}/docker-compose.yml"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify: Recreate Hermes Docker agents
 
 - name: Apply pending Hermes Docker Compose changes

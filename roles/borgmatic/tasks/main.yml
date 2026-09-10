@@ -7,7 +7,7 @@
       - libssl-dev
       - libacl1-dev
     state: present
-    update_cache: yes
+    update_cache: true
   become: true
 
 - name: Remove system borgmatic if present
@@ -43,7 +43,7 @@
   ansible.builtin.file:
     path: /etc/borgmatic.d
     state: directory
-    mode: '0755'
+    mode: "0755"
     owner: root
     group: root
   become: true
@@ -52,7 +52,7 @@
   ansible.builtin.file:
     path: "{{ backup_local_repo }}"
     state: directory
-    mode: '0700'
+    mode: "0700"
     owner: root
     group: root
   become: true
@@ -61,7 +61,7 @@
   ansible.builtin.template:
     src: "config-local.yaml.j2"
     dest: "/etc/borgmatic.d/config-local.yaml"
-    mode: '0600'
+    mode: "0600"
     owner: root
     group: root
   become: true
@@ -81,7 +81,7 @@
   ansible.builtin.copy:
     src: "borgmatic-local.service"
     dest: "/etc/systemd/system/borgmatic-local.service"
-    mode: '0644'
+    mode: "0644"
   become: true
   notify: Reload systemd daemon
 
@@ -89,16 +89,15 @@
   ansible.builtin.copy:
     src: "borgmatic-local.timer"
     dest: "/etc/systemd/system/borgmatic-local.timer"
-    mode: '0644'
+    mode: "0644"
   become: true
   notify: Reload systemd daemon
 
 - name: Flush handlers to apply systemd changes
-  meta: flush_handlers
-
+  ansible.builtin.meta: flush_handlers
 - name: Enable borgmatic timer
   ansible.builtin.systemd:
     name: borgmatic-local.timer
-    enabled: yes
+    enabled: true
     state: started
   become: true

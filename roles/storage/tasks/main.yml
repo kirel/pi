@@ -38,7 +38,7 @@
 - name: Build Samba volume list
   ansible.builtin.set_fact:
     samba_volumes: "{{ samba_volumes | default([]) + ['/etc/avahi/services/:/external/avahi'] }}"
-  loop: "{{ [0] }}"  # Run once to initialize
+  loop: "{{ [0] }}" # Run once to initialize
 
 - name: Add dataset shares to Samba volumes
   ansible.builtin.set_fact:
@@ -64,7 +64,7 @@
           syncthing_data_folder + ':/data'
         ]
       }}
-  loop: "{{ [0] }}"  # Run once to initialize
+  loop: "{{ [0] }}" # Run once to initialize
 
 - name: Add Syncthing datasets to volumes
   ansible.builtin.set_fact:
@@ -85,17 +85,48 @@
 
 - name: Add dataset shares to Samba environment
   ansible.builtin.set_fact:
-    samba_env: "{{ samba_env | combine({('SAMBA_VOLUME_CONFIG_' + item | capitalize): '[' + item | capitalize + ']; path=/shares/' + item | capitalize + '; valid users = daniel, nuc; browseable = yes; guest ok = yes; read only = no; force group = users; create mask = 0775; directory mask = 0775'}) }}"
+    samba_env: >-
+      {{
+        samba_env
+        | combine({
+          ('SAMBA_VOLUME_CONFIG_' ~ (item | capitalize)):
+            '[' ~ (item | capitalize)
+            ~ ']; path=/shares/' ~ (item | capitalize)
+            ~ '; valid users = daniel, nuc; browseable = yes; guest ok = yes;'
+            ~ ' read only = no; force group = users; create mask = 0775;'
+            ~ ' directory mask = 0775'
+        })
+      }}
   loop: "{{ dataset_shares }}"
 
 - name: Add Time Machine shares to Samba environment
   ansible.builtin.set_fact:
-    samba_env: "{{ samba_env | combine({('SAMBA_VOLUME_CONFIG_' + item | capitalize): '[TimeMachine]; path=/shares/' + item | capitalize + '/%U; valid users = daniel; guest ok = no; read only = no; browseable = yes; fruit:time machine = yes; fruit:time machine max size = 1000G'}) }}"
+    samba_env: >-
+      {{
+        samba_env
+        | combine({
+          ('SAMBA_VOLUME_CONFIG_' ~ (item | capitalize)):
+            '[TimeMachine]; path=/shares/' ~ (item | capitalize)
+            ~ '/%U; valid users = daniel; guest ok = no; read only = no;'
+            ~ ' browseable = yes; fruit:time machine = yes;'
+            ~ ' fruit:time machine max size = 1000G'
+        })
+      }}
   loop: "{{ timemachine_shares }}"
 
 - name: Add config to Samba environment
   ansible.builtin.set_fact:
-    samba_env: "{{ samba_env | combine({'SAMBA_VOLUME_CONFIG_Config': '[Config]; path=/shares/config; valid users = daniel; guest ok = no; read only = no; browseable = yes; create mask = 0775; directory mask = 0775; force user = ' + username + '; force group = users;'}) }}"
+    samba_env: >-
+      {{
+        samba_env
+        | combine({
+          'SAMBA_VOLUME_CONFIG_Config':
+            '[Config]; path=/shares/config; valid users = daniel; guest ok = no;'
+            ~ ' read only = no; browseable = yes; create mask = 0775;'
+            ~ ' directory mask = 0775; force user = ' ~ username
+            ~ '; force group = users;'
+        })
+      }}
 
 - name: Start Storage
   community.docker.docker_compose_v2:

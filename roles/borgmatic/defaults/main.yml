@@ -14,7 +14,7 @@ backup_retention:
   keep_monthly: 12
 
 # Archive naming
-backup_archive_name_format: 'homelab-nuc-{hostname}-{now}'
+backup_archive_name_format: "homelab-nuc-{hostname}-{now}"
 
 # Compression algorithm
 backup_compression: lz4
@@ -24,10 +24,10 @@ backup_compression: lz4
 
 # Exclude patterns (common cache/log directories)
 backup_exclude_patterns:
-  - '**/cache'
-  - '**/logs'
-  - '**/temp'
-  - '**/.cache'
-  - '**/node_modules'
-  - '**/build'
-  - '**/dist'
+  - "**/cache"
+  - "**/logs"
+  - "**/temp"
+  - "**/.cache"
+  - "**/node_modules"
+  - "**/build"
+  - "**/dist"

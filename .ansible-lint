@@ -1,0 +1,5 @@
+---
+skip_list:
+  # Role variables intentionally form a shared, declarative interface across
+  # inventory, group_vars, playbooks, and multiple roles in this repository.
+  - var-naming[no-role-prefix]

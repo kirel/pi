@@ -31,11 +31,22 @@ litellm_proxy_port_container: "4000" # Container port for LiteLLM (default)
 phoenix_host_for_litellm: "http://{{ homelab_nuc_ip }}:{{ phoenix_grpc_port }}"
 
 # Database connection string
-litellm_database_url: "postgresql://{{ litellm_db_user }}:{{ litellm_db_password }}@{{ litellm_db_container_name }}:{{ litellm_db_port_container }}/{{ litellm_db_name }}"
+litellm_database_url: >-
+  {{
+    'postgresql://'
+    ~ litellm_db_user
+    ~ ':'
+    ~ litellm_db_password
+    ~ '@'
+    ~ litellm_db_container_name
+    ~ ':'
+    ~ litellm_db_port_container
+    ~ '/'
+    ~ litellm_db_name
+  }}
 
 # Additional provider-backed models rendered into LiteLLM model_list.
 litellm_extra_models: []
-
 # Non-standard OpenAI-compatible endpoints forwarded through LiteLLM. The
 # voices endpoint defaults to the actual llama-swap TTS model so clients do not
 # need to know its backend alias.
@@ -187,7 +198,6 @@ litellm_mcp_servers:
     url: "http://{{ wan2gp_mcp_host_for_litellm }}:{{ wan2gp_mcp_port }}/mcp/"
     timeout: 300
     access_groups: ["media_generation"]
-
 # Virtual keys that are not owned by a service-specific role. This currently
 # covers the manually installed bare-metal Hermes agent; its runtime remains
 # unmanaged while LiteLLM access is declarative.

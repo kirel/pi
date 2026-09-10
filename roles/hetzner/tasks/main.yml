@@ -43,7 +43,7 @@
     content: "{{ item.name }} ALL=(ALL) NOPASSWD: ALL\n"
     owner: root
     group: root
-    mode: '0440'
+    mode: "0440"
     validate: /usr/sbin/visudo -cf %s
   loop: "{{ hetzner_users | selectattr('passwordless_sudo', 'defined') | selectattr('passwordless_sudo') | list }}"
   tags: [homebrew, mise, users]
@@ -52,7 +52,18 @@
   ansible.builtin.file:
     path: "/etc/sudoers.d/{{ item.name }}"
     state: absent
-  loop: "{{ hetzner_users | rejectattr('passwordless_sudo', 'defined') | list + (hetzner_users | selectattr('passwordless_sudo', 'defined') | rejectattr('passwordless_sudo') | list) }}"
+  loop: >-
+    {{
+      hetzner_users
+      | rejectattr('passwordless_sudo', 'defined')
+      | list
+      + (
+        hetzner_users
+        | selectattr('passwordless_sudo', 'defined')
+        | rejectattr('passwordless_sudo')
+        | list
+      )
+    }}
   tags: [users]
 
 - name: Ensure Homebrew admin group exists
@@ -102,7 +113,7 @@
     path: "{{ hetzner_homebrew_prefix }}"
     owner: "{{ hetzner_homebrew_user }}"
     group: "{{ hetzner_homebrew_group }}"
-    mode: '0775'
+    mode: "0775"
     recurse: true
   tags: [homebrew, mise]
 
@@ -125,7 +136,7 @@
       fi
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   tags: [homebrew, mise]
 
 - name: Add Homebrew shell environment to Hetzner user zsh startup files
@@ -135,7 +146,7 @@
     create: true
     owner: "{{ item.0.name }}"
     group: "{{ item.0.name }}"
-    mode: '0644'
+    mode: "0644"
   loop: "{{ hetzner_users | product(['.zprofile', '.zshrc']) | list }}"
   tags: [homebrew, mise]
 
@@ -158,7 +169,7 @@
     state: directory
     owner: "{{ hetzner_homebrew_user }}"
     group: "{{ hetzner_homebrew_user }}"
-    mode: '0700'
+    mode: "0700"
   when:
     - "'gh' in hetzner_homebrew_formulae"
     - hetzner_github_cli_token | default('') | string | length > 0
@@ -176,7 +187,7 @@
           user: {{ hetzner_github_cli_user }}
     owner: "{{ hetzner_homebrew_user }}"
     group: "{{ hetzner_homebrew_user }}"
-    mode: '0600'
+    mode: "0600"
   no_log: true
   when:
     - "'gh' in hetzner_homebrew_formulae"
@@ -209,5 +220,5 @@
     create: true
     owner: "{{ hetzner_homebrew_user }}"
     group: "{{ hetzner_homebrew_user }}"
-    mode: '0644'
+    mode: "0644"
   tags: [mise]

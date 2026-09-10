@@ -22,7 +22,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
 
 - name: Install NodeSource apt signing key
   ansible.builtin.shell: |
@@ -39,7 +39,7 @@
     path: /usr/share/keyrings/nodesource.gpg
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
 
 - name: Get dpkg architecture
   ansible.builtin.command: dpkg --print-architecture
@@ -59,7 +59,7 @@
     dest: /etc/apt/sources.list.d/nodesource.sources
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
     content: |
       Types: deb
       URIs: https://deb.nodesource.com/node_{{ nodesource_nodejs_major_version }}.x
@@ -74,7 +74,7 @@
     dest: /etc/apt/preferences.d/nodejs
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
     content: |
       Package: nodejs
       Pin: origin deb.nodesource.com
@@ -104,7 +104,7 @@
         state: directory
         owner: "{{ nodesource_nodejs_npm_prefix_user }}"
         group: "{{ nodesource_nodejs_npm_prefix_user }}"
-        mode: '0755'
+        mode: "0755"
       loop:
         - "{{ nodesource_nodejs_npm_prefix }}"
         - "{{ nodesource_nodejs_npm_prefix }}/bin"
@@ -114,20 +114,27 @@
     - name: Configure npm prefix
       ansible.builtin.lineinfile:
         path: "/home/{{ nodesource_nodejs_npm_prefix_user }}/.npmrc"
-        regexp: '^prefix='
+        regexp: "^prefix="
         line: "prefix={{ nodesource_nodejs_npm_prefix }}"
         create: true
         owner: "{{ nodesource_nodejs_npm_prefix_user }}"
         group: "{{ nodesource_nodejs_npm_prefix_user }}"
-        mode: '0644'
+        mode: "0644"
 
     - name: Ensure npm global bin directory is in zsh PATH
       ansible.builtin.lineinfile:
         path: "/home/{{ nodesource_nodejs_npm_prefix_user }}/.zshrc"
         line: >-
-          {% if nodesource_nodejs_npm_prefix == '/home/' ~ nodesource_nodejs_npm_prefix_user ~ '/.local' %}export PATH="$HOME/.local/bin:$PATH"{% else %}export PATH="{{ nodesource_nodejs_npm_prefix }}/bin:$PATH"{% endif %}
+          {{
+            'export PATH="$HOME/.local/bin:$PATH"'
+            if nodesource_nodejs_npm_prefix
+              == '/home/' ~ nodesource_nodejs_npm_prefix_user ~ '/.local'
+            else 'export PATH="'
+              ~ nodesource_nodejs_npm_prefix
+              ~ '/bin:$PATH"'
+          }}
         create: true
         owner: "{{ nodesource_nodejs_npm_prefix_user }}"
         group: "{{ nodesource_nodejs_npm_prefix_user }}"
-        mode: '0644'
+        mode: "0644"
       when: nodesource_nodejs_manage_npm_prefix_path | bool

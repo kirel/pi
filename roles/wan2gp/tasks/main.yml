@@ -116,21 +116,21 @@
 - name: Configure Wan2GP CUDA base image
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '^FROM nvidia/cuda:[^ ]+$'
-    replace: 'FROM {{ wan2gp_cuda_base_image }}'
+    regexp: "^FROM nvidia/cuda:[^ ]+$"
+    replace: "FROM {{ wan2gp_cuda_base_image }}"
   register: wan2gp_cuda_base_image_result
 
 - name: Enable the BuildKit Dockerfile frontend
   ansible.builtin.lineinfile:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    line: '# syntax=docker/dockerfile:1'
+    line: "# syntax=docker/dockerfile:1"
     insertbefore: BOF
     state: present
 
 - name: Make Wan2GP apt downloads resilient in Docker builds
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '^RUN apt update'
+    regexp: "^RUN apt update"
     replace: >-
       RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://de.archive.ubuntu.com/ubuntu/|g;
       s|http://security.ubuntu.com/ubuntu/|http://de.archive.ubuntu.com/ubuntu/|g'
@@ -141,13 +141,13 @@
 - name: Remove distribution Python from Wan2GP system dependencies
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '    python3 python3-pip git wget curl cmake ninja-build \\'
-    replace: '    git wget curl cmake ninja-build \\'
+    regexp: "    python3 python3-pip git wget curl cmake ninja-build \\\\"
+    replace: "    git wget curl cmake ninja-build \\\\"
 
 - name: Install uv and managed Python in Wan2GP image
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '    apt clean\n\nWORKDIR /workspace'
+    regexp: "    apt clean\\n\\nWORKDIR /workspace"
     replace: |2-
           apt clean && rm -rf /var/lib/apt/lists/*
 
@@ -164,13 +164,13 @@
 - name: Use uv for Wan2GP Python packaging
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: 'RUN pip install --upgrade pip setuptools wheel'
+    regexp: "RUN pip install --upgrade pip setuptools wheel"
     replace: 'RUN uv pip install --upgrade pip "setuptools<=75.8.2" wheel'
 
 - name: Configure Wan2GP PyTorch CUDA wheels
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '^RUN (?:pip|uv pip) install torch==[^ ]+ torchvision==[^ ]+ torchaudio==[^ ]+ --index-url https://download\.pytorch\.org/whl/[^ ]+$'
+    regexp: "^RUN (?:pip|uv pip) install torch==[^ ]+ torchvision==[^ ]+ torchaudio==[^ ]+ --index-url https://download\\.pytorch\\.org/whl/[^ ]+$"
     replace: >-
       RUN uv pip install torch=={{ wan2gp_torch_version }}+{{ wan2gp_torch_cuda_suffix }}
       torchvision=={{ wan2gp_torchvision_version }}+{{ wan2gp_torch_cuda_suffix }}
@@ -181,13 +181,13 @@
 - name: Install Wan2GP requirements with uv
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '^RUN pip install -r requirements\.txt$'
-    replace: 'RUN uv pip install -r requirements.txt'
+    regexp: "^RUN pip install -r requirements\\.txt$"
+    replace: "RUN uv pip install -r requirements.txt"
 
 - name: Install LightX2V CUDA 13 kernels
   ansible.builtin.lineinfile:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    insertafter: '^RUN uv pip install -r requirements\.txt$'
+    insertafter: "^RUN uv pip install -r requirements\\.txt$"
     line: 'RUN uv pip install "{{ wan2gp_lightx2v_wheel }}"'
     state: present
 
@@ -202,8 +202,12 @@
   ansible.builtin.lineinfile:
     path: "{{ wan2gp_app_path }}/Dockerfile"
     insertafter: '^RUN uv pip install {{ wan2gp_lightx2v_cuda12_compat_packages | join(" ") | regex_escape }}$'
-    line: "ENV LD_LIBRARY_PATH=/opt/venv/lib/python3.11/site-packages/nvidia/cublas/lib:\
-      /opt/venv/lib/python3.11/site-packages/nvidia/cuda_runtime/lib:${LD_LIBRARY_PATH}"
+    line: >-
+      {{
+        'ENV LD_LIBRARY_PATH=/opt/venv/lib/python3.11/site-packages/nvidia/cublas/lib:'
+        ~ '/opt/venv/lib/python3.11/site-packages/nvidia/cuda_runtime/lib:'
+        ~ '${LD_LIBRARY_PATH}'
+      }}
     state: present
 
 - name: Install GGUF CUDA 13 kernels
@@ -216,25 +220,25 @@
 - name: Build SageAttention with uv
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '    pip install --no-build-isolation \.'
-    replace: '    uv pip install --no-build-isolation .'
+    regexp: "    pip install --no-build-isolation \\."
+    replace: "    uv pip install --no-build-isolation ."
 
 - name: Mount the persistent BuildKit cache for uv commands
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '^RUN uv '
-    replace: 'RUN --mount=type=cache,id=wan2gp-uv,target=/root/.cache/uv uv '
+    regexp: "^RUN uv "
+    replace: "RUN --mount=type=cache,id=wan2gp-uv,target=/root/.cache/uv uv "
 
 - name: Mount the persistent uv cache while building SageAttention
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '^RUN git clone https://github\.com/thu-ml/SageAttention\.git'
-    replace: 'RUN --mount=type=cache,id=wan2gp-uv,target=/root/.cache/uv git clone https://github.com/thu-ml/SageAttention.git'
+    regexp: "^RUN git clone https://github\\.com/thu-ml/SageAttention\\.git"
+    replace: "RUN --mount=type=cache,id=wan2gp-uv,target=/root/.cache/uv git clone https://github.com/thu-ml/SageAttention.git"
 
 - name: Reuse the Ubuntu base image UID for Wan2GP
   ansible.builtin.replace:
     path: "{{ wan2gp_app_path }}/Dockerfile"
-    regexp: '^RUN useradd -u 1000 -ms /bin/bash user$'
+    regexp: "^RUN useradd -u 1000 -ms /bin/bash user$"
     replace: >-
       RUN existing_user="$(getent passwd 1000 | cut -d: -f1)";
       existing_group="$(getent group 1000 | cut -d: -f1)";
