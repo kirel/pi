@@ -10,6 +10,51 @@ monitoring_autokuma_sync_interval: 30
 monitoring_autokuma_delete_grace_period: 600
 monitoring_autokuma_migrate: false
 
+# CPA credential identity, not an OAuth token. Update after replacing the account.
+monitoring_cpa_codex_auth_index: 72a03c912a94d53f
+monitoring_cpa_google_auth_index: 4d4e5b6c86217448
+monitoring_cpa_google_project_id: keen-theory-lf3h4
+monitoring_cpa_quota_min_remaining: 20
+# Existing Kuma notification IDs: Home Assistant Alarm and Mein Telegram Alarm.
+monitoring_cpa_quota_notifications:
+  "1": true
+  "3": true
+
+# CPA wraps the upstream JSON in a string. Fail closed for upstream errors,
+# absent/invalid windows, expired reset times, and explicitly exhausted accounts.
+# Return the lowest remaining percentage so Kuma includes it in its status.
+monitoring_cpa_quota_json_query: >-
+  (
+    $q := status_code = 200 ? $eval(body).rate_limit : null;
+    $windows := [$q.primary_window, $q.secondary_window][$type($) = "object"];
+    $valid := $windows[
+      $type(used_percent) = "number" and used_percent >= 0 and used_percent <= 100
+      and $type(reset_at) = "number" and reset_at * 1000 > $millis()
+      and $type(limit_window_seconds) = "number" and limit_window_seconds > 0
+    ];
+    $q.allowed = true and $q.limit_reached = false
+      and $count($windows) > 0 and $count($valid) = $count($windows)
+      ? 100 - $max($valid.used_percent) : -1
+  )
+
+# Antigravity exposes weekly and 5h buckets for Gemini and third-party models.
+# Require both windows in every group and valid future reset times.
+monitoring_cpa_google_quota_json_query: >-
+  (
+    $groups := status_code = 200 ? $eval(body).groups : [];
+    $complete := $groups[
+      $count(buckets[window = "weekly"]) = 1 and $count(buckets[window = "5h"]) = 1
+    ];
+    $buckets := $groups.buckets[];
+    $valid := $buckets[
+      $type(remainingFraction) = "number" and remainingFraction >= 0 and remainingFraction <= 1
+      and $type(resetTime) = "string" and $toMillis(resetTime) > $millis()
+    ];
+    $count($groups) > 0 and $count($complete) = $count($groups)
+      and $count($buckets) > 0 and $count($valid) = $count($buckets)
+      ? 100 * $min($valid.remainingFraction) : -1
+  )
+
 # AutoKuma scans the same restricted Docker API endpoints already used by
 # Homepage. The Hetzner endpoint is bound to its Tailnet address.
 monitoring_autokuma_docker_hosts:
@@ -19,9 +64,64 @@ monitoring_autokuma_docker_hosts:
   - "tcp://{{ hostvars[groups.hetzner | first].ansible_host }}:2375"
 
 # IDs are the file names and are globally stable within AutoKuma. Container-
-# owned monitors live on their Docker services as labels; only infrastructure
-# checks and Uptime Kuma Docker-host objects belong here.
+# owned monitors live on their Docker services as labels. Infrastructure checks,
+# Docker-host objects and checks containing secrets use protected files here.
 monitoring_autokuma_static_entities:
+  cpa-openai-quota:
+    type: json-query
+    name: CPA OpenAI Restquote (%)
+    description: >-
+      Niedrigste Restquote aller gelieferten OpenAI-Zeitfenster in Prozent.
+      Alarm unter {{ monitoring_cpa_quota_min_remaining }} Prozent;
+      -1 bedeutet ungueltige/veraltete Daten oder gesperrtes Kontingent.
+    url: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v0/management/api-call"
+    method: POST
+    http_body_encoding: json
+    headers: >-
+      {{ {'Authorization': 'Bearer ' ~ (vault_cpa_management_key | trim),
+          'Content-Type': 'application/json'} | to_json }}
+    body: >-
+      {{ {'auth_index': monitoring_cpa_codex_auth_index,
+          'method': 'GET', 'url': 'https://chatgpt.com/backend-api/wham/usage',
+          'header': {'Authorization': 'Bearer $TOKEN$',
+                     'Content-Type': 'application/json'}} | to_json }}
+    json_path: "{{ monitoring_cpa_quota_json_query }}"
+    json_path_operator: ">="
+    expected_value: "{{ monitoring_cpa_quota_min_remaining | string }}"
+    interval: 300
+    retry_interval: 60
+    max_retries: 1
+    timeout: 60
+    notification_id_list: "{{ monitoring_cpa_quota_notifications | to_json }}"
+  cpa-google-quota:
+    type: json-query
+    name: CPA Google Restquote (%)
+    description: >-
+      Niedrigste Restquote aller Google-Antigravity-Modellgruppen (Weekly und 5h).
+      Alarm unter {{ monitoring_cpa_quota_min_remaining }} Prozent;
+      -1 bedeutet ungueltige/veraltete Daten oder fehlende Zeitfenster.
+    url: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v0/management/api-call"
+    method: POST
+    http_body_encoding: json
+    headers: >-
+      {{ {'Authorization': 'Bearer ' ~ (vault_cpa_management_key | trim),
+          'Content-Type': 'application/json'} | to_json }}
+    body: >-
+      {{ {'auth_index': monitoring_cpa_google_auth_index,
+          'method': 'POST',
+          'url': 'https://daily-cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary',
+          'header': {'Authorization': 'Bearer $TOKEN$',
+                     'Content-Type': 'application/json',
+                     'User-Agent': 'antigravity/1.104.0 linux/amd64'},
+          'data': {'project': monitoring_cpa_google_project_id} | to_json} | to_json }}
+    json_path: "{{ monitoring_cpa_google_quota_json_query }}"
+    json_path_operator: ">="
+    expected_value: "{{ monitoring_cpa_quota_min_remaining | string }}"
+    interval: 300
+    retry_interval: 60
+    max_retries: 1
+    timeout: 60
+    notification_id_list: "{{ monitoring_cpa_quota_notifications | to_json }}"
   local:
     type: docker_host
     name: Local Docker

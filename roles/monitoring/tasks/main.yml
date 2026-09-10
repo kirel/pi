@@ -44,10 +44,13 @@
     content: "{{ item.value | to_nice_json }}\n"
     dest: "{{ monitoring_autokuma_static_monitors_folder }}/{{ item.key }}.json"
     owner: "{{ username }}"
-    mode: "0640"
+    mode: "0600"
   loop: "{{ monitoring_autokuma_static_entities | dict2items }}"
   loop_control:
     label: "{{ item.key }}"
+  no_log: true
+  diff: false
+  tags: [monitoring-config]
 
 - name: Find existing AutoKuma static entity files
   ansible.builtin.find:
