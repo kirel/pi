@@ -18,6 +18,15 @@ danishkirel.asuscomm.com {
 
 {% for service, props in services.items() %}
 {% if props.tls_skip | default(false) %}http://{% endif %}{{ props.domain|default(service ~ ".lan") }}{% if props.proxy_port is defined %}:{{ props.proxy_port }}{% endif %} {
+{% if service == 'cpa' %}
+        # Send browser navigation to the admin UI, preserving API requests.
+        @management_ui {
+                path /
+                method GET HEAD
+                header Accept *text/html*
+        }
+        redir @management_ui /management.html 302
+{% endif %}
         # Use localhost if the target is the current host (homelab-nuc)
         {% set target_host = (props.target | regex_replace('\\.lan$', '')) if props.target.endswith('.lan') else props.target %}
         {% set backend_host = 'localhost' if target_host == 'homelab-nuc' else props.target %}
