@@ -31,7 +31,7 @@ From `group_vars/all/services.yml`:
 - `ollama-ailab` → `ailab-ubuntu.lan` (AI lab server)
 
 **Non-Docker/Bare-metal:**
-- `proxmox` → `ailab-proxmox.lan:8006` (physical Proxmox server, nodocker: true)
+- `proxmox` → `ailab-proxmox.lan:8006` (physical Proxmox server, homepage.source: static)
 
 **Standard Docker (same host):**
 - Most services on `homelab-nuc` (homeassistant, jellyfin, portainer, etc.)
@@ -335,7 +335,7 @@ traefik_service:
 
 ### Additional Service Considerations
 
-#### For `nodocker: true` services (like Proxmox)
+#### For `homepage.source: static` services (like Proxmox)
 Create a tiny stack on the Traefik node whose sole purpose is to register the remote backend via labels. Example:
 ```yaml
 services:

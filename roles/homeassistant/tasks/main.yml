@@ -153,13 +153,15 @@
             - apparmor:unconfined
           environment:
             - LOG_LEVEL=info
-          labels:
-            - homepage.group={{ services.musicassistant.group }}
-            - homepage.name={{ services.musicassistant.name }}
-            - homepage.href=https://{{ services.musicassistant.domain }}
-            - homepage.icon={{ services.musicassistant.icon }}
-            - homepage.server={{ inventory_hostname }}
-            - homepage.container=music-assistant-server
+          labels: >-
+            {{ {
+                'homepage.group': (services.musicassistant.group),
+                'homepage.name': (services.musicassistant.name),
+                'homepage.href': 'https://' ~ (services.musicassistant.domain),
+                'homepage.icon': (services.musicassistant.icon),
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'music-assistant-server'
+               } | combine(services['musicassistant'] | autokuma_labels('musicassistant', 'music-assistant-server')) }}
         mosquitto:
           container_name: mosquitto
           image: "{{ homeassistant_mosquitto_image }}"

@@ -56,6 +56,7 @@
         grafana:
           image: teslamate/grafana:latest
           container_name: teslamate-grafana
+          labels: "{{ services['teslamate-grafana'] | autokuma_labels('teslamate-grafana', 'teslamate-grafana') }}"
           restart: unless-stopped
           environment:
             - GF_SECURITY_ADMIN_USER=admin
@@ -110,13 +111,15 @@
           depends_on:
             teslamate-db:
               condition: service_healthy
-          labels:
-            - homepage.group={{ services.teslamate.group }}
-            - homepage.name={{ services.teslamate.name }}
-            - homepage.href=https://{{ services.teslamate.domain }}
-            - homepage.icon=teslamate.png
-            - homepage.server={{ inventory_hostname }}
-            - homepage.container=teslamate
+          labels: >-
+            {{ {
+                'homepage.group': (services.teslamate.group),
+                'homepage.name': (services.teslamate.name),
+                'homepage.href': 'https://' ~ (services.teslamate.domain),
+                'homepage.icon': 'teslamate.png',
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'teslamate'
+               } | combine(services['teslamate'] | autokuma_labels('teslamate', 'teslamate')) }}
 
       volumes:
         teslamate-db-data:

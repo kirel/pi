@@ -36,6 +36,9 @@ services:
       database:
         condition: service_healthy
     labels:
+{% for label_key, label_value in (services['immich'] | autokuma_labels('immich', 'immich_server')).items() %}
+      - {{ (label_key ~ "=" ~ label_value) | to_json }}
+{% endfor %}
       - homepage.group={{ services['immich'].group }}
       - homepage.name={{ services['immich'].name }}
       - homepage.href=http://{{ services['immich'].domain }}

@@ -17,6 +17,9 @@ services:
       - /etc/ssl/certs:/etc/ssl/certs:ro
       - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
     labels:
+{% for label_key, label_value in (services['changedetection'] | autokuma_labels('changedetection', 'changedetection')).items() %}
+      - {{ (label_key ~ "=" ~ label_value) | to_json }}
+{% endfor %}
       - homepage.group={{ services['changedetection'].group }}
       - homepage.name={{ services['changedetection'].name }}
       - homepage.href=http://{{ services['changedetection'].domain }}

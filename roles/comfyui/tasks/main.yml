@@ -22,11 +22,12 @@
   notify: Restart ComfyUI
 
 - name: Ensure ComfyUI container is running
+  tags: [autokuma-labels]
   community.docker.docker_container:
     name: "{{ comfyui_container_name }}"
     image: "{{ comfyui_image }}"
     image_name_mismatch: recreate
-    pull: true
+    pull: "{{ 'autokuma-labels' not in ansible_run_tags }}"
     state: started
     # user: "{{ comfyui_user }}"
     restart_policy: unless-stopped
@@ -42,13 +43,15 @@
     env:
       CLI_ARGS: "{{ comfyui_cli_args }}"
       HOME: "/root"
-    labels:
-      homepage.group: "{{ services.comfyui.group }}"
-      homepage.name: "{{ services.comfyui.name }}"
-      homepage.href: "https://{{ services.comfyui.domain }}"
-      homepage.icon: "{{ services.comfyui.icon }}"
-      homepage.server: "{{ inventory_hostname }}"
-      homepage.container: "{{ comfyui_container_name }}"
+    labels: >-
+      {{ {
+          'homepage.group': (services.comfyui.group),
+          'homepage.name': (services.comfyui.name),
+          'homepage.href': 'https://' ~ (services.comfyui.domain),
+          'homepage.icon': (services.comfyui.icon),
+          'homepage.server': (inventory_hostname),
+          'homepage.container': (comfyui_container_name)
+         } | combine(services['comfyui'] | autokuma_labels('comfyui', comfyui_container_name, 'ailab')) }}
     security_opts:
       - "label=type:nvidia_container_t"
 

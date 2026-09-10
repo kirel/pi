@@ -162,7 +162,7 @@
 - name: Start pihole
   community.docker.docker_compose_v2:
     project_name: pihole
-    pull: always # Set to "always", "missing", "never", or "policy" based on your needs
+    pull: "{{ pihole_pull_policy | default('always') }}"
     state: present # Ensure the services are started
     definition:
       networks:
@@ -233,6 +233,14 @@
             - "kuma.{{ pihole_monitor_id_prefix }}-container.docker.docker_container=pihole"
             - "kuma.{{ pihole_monitor_id_prefix }}-container.docker.docker_host_name={{ pihole_monitor_docker_host }}"
             - "kuma.{{ pihole_monitor_id_prefix }}-container.docker.interval=60"
+            - "kuma.{{ pihole_monitor_id_prefix }}-dns.dns.name={{ pihole_monitor_name_prefix }} DNS"
+            - "kuma.{{ pihole_monitor_id_prefix }}-dns.dns.hostname=homelab-nuc.lan"
+            - "kuma.{{ pihole_monitor_id_prefix }}-dns.dns.dns_resolve_server={{ ansible_host }}"
+            - "kuma.{{ pihole_monitor_id_prefix }}-dns.dns.dns_resolve_type=A"
+            - "kuma.{{ pihole_monitor_id_prefix }}-dns.dns.port=53"
+            - "kuma.{{ pihole_monitor_id_prefix }}-dns.dns.interval=60"
+            - "kuma.{{ pihole_monitor_id_prefix }}-dns.dns.retry_interval=30"
+            - "kuma.{{ pihole_monitor_id_prefix }}-dns.dns.max_retries=2"
           depends_on:
             - dhcphelper
           networks:
@@ -242,6 +250,9 @@
         dhcphelper:
           restart: unless-stopped
           container_name: dhcphelper
+          labels: >-
+            {{ {'name': pihole_monitor_name_prefix ~ ' DHCP Helper', 'monitoring': {'docker': true}}
+               | autokuma_labels(pihole_monitor_id_prefix ~ '-dhcp', 'dhcphelper', pihole_monitor_docker_host) }}
           network_mode: host
           image: homeall/dhcphelper:latest
           environment:

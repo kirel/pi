@@ -7,6 +7,10 @@ services:
   gluetun:
     image: "{{ qbittorrent_gluetun_image }}"
     container_name: qbittorrent-gluetun
+    labels:
+{% for label_key, label_value in ({'name': 'qBittorrent VPN', 'monitoring': {'docker': true}} | autokuma_labels('qbittorrent-vpn', 'qbittorrent-gluetun')).items() %}
+      {{ label_key }}: {{ label_value | to_json }}
+{% endfor %}
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
@@ -64,6 +68,9 @@ services:
       - "{{ qbittorrent_config_folder }}:/config"
       - "{{ qbittorrent_data_folder }}:/data"
     labels:
+{% for label_key, label_value in (services['qbittorrent'] | autokuma_labels('qbittorrent', 'qbittorrent')).items() %}
+      {{ label_key }}: {{ label_value | to_json }}
+{% endfor %}
       autoheal.stop.timeout: "120"
       homepage.group: "{{ services.qbittorrent.group }}"
       homepage.name: "{{ services.qbittorrent.name }}"

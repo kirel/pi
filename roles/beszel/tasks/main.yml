@@ -35,13 +35,15 @@
             timeout: 5s
             retries: 5
             start_period: 15s
-          labels:
-            homepage.group: "{{ services.beszel.group }}"
-            homepage.name: "{{ services.beszel.name }}"
-            homepage.href: "{{ beszel_public_url }}"
-            homepage.icon: "{{ services.beszel.icon }}"
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: beszel
+          labels: >-
+            {{ {
+                'homepage.group': (services.beszel.group),
+                'homepage.name': (services.beszel.name),
+                'homepage.href': (beszel_public_url),
+                'homepage.icon': (services.beszel.icon),
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'beszel'
+               } | combine(services['beszel'] | autokuma_labels('beszel', 'beszel')) }}
   when: inventory_hostname == beszel_hub_inventory_hostname
 
 - name: Wait for Beszel Hub API

@@ -140,6 +140,7 @@
   when: llamaswap_enabled | bool
 
 - name: Inspect Docker socket for llama-swap lifecycle management
+  tags: [autokuma-labels]
   ansible.builtin.stat:
     path: /var/run/docker.sock
   register: llamaswap_docker_socket
@@ -250,6 +251,7 @@
   when: llamaswap_enabled | bool
 
 - name: Start the llama-swap container
+  tags: [autokuma-labels]
   community.docker.docker_container:
     name: "{{ llamaswap_container_name }}"
     image: "{{ llamaswap_image }}"
@@ -290,13 +292,15 @@
       HOME: /app
       HF_HOME: /app/.cache/huggingface
       LLAMASWAP_RESTART_TOKEN: "{{ ansible_facts.date_time.epoch }}"
-    labels:
-      homepage.group: "{{ services['llama-swap'].group }}"
-      homepage.name: "{{ services['llama-swap'].name }}"
-      homepage.href: "https://{{ services['llama-swap'].domain }}"
-      homepage.icon: "{{ services['llama-swap'].icon }}"
-      homepage.server: "{{ inventory_hostname }}"
-      homepage.container: "{{ llamaswap_container_name }}"
+    labels: >-
+      {{ {
+          'homepage.group': (services['llama-swap'].group),
+          'homepage.name': (services['llama-swap'].name),
+          'homepage.href': 'https://' ~ (services['llama-swap'].domain),
+          'homepage.icon': (services['llama-swap'].icon),
+          'homepage.server': (inventory_hostname),
+          'homepage.container': (llamaswap_container_name)
+         } | combine(services['llama-swap'] | autokuma_labels('llama-swap', llamaswap_container_name, 'ailab')) }}
   become: true
   when: llamaswap_enabled | bool
 

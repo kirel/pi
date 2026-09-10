@@ -15,11 +15,13 @@
           environment:
             - PRUNEMATE_TZ={{ system_timezone | default('UTC') }}
             - PRUNEMATE_TIME_24H=true
-          labels:
-            homepage.group: "{{ services.prunemate.group }}"
-            homepage.name: "{{ services.prunemate.name }}"
-            homepage.href: "https://{{ services.prunemate.domain }}"
-            homepage.icon: "{{ services.prunemate.icon }}"
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: prunemate
+          labels: >-
+            {{ {
+                'homepage.group': (services.prunemate.group),
+                'homepage.name': (services.prunemate.name),
+                'homepage.href': 'https://' ~ (services.prunemate.domain),
+                'homepage.icon': (services.prunemate.icon),
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'prunemate'
+               } | combine(services['prunemate'] | autokuma_labels('prunemate', 'prunemate')) }}
           restart: unless-stopped

@@ -298,3 +298,7 @@ hermes_docker_runtime_env:
 
 # Validate that Docker and the Compose v2 plugin are available on the target.
 hermes_docker_validate_prerequisites: true
+
+# Fleet default for Hetzner; AI Lab explicitly enables monitoring in group_vars.
+hermes_docker_monitoring_enabled: "{{ inventory_hostname in groups.get('hetzner', []) }}"
+hermes_docker_monitoring_docker_host: hetzner

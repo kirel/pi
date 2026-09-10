@@ -77,6 +77,12 @@ services:
     pull_policy: {{ hermes_docker_pull_policy }}
 {% endif %}
     container_name: hermes-{{ agent_name }}
+{% if hermes_docker_monitoring_enabled | bool %}
+    labels:
+{% for label_key, label_value in ((services['hermes-local'] if agent_name == 'local' else {'name': 'Hermes ' ~ agent_name, 'monitoring': {'docker': true}}) | autokuma_labels('hermes-' ~ agent_name, 'hermes-' ~ agent_name, hermes_docker_monitoring_docker_host)).items() %}
+      {{ label_key }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
     restart: {{ hermes_docker_restart_policy }}
     logging: *hermes-logging
 {% if hermes_docker_tailscale_enabled | bool %}
@@ -192,6 +198,12 @@ services:
   webui-hermes-{{ agent_name }}:
     image: {{ hermes_docker_webui_image }}
     container_name: webui-hermes-{{ agent_name }}
+{% if agent_name == 'local' %}
+    labels:
+{% for label_key, label_value in (services['hermes-local-webui'] | autokuma_labels('hermes-local-webui', 'webui-hermes-local', 'ailab')).items() %}
+      {{ label_key }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
     restart: {{ hermes_docker_restart_policy }}
     logging: *hermes-logging
     env_file:

@@ -158,13 +158,15 @@
             - 22000:22000/udp
             - 21027:21027/udp
           restart: unless-stopped
-          labels:
-            - homepage.group={{ services['syncthing-homelab'].group }}
-            - homepage.name={{ services['syncthing-homelab'].name }}
-            - homepage.href=https://{{ services['syncthing-homelab'].domain }}
-            - homepage.icon=syncthing.png
-            - homepage.server={{ inventory_hostname }}
-            - homepage.container=syncthing
+          labels: >-
+            {{ {
+                'homepage.group': (services['syncthing-homelab'].group),
+                'homepage.name': (services['syncthing-homelab'].name),
+                'homepage.href': 'https://' ~ (services['syncthing-homelab'].domain),
+                'homepage.icon': 'syncthing.png',
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'syncthing'
+               } | combine(services['syncthing-homelab'] | autokuma_labels('syncthing-homelab', 'syncthing')) }}
 
 - name: Avahi present
   ansible.builtin.package:

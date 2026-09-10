@@ -4,7 +4,7 @@
 
 {%- set services_list = [] -%}
 {%- for service, props in services.items() -%}
-    {%- if props.nodocker is defined and props.nodocker == true -%} {#- Only include services with nodocker: true -#}
+    {%- if (props.homepage | default({})).source | default('docker') == 'static' -%} {#- Include services explicitly configured for static Homepage entries -#}
         {%- set merged = {'service': service}|combine(props) -%}
         {%- set _ = services_list.append(merged) -%}
     {%- endif -%}

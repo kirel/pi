@@ -69,13 +69,15 @@
             interval: 10s
             retries: 5
             start_period: 10s
-          labels:
-            homepage.group: "{{ services.dozzle.group }}"
-            homepage.name: "{{ services.dozzle.name }}"
-            homepage.href: "https://{{ services.dozzle.domain }}"
-            homepage.icon: "{{ services.dozzle.icon }}"
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: dozzle
+          labels: >-
+            {{ {
+                'homepage.group': (services.dozzle.group),
+                'homepage.name': (services.dozzle.name),
+                'homepage.href': 'https://' ~ (services.dozzle.domain),
+                'homepage.icon': (services.dozzle.icon),
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'dozzle'
+               } | combine(services['dozzle'] | autokuma_labels('dozzle', 'dozzle')) }}
   vars:
     _dozzle_auth_environment: >-
       {{ {'DOZZLE_AUTH_PROVIDER': dozzle_auth_provider}

@@ -135,13 +135,15 @@
           volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - "{{ dockhand_data_folder }}:/app/data"
-          labels:
-            homepage.group: "{{ services.dockhand.group }}"
-            homepage.name: "{{ services.dockhand.name }}"
-            homepage.href: https://{{ services.dockhand.domain }}
-            homepage.icon: "{{ services.dockhand.icon }}"
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: dockhand
+          labels: >-
+            {{ {
+                'homepage.group': (services.dockhand.group),
+                'homepage.name': (services.dockhand.name),
+                'homepage.href': 'https://' ~ (services.dockhand.domain),
+                'homepage.icon': (services.dockhand.icon),
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'dockhand'
+               } | combine(services['dockhand'] | autokuma_labels('dockhand', 'dockhand')) }}
 
   register: monitoring_compose_result
 

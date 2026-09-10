@@ -70,16 +70,18 @@
           # Optional - may be necessary for docker healthcheck to pass if running in host network mode
           extra_hosts:
             host.docker.internal: host-gateway
-          labels:
-            homepage.group: "{{ services.jellyfin.group }}"
-            homepage.name: jellyfin
-            homepage.href: http://{{ services['jellyfin'].domain }}
-            homepage.icon: jellyfin.png
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: jellyfin
-            homepage.widget.type: jellyfin
-            homepage.widget.url: http://192.168.50.5:8096
-            homepage.widget.key: "{{ jellyfin_api_key }}"
+          labels: >-
+            {{ {
+                'homepage.group': (services.jellyfin.group),
+                'homepage.name': 'jellyfin',
+                'homepage.href': 'http://' ~ (services['jellyfin'].domain),
+                'homepage.icon': 'jellyfin.png',
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'jellyfin',
+                'homepage.widget.type': 'jellyfin',
+                'homepage.widget.url': 'http://192.168.50.5:8096',
+                'homepage.widget.key': (jellyfin_api_key)
+               } | combine(services['jellyfin'] | autokuma_labels('jellyfin', 'jellyfin')) }}
 
         navidrome:
           image: deluan/navidrome:latest
@@ -91,18 +93,20 @@
           volumes:
             - "{{ navidrome_data_folder }}:/data"
             - "{{ jellyfin_music_folder }}:/music:ro"
-          labels:
-            homepage.group: "{{ services.music.group }}"
-            homepage.name: Navidrome
-            homepage.href: https://{{ services.music.domain }}
-            homepage.icon: navidrome.png
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: navidrome
-            homepage.widget.type: navidrome
-            homepage.widget.url: https://music.lan
-            homepage.widget.user: daniel
-            homepage.widget.token: "{{ navidrome_token }}"
-            homepage.widget.salt: "{{ navidrome_salt }}"
+          labels: >-
+            {{ {
+                'homepage.group': (services.music.group),
+                'homepage.name': 'Navidrome',
+                'homepage.href': 'https://' ~ (services.music.domain),
+                'homepage.icon': 'navidrome.png',
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'navidrome',
+                'homepage.widget.type': 'navidrome',
+                'homepage.widget.url': 'https://music.lan',
+                'homepage.widget.user': 'daniel',
+                'homepage.widget.token': (navidrome_token),
+                'homepage.widget.salt': (navidrome_salt)
+               } | combine(services['music'] | autokuma_labels('music', 'navidrome')) }}
 
       volumes:
         jellyfin-cache: {} # Define the volume

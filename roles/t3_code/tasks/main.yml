@@ -63,10 +63,11 @@
     mode: "0644"
 
 - name: Deploy T3 Code
+  tags: [autokuma-labels]
   community.docker.docker_compose_v2:
     project_name: "{{ t3_code_project_name }}"
     pull: never
-    build: always
+    build: "{{ 'never' if 'autokuma-labels' in ansible_run_tags else 'always' }}"
     state: present
     definition:
       services:
@@ -98,10 +99,12 @@
           volumes:
             - "{{ t3_code_data_dir }}:/data"
             - "{{ t3_code_home_host_path }}:{{ t3_code_home_container_path }}:rw"
-          labels:
-            homepage.group: "{{ services['t3-code-ailab'].group }}"
-            homepage.name: "{{ services['t3-code-ailab'].name }}"
-            homepage.href: "https://{{ services['t3-code-ailab'].domain }}"
-            homepage.icon: "{{ services['t3-code-ailab'].icon }}"
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: "{{ t3_code_container_name }}"
+          labels: >-
+            {{ {
+                'homepage.group': (services['t3-code-ailab'].group),
+                'homepage.name': (services['t3-code-ailab'].name),
+                'homepage.href': 'https://' ~ (services['t3-code-ailab'].domain),
+                'homepage.icon': (services['t3-code-ailab'].icon),
+                'homepage.server': (inventory_hostname),
+                'homepage.container': (t3_code_container_name)
+               } | combine(services['t3-code-ailab'] | autokuma_labels('t3-code-ailab', t3_code_container_name, 'ailab')) }}

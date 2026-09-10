@@ -14,6 +14,9 @@ services:
       - "{{ sonarr_config_folder }}:/config"
       - "{{ qbittorrent_data_folder }}:/data"
     labels:
+{% for label_key, label_value in (services['sonarr'] | autokuma_labels('sonarr', 'sonarr')).items() %}
+      {{ label_key }}: {{ label_value | to_json }}
+{% endfor %}
       homepage.group: "{{ services.sonarr.group }}"
       homepage.name: "{{ services.sonarr.name }}"
       homepage.href: "https://{{ services.sonarr.domain }}"

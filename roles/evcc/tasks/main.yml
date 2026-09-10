@@ -34,13 +34,15 @@
           volumes:
             - "{{ evcc_config_file }}:/etc/evcc.yaml:ro"
             - "{{ evcc_database_folder }}:/root/.evcc"
-          labels:
-            homepage.group: "{{ services.evcc.group }}"
-            homepage.name: "{{ services.evcc.name }}"
-            homepage.href: "https://{{ services.evcc.domain }}"
-            homepage.icon: "{{ services.evcc.icon }}"
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: evcc
+          labels: >-
+            {{ {
+                'homepage.group': (services.evcc.group),
+                'homepage.name': (services.evcc.name),
+                'homepage.href': 'https://' ~ (services.evcc.domain),
+                'homepage.icon': (services.evcc.icon),
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'evcc'
+               } | combine(services['evcc'] | autokuma_labels('evcc', 'evcc')) }}
 
 - name: Read evcc loadpoint maximum current setting
   ansible.builtin.command:

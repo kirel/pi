@@ -37,6 +37,7 @@
           networks: [pocket_id]
           image: "{{ pocket_id_image }}"
           container_name: pocket-id
+          labels: "{{ services['pocket_id'] | autokuma_labels('pocket_id', 'pocket-id') }}"
           restart: unless-stopped
           ports:
             - "127.0.0.1:{{ pocket_id_http_port }}:1411"

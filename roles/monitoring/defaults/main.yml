@@ -77,3 +77,12 @@ monitoring_autokuma_static_entities:
     interval: 60
     retry_interval: 60
     max_retries: 0
+  syncthing-ailab-http:
+    type: http
+    name: "{{ services['syncthing-ailab'].name }} HTTP"
+    url: "https://{{ services['syncthing-ailab'].domain }}{{ services['syncthing-ailab'].monitoring.http.path }}"
+    interval: 60
+    retry_interval: 30
+    max_retries: 2
+    timeout: 10
+    max_redirects: 0

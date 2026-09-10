@@ -1,6 +1,8 @@
 ---
 services:
   homepage:
+    monitoring:
+      docker: true
     target: homelab-nuc.lan
     http_port: "{{ homepage_http_port }}"
     domain: homepage.kirelabs.org
@@ -11,6 +13,9 @@ services:
       proxy_port: 14201
       groups: [admins]
   pocket_id:
+    monitoring:
+      http:
+        path: /healthz
     name: Pocket ID
     target: homelab-nuc.lan
     http_port: 1411
@@ -32,6 +37,9 @@ services:
     group: AI
     icon: hermes-icon.png
   musicassistant:
+    monitoring:
+      http:
+        path: /
     name: Music Assistant
     http_port: "{{ music_assistant_http_port }}"
     target: homelab-nuc.lan
@@ -39,6 +47,9 @@ services:
     group: Media
     icon: music-assistant.png
   immich:
+    monitoring:
+      http:
+        path: /api/server/ping
     name: Immich
     target: homelab-nuc.lan
     http_port: "{{ immich_http_port }}"
@@ -54,6 +65,9 @@ services:
     domain: uptime.kirelabs.org
     icon: uptime-kuma.png
   readeck:
+    monitoring:
+      http:
+        path: /login
     name: Readeck
     target: homelab-nuc.lan
     http_port: "{{ readeck_http_port }}"
@@ -61,6 +75,9 @@ services:
     group: Productivity
     icon: readeck
   qbittorrent:
+    monitoring:
+      http:
+        path: /
     name: qBittorrent
     target: homelab-nuc.lan
     http_port: "{{ qbittorrent_http_port }}"
@@ -68,6 +85,9 @@ services:
     group: Downloads
     icon: qbittorrent
   prowlarr:
+    monitoring:
+      http:
+        path: /ping
     name: Prowlarr
     target: homelab-nuc.lan
     http_port: "{{ prowlarr_http_port }}"
@@ -75,6 +95,9 @@ services:
     group: Downloads
     icon: prowlarr
   sonarr:
+    monitoring:
+      http:
+        path: /ping
     name: Sonarr
     target: homelab-nuc.lan
     http_port: "{{ sonarr_http_port }}"
@@ -82,6 +105,9 @@ services:
     group: Downloads
     icon: sonarr
   radarr:
+    monitoring:
+      http:
+        path: /ping
     name: Radarr
     target: homelab-nuc.lan
     http_port: "{{ radarr_http_port }}"
@@ -89,6 +115,9 @@ services:
     group: Downloads
     icon: radarr
   seerr:
+    monitoring:
+      http:
+        path: /api/v1/status
     name: Seerr
     target: homelab-nuc.lan
     http_port: "{{ seerr_http_port }}"
@@ -96,6 +125,9 @@ services:
     group: Downloads
     icon: seerr
   linkding:
+    monitoring:
+      http:
+        path: /health
     name: Linkding
     target: homelab-nuc.lan
     http_port: "{{ linkding_http_port }}"
@@ -103,6 +135,8 @@ services:
     group: Productivity
     icon: linkding
   changedetection:
+    monitoring:
+      docker: true
     name: ChangeDetection.io
     target: homelab-nuc.lan
     http_port: "{{ changedetection_http_port }}"
@@ -116,6 +150,9 @@ services:
       groups: [admins]
       native_api_routes: ['^/api/v1/']
   dockhand:
+    monitoring:
+      http:
+        path: /api/health
     name: Dockhand
     target: homelab-nuc.lan
     http_port: "{{ dockhand_http_port }}"
@@ -123,6 +160,8 @@ services:
     group: Monitoring
     icon: dockhand.png
   dozzle:
+    monitoring:
+      docker: true
     name: Dozzle
     target: homelab-nuc.lan
     http_port: "{{ dozzle_http_port }}"
@@ -135,6 +174,8 @@ services:
       proxy_port: 14204
       groups: [admins]
   prunemate:
+    monitoring:
+      docker: true
     name: PruneMate
     target: homelab-nuc.lan
     http_port: 7676
@@ -147,6 +188,9 @@ services:
       proxy_port: 14202
       groups: [admins]
   beszel:
+    monitoring:
+      http:
+        path: /api/health
     name: Beszel
     target: homelab-nuc.lan
     http_port: "{{ beszel_http_port }}"
@@ -154,6 +198,9 @@ services:
     group: Monitoring
     icon: beszel.png
   n8n:
+    monitoring:
+      http:
+        path: /healthz/readiness
     name: n8n
     target: homelab-nuc.lan
     http_port: "{{ n8n_http_port }}"
@@ -175,6 +222,8 @@ services:
     domain: z2m.kirelabs.org
     group: Smart Home
   teslamate:
+    monitoring:
+      docker: true
     name: TeslaMate
     target: homelab-nuc.lan
     http_port: "{{ teslamate_http_port }}"
@@ -187,29 +236,43 @@ services:
       proxy_port: 14206
       groups: [admins]
   teslamate-grafana:
+    monitoring:
+      http:
+        path: /api/health
     name: TeslaMate Grafana
     target: homelab-nuc.lan
     http_port: "{{ grafana_http_port }}"
     domain: teslamate-grafana.kirelabs.org
     group: Smart Home
   jellyfin:
+    monitoring:
+      http:
+        path: /health
     target: homelab-nuc.lan
     http_port: "{{ jellyfin_http_port }}"
     domain: jellyfin.kirelabs.org
     group: Media
     public: true
   music:
+    monitoring:
+      http:
+        path: /ping
     target: homelab-nuc.lan
     http_port: "{{ navidrome_http_port }}"
     domain: music.kirelabs.org
     group: Media
   syncthing-homelab:
+    monitoring:
+      docker: true
     name: Syncthing Homelab
     target: homelab-nuc.lan
     http_port: "{{ syncthing_http_port }}"
     domain: syncthing-homelab.kirelabs.org
     group: NAS
   open-webui:
+    monitoring:
+      http:
+        path: /health
     name: Open WebUI
     target: homelab-nuc.lan
     http_port: "{{ open_webui_http_port }}"
@@ -217,6 +280,9 @@ services:
     group: AI
     icon: open-webui.png
   phoenix:
+    monitoring:
+      http:
+        path: /healthz
     name: Arize Phoenix
     target: homelab-nuc.lan
     http_port: "{{ phoenix_port }}"
@@ -224,6 +290,8 @@ services:
     group: AI
     icon: https://phoenix.kirelabs.org/favicon.ico
   evcc:
+    monitoring:
+      docker: true
     name: evcc
     target: homelab-nuc.lan
     http_port: "{{ evcc_http_port }}"
@@ -238,6 +306,8 @@ services:
     group: AI
     icon: https://litellm.kirelabs.org/swagger/favicon.png
   cpa:
+    monitoring:
+      docker: true
     name: CLIProxyAPI
     target: homelab-nuc.lan
     http_port: "{{ cpa_http_port }}"
@@ -245,6 +315,8 @@ services:
     group: AI
     icon: mdi-api
   cpa-usage:
+    monitoring:
+      docker: true
     name: CPA Usage Keeper
     target: homelab-nuc.lan
     http_port: "{{ cpa_usage_keeper_http_port }}"
@@ -283,55 +355,65 @@ services:
     http_port: 5005
   # ailab
   llama-swap:
+    monitoring:
+      http:
+        path: /health
     name: LlamaSwap
     target: ailab-ubuntu.lan
     http_port: 9292
     domain: llama-swap.kirelabs.org
     group: AI
     icon: https://cdn.jsdelivr.net/gh/mostlygeek/llama-swap@main/ui-svelte/public/favicon.svg
-    wol: "{{ ailab_mac_address }}"
-    try: 360s
   comfyui:
+    monitoring:
+      http:
+        path: /system_stats
     name: ComfyUI
     target: ailab-ubuntu.lan
     http_port: "{{ comfyui_port }}"
     domain: comfyui.kirelabs.org
     group: AI
     icon: comfy-ui
-    wol: "{{ ailab_mac_address }}"
-    try: 360s
   wan2gp:
+    monitoring:
+      docker: true
     name: Wan2GP
     target: ailab-ubuntu.lan
     http_port: "{{ wan2gp_port }}"
     domain: wan2gp.kirelabs.org
     group: AI
     icon: mdi-video
-    wol: "{{ ailab_mac_address }}"
-    try: 360s
   t3-code-ailab:
+    monitoring:
+      http:
+        path: /
     name: T3 Code AI Lab
     target: ailab-ubuntu.lan
     http_port: 8093
     domain: t3-ubuntu-ailab.kirelabs.org
     group: AI
     icon: mdi-code-braces
-    wol: "{{ ailab_mac_address }}"
-    try: 360s
   hermes-local:
+    monitoring:
+      docker: true
     name: Hermes Local Dashboard
     target: ailab-ubuntu.lan
     http_port: 18080
     domain: hermes-local.kirelabs.org
-    nodocker: true
+    homepage:
+      source: static
     group: AI
     icon: hermes-icon.png
   hermes-local-webui:
+    monitoring:
+      http:
+        path: /health
     name: Hermes Local WebUI
     target: ailab-ubuntu.lan
     http_port: 18787
     domain: hermes-local-webui.kirelabs.org
-    nodocker: true
+    homepage:
+      source: static
     group: AI
     icon: hermes-icon.png
   hermes-baremetal-daniel:
@@ -342,15 +424,20 @@ services:
     upstream_host_header: 127.0.0.1:9119
     upstream_origin: http://127.0.0.1:9119
     domain: hermes-baremetal.kirelabs.org
-    nodocker: true
+    homepage:
+      source: static
     group: AI
     icon: hermes-icon.png
   syncthing-ailab:
+    monitoring:
+      http:
+        path: /rest/noauth/health
     name: Syncthing AI Lab
     target: ailab-ubuntu.lan
     http_port: "{{ syncthing_http_port }}"
     domain: syncthing-ailab.kirelabs.org
-    nodocker: true
+    homepage:
+      source: static
     group: NAS
     icon: syncthing.png
   brumm:

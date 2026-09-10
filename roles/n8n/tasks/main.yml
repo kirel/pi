@@ -60,11 +60,13 @@
       NODE_TLS_REJECT_UNAUTHORIZED: "0"  # Allow self-signed certs for webhooks for now - fix later
       NODES_EXCLUDE: "[]"
       N8N_RESTRICT_FILE_ACCESS_TO: "/tmp/data"
-    labels:
-      homepage.group: "{{ services['n8n'].group }}"
-      homepage.name: "{{ services['n8n'].name }}"
-      homepage.href: "https://{{ services['n8n'].domain }}"
-      homepage.icon: "{{ services['n8n'].icon }}"
-      homepage.server: "{{ inventory_hostname }}"
-      homepage.container: "n8n"
+    labels: >-
+      {{ {
+          'homepage.group': (services['n8n'].group),
+          'homepage.name': (services['n8n'].name),
+          'homepage.href': 'https://' ~ (services['n8n'].domain),
+          'homepage.icon': (services['n8n'].icon),
+          'homepage.server': (inventory_hostname),
+          'homepage.container': 'n8n'
+         } | combine(services['n8n'] | autokuma_labels('n8n', 'n8n')) }}
   become: true

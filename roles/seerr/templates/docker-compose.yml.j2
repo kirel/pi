@@ -20,6 +20,9 @@ services:
       interval: 15s
       retries: 3
     labels:
+{% for label_key, label_value in (services['seerr'] | autokuma_labels('seerr', 'seerr')).items() %}
+      {{ label_key }}: {{ label_value | to_json }}
+{% endfor %}
       homepage.group: "{{ services.seerr.group }}"
       homepage.name: "{{ services.seerr.name }}"
       homepage.href: "https://{{ services.seerr.domain }}"

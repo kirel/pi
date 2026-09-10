@@ -34,6 +34,7 @@
         homepage:
           image: ghcr.io/gethomepage/homepage:latest
           container_name: homepage
+          labels: "{{ services['homepage'] | autokuma_labels('homepage', 'homepage') }}"
           privileged: true
           environment:
             HOMEPAGE_ALLOWED_HOSTS: homepage.lan,homepage.kirelabs.org,localhost,{{ homelab_nuc_ip }}

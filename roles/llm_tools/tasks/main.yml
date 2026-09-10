@@ -255,13 +255,15 @@
             resources:
               limits:
                 memory: 2g
-          labels:
-            homepage.group: "{{ services['open-webui'].group }}"
-            homepage.name: "{{ services['open-webui'].name }}"
-            homepage.href: https://{{ services['open-webui'].domain }}
-            homepage.icon: "{{ services['open-webui'].icon }}"
-            homepage.server: "{{ inventory_hostname }}"
-            homepage.container: open-webui
+          labels: >-
+            {{ {
+                'homepage.group': (services['open-webui'].group),
+                'homepage.name': (services['open-webui'].name),
+                'homepage.href': 'https://' ~ (services['open-webui'].domain),
+                'homepage.icon': (services['open-webui'].icon),
+                'homepage.server': (inventory_hostname),
+                'homepage.container': 'open-webui'
+               } | combine(services['open-webui'] | autokuma_labels('open-webui', 'open-webui')) }}
           restart: unless-stopped
           networks:
             - llm-network
