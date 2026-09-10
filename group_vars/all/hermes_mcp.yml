@@ -77,6 +77,26 @@ litellm_managed_virtual_keys:
       todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
 
 litellm_managed_virtual_key_teams:
+  daniel_personal_pilot:
+    team_id: hermes-daniel-personal-pilot
+    team_alias: Daniel Personal Hermes Pilot
+    members_with_roles:
+      - user_id: fa559a90-e4e0-4793-8aaa-594bce6fbe06
+        role: user
+    models: "{{ hermes_litellm_model_profiles.all_models }}"
+    object_permission:
+      mcp_servers: [todoist, craft]
+      mcp_access_groups:
+        - web
+        - maps
+        - home_admin
+        - shopping
+        - photos
+        - notes
+        - workflow_admin
+        - code
+        - media_generation
+        - craft_personal_pilot
   baremetal:
     team_id: hermes-baremetal
     team_alias: Hermes Bare Metal

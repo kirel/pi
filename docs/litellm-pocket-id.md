@@ -46,3 +46,33 @@ returned `invalid_grant` after client authentication. Existing admin login retur
 303 with a session cookie; models returned 200 with authentication and 401 without.
 The personal passkey login and resulting account permissions remain to be tested
 by Daniel. No upstream OAuth migration has been performed.
+
+## Daniel's Craft pilot
+
+Daniel confirmed the Pocket ID browser login. His SSO identity is
+`fa559a90-e4e0-4793-8aaa-594bce6fbe06` (`internal_user_viewer`).
+
+The central `craft` MCP entry uses `https://mcp.craft.do/my/mcp` with
+`oauth2` / `authorization_code`, scoped to `craft_personal_pilot`.
+A separate `hermes-daniel-personal-pilot` team is declared in
+`group_vars/all/hermes_mcp.yml`. Its personally owned runtime key has the same
+alias, preserves the previous Hermes model/MCP scope and Todoist tool allowlist,
+and adds Craft. The previous `hermes` key and team have not gained Craft access.
+
+The new key is stored only in 1Password and LiteLLM's credential database:
+`op://homelab/6zduarevk6sf7s2bidaecujcne/credential`
+(item title: `LiteLLM Daniel personal Hermes pilot`). This pilot key is not part
+of the existing Ansible Vault backed key reconciler; do not regenerate or rotate
+it during ordinary deployments. Its team permissions are declarative.
+
+Client endpoint: `https://litellm.kirelabs.org/mcp/`. Use
+`x-litellm-api-key: Bearer <key>` for gateway admission. Daniel will configure
+his bare-metal Hermes separately. The existing direct Craft connection remains.
+
+Validation: the stored key authenticates `/v1/models`, can list the Craft server,
+and has the expected personal user ID. Upstream credential status is currently
+not connected. Dynamic registration through LiteLLM succeeded (200), followed
+by a Craft authorization redirect (307). Daniel must connect Craft through his
+personal LiteLLM UI before end-to-end tool calls and token refresh can be tested.
+The initial authorize probe without DCR returned `missing_client_id`; the normal
+registration followed by authorization succeeded.
