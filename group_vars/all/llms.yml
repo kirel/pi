@@ -199,6 +199,11 @@ litellm_extra_models:
     litellm_params:
       model: openai/glm-5.3-flash
       allowed_openai_params: [reasoning_effort]
+      # Temporary workaround for LiteLLM #39354 / PR #36363: the Responses
+      # bridge forwards summary-bearing reasoning as an object. Pin the wire
+      # value to high until the upstream fix is released and verified.
+      extra_body:
+        reasoning_effort: high
       api_key: os.environ/ZAI_API_KEY
       api_base: https://api.z.ai/api/coding/paas/v4
       # Hermes speaks the Responses API, while Z.AI's coding endpoint exposes

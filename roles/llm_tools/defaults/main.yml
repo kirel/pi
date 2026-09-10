@@ -20,9 +20,8 @@ litellm_redis_port_host: 6380
 litellm_redis_port_container: 6379
 litellm_redis_data_dir: "{{ llm_base_config_path }}/litellm/redis"
 
-
 # --- LiteLLM Proxy Settings ---
-litellm_proxy_image: "ghcr.io/berriai/litellm:latest"
+litellm_proxy_image: "ghcr.io/berriai/litellm:v1.99.1"
 litellm_proxy_container_name: "litellm-proxy-container"
 litellm_proxy_config_dir_host: "{{ llm_base_config_path }}/litellm"
 litellm_proxy_config_filename: "config.yaml"
