@@ -24,7 +24,6 @@ homeassistant_http_port: 8123
 homepage_http_port: 3002
 music_assistant_http_port: 8095
 uptime_kuma_http_port: 3001
-nodered_http_port: 1880
 mosquitto_address: "{{ ansible_default_ipv4.address }}"
 mosquitto_port: 1883
 z2m_http_port: 8080
@@ -115,7 +114,6 @@ music_assistant_data_folder: "{{ config_root }}/music-assistant"
 music_assistant_media_folder: /tank/medien/Musik
 frigate_config_folder: "{{ config_root }}/frigate"
 frigate_media_folder: /tank/medien/Frigate
-nodered_config_folder: "{{ config_root }}/node-red"
 mosquitto_config_folder: "{{ config_root }}/mosquitto/config"
 mosquitto_data_folder: "{{ config_root }}/mosquitto/data"
 matter_server_data_folder: "{{ config_root }}/matter/data"

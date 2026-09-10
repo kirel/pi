@@ -9,7 +9,6 @@
     - "{{ music_assistant_data_folder }}"
     - "{{ frigate_config_folder }}"
     - "{{ frigate_media_folder }}"
-    - "{{ nodered_config_folder }}"
     - "{{ mosquitto_config_folder }}"
     - "{{ mosquitto_data_folder }}"
     - "{{ zigbee2mqtt_data_folder }}"
@@ -77,7 +76,6 @@
     - "{{ homeassistant_config_folder }}"
     - "{{ frigate_config_folder }}"
     - "{{ frigate_media_folder }}"
-    - "{{ nodered_config_folder }}"
     - "{{ mosquitto_config_folder }}"
     - "{{ mosquitto_data_folder }}"
     - "{{ zigbee2mqtt_data_folder }}"
@@ -92,10 +90,13 @@
     state: present
 
 - name: Start home assistant
+  tags: [ha-apps]
   community.docker.docker_compose_v2:
     project_name: ha
     pull: always
-    remove_orphans: true
+    services: "{{ homeassistant_compose_services | default(omit) }}"
+    dependencies: "{{ homeassistant_compose_services is not defined }}"
+    remove_orphans: "{{ homeassistant_compose_services is not defined }}"
     definition:
       networks:
         ha:
@@ -159,19 +160,6 @@
             - homepage.icon={{ services.musicassistant.icon }}
             - homepage.server={{ inventory_hostname }}
             - homepage.container=music-assistant-server
-        # nodered:
-        #   container_name: nodered
-        #   image: nodered/node-red
-        #   ports:
-        #     - "{{ nodered_http_port }}:1880"
-        #   volumes:
-        #     - "{{ nodered_config_folder }}:/data"
-        #   depends_on:
-        #     - homeassistant
-        #   environment:
-        #     TZ: "Europe/Amsterdam"
-        #   user: "{{ ha_user.uid }}:{{ ha_user.group }}"
-        #   restart: unless-stopped
         mosquitto:
           container_name: mosquitto
           image: "{{ homeassistant_mosquitto_image }}"

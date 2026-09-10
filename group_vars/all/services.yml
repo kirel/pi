@@ -155,11 +155,6 @@ services:
     http_port: "{{ teddycloud_http_port }}"
     domain: teddycloud.kirelabs.org
     group: Family
-  nodered:
-    target: homelab-nuc.lan
-    http_port: "{{ nodered_http_port }}"
-    domain: nodered.kirelabs.org
-    group: Smart Home
   z2m:
     name: Zigbee2MQTT
     target: homelab-nuc.lan
