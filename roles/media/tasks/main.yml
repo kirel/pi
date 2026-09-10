@@ -45,7 +45,7 @@
     definition:
       services:
         jellyfin:
-          image: jellyfin/jellyfin
+          image: jellyfin/jellyfin:12.0
           container_name: jellyfin
           user: "{{ uid }}:{{ uid }}"
           group_add:
@@ -130,7 +130,7 @@
     url: "http://127.0.0.1:{{ jellyfin_http_port }}/System/Configuration/encoding"
     method: GET
     headers:
-      X-Emby-Token: "{{ jellyfin_api_key }}"
+      Authorization: 'MediaBrowser Token="{{ jellyfin_api_key }}"'
     return_content: true
     status_code:
       - 200
@@ -146,7 +146,7 @@
     url: "http://127.0.0.1:{{ jellyfin_http_port }}/System/Configuration/encoding"
     method: POST
     headers:
-      X-Emby-Token: "{{ jellyfin_api_key }}"
+      Authorization: 'MediaBrowser Token="{{ jellyfin_api_key }}"'
     body_format: json
     body: "{{ media_jellyfin_encoding_configuration.json | combine(media_jellyfin_quicksync_configuration) }}"
     status_code: 204
