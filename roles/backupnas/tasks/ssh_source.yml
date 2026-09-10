@@ -1,0 +1,34 @@
+---
+- name: Ensure the source SSH directory exists
+  ansible.builtin.file:
+    path: "{{ backupnas_source.home }}/.ssh"
+    state: directory
+    owner: "{{ backupnas_source.user }}"
+    mode: '0700'
+  delegate_to: "{{ backupnas_source.host }}"
+
+- name: Pin the NAS host key on the management server
+  ansible.builtin.known_hosts:
+    path: "{{ backupnas_source.home }}/.ssh/known_hosts"
+    name: "backupnas.{{ tailscale_tailnet_domain }}"
+    key: "backupnas.{{ tailscale_tailnet_domain }} {{ backupnas_host_key.content | b64decode | trim }}"
+  become: true
+  become_user: "{{ backupnas_source.user }}"
+  delegate_to: "{{ backupnas_source.host }}"
+
+- name: Configure the backupnas SSH alias over Tailscale
+  ansible.builtin.blockinfile:
+    path: "{{ backupnas_source.home }}/.ssh/config"
+    create: true
+    owner: "{{ backupnas_source.user }}"
+    mode: '0600'
+    insertbefore: BOF
+    marker: '# {mark} ANSIBLE BACKUPNAS'
+    block: |
+      Host backupnas backupnas.{{ tailscale_tailnet_domain }}
+          HostName backupnas.{{ tailscale_tailnet_domain }}
+          User {{ ansible_user }}
+          IdentityFile {{ backupnas_source.key }}
+          IdentitiesOnly yes
+          StrictHostKeyChecking yes
+  delegate_to: "{{ backupnas_source.host }}"

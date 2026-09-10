@@ -16,5 +16,8 @@ ubuntu-8gb-fsn1-1 ansible_host=100.82.91.51 ansible_user=daniel ansible_python_i
 [dashserv]
 dashserv-m-1 ansible_host=77.90.42.61 ansible_user=daniel ansible_python_interpreter=/usr/bin/python3
 
+[backup_nas]
+backupnas ansible_host=backupnas.halfmoon-platy.ts.net ansible_user=daniel ansible_python_interpreter=/usr/bin/python3
+
 # [virtualhere]
 # virtualhere-pi ansible_host=192.168.50.7 ansible_user=pi ansible_python_interpreter=/usr/bin/python3

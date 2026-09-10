@@ -1,0 +1,133 @@
+---
+- name: Require named Wi-Fi profiles with 1Password password references
+  ansible.builtin.assert:
+    that:
+      - item.name is match('^[a-zA-Z0-9_-]+$')
+      - (item.ssid is defined) != (item.ssid_ref is defined)
+      - item.ssid_ref is not defined or item.ssid_ref is match('^op://homelab/')
+      - item.ssid is not defined or (item.ssid is string and item.ssid | length > 0)
+      - item.password_ref is match('^op://homelab/')
+      - backupnas_wifi_country is match('^[A-Z]{2}$')
+  loop: "{{ backupnas_wifi_profiles }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Check for conflicting OMV or Netplan Wi-Fi ownership
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/python3
+      - -c
+      - |
+        import pathlib, sys, xml.etree.ElementTree as ET, yaml
+        root = ET.parse('/etc/openmediavault/config.xml').getroot()
+        conflicts = any(n.findtext('devicename') == 'wlan0'
+                        for n in root.findall('.//network/interfaces/interface'))
+        for path in pathlib.Path('/etc/netplan').glob('*.yaml'):
+            data = yaml.safe_load(path.read_text()) or {}
+            conflicts |= bool((data.get('network') or {}).get('wifis'))
+        sys.exit(1 if conflicts else 0)
+  changed_when: false
+  check_mode: false
+
+- name: Ensure Wi-Fi tools are installed
+  ansible.builtin.apt:
+    name: [wpasupplicant, iw, rfkill]
+    state: present
+
+- name: Create the credential and state directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+  loop:
+    - /etc/wpa_supplicant
+    - /var/lib/backupnas
+
+- name: Calculate a revision from profile references only
+  ansible.builtin.set_fact:
+    backupnas_wifi_revision: "{{ {'version': 1, 'profiles': backupnas_wifi_profiles, 'country': backupnas_wifi_country} | to_json | hash('sha256') }}"
+
+- name: Inspect Wi-Fi provisioning files without reading credentials
+  ansible.builtin.stat:
+    path: "{{ item }}"
+    get_checksum: false
+    get_mime: false
+  loop:
+    - /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+    - /var/lib/backupnas/wifi-profile-revision
+  register: backupnas_wifi_files
+
+- name: Read the non-secret profile revision
+  ansible.builtin.slurp:
+    src: /var/lib/backupnas/wifi-profile-revision
+  when: backupnas_wifi_files.results[1].stat.exists
+  register: backupnas_wifi_saved_revision
+
+- name: Resolve and provision Wi-Fi credentials entirely on the homelab hosts
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/python3
+      - -c
+      - "{{ lookup('file', role_path + '/files/provision_wifi.py') }}"
+      - "{{ {'profiles': backupnas_wifi_profiles, 'country': backupnas_wifi_country, 'target': ansible_user ~ '@' ~ ansible_host} | to_json }}"
+  delegate_to: ailab-ubuntu
+  become: true
+  become_user: daniel
+  no_log: true
+  diff: false
+  changed_when: true
+  when: >-
+    not backupnas_wifi_files.results[0].stat.exists or
+    (backupnas_wifi_saved_revision.content | default('') | b64decode | trim) != backupnas_wifi_revision or
+    backupnas_wifi_refresh_credentials | default(false) | bool
+  register: backupnas_wifi_credentials
+
+- name: Enforce root-only permissions on saved Wi-Fi credentials
+  ansible.builtin.file:
+    path: /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+    state: file
+    owner: root
+    group: root
+    mode: '0600'
+  when: not ansible_check_mode or backupnas_wifi_files.results[0].stat.exists
+
+- name: Record the non-secret profile revision after successful provisioning
+  ansible.builtin.copy:
+    content: "{{ backupnas_wifi_revision }}\n"
+    dest: /var/lib/backupnas/wifi-profile-revision
+    owner: root
+    group: root
+    mode: '0600'
+  when: not ansible_check_mode
+
+- name: Configure DHCP and Wi-Fi routing below the existing LAN priority
+  ansible.builtin.template:
+    src: wlan.network.j2
+    dest: /etc/systemd/network/05-ansible-backupnas-wlan.network
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload networkd for backup NAS Wi-Fi
+    - Reconfigure backup NAS Wi-Fi
+
+- name: Read radio blocking state
+  ansible.builtin.command: /usr/sbin/rfkill --json
+  changed_when: false
+  check_mode: false
+  register: backupnas_wifi_rfkill
+
+- name: Unblock the Wi-Fi radio when software blocked
+  ansible.builtin.command: /usr/sbin/rfkill unblock wifi
+  changed_when: true
+  when: >-
+    (backupnas_wifi_rfkill.stdout | from_json).rfkilldevices |
+    selectattr('type', 'equalto', 'wlan') | selectattr('soft', 'equalto', 'blocked') | list | length > 0
+
+- name: Enable the Wi-Fi supplicant at boot
+  ansible.builtin.systemd_service:
+    name: wpa_supplicant@wlan0.service
+    enabled: true
+    state: "{{ 'restarted' if backupnas_wifi_credentials is changed else 'started' }}"

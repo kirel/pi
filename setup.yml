@@ -130,8 +130,18 @@
     - { role: syncthing, become: true, tags: [syncthing] }
     - { role: syncthing_folders, become: true, tags: [wan2gp, syncthing, syncthing-config] }
 
+- name: Setup OpenMediaVault backup NAS
+  hosts: backup_nas
+  module_defaults:
+    ansible.builtin.apt:
+      lock_timeout: 300
+  roles:
+    - { role: backupnas, become: true, tags: [backupnas] }
+    - { role: tailscale_apt_cleanup, become: true, tags: [backupnas, tailscale] }
+    - { role: artis3n.tailscale.machine, become: true, tags: [backupnas, tailscale] }
+
 - name: Setup SSH key distribution
-  hosts: ailab_ubuntus,homelab,nameserver,hetzner,mic_satellites
+  hosts: ailab_ubuntus,homelab,nameserver,hetzner,mic_satellites,backup_nas
   ignore_unreachable: true
   vars:
     source_host: ailab-ubuntu

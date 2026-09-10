@@ -1,0 +1,30 @@
+---
+# OMV retains ownership of storage, users, LAN and sshd configuration.
+# Do not import the general basic/pi roles onto this appliance.
+tailscale_args: "--hostname=backupnas --accept-dns=false --accept-routes=false --ssh=false"
+backupnas_legacy_wireguard_name: Home
+backupnas_penta_hat: true
+# Required by the updated 6.18 kernel's JMB585 DMA restriction.
+backupnas_penta_dma32: true
+backupnas_wifi_country: DE
+backupnas_wifi_profiles:
+  - name: home
+    ssid_ref: "op://homelab/WLAN Zuhause/Netzwerkname"
+    password_ref: "op://homelab/WLAN Zuhause/Passwort des drahtlosen Netzwerks"
+    priority: 10
+  - name: offsite
+    ssid: "Telekom MN 5 GHz"
+    password_ref: "op://homelab/WLAN Marian/Passwort des drahtlosen Netzwerks"
+    priority: 5
+# The standard Ailab key and these additional keys are distributed exclusively
+# by the central ssh_keys role. The NAS role only configures SSH client aliases.
+ssh_keys_additional_sources: "{{ backupnas_ssh_sources | rejectattr('host', 'equalto', 'ailab-ubuntu') | list }}"
+backupnas_ssh_sources:
+  - host: ailab-ubuntu
+    user: daniel
+    home: /home/daniel
+    key: /home/daniel/.ssh/id_rsa
+  - host: homelab-nuc
+    user: root
+    home: /root
+    key: /root/.ssh/backupnas_ed25519

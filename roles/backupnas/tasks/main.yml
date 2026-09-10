@@ -1,0 +1,88 @@
+---
+- name: Verify OpenMediaVault is installed
+  ansible.builtin.stat:
+    path: /usr/sbin/omv-confdbadm
+  register: backupnas_omv
+
+- name: Require an existing OpenMediaVault appliance
+  ansible.builtin.assert:
+    that: backupnas_omv.stat.exists
+
+- name: Preserve the original boot configuration outside the FAT filesystem
+  ansible.builtin.copy:
+    src: /boot/firmware/config.txt
+    dest: /root/config.txt.before-ansible-penta
+    remote_src: true
+    force: false
+    mode: '0600'
+  when: backupnas_penta_hat | default(false) | bool
+
+- name: Enable the Radxa Penta SATA HAT PCIe connection
+  ansible.builtin.blockinfile:
+    path: /boot/firmware/config.txt
+    marker: '# {mark} ANSIBLE RADXA PENTA SATA HAT'
+    block: |
+      [all]
+      dtparam=pciex1
+      {% if backupnas_penta_dma32 | default(false) | bool %}
+      dtoverlay=pcie-32bit-dma-pi5
+      {% endif %}
+  when: backupnas_penta_hat | default(false) | bool
+  notify: Reboot backup NAS
+
+- name: Disable the legacy VPN in the OMV database without exposing its keys
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/python3
+      - -c
+      - |
+        import json, subprocess, sys
+        model = 'conf.service.wireguard.custom'
+        configs = json.loads(subprocess.check_output(['omv-confdbadm', 'read', model]))
+        changed = False
+        for config in configs:
+            if config['name'] == sys.argv[1] and config['enable']:
+                config['enable'] = False
+                subprocess.run(['omv-confdbadm', 'update', model, '-'],
+                               input=json.dumps(config), text=True, check=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                changed = True
+        print('changed' if changed else 'ok')
+      - "{{ backupnas_legacy_wireguard_name }}"
+  register: backupnas_wireguard
+  changed_when: backupnas_wireguard.stdout == 'changed'
+  no_log: true
+  diff: false
+  when: backupnas_legacy_wireguard_name | default('') | length > 0
+
+- name: Stop and disable the legacy VPN
+  ansible.builtin.systemd_service:
+    name: "wg-quick@wgnet_{{ backupnas_legacy_wireguard_name }}.service"
+    state: stopped
+    enabled: false
+  when: backupnas_legacy_wireguard_name | default('') | length > 0
+
+- name: Read the NAS public host key over the trusted management connection
+  ansible.builtin.slurp:
+    src: /etc/ssh/ssh_host_ed25519_key.pub
+  register: backupnas_host_key
+  tags: [ssh-keys]
+
+- name: Configure Wi-Fi connectivity with LAN preferred
+  ansible.builtin.include_tasks:
+    file: wifi.yml
+    apply:
+      tags: [backupnas-wifi]
+  when: backupnas_wifi_profiles | default([]) | length > 0
+  tags: [backupnas-wifi]
+
+- name: Configure management access from homelab servers
+  ansible.builtin.include_tasks:
+    file: ssh_source.yml
+    apply:
+      tags: [ssh-keys]
+  loop: "{{ backupnas_ssh_sources }}"
+  loop_control:
+    loop_var: backupnas_source
+    label: "{{ backupnas_source.user }}@{{ backupnas_source.host }}"
+  tags: [ssh-keys]
