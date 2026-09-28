@@ -130,6 +130,7 @@
   changed_when: "'changed' in jellyfin_transcode_cache.stdout"
 
 - name: Read Jellyfin encoding configuration
+  tags: [jellyfin-encoding]
   ansible.builtin.uri:
     url: "http://127.0.0.1:{{ jellyfin_http_port }}/System/Configuration/encoding"
     method: GET
@@ -144,8 +145,10 @@
   retries: 30
   delay: 2
   no_log: true
+  diff: false
 
 - name: Enable Intel Quick Sync in Jellyfin
+  tags: [jellyfin-encoding]
   ansible.builtin.uri:
     url: "http://127.0.0.1:{{ jellyfin_http_port }}/System/Configuration/encoding"
     method: POST
@@ -154,11 +157,17 @@
     body_format: json
     body: "{{ media_jellyfin_encoding_configuration.json | combine(media_jellyfin_quicksync_configuration) }}"
     status_code: 204
+  changed_when: true
   when: >-
-    media_jellyfin_encoding_configuration.json.HardwareAccelerationType != 'qsv' or
-    not media_jellyfin_encoding_configuration.json.EnableHardwareEncoding
+    media_jellyfin_encoding_configuration.json !=
+    (media_jellyfin_encoding_configuration.json | combine(media_jellyfin_quicksync_configuration))
   no_log: true
+  diff: false
   vars:
     media_jellyfin_quicksync_configuration:
       HardwareAccelerationType: qsv
       EnableHardwareEncoding: true
+      HardwareDecodingCodecs: "{{ (media_jellyfin_encoding_configuration.json.HardwareDecodingCodecs + ['hevc']) | unique | list }}"
+      EnableDecodingColorDepth10Hevc: true
+      PreferSystemNativeHwDecoder: true
+      EnableVppTonemapping: true
