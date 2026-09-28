@@ -21,7 +21,7 @@ litellm_redis_port_container: 6379
 litellm_redis_data_dir: "{{ llm_base_config_path }}/litellm/redis"
 
 # --- LiteLLM Proxy Settings ---
-litellm_proxy_image: "ghcr.io/berriai/litellm:v1.99.1"
+litellm_proxy_image: "ghcr.io/berriai/litellm:v1.103.0"
 litellm_proxy_container_name: "litellm-proxy-container"
 litellm_proxy_config_dir_host: "{{ llm_base_config_path }}/litellm"
 litellm_proxy_config_filename: "config.yaml"
@@ -132,10 +132,10 @@ litellm_mcp_servers:
     install:
       manager: uv
       args:
-        - "immich-photo-manager==1.4.0"
-        # The server requires MCP SDK 1.x; keep the validated version explicit.
+        - "immich-photo-manager==2.0.11"
+        # Version 2 requires MCP SDK 2.x in its isolated uv tool environment.
         - "--with"
-        - "mcp==1.29.0"
+        - "mcp==2.2.0"
   n8n:
     transport: stdio
     command: n8n-mcp

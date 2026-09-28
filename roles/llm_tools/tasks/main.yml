@@ -20,6 +20,8 @@
   become: true
 
 - name: Template LiteLLM Proxy config.yaml
+  no_log: true
+  diff: false
   ansible.builtin.template:
     src: litellm_config.yaml.j2
     dest: "{{ litellm_proxy_config_full_host_path }}"
