@@ -1,0 +1,813 @@
+{
+  "scope": "Read-only live HA debug traces and Hermes SQLite; intent-end is not audible playback start",
+  "samples": [
+    {
+      "request": "Füge \"Dinkel Flakes\" zu meiner Einkaufsliste hinzu.",
+      "session": "api-814d2af1472b2dbd",
+      "response": "„Dinkel Flakes“ steht schon auf der Liste: Item „Flakes“ (Description: Dinkel) in der Section Müsli. Nicht doppelt angelegt.",
+      "intent_seconds": 31.223164,
+      "speech_end_to_intent_end_seconds": 31.435622,
+      "stt_tail_seconds": 0.212089,
+      "model_calls": 5,
+      "hermes_seconds": 31.065189123153687,
+      "tool_timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 3.587
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 3.631,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 3.635,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 9.599
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 9.63,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 12.304
+        },
+        {
+          "role": "tool",
+          "tool": "tool_describe",
+          "t": 12.332,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 17.516
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 21.967,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 24.375,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_sections",
+          "t": 29.095,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 31.065
+        }
+      ],
+      "cache_read_tokens": 109760
+    },
+    {
+      "request": "Füge \"Bananen\" zu meiner Einkaufsliste hinzu.",
+      "session": "api-416ddd645983f20c",
+      "response": "Bananen stehen schon auf der Liste, unter Obst und Gemüse.",
+      "intent_seconds": 9.336891,
+      "speech_end_to_intent_end_seconds": 9.482052,
+      "stt_tail_seconds": 0.144801,
+      "model_calls": 3,
+      "hermes_seconds": 9.215354681015015,
+      "tool_timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 1.576
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 1.609,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 3.281
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__shopping_shopping_snapshot",
+          "t": 6.82,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 9.215
+        }
+      ],
+      "cache_read_tokens": 48608
+    },
+    {
+      "request": "Füge \"Eier\" zu meiner Einkaufsliste hinzu.",
+      "session": "api-9c34bc5b2c2d8800",
+      "response": "„Eier“ steht schon in der Liste, im Abschnitt Kühlregal.",
+      "intent_seconds": 10.670602,
+      "speech_end_to_intent_end_seconds": 10.808931,
+      "stt_tail_seconds": 0.137791,
+      "model_calls": 3,
+      "hermes_seconds": 10.528575658798218,
+      "tool_timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 1.621
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 1.658,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 3.354
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__shopping_shopping_snapshot",
+          "t": 8.096,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 10.529
+        }
+      ],
+      "cache_read_tokens": 48608
+    },
+    {
+      "request": "Füge \"Saft\" zu meiner Einkaufsliste hinzu.",
+      "session": "api-70ed9edffb3fc111",
+      "response": "Es gibt schon einen Eintrag „Orangensaft/saft\" in der Sektion Getränke. Meinst du den, oder soll ein neuer, generischer „Saft\"-Eintrag dazu?",
+      "intent_seconds": 10.968584,
+      "speech_end_to_intent_end_seconds": 11.085649,
+      "stt_tail_seconds": 0.116706,
+      "model_calls": 4,
+      "hermes_seconds": 10.852054357528687,
+      "tool_timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 1.692
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 1.727,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 3.486
+        },
+        {
+          "role": "tool",
+          "tool": "tool_describe",
+          "t": 3.514,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 4.723
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__shopping_shopping_snapshot",
+          "t": 7.853,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 10.852
+        }
+      ],
+      "cache_read_tokens": 65856
+    },
+    {
+      "request": "Füge \"35 Liter Müllbeutel\" zu meiner Einkaufsliste hinzu.",
+      "session": "api-5ebdc39de17ca999",
+      "response": "Müllbeutel 35 Liter steht schon in der Liste (Haushalt). Nichts hinzugefügt.",
+      "intent_seconds": 8.673911,
+      "speech_end_to_intent_end_seconds": 8.809558,
+      "stt_tail_seconds": 0.135292,
+      "model_calls": 3,
+      "hermes_seconds": 8.562099933624268,
+      "tool_timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 1.528
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 1.56,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 3.217
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__shopping_shopping_snapshot",
+          "t": 6.006,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 8.562
+        }
+      ],
+      "cache_read_tokens": 48608
+    },
+    {
+      "request": "Füge \"Gouda-Käse\" zu meiner Einkaufsliste hinzu.",
+      "session": "api-2f73ccf63694c5ea",
+      "response": "Gouda-Käse ist in der Einkaufsliste (Kühlregal).",
+      "intent_seconds": 16.066779,
+      "speech_end_to_intent_end_seconds": 16.193008,
+      "stt_tail_seconds": 0.125954,
+      "model_calls": 5,
+      "hermes_seconds": 15.944677352905273,
+      "tool_timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 1.477
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 1.512,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 3.191
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__shopping_shopping_snapshot",
+          "t": 4.087,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 7.979
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__shopping_shopping_apply",
+          "t": 9.944,
+          "schema_error": true
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 12.726
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__shopping_shopping_apply",
+          "t": 15.263,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 15.945
+        }
+      ],
+      "cache_read_tokens": 90944
+    }
+  ],
+  "historical_hermes": [
+    {
+      "id": "api-814d2af1472b2dbd",
+      "model": "home-hermes",
+      "api_call_count": 5,
+      "input_tokens": 19666,
+      "output_tokens": 452,
+      "cache_read_tokens": 109760,
+      "start": 1790570984.1084547,
+      "text": "Füge \"Dinkel Flakes\" zu meiner Einkaufsliste hinzu.",
+      "seconds": 31.065189123153687,
+      "response": "„Dinkel Flakes“ steht schon auf der Liste: Item „Flakes“ (Description: Dinkel) in der Section Müsli. Nicht doppelt angelegt.",
+      "timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 3.587
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 3.631,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 3.635,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 9.599
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 9.63,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 12.304
+        },
+        {
+          "role": "tool",
+          "tool": "tool_describe",
+          "t": 12.332,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 17.516
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 21.967,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 24.375,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_sections",
+          "t": 29.095,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 31.065
+        }
+      ]
+    },
+    {
+      "id": "api-a86eca30f8a9ba6e",
+      "model": "home-hermes",
+      "api_call_count": 9,
+      "input_tokens": 22392,
+      "output_tokens": 648,
+      "cache_read_tokens": 228928,
+      "start": 1790513772.6763637,
+      "text": "Füge \"frischer Ingwer\" zu meiner Einkaufsliste hinzu.",
+      "seconds": 42.6167688369751,
+      "response": "Hinzugefügt: Ingwer (frisch) in der Sektion Gewürze.",
+      "timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 2.074
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 2.125,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 2.129,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 7.953
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 7.984,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 10.641
+        },
+        {
+          "role": "tool",
+          "tool": "tool_describe",
+          "t": 10.669,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 13.641
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 17.398,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 20.329
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 22.904,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 24.449
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_sections",
+          "t": 29.466,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 31.754
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_add_tasks",
+          "t": 37.266,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 39.142
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_fetch",
+          "t": 41.399,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 42.617
+        }
+      ]
+    },
+    {
+      "id": "api-152461afa66d5365",
+      "model": "home-hermes",
+      "api_call_count": 10,
+      "input_tokens": 22475,
+      "output_tokens": 705,
+      "cache_read_tokens": 257152,
+      "start": 1790490584.9233682,
+      "text": "Füge \"Planen\" zu meiner Einkaufsliste hinzu.",
+      "seconds": 48.67272448539734,
+      "response": "„Planen\" ist in der Einkaufsliste, in der Section „Woanders\".",
+      "timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 1.927
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 1.983,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 1.988,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 7.663
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 7.693,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 10.194
+        },
+        {
+          "role": "tool",
+          "tool": "tool_describe",
+          "t": 10.222,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 12.905
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 21.535,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 24.112
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 28.879,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 31.112
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_sections",
+          "t": 33.331,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 34.878
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_sections",
+          "t": 36.989,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 39.04
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_add_tasks",
+          "t": 41.686,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 43.462
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_fetch",
+          "t": 47.425,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 48.673
+        }
+      ]
+    },
+    {
+      "id": "api-94b343c55c815e53",
+      "model": "home-hermes",
+      "api_call_count": 9,
+      "input_tokens": 22654,
+      "output_tokens": 842,
+      "cache_read_tokens": 228928,
+      "start": 1790401737.5631864,
+      "text": "Füge \"35 Liter Müllbeutel\" zu meiner Einkaufsliste hinzu.",
+      "seconds": 51.40876245498657,
+      "response": "Müllbeutel (35 Liter) ist in der Einkaufsliste, Abschnitt Haushalt.",
+      "timeline": [
+        {
+          "role": "user",
+          "tool": null,
+          "t": 0.0
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 2.034
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 2.121,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "skill_view",
+          "t": 2.126,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 7.942
+        },
+        {
+          "role": "tool",
+          "tool": "tool_search",
+          "t": 7.977,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 10.502
+        },
+        {
+          "role": "tool",
+          "tool": "tool_describe",
+          "t": 10.536,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 14.679
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 18.214,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_sections",
+          "t": 20.641,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 24.746
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 29.671,
+          "schema_error": false
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 32.132,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 34.698
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_find_tasks",
+          "t": 37.073,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 39.465
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_add_tasks",
+          "t": 44.144,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 46.12
+        },
+        {
+          "role": "tool",
+          "tool": "mcp__litellm__todoist_fetch",
+          "t": 49.992,
+          "schema_error": false
+        },
+        {
+          "role": "assistant",
+          "tool": null,
+          "t": 51.409
+        }
+      ]
+    }
+  ]
+}

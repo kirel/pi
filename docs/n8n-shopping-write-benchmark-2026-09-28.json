@@ -1,0 +1,488 @@
+{
+  "date": "2026-09-28",
+  "route": "Both variants from hermes-local through https://litellm.kirelabs.org/mcp/",
+  "measured_scope": "Tool calls through verified state, no LLM/STT/TTS",
+  "runs_per_scenario_per_route": 3,
+  "samples": [
+    {
+      "route": "n8n",
+      "cycle": 0,
+      "scenario": "add_one",
+      "seconds": 3.942575626075268,
+      "tool_calls": 2,
+      "response_json_bytes": 12354,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 0,
+      "scenario": "already_present",
+      "seconds": 0.8104958403855562,
+      "tool_calls": 1,
+      "response_json_bytes": 12143,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 0,
+      "scenario": "refine",
+      "seconds": 15.739186545833945,
+      "tool_calls": 2,
+      "response_json_bytes": 12714,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 0,
+      "scenario": "move",
+      "seconds": 9.928853055462241,
+      "tool_calls": 2,
+      "response_json_bytes": 12724,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 0,
+      "scenario": "add_three",
+      "seconds": 3.332356841303408,
+      "tool_calls": 2,
+      "response_json_bytes": 13468,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 0,
+      "scenario": "complete_two",
+      "seconds": 3.446859462186694,
+      "tool_calls": 2,
+      "response_json_bytes": 13690,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 0,
+      "scenario": "merge_duplicates",
+      "seconds": 6.036890314891934,
+      "tool_calls": 2,
+      "response_json_bytes": 13080,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 0,
+      "scenario": "add_one",
+      "seconds": 12.206294259056449,
+      "tool_calls": 4,
+      "response_json_bytes": 23381,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 0,
+      "scenario": "already_present",
+      "seconds": 6.493366160430014,
+      "tool_calls": 2,
+      "response_json_bytes": 21807,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 0,
+      "scenario": "refine",
+      "seconds": 9.640643964521587,
+      "tool_calls": 3,
+      "response_json_bytes": 20234,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 0,
+      "scenario": "move",
+      "seconds": 12.022307580336928,
+      "tool_calls": 4,
+      "response_json_bytes": 24298,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 0,
+      "scenario": "add_three",
+      "seconds": 16.79459145013243,
+      "tool_calls": 6,
+      "response_json_bytes": 27905,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 0,
+      "scenario": "complete_two",
+      "seconds": 9.4296615999192,
+      "tool_calls": 3,
+      "response_json_bytes": 38736,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 0,
+      "scenario": "merge_duplicates",
+      "seconds": 15.056316118687391,
+      "tool_calls": 5,
+      "response_json_bytes": 39179,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 1,
+      "scenario": "add_one",
+      "seconds": 11.00611177366227,
+      "tool_calls": 4,
+      "response_json_bytes": 24086,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 1,
+      "scenario": "already_present",
+      "seconds": 6.966926982626319,
+      "tool_calls": 2,
+      "response_json_bytes": 22512,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 1,
+      "scenario": "refine",
+      "seconds": 9.410377061925828,
+      "tool_calls": 3,
+      "response_json_bytes": 20939,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 1,
+      "scenario": "move",
+      "seconds": 13.211477244272828,
+      "tool_calls": 4,
+      "response_json_bytes": 25003,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 1,
+      "scenario": "add_three",
+      "seconds": 20.909037773497403,
+      "tool_calls": 6,
+      "response_json_bytes": 28610,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 1,
+      "scenario": "complete_two",
+      "seconds": 14.732244925573468,
+      "tool_calls": 3,
+      "response_json_bytes": 40146,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 1,
+      "scenario": "merge_duplicates",
+      "seconds": 16.103204363957047,
+      "tool_calls": 5,
+      "response_json_bytes": 40589,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 1,
+      "scenario": "add_one",
+      "seconds": 6.060189951211214,
+      "tool_calls": 2,
+      "response_json_bytes": 13462,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 1,
+      "scenario": "already_present",
+      "seconds": 0.8095781663432717,
+      "tool_calls": 1,
+      "response_json_bytes": 13251,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 1,
+      "scenario": "refine",
+      "seconds": 3.2788325492292643,
+      "tool_calls": 2,
+      "response_json_bytes": 13822,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 1,
+      "scenario": "move",
+      "seconds": 11.906714940443635,
+      "tool_calls": 2,
+      "response_json_bytes": 13832,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 1,
+      "scenario": "add_three",
+      "seconds": 3.3881839215755463,
+      "tool_calls": 2,
+      "response_json_bytes": 14576,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 1,
+      "scenario": "complete_two",
+      "seconds": 3.5222811065614223,
+      "tool_calls": 2,
+      "response_json_bytes": 14798,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 1,
+      "scenario": "merge_duplicates",
+      "seconds": 6.7091670064255595,
+      "tool_calls": 2,
+      "response_json_bytes": 14188,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 2,
+      "scenario": "add_one",
+      "seconds": 2.9896665224805474,
+      "tool_calls": 2,
+      "response_json_bytes": 13828,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 2,
+      "scenario": "already_present",
+      "seconds": 0.7641721917316318,
+      "tool_calls": 1,
+      "response_json_bytes": 13617,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 2,
+      "scenario": "refine",
+      "seconds": 5.646231668069959,
+      "tool_calls": 2,
+      "response_json_bytes": 14188,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 2,
+      "scenario": "move",
+      "seconds": 3.6235487069934607,
+      "tool_calls": 2,
+      "response_json_bytes": 14198,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 2,
+      "scenario": "add_three",
+      "seconds": 6.693051418289542,
+      "tool_calls": 2,
+      "response_json_bytes": 14942,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 2,
+      "scenario": "complete_two",
+      "seconds": 3.361629572696984,
+      "tool_calls": 2,
+      "response_json_bytes": 15164,
+      "verified": true
+    },
+    {
+      "route": "n8n",
+      "cycle": 2,
+      "scenario": "merge_duplicates",
+      "seconds": 5.856136992573738,
+      "tool_calls": 2,
+      "response_json_bytes": 14554,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 2,
+      "scenario": "add_one",
+      "seconds": 12.258851654827595,
+      "tool_calls": 4,
+      "response_json_bytes": 26171,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 2,
+      "scenario": "already_present",
+      "seconds": 8.050727820955217,
+      "tool_calls": 2,
+      "response_json_bytes": 24597,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 2,
+      "scenario": "refine",
+      "seconds": 10.107077942229807,
+      "tool_calls": 3,
+      "response_json_bytes": 23024,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 2,
+      "scenario": "move",
+      "seconds": 12.495429365895689,
+      "tool_calls": 4,
+      "response_json_bytes": 27088,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 2,
+      "scenario": "add_three",
+      "seconds": 20.20546440500766,
+      "tool_calls": 6,
+      "response_json_bytes": 30695,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 2,
+      "scenario": "complete_two",
+      "seconds": 10.715479711070657,
+      "tool_calls": 3,
+      "response_json_bytes": 44316,
+      "verified": true
+    },
+    {
+      "route": "official",
+      "cycle": 2,
+      "scenario": "merge_duplicates",
+      "seconds": 21.7465314399451,
+      "tool_calls": 5,
+      "response_json_bytes": 44759,
+      "verified": true
+    }
+  ],
+  "medians": {
+    "add_one": {
+      "n8n": {
+        "seconds": 3.942575626075268,
+        "tool_calls": [
+          2
+        ]
+      },
+      "official": {
+        "seconds": 12.206294259056449,
+        "tool_calls": [
+          4
+        ]
+      }
+    },
+    "already_present": {
+      "n8n": {
+        "seconds": 0.8095781663432717,
+        "tool_calls": [
+          1
+        ]
+      },
+      "official": {
+        "seconds": 6.966926982626319,
+        "tool_calls": [
+          2
+        ]
+      }
+    },
+    "refine": {
+      "n8n": {
+        "seconds": 5.646231668069959,
+        "tool_calls": [
+          2
+        ]
+      },
+      "official": {
+        "seconds": 9.640643964521587,
+        "tool_calls": [
+          3
+        ]
+      }
+    },
+    "move": {
+      "n8n": {
+        "seconds": 9.928853055462241,
+        "tool_calls": [
+          2
+        ]
+      },
+      "official": {
+        "seconds": 12.495429365895689,
+        "tool_calls": [
+          4
+        ]
+      }
+    },
+    "add_three": {
+      "n8n": {
+        "seconds": 3.3881839215755463,
+        "tool_calls": [
+          2
+        ]
+      },
+      "official": {
+        "seconds": 20.20546440500766,
+        "tool_calls": [
+          6
+        ]
+      }
+    },
+    "complete_two": {
+      "n8n": {
+        "seconds": 3.446859462186694,
+        "tool_calls": [
+          2
+        ]
+      },
+      "official": {
+        "seconds": 10.715479711070657,
+        "tool_calls": [
+          3
+        ]
+      }
+    },
+    "merge_duplicates": {
+      "n8n": {
+        "seconds": 6.036890314891934,
+        "tool_calls": [
+          2
+        ]
+      },
+      "official": {
+        "seconds": 16.103204363957047,
+        "tool_calls": [
+          5
+        ]
+      }
+    }
+  },
+  "cleanup_verified": true,
+  "non_benchmark_tasks_unchanged": true
+}

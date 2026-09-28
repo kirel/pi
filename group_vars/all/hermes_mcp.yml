@@ -58,6 +58,9 @@ hermes_litellm_model_profiles:
 
 hermes_mcp_tool_profiles:
   shopping:
+    shopping:
+      - shopping_snapshot
+      - shopping_apply
     todoist:
       - find-sections
       - find-tasks

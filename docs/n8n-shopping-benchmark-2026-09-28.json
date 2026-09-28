@@ -1,0 +1,238 @@
+{
+  "date": "2026-09-28",
+  "source": "hermes-local on ailab-ubuntu",
+  "scope": "read-only full shopping snapshot; n8n direct versus official Todoist through LiteLLM; no LLM or voice",
+  "samples": [
+    {
+      "cycle": 0,
+      "method": "n8n_direct",
+      "seconds": 0.5850815055891871,
+      "response_json_bytes": 9120,
+      "calls": 1,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 0,
+      "method": "official_sequential_via_litellm",
+      "seconds": 4.9986160872504115,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 0,
+      "method": "official_parallel_via_litellm",
+      "seconds": 13.802216823212802,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 1,
+      "method": "official_sequential_via_litellm",
+      "seconds": 8.525762886740267,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 1,
+      "method": "official_parallel_via_litellm",
+      "seconds": 5.524917353875935,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 1,
+      "method": "n8n_direct",
+      "seconds": 0.582338166423142,
+      "response_json_bytes": 9120,
+      "calls": 1,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 2,
+      "method": "official_parallel_via_litellm",
+      "seconds": 6.339464457705617,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 2,
+      "method": "n8n_direct",
+      "seconds": 0.5790960695594549,
+      "response_json_bytes": 9120,
+      "calls": 1,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 2,
+      "method": "official_sequential_via_litellm",
+      "seconds": 4.533379569649696,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 3,
+      "method": "n8n_direct",
+      "seconds": 0.5343135884031653,
+      "response_json_bytes": 9120,
+      "calls": 1,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 3,
+      "method": "official_sequential_via_litellm",
+      "seconds": 7.249731225892901,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 3,
+      "method": "official_parallel_via_litellm",
+      "seconds": 6.382274015806615,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 4,
+      "method": "official_sequential_via_litellm",
+      "seconds": 5.059564784169197,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 4,
+      "method": "official_parallel_via_litellm",
+      "seconds": 19.986981292255223,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 4,
+      "method": "n8n_direct",
+      "seconds": 0.57447075471282,
+      "response_json_bytes": 9120,
+      "calls": 1,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 5,
+      "method": "official_parallel_via_litellm",
+      "seconds": 6.316705010831356,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 5,
+      "method": "n8n_direct",
+      "seconds": 0.5654355585575104,
+      "response_json_bytes": 9120,
+      "calls": 1,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 5,
+      "method": "official_sequential_via_litellm",
+      "seconds": 4.608255288563669,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 6,
+      "method": "n8n_direct",
+      "seconds": 0.6224162578582764,
+      "response_json_bytes": 9120,
+      "calls": 1,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 6,
+      "method": "official_sequential_via_litellm",
+      "seconds": 6.0019469782710075,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 6,
+      "method": "official_parallel_via_litellm",
+      "seconds": 4.544581497088075,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 7,
+      "method": "official_sequential_via_litellm",
+      "seconds": 6.619329130277038,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 7,
+      "method": "official_parallel_via_litellm",
+      "seconds": 6.550539358519018,
+      "response_json_bytes": 20453,
+      "calls": 2,
+      "tasks": 28,
+      "sections": 20
+    },
+    {
+      "cycle": 7,
+      "method": "n8n_direct",
+      "seconds": 0.6086517050862312,
+      "response_json_bytes": 9120,
+      "calls": 1,
+      "tasks": 28,
+      "sections": 20
+    }
+  ],
+  "summary": {
+    "n8n_direct": {
+      "median_seconds": 0.5790960695594549,
+      "measured_runs": 7
+    },
+    "official_sequential_via_litellm": {
+      "median_seconds": 6.0019469782710075,
+      "measured_runs": 7
+    },
+    "official_parallel_via_litellm": {
+      "median_seconds": 6.339464457705617,
+      "measured_runs": 7
+    }
+  },
+  "all_results_equivalent": true
+}

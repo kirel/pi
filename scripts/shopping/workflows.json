@@ -1,0 +1,1013 @@
+{
+  "snapshot": {
+    "id": "DvIUXUvO0fGnXseG",
+    "name": "Experiment: Read shopping snapshot",
+    "nodes": [
+      {
+        "id": "76de6644-6aa1-4146-af14-d1c2d947fbc5",
+        "name": "Start",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "position": [
+          0,
+          0
+        ]
+      },
+      {
+        "id": "1c96f6a4-7898-41e0-b05e-6ca898de8ceb",
+        "name": "Read tasks",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "parameters": {
+          "url": "https://api.todoist.com/api/v1/tasks",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "todoistApi",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "project_id",
+                "value": "6Jhc7FCRmrMQPgW7"
+              },
+              {
+                "name": "limit",
+                "value": "100"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 15000,
+            "pagination": {
+              "pagination": {
+                "paginationMode": "updateAParameterInEachRequest",
+                "parameters": {
+                  "parameters": [
+                    {
+                      "type": "qs",
+                      "name": "cursor",
+                      "value": "={{ $response.body.next_cursor || \"\" }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ !$response.body.next_cursor }}",
+                "limitPagesFetched": true,
+                "maxRequests": 100
+              }
+            }
+          }
+        },
+        "position": [
+          220,
+          0
+        ],
+        "credentials": {
+          "todoistApi": {
+            "id": "0pIx7HjxMuZL9Vha",
+            "name": "Todoist account"
+          }
+        },
+        "executeOnce": true,
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 1000
+      },
+      {
+        "id": "496be99f-2e33-4fc7-abfc-0c38a27c29c8",
+        "name": "Read sections",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "parameters": {
+          "url": "https://api.todoist.com/api/v1/sections",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "todoistApi",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "project_id",
+                "value": "6Jhc7FCRmrMQPgW7"
+              },
+              {
+                "name": "limit",
+                "value": "100"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 15000,
+            "pagination": {
+              "pagination": {
+                "paginationMode": "updateAParameterInEachRequest",
+                "parameters": {
+                  "parameters": [
+                    {
+                      "type": "qs",
+                      "name": "cursor",
+                      "value": "={{ $response.body.next_cursor || \"\" }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ !$response.body.next_cursor }}",
+                "limitPagesFetched": true,
+                "maxRequests": 100
+              }
+            }
+          }
+        },
+        "position": [
+          440,
+          0
+        ],
+        "credentials": {
+          "todoistApi": {
+            "id": "0pIx7HjxMuZL9Vha",
+            "name": "Todoist account"
+          }
+        },
+        "executeOnce": true,
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 1000
+      },
+      {
+        "id": "95761604-b2bd-4050-9f8f-fd83add9c059",
+        "name": "Return snapshot",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "={{ { request_id: 'shopping-' + $execution.id + '-' + $now.toMillis(), projectId: '6Jhc7FCRmrMQPgW7', complete: !$('Read tasks').all().slice(-1)[0].json.next_cursor && !$('Read sections').all().slice(-1)[0].json.next_cursor, tasks: $('Read tasks').all().flatMap(p => p.json.results).map(t => ({id:t.id,content:t.content,description:t.description,projectId:t.project_id,sectionId:t.section_id,parentId:t.parent_id,recurring:!!t.due?.is_recurring,uncompletable:!!t.is_uncompletable})), sections: $('Read sections').all().flatMap(p => p.json.results).map(s => ({id:s.id,name:s.name,projectId:s.project_id})) } }}",
+          "options": {}
+        },
+        "position": [
+          660,
+          0
+        ],
+        "executeOnce": true
+      }
+    ],
+    "connections": {
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "Read tasks",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read tasks": {
+        "main": [
+          [
+            {
+              "node": "Read sections",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read sections": {
+        "main": [
+          [
+            {
+              "node": "Return snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "saveDataErrorExecution": "none",
+      "saveDataSuccessExecution": "none",
+      "executionTimeout": 60,
+      "callerPolicy": "workflowsFromSameOwner",
+      "availableInMCP": false
+    }
+  },
+  "apply": {
+    "id": "woGpVPKNAKntvUJY",
+    "name": "Shopping: Apply and verify",
+    "nodes": [
+      {
+        "id": "dbe806e2-b7d2-40de-a20d-d565b3bb3c18",
+        "name": "Start",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "request_id",
+                "type": "string"
+              },
+              {
+                "name": "operations",
+                "type": "array"
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          0
+        ]
+      },
+      {
+        "id": "743f9a49-f358-42f3-b827-2f509a61d9e2",
+        "name": "Acquire lock",
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1,
+        "parameters": {
+          "command": "=node -e 'const f=require('\"'\"'fs'\"'\"'),p='\"'\"'/tmp/data/shopping-apply-lock'\"'\"';try{f.mkdirSync(p);f.writeFileSync(p+'\"'\"'/owner'\"'\"',process.argv[1]);console.log(JSON.stringify({acquired:true}));}catch(e){if(e.code!=='\"'\"'EEXIST'\"'\"')throw e;console.log(JSON.stringify({acquired:false}));}' {{ $execution.id }}"
+        },
+        "position": [
+          240,
+          0
+        ]
+      },
+      {
+        "id": "19adf742-012d-4bac-9b36-2f757d2e79f3",
+        "name": "Lock acquired",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "a6744b7f-32c5-4d7f-9839-212c62ab15a5",
+                "leftValue": "={{ JSON.parse($json.stdout).acquired }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "position": [
+          480,
+          0
+        ]
+      },
+      {
+        "id": "18f1ee74-7a8a-47c4-90df-7b45381fa615",
+        "name": "Busy",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "parameters": {
+          "jsCode": "return [{json:{verified:false,status:'busy',message:'Another shopping request is running. No changes made.'}}];"
+        },
+        "position": [
+          720,
+          0
+        ]
+      },
+      {
+        "id": "4c01cc2e-0406-4667-a755-1079803ef91b",
+        "name": "Read current",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "DvIUXUvO0fGnXseG"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": []
+          },
+          "options": {
+            "waitForSubWorkflow": true
+          }
+        },
+        "position": [
+          960,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "id": "22aa4b65-8814-40ba-811d-30bb3b390157",
+        "name": "Plan",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "parameters": {
+          "jsCode": "/* Pure planning/verification shared by n8n Code nodes and the runnable self-check. */\nconst PROJECT = '6Jhc7FCRmrMQPgW7';\nconst norm = s => s.normalize('NFKC').trim().toLocaleLowerCase('de').replace(/\\s+/g, ' ');\nconst shape = t => ({id:t.id,content:t.content,description:t.description || '',sectionId:t.sectionId || null});\nconst same = (a,b) => JSON.stringify(shape(a)) === JSON.stringify(shape(b));\nconst fail = message => {throw new Error(message);};\nfunction snapshot(s) {\n  if (!s || s.complete !== true || s.projectId !== PROJECT || !Array.isArray(s.tasks) || !Array.isArray(s.sections)) fail('incomplete_snapshot');\n  if (s.tasks.some(t => t.projectId !== PROJECT || typeof t.content !== 'string' || typeof t.id !== 'string')) fail('invalid_snapshot');\n  return s;\n}\nfunction plan(input, state) {\n  snapshot(state);\n  if (!input || !/^[a-zA-Z0-9_-]{12,80}$/.test(input.request_id || '') || !Array.isArray(input.operations) || !input.operations.length || input.operations.length > 25) fail('invalid_request');\n  const tasks = new Map(state.tasks.map(t => [t.id,t]));\n  const used = new Set();\n  const claim = id => {if (used.has(id)) fail('overlapping_operations'); used.add(id);};\n  const get = (id, expected) => {\n    const t = tasks.get(id);\n    if (!t || !expected || expected.id !== id || !same(t,expected)) fail('stale_or_missing_task');\n    if (t.parentId || t.recurring || t.uncompletable || state.tasks.some(c => c.parentId === id)) fail('complex_task_requires_official_tools');\n    claim(id); return t;\n  };\n  const section = name => {\n    const matches = state.sections.filter(s => norm(s.name) === norm(name || ''));\n    if(matches.length !== 1) fail('unknown_or_ambiguous_section');\n    return matches[0].id;\n  };\n  const text = (s,max=500) => {if(typeof s !== 'string' || !s.trim() || s.length>max) fail('invalid_text');return s.trim();};\n  const entries=[],commands=[];\n  input.operations.forEach((op,i) => {\n    if (!op || !['add','update','move','complete','merge'].includes(op.action)) fail('invalid_action');\n    const uuid = `${input.request_id}-${i}`;\n    const e = {index:i,action:op.action,uuid};\n    if (op.action === 'add') {\n      if(op.description!==undefined && typeof op.description!=='string') fail('invalid_description');\n      const content=text(op.content),description=op.description === undefined?'':op.description;\n      if(description.length>5000) fail('description_too_long');\n      const sectionId=section(op.section);\n      const candidates=state.tasks.filter(t=>norm(t.content)===norm(content));\n      if(!Array.isArray(op.expected_candidates)) fail('expected_candidates_required');\n      const sorted = ts => ts.map(shape).sort((a,b)=>a.id.localeCompare(b.id));\n      if(JSON.stringify(sorted(candidates))!==JSON.stringify(sorted(op.expected_candidates))) fail('stale_add_candidates');\n      const exact=candidates.filter(t=>norm(t.description||'')===norm(description));\n      if(exact.length>1) fail('ambiguous_duplicate');\n      if(exact.length===1) {\n        if(exact[0].sectionId!==sectionId) fail('existing_item_requires_move');\n        e.id=exact[0].id;e.desired=shape(exact[0]);e.already_present=true;\n      } else {\n        if(entries.some(x=>x.action==='add' && norm(x.desired.content)===norm(content) && norm(x.desired.description)===norm(description))) fail('duplicate_in_batch');\n        e.temp_id=uuid+'-new';e.desired={content,description,sectionId};\n        commands.push({type:'item_add',uuid,temp_id:e.temp_id,args:{content,description,project_id:PROJECT,section_id:sectionId,auto_parse_labels:false}});\n      }\n    } else {\n      const t=get(op.id,op.expected);e.id=t.id;e.desired=shape(t);\n      if(op.action==='complete') commands.push({type:'item_close',uuid,args:{id:t.id}});\n      if(op.action==='move') {\n        e.desired.sectionId=section(op.section);\n        commands.push({type:'item_move',uuid,args:{id:t.id,section_id:e.desired.sectionId}});\n      }\n      if(op.action==='update') {\n        const args={id:t.id};\n        if(op.content!==undefined) args.content=e.desired.content=text(op.content);\n        if(op.description!==undefined) {\n          if(typeof op.description!=='string'||op.description.length>5000) fail('invalid_description');\n          args.description=e.desired.description=op.description;\n        }\n        if(Object.keys(args).length===1) fail('empty_update');\n        commands.push({type:'item_update',uuid,args});\n      }\n      if(op.action==='merge') {\n        if(!Array.isArray(op.duplicates)||!op.duplicates.length||op.duplicates.length>24) fail('invalid_merge');\n        const others=op.duplicates.map(d=>get(d.id,d.expected));\n        // Semantic duplicate selection belongs to Hermes; never discard descriptions here.\n        e.duplicates=others.map(shape);\n        e.desired.description=[...new Set([t,...others].map(x=>x.description||'').filter(Boolean))].join('\\n');\n        if(e.desired.description.length>5000) fail('merged_description_too_long');\n        commands.push({type:'item_update',uuid,args:{id:t.id,description:e.desired.description}});\n      }\n    }\n    entries.push(e);\n  });\n  if(used.size + entries.filter(e=>e.action==='add').length > 25) fail('too_many_affected_tasks');\n  return {request_id:input.request_id,entries,commands};\n}\nfunction verify(p, raw, state, final=false) {\n  snapshot(state);\n  const tasks=new Map(state.tasks.map(t=>[t.id,t])),commands=[],results=[];\n  const status=raw?.sync_status || {},mapping=raw?.temp_id_mapping || {};\n  for(const e of p.entries) {\n    const id=e.id||mapping[e.temp_id];\n    const task=tasks.get(id);\n    const good=e.action==='complete' ? Boolean(id)&&!task : Boolean(task)&&same(task,{...e.desired,id});\n    let outcome='uncertain';\n    if(good) outcome=e.already_present?'already_present':'verified';\n    else if(status[e.uuid] && status[e.uuid]!=='ok') outcome='failed';\n    const result={index:e.index,action:e.action,id:id||null,status:outcome};\n    if(task) result.task=shape(task);\n    if(e.action==='merge' && good) {\n      const duplicates=e.duplicates.map(d=>tasks.get(d.id));\n      if(final) result.status=duplicates.every(d=>!d)?'verified':'partial';\n      else {\n        // Readback of the survivor MUST succeed before any duplicate is completed.\n        const unchanged=duplicates.every((d,i)=>d&&same(d,e.duplicates[i]));\n        if(!unchanged) result.status='conflict';\n        else {\n          e.duplicates.forEach((d,i)=>commands.push({type:'item_close',uuid:`${e.uuid}-merge-${i}`,args:{id:d.id}}));\n          result.status='pending_merge';\n        }\n      }\n    }\n    results.push(result);\n  }\n  return {request_id:p.request_id,results,commands,verified:results.every(r=>['verified','already_present'].includes(r.status))};\n}\nfunction combineResponses(a,b) {return {sync_status:{...a?.sync_status,...b?.sync_status},temp_id_mapping:{...a?.temp_id_mapping,...b?.temp_id_mapping}};}\nif(typeof module!=='undefined') module.exports={plan,verify,shape,snapshot,combineResponses,PROJECT};\n\nreturn [{json:plan($('Start').first().json,$input.first().json)}];"
+        },
+        "position": [
+          1200,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "id": "f3b61c64-cc1a-4de8-b07a-d179da1c6106",
+        "name": "Changes needed",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "157f1527-2541-4b30-9354-d60d753d87b3",
+                "leftValue": "={{ $json.commands.length > 0 }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "position": [
+          0,
+          240
+        ]
+      },
+      {
+        "id": "2ab347c6-3249-4bd8-8941-86a7fb47df83",
+        "name": "Write first",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.todoist.com/api/v1/sync",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "todoistApi",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "commands",
+                "value": "={{ JSON.stringify($('Plan').first().json.commands) }}"
+              },
+              {
+                "name": "resource_types",
+                "value": "[]"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 15000
+          }
+        },
+        "position": [
+          240,
+          240
+        ],
+        "credentials": {
+          "todoistApi": {
+            "id": "0pIx7HjxMuZL9Vha",
+            "name": "Todoist account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "id": "f330ea96-4081-4d29-b884-80e59a258d94",
+        "name": "Read after first",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "DvIUXUvO0fGnXseG"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": []
+          },
+          "options": {
+            "waitForSubWorkflow": true
+          }
+        },
+        "position": [
+          480,
+          240
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "id": "fc2f666c-fec6-40d6-8144-1c113004fa5d",
+        "name": "Verify first",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "parameters": {
+          "jsCode": "/* Pure planning/verification shared by n8n Code nodes and the runnable self-check. */\nconst PROJECT = '6Jhc7FCRmrMQPgW7';\nconst norm = s => s.normalize('NFKC').trim().toLocaleLowerCase('de').replace(/\\s+/g, ' ');\nconst shape = t => ({id:t.id,content:t.content,description:t.description || '',sectionId:t.sectionId || null});\nconst same = (a,b) => JSON.stringify(shape(a)) === JSON.stringify(shape(b));\nconst fail = message => {throw new Error(message);};\nfunction snapshot(s) {\n  if (!s || s.complete !== true || s.projectId !== PROJECT || !Array.isArray(s.tasks) || !Array.isArray(s.sections)) fail('incomplete_snapshot');\n  if (s.tasks.some(t => t.projectId !== PROJECT || typeof t.content !== 'string' || typeof t.id !== 'string')) fail('invalid_snapshot');\n  return s;\n}\nfunction plan(input, state) {\n  snapshot(state);\n  if (!input || !/^[a-zA-Z0-9_-]{12,80}$/.test(input.request_id || '') || !Array.isArray(input.operations) || !input.operations.length || input.operations.length > 25) fail('invalid_request');\n  const tasks = new Map(state.tasks.map(t => [t.id,t]));\n  const used = new Set();\n  const claim = id => {if (used.has(id)) fail('overlapping_operations'); used.add(id);};\n  const get = (id, expected) => {\n    const t = tasks.get(id);\n    if (!t || !expected || expected.id !== id || !same(t,expected)) fail('stale_or_missing_task');\n    if (t.parentId || t.recurring || t.uncompletable || state.tasks.some(c => c.parentId === id)) fail('complex_task_requires_official_tools');\n    claim(id); return t;\n  };\n  const section = name => {\n    const matches = state.sections.filter(s => norm(s.name) === norm(name || ''));\n    if(matches.length !== 1) fail('unknown_or_ambiguous_section');\n    return matches[0].id;\n  };\n  const text = (s,max=500) => {if(typeof s !== 'string' || !s.trim() || s.length>max) fail('invalid_text');return s.trim();};\n  const entries=[],commands=[];\n  input.operations.forEach((op,i) => {\n    if (!op || !['add','update','move','complete','merge'].includes(op.action)) fail('invalid_action');\n    const uuid = `${input.request_id}-${i}`;\n    const e = {index:i,action:op.action,uuid};\n    if (op.action === 'add') {\n      if(op.description!==undefined && typeof op.description!=='string') fail('invalid_description');\n      const content=text(op.content),description=op.description === undefined?'':op.description;\n      if(description.length>5000) fail('description_too_long');\n      const sectionId=section(op.section);\n      const candidates=state.tasks.filter(t=>norm(t.content)===norm(content));\n      if(!Array.isArray(op.expected_candidates)) fail('expected_candidates_required');\n      const sorted = ts => ts.map(shape).sort((a,b)=>a.id.localeCompare(b.id));\n      if(JSON.stringify(sorted(candidates))!==JSON.stringify(sorted(op.expected_candidates))) fail('stale_add_candidates');\n      const exact=candidates.filter(t=>norm(t.description||'')===norm(description));\n      if(exact.length>1) fail('ambiguous_duplicate');\n      if(exact.length===1) {\n        if(exact[0].sectionId!==sectionId) fail('existing_item_requires_move');\n        e.id=exact[0].id;e.desired=shape(exact[0]);e.already_present=true;\n      } else {\n        if(entries.some(x=>x.action==='add' && norm(x.desired.content)===norm(content) && norm(x.desired.description)===norm(description))) fail('duplicate_in_batch');\n        e.temp_id=uuid+'-new';e.desired={content,description,sectionId};\n        commands.push({type:'item_add',uuid,temp_id:e.temp_id,args:{content,description,project_id:PROJECT,section_id:sectionId,auto_parse_labels:false}});\n      }\n    } else {\n      const t=get(op.id,op.expected);e.id=t.id;e.desired=shape(t);\n      if(op.action==='complete') commands.push({type:'item_close',uuid,args:{id:t.id}});\n      if(op.action==='move') {\n        e.desired.sectionId=section(op.section);\n        commands.push({type:'item_move',uuid,args:{id:t.id,section_id:e.desired.sectionId}});\n      }\n      if(op.action==='update') {\n        const args={id:t.id};\n        if(op.content!==undefined) args.content=e.desired.content=text(op.content);\n        if(op.description!==undefined) {\n          if(typeof op.description!=='string'||op.description.length>5000) fail('invalid_description');\n          args.description=e.desired.description=op.description;\n        }\n        if(Object.keys(args).length===1) fail('empty_update');\n        commands.push({type:'item_update',uuid,args});\n      }\n      if(op.action==='merge') {\n        if(!Array.isArray(op.duplicates)||!op.duplicates.length||op.duplicates.length>24) fail('invalid_merge');\n        const others=op.duplicates.map(d=>get(d.id,d.expected));\n        // Semantic duplicate selection belongs to Hermes; never discard descriptions here.\n        e.duplicates=others.map(shape);\n        e.desired.description=[...new Set([t,...others].map(x=>x.description||'').filter(Boolean))].join('\\n');\n        if(e.desired.description.length>5000) fail('merged_description_too_long');\n        commands.push({type:'item_update',uuid,args:{id:t.id,description:e.desired.description}});\n      }\n    }\n    entries.push(e);\n  });\n  if(used.size + entries.filter(e=>e.action==='add').length > 25) fail('too_many_affected_tasks');\n  return {request_id:input.request_id,entries,commands};\n}\nfunction verify(p, raw, state, final=false) {\n  snapshot(state);\n  const tasks=new Map(state.tasks.map(t=>[t.id,t])),commands=[],results=[];\n  const status=raw?.sync_status || {},mapping=raw?.temp_id_mapping || {};\n  for(const e of p.entries) {\n    const id=e.id||mapping[e.temp_id];\n    const task=tasks.get(id);\n    const good=e.action==='complete' ? Boolean(id)&&!task : Boolean(task)&&same(task,{...e.desired,id});\n    let outcome='uncertain';\n    if(good) outcome=e.already_present?'already_present':'verified';\n    else if(status[e.uuid] && status[e.uuid]!=='ok') outcome='failed';\n    const result={index:e.index,action:e.action,id:id||null,status:outcome};\n    if(task) result.task=shape(task);\n    if(e.action==='merge' && good) {\n      const duplicates=e.duplicates.map(d=>tasks.get(d.id));\n      if(final) result.status=duplicates.every(d=>!d)?'verified':'partial';\n      else {\n        // Readback of the survivor MUST succeed before any duplicate is completed.\n        const unchanged=duplicates.every((d,i)=>d&&same(d,e.duplicates[i]));\n        if(!unchanged) result.status='conflict';\n        else {\n          e.duplicates.forEach((d,i)=>commands.push({type:'item_close',uuid:`${e.uuid}-merge-${i}`,args:{id:d.id}}));\n          result.status='pending_merge';\n        }\n      }\n    }\n    results.push(result);\n  }\n  return {request_id:p.request_id,results,commands,verified:results.every(r=>['verified','already_present'].includes(r.status))};\n}\nfunction combineResponses(a,b) {return {sync_status:{...a?.sync_status,...b?.sync_status},temp_id_mapping:{...a?.temp_id_mapping,...b?.temp_id_mapping}};}\nif(typeof module!=='undefined') module.exports={plan,verify,shape,snapshot,combineResponses,PROJECT};\n\nlet raw={};if($('Write first').isExecuted)raw=$('Write first').first().json;return [{json:verify($('Plan').first().json,raw,$input.first().json)}];"
+        },
+        "position": [
+          720,
+          240
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "id": "cbc2ee9e-95da-4f12-8b53-c6ffd725dbff",
+        "name": "Merge pending",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "85f8438a-4b4f-4d5a-80db-70b1167f6842",
+                "leftValue": "={{ $json.commands.length > 0 }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "position": [
+          960,
+          240
+        ]
+      },
+      {
+        "id": "720bd7d1-7a22-44c8-b2ce-062ca1f5ecf6",
+        "name": "Complete duplicates",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.todoist.com/api/v1/sync",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "todoistApi",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "commands",
+                "value": "={{ JSON.stringify($('Verify first').first().json.commands) }}"
+              },
+              {
+                "name": "resource_types",
+                "value": "[]"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 15000
+          }
+        },
+        "position": [
+          1200,
+          240
+        ],
+        "credentials": {
+          "todoistApi": {
+            "id": "0pIx7HjxMuZL9Vha",
+            "name": "Todoist account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "id": "761bd68d-0d00-458f-bcd0-608b3577e8db",
+        "name": "Read after merge",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "DvIUXUvO0fGnXseG"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": []
+          },
+          "options": {
+            "waitForSubWorkflow": true
+          }
+        },
+        "position": [
+          0,
+          480
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "id": "f20c2c3f-378f-4220-832e-bdf46281d3c8",
+        "name": "Verify final",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "parameters": {
+          "jsCode": "/* Pure planning/verification shared by n8n Code nodes and the runnable self-check. */\nconst PROJECT = '6Jhc7FCRmrMQPgW7';\nconst norm = s => s.normalize('NFKC').trim().toLocaleLowerCase('de').replace(/\\s+/g, ' ');\nconst shape = t => ({id:t.id,content:t.content,description:t.description || '',sectionId:t.sectionId || null});\nconst same = (a,b) => JSON.stringify(shape(a)) === JSON.stringify(shape(b));\nconst fail = message => {throw new Error(message);};\nfunction snapshot(s) {\n  if (!s || s.complete !== true || s.projectId !== PROJECT || !Array.isArray(s.tasks) || !Array.isArray(s.sections)) fail('incomplete_snapshot');\n  if (s.tasks.some(t => t.projectId !== PROJECT || typeof t.content !== 'string' || typeof t.id !== 'string')) fail('invalid_snapshot');\n  return s;\n}\nfunction plan(input, state) {\n  snapshot(state);\n  if (!input || !/^[a-zA-Z0-9_-]{12,80}$/.test(input.request_id || '') || !Array.isArray(input.operations) || !input.operations.length || input.operations.length > 25) fail('invalid_request');\n  const tasks = new Map(state.tasks.map(t => [t.id,t]));\n  const used = new Set();\n  const claim = id => {if (used.has(id)) fail('overlapping_operations'); used.add(id);};\n  const get = (id, expected) => {\n    const t = tasks.get(id);\n    if (!t || !expected || expected.id !== id || !same(t,expected)) fail('stale_or_missing_task');\n    if (t.parentId || t.recurring || t.uncompletable || state.tasks.some(c => c.parentId === id)) fail('complex_task_requires_official_tools');\n    claim(id); return t;\n  };\n  const section = name => {\n    const matches = state.sections.filter(s => norm(s.name) === norm(name || ''));\n    if(matches.length !== 1) fail('unknown_or_ambiguous_section');\n    return matches[0].id;\n  };\n  const text = (s,max=500) => {if(typeof s !== 'string' || !s.trim() || s.length>max) fail('invalid_text');return s.trim();};\n  const entries=[],commands=[];\n  input.operations.forEach((op,i) => {\n    if (!op || !['add','update','move','complete','merge'].includes(op.action)) fail('invalid_action');\n    const uuid = `${input.request_id}-${i}`;\n    const e = {index:i,action:op.action,uuid};\n    if (op.action === 'add') {\n      if(op.description!==undefined && typeof op.description!=='string') fail('invalid_description');\n      const content=text(op.content),description=op.description === undefined?'':op.description;\n      if(description.length>5000) fail('description_too_long');\n      const sectionId=section(op.section);\n      const candidates=state.tasks.filter(t=>norm(t.content)===norm(content));\n      if(!Array.isArray(op.expected_candidates)) fail('expected_candidates_required');\n      const sorted = ts => ts.map(shape).sort((a,b)=>a.id.localeCompare(b.id));\n      if(JSON.stringify(sorted(candidates))!==JSON.stringify(sorted(op.expected_candidates))) fail('stale_add_candidates');\n      const exact=candidates.filter(t=>norm(t.description||'')===norm(description));\n      if(exact.length>1) fail('ambiguous_duplicate');\n      if(exact.length===1) {\n        if(exact[0].sectionId!==sectionId) fail('existing_item_requires_move');\n        e.id=exact[0].id;e.desired=shape(exact[0]);e.already_present=true;\n      } else {\n        if(entries.some(x=>x.action==='add' && norm(x.desired.content)===norm(content) && norm(x.desired.description)===norm(description))) fail('duplicate_in_batch');\n        e.temp_id=uuid+'-new';e.desired={content,description,sectionId};\n        commands.push({type:'item_add',uuid,temp_id:e.temp_id,args:{content,description,project_id:PROJECT,section_id:sectionId,auto_parse_labels:false}});\n      }\n    } else {\n      const t=get(op.id,op.expected);e.id=t.id;e.desired=shape(t);\n      if(op.action==='complete') commands.push({type:'item_close',uuid,args:{id:t.id}});\n      if(op.action==='move') {\n        e.desired.sectionId=section(op.section);\n        commands.push({type:'item_move',uuid,args:{id:t.id,section_id:e.desired.sectionId}});\n      }\n      if(op.action==='update') {\n        const args={id:t.id};\n        if(op.content!==undefined) args.content=e.desired.content=text(op.content);\n        if(op.description!==undefined) {\n          if(typeof op.description!=='string'||op.description.length>5000) fail('invalid_description');\n          args.description=e.desired.description=op.description;\n        }\n        if(Object.keys(args).length===1) fail('empty_update');\n        commands.push({type:'item_update',uuid,args});\n      }\n      if(op.action==='merge') {\n        if(!Array.isArray(op.duplicates)||!op.duplicates.length||op.duplicates.length>24) fail('invalid_merge');\n        const others=op.duplicates.map(d=>get(d.id,d.expected));\n        // Semantic duplicate selection belongs to Hermes; never discard descriptions here.\n        e.duplicates=others.map(shape);\n        e.desired.description=[...new Set([t,...others].map(x=>x.description||'').filter(Boolean))].join('\\n');\n        if(e.desired.description.length>5000) fail('merged_description_too_long');\n        commands.push({type:'item_update',uuid,args:{id:t.id,description:e.desired.description}});\n      }\n    }\n    entries.push(e);\n  });\n  if(used.size + entries.filter(e=>e.action==='add').length > 25) fail('too_many_affected_tasks');\n  return {request_id:input.request_id,entries,commands};\n}\nfunction verify(p, raw, state, final=false) {\n  snapshot(state);\n  const tasks=new Map(state.tasks.map(t=>[t.id,t])),commands=[],results=[];\n  const status=raw?.sync_status || {},mapping=raw?.temp_id_mapping || {};\n  for(const e of p.entries) {\n    const id=e.id||mapping[e.temp_id];\n    const task=tasks.get(id);\n    const good=e.action==='complete' ? Boolean(id)&&!task : Boolean(task)&&same(task,{...e.desired,id});\n    let outcome='uncertain';\n    if(good) outcome=e.already_present?'already_present':'verified';\n    else if(status[e.uuid] && status[e.uuid]!=='ok') outcome='failed';\n    const result={index:e.index,action:e.action,id:id||null,status:outcome};\n    if(task) result.task=shape(task);\n    if(e.action==='merge' && good) {\n      const duplicates=e.duplicates.map(d=>tasks.get(d.id));\n      if(final) result.status=duplicates.every(d=>!d)?'verified':'partial';\n      else {\n        // Readback of the survivor MUST succeed before any duplicate is completed.\n        const unchanged=duplicates.every((d,i)=>d&&same(d,e.duplicates[i]));\n        if(!unchanged) result.status='conflict';\n        else {\n          e.duplicates.forEach((d,i)=>commands.push({type:'item_close',uuid:`${e.uuid}-merge-${i}`,args:{id:d.id}}));\n          result.status='pending_merge';\n        }\n      }\n    }\n    results.push(result);\n  }\n  return {request_id:p.request_id,results,commands,verified:results.every(r=>['verified','already_present'].includes(r.status))};\n}\nfunction combineResponses(a,b) {return {sync_status:{...a?.sync_status,...b?.sync_status},temp_id_mapping:{...a?.temp_id_mapping,...b?.temp_id_mapping}};}\nif(typeof module!=='undefined') module.exports={plan,verify,shape,snapshot,combineResponses,PROJECT};\n\nreturn [{json:verify($('Plan').first().json,combineResponses($('Write first').first().json,$('Complete duplicates').first().json),$input.first().json,true)}];"
+        },
+        "position": [
+          240,
+          480
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "id": "89bf080d-6674-4b66-af79-808019acdb51",
+        "name": "Conflict",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "parameters": {
+          "jsCode": "return [{json:{verified:false,status:'conflict',message:'Invalid or stale plan. No changes made. Read snapshot and correct the plan.'}}];"
+        },
+        "position": [
+          480,
+          480
+        ]
+      },
+      {
+        "id": "e650a048-80d7-4a41-9a32-3b9987f09e45",
+        "name": "Failure",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "parameters": {
+          "jsCode": "return [{json:{verified:false,status:'uncertain',message:'Request stopped. Do not blindly retry; read current shopping state first.'}}];"
+        },
+        "position": [
+          720,
+          480
+        ]
+      },
+      {
+        "id": "cd9acb94-c86a-45d2-959b-6ca7fc09b4e1",
+        "name": "Result",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "parameters": {
+          "jsCode": "const {commands,...result}=$input.first().json;return [{json:result}];"
+        },
+        "position": [
+          960,
+          480
+        ]
+      },
+      {
+        "id": "07e79cfd-38f4-4eb4-abd8-5b7ba8eb5d5f",
+        "name": "Release lock",
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1,
+        "parameters": {
+          "command": "=node -e 'const f=require('\"'\"'fs'\"'\"'),p='\"'\"'/tmp/data/shopping-apply-lock'\"'\"';if(f.readFileSync(p+'\"'\"'/owner'\"'\"','\"'\"'utf8'\"'\"')!==process.argv[1])throw Error('\"'\"'lock_owner_mismatch'\"'\"');f.unlinkSync(p+'\"'\"'/owner'\"'\"');f.rmdirSync(p);console.log('\"'\"'released'\"'\"');' {{ $execution.id }}"
+        },
+        "position": [
+          1200,
+          480
+        ]
+      },
+      {
+        "id": "616fa2a8-be52-42cb-83df-44e94bdda046",
+        "name": "Return",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "parameters": {
+          "jsCode": "return [{json:$('Result').first().json}];"
+        },
+        "position": [
+          0,
+          720
+        ]
+      }
+    ],
+    "connections": {
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "Acquire lock",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Acquire lock": {
+        "main": [
+          [
+            {
+              "node": "Lock acquired",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lock acquired": {
+        "main": [
+          [
+            {
+              "node": "Read current",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Busy",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read current": {
+        "main": [
+          [
+            {
+              "node": "Plan",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Plan": {
+        "main": [
+          [
+            {
+              "node": "Changes needed",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Conflict",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Changes needed": {
+        "main": [
+          [
+            {
+              "node": "Write first",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Read after first",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Write first": {
+        "main": [
+          [
+            {
+              "node": "Read after first",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read after first": {
+        "main": [
+          [
+            {
+              "node": "Verify first",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verify first": {
+        "main": [
+          [
+            {
+              "node": "Merge pending",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge pending": {
+        "main": [
+          [
+            {
+              "node": "Complete duplicates",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Result",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Complete duplicates": {
+        "main": [
+          [
+            {
+              "node": "Read after merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read after merge": {
+        "main": [
+          [
+            {
+              "node": "Verify final",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verify final": {
+        "main": [
+          [
+            {
+              "node": "Result",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Failure": {
+        "main": [
+          [
+            {
+              "node": "Result",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Conflict": {
+        "main": [
+          [
+            {
+              "node": "Result",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Result": {
+        "main": [
+          [
+            {
+              "node": "Release lock",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Release lock": {
+        "main": [
+          [
+            {
+              "node": "Return",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "saveDataErrorExecution": "none",
+      "saveDataSuccessExecution": "none",
+      "executionTimeout": 120,
+      "callerPolicy": "workflowsFromSameOwner",
+      "availableInMCP": false
+    }
+  },
+  "mcp": {
+    "id": "iwne0jSsKHaOLMj0",
+    "name": "Experiment: Shopping MCP",
+    "nodes": [
+      {
+        "id": "486c73e7-6860-4144-bf15-c6c5a64233da",
+        "name": "Shopping MCP",
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "parameters": {
+          "path": "shopping-experiment",
+          "authentication": "bearerAuth"
+        },
+        "position": [
+          0,
+          0
+        ],
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "XPHUatSgXCvQ6PKI",
+            "name": "Shopping experiment MCP (isolated)"
+          }
+        },
+        "webhookId": "4635966e-e0f7-4301-b44d-172a2783c751"
+      },
+      {
+        "id": "a1edc6cc-fc64-448c-b09c-fa79911f8e29",
+        "name": "shopping_snapshot",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "parameters": {
+          "description": "Read all open tasks (including assigned tasks) and sections in the shared Einkaufsliste. No inputs, no changes. Check complete=true before treating this as the full list.",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "DvIUXUvO0fGnXseG"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "position": [
+          220,
+          0
+        ]
+      },
+      {
+        "id": "36f4eb11-2230-483e-b878-7c7009f6a0ed",
+        "name": "shopping_apply",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "description": "Apply up to 25 shopping changes and verify them. Always read shopping_snapshot first. request_id: copy from shopping_snapshot and reuse only for exactly the same request. operations array: add {content,description,section,expected_candidates:[matching snapshot tasks]}; update {id,expected:snapshot task,content?,description?}; move {id,expected,section}; complete {id,expected}; merge {id:survivor,expected,duplicates:[{id,expected}]}. Section is its live name. Meaning/variants are your decision; never merge variants or invent speech. Check every result status; uncertain/partial/conflict is not success. Permanent deletion unsupported.",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "woGpVPKNAKntvUJY"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "request_id": "={{ $fromAI('request_id', 'Copy request_id from the fresh shopping_snapshot. Preserve only for an identical retry.', 'string') }}",
+              "operations": "={{ $fromAI('operations', 'Array of add, update, move, complete or merge operations as described. Expected tasks copied from fresh snapshot.', 'json') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "request_id",
+                "displayName": "request_id",
+                "type": "string",
+                "required": true,
+                "display": true
+              },
+              {
+                "id": "operations",
+                "displayName": "operations",
+                "type": "array",
+                "required": true,
+                "display": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        }
+      }
+    ],
+    "connections": {
+      "shopping_snapshot": {
+        "ai_tool": [
+          [
+            {
+              "node": "Shopping MCP",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "shopping_apply": {
+        "ai_tool": [
+          [
+            {
+              "node": "Shopping MCP",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "saveDataErrorExecution": "none",
+      "saveDataSuccessExecution": "none",
+      "executionTimeout": 90,
+      "callerPolicy": "workflowsFromSameOwner",
+      "availableInMCP": false
+    }
+  }
+}

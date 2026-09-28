@@ -175,10 +175,16 @@ litellm_mcp_servers:
       WEBHOOK_SECURITY_MODE: permissive
       DISABLE_CONSOLE_OUTPUT: "true"
       NODE_TLS_REJECT_UNAUTHORIZED: "0"
-    access_groups: ["workflow_admin"]
+    access_groups: ["workflow_admin", "coding_agents"]
     install:
       manager: npm
       package: n8n-mcp
+  shopping:
+    transport: http
+    url: "https://n8n.kirelabs.org/mcp/shopping-experiment"
+    auth_type: bearer_token
+    auth_value: "{{ vault_n8n_shopping_mcp_token | trim }}"
+    access_groups: ["shopping"]
   todoist:
     url: "https://ai.todoist.net/mcp"
     auth_type: bearer_token

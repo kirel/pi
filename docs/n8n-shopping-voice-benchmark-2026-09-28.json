@@ -1,0 +1,38 @@
+{
+  "scope": "Home Assistant preferred Local Hermes pipeline, start_stage=intent, end_stage=tts; streamed audio downloaded without speaker playback; one run per route",
+  "test_tasks_removed": true,
+  "samples": [
+    {
+      "route": "n8n",
+      "name": "[MCP-BENCH 7bcbd4125963 voice-n8n] Testartikel",
+      "timings": {
+        "started_unix": 1790582617.6160083,
+        "first_text_s": 18.526384834200144,
+        "intent_complete_s": 18.643642373383045,
+        "first_audio_s": 19.105606772005558,
+        "audio_complete_s": 19.1638721562922,
+        "audio_bytes": 20997
+      },
+      "text": "\n\nTestartikel eingetragen.",
+      "verified_action_s": 18.12017583847046,
+      "model_calls": 5,
+      "session": "api-cf0fa8fc9a8ebd19"
+    },
+    {
+      "route": "official",
+      "name": "[MCP-BENCH 7bcbd4125963 voice-official] Testartikel",
+      "timings": {
+        "started_unix": 1790582637.6289005,
+        "first_text_s": 30.167127568274736,
+        "first_audio_s": 30.278689451515675,
+        "audio_complete_s": 30.27899171411991,
+        "audio_bytes": 20997,
+        "intent_complete_s": 30.27918281033635
+      },
+      "text": "\n\nTestartikel eingetragen.",
+      "verified_action_s": 29.755669593811035,
+      "model_calls": 9,
+      "session": "api-8904d16312538b38"
+    }
+  ]
+}

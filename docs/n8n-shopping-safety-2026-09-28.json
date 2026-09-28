@@ -1,0 +1,17 @@
+[
+  {
+    "replay_no_duplicate": true,
+    "already_present_no_write": true,
+    "stale_plan_rejected": true,
+    "sync_uuid_replay_after_completion_no_recreation": true,
+    "concurrent_add_exactly_one": true,
+    "mixed_add_and_merge_verified": true
+  },
+  {
+    "cleanup": "verified",
+    "run": "7edeb7a0d459"
+  },
+  {
+    "non_benchmark_tasks_unchanged": true
+  }
+]

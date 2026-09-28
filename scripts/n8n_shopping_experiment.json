@@ -1,0 +1,272 @@
+{
+  "snapshot": {
+    "id": "DvIUXUvO0fGnXseG",
+    "name": "Experiment: Read shopping snapshot",
+    "nodes": [
+      {
+        "id": "76de6644-6aa1-4146-af14-d1c2d947fbc5",
+        "name": "Start",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "position": [
+          0,
+          0
+        ]
+      },
+      {
+        "id": "1c96f6a4-7898-41e0-b05e-6ca898de8ceb",
+        "name": "Read tasks",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "parameters": {
+          "url": "https://api.todoist.com/api/v1/tasks",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "todoistApi",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "project_id",
+                "value": "6Jhc7FCRmrMQPgW7"
+              },
+              {
+                "name": "limit",
+                "value": "100"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 15000,
+            "pagination": {
+              "pagination": {
+                "paginationMode": "updateAParameterInEachRequest",
+                "parameters": {
+                  "parameters": [
+                    {
+                      "type": "qs",
+                      "name": "cursor",
+                      "value": "={{ $response.body.next_cursor || \"\" }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ !$response.body.next_cursor }}",
+                "limitPagesFetched": true,
+                "maxRequests": 100
+              }
+            }
+          }
+        },
+        "position": [
+          220,
+          0
+        ],
+        "credentials": {
+          "todoistApi": {
+            "id": "0pIx7HjxMuZL9Vha",
+            "name": "Todoist account"
+          }
+        },
+        "executeOnce": true,
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 1000
+      },
+      {
+        "id": "496be99f-2e33-4fc7-abfc-0c38a27c29c8",
+        "name": "Read sections",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "parameters": {
+          "url": "https://api.todoist.com/api/v1/sections",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "todoistApi",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "project_id",
+                "value": "6Jhc7FCRmrMQPgW7"
+              },
+              {
+                "name": "limit",
+                "value": "100"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 15000,
+            "pagination": {
+              "pagination": {
+                "paginationMode": "updateAParameterInEachRequest",
+                "parameters": {
+                  "parameters": [
+                    {
+                      "type": "qs",
+                      "name": "cursor",
+                      "value": "={{ $response.body.next_cursor || \"\" }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ !$response.body.next_cursor }}",
+                "limitPagesFetched": true,
+                "maxRequests": 100
+              }
+            }
+          }
+        },
+        "position": [
+          440,
+          0
+        ],
+        "credentials": {
+          "todoistApi": {
+            "id": "0pIx7HjxMuZL9Vha",
+            "name": "Todoist account"
+          }
+        },
+        "executeOnce": true,
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 1000
+      },
+      {
+        "id": "95761604-b2bd-4050-9f8f-fd83add9c059",
+        "name": "Return snapshot",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "={{ { projectId: '6Jhc7FCRmrMQPgW7', complete: !$('Read tasks').all().slice(-1)[0].json.next_cursor && !$('Read sections').all().slice(-1)[0].json.next_cursor, tasks: $('Read tasks').all().flatMap(p => p.json.results).map(t => ({id:t.id,content:t.content,description:t.description,projectId:t.project_id,sectionId:t.section_id})), sections: $('Read sections').all().flatMap(p => p.json.results).map(s => ({id:s.id,name:s.name,projectId:s.project_id})) } }}",
+          "options": {}
+        },
+        "position": [
+          660,
+          0
+        ],
+        "executeOnce": true
+      }
+    ],
+    "connections": {
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "Read tasks",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read tasks": {
+        "main": [
+          [
+            {
+              "node": "Read sections",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read sections": {
+        "main": [
+          [
+            {
+              "node": "Return snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "saveDataErrorExecution": "none",
+      "saveDataSuccessExecution": "none",
+      "executionTimeout": 60,
+      "callerPolicy": "workflowsFromSameOwner",
+      "availableInMCP": false
+    }
+  },
+  "mcp": {
+    "id": "iwne0jSsKHaOLMj0",
+    "name": "Experiment: Shopping MCP",
+    "nodes": [
+      {
+        "id": "486c73e7-6860-4144-bf15-c6c5a64233da",
+        "name": "Shopping MCP",
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "parameters": {
+          "path": "shopping-experiment",
+          "authentication": "bearerAuth"
+        },
+        "position": [
+          0,
+          0
+        ],
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "XPHUatSgXCvQ6PKI",
+            "name": "Shopping experiment MCP (isolated)"
+          }
+        },
+        "webhookId": "4635966e-e0f7-4301-b44d-172a2783c751"
+      },
+      {
+        "id": "a1edc6cc-fc64-448c-b09c-fa79911f8e29",
+        "name": "shopping_snapshot",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "parameters": {
+          "description": "Read all open tasks (including assigned tasks) and sections in the shared Einkaufsliste. No inputs, no changes. Check complete=true before treating this as the full list.",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "DvIUXUvO0fGnXseG"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "position": [
+          220,
+          0
+        ]
+      }
+    ],
+    "connections": {
+      "shopping_snapshot": {
+        "ai_tool": [
+          [
+            {
+              "node": "Shopping MCP",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "saveDataErrorExecution": "none",
+      "saveDataSuccessExecution": "none",
+      "executionTimeout": 90,
+      "callerPolicy": "workflowsFromSameOwner",
+      "availableInMCP": false
+    }
+  }
+}
