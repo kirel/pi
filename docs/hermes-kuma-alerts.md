@@ -39,7 +39,7 @@ notification assignments must remain intact.
 
 AutoKuma replaces the notification selection when defaults are supplied, so
 the defaults explicitly retain Kuma IDs 1 and 3. Existing exceptions are
-preserved: Borgmatic uses only ID 3, and `hermes-assist` previously had neither.
+preserved: Borgmatic uses only ID 3.
 Hermes is added to all of these through `notification_name_list`. Future
 AutoKuma monitors inherit Hermes; the notification is also a UI default for
 manually created monitors.

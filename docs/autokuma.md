@@ -32,7 +32,7 @@ Use `monitoring: {docker: true}` for a container check, or combine `docker` and
 third filter argument for remote containers. `enabled: false` removes the generated
 labels; it does **not** pause a monitor. AutoKuma is configured to delete missing
 IDs after 600 seconds, including their history. Preserve IDs for existing checks.
-The previously deployed Home Assistant, Pi-hole, MQTT, Zigbee2MQTT, Hermes Assist
+The previously deployed Home Assistant, Pi-hole, MQTT, Zigbee2MQTT
 and LiteLLM checks retain their original definitions and IDs.
 
 ## Coverage and deliberate exceptions

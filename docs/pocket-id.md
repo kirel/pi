@@ -116,7 +116,7 @@ The following services were not put behind blanket browser SSO:
 | Services | Reason / remaining work |
 | --- | --- |
 | Jellyfin | Pocket ID's example uses an archived plugin and documents mobile/TV limitations; evaluate a maintained integration first |
-| Home Assistant, Hermes Assist, Music Assistant | App/device authentication and callbacks; no verified native OIDC integration in this rollout |
+| Home Assistant, Music Assistant | App/device authentication and callbacks; no verified native OIDC integration in this rollout |
 | Node-RED, Portainer | Retired; no migration planned |
 | LiteLLM, CPA, CPA Usage, Phoenix, Google Workspace MCP | API/MCP consumers; assess UI-only authentication separately |
 | ComfyUI, Wan2GP, LlamaSwap | Cross-host inference/MCP/file workflows; require backend allowlists and explicit machine paths before a proxy rollout |

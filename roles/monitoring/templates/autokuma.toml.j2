@@ -1,6 +1,6 @@
 default_settings = '''
 *.notification_name_list: ["hermes-projects"]
-*.notification_id_list: {% raw %}{% if container_name is defined and container_name == 'hermes-assist' %}{}{% else %}{"1": true, "3": true}{% endif %}{% endraw %}
+*.notification_id_list: {"1": true, "3": true}
 '''
 
 [kuma]
