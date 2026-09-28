@@ -46,6 +46,8 @@ services:
       test:
         - CMD-SHELL
         - >-
+          curl --fail --silent --show-error --max-time 3
+          --output /dev/null http://127.0.0.1:9999/ &&
           curl --silent --show-error --max-time 5
           --output /dev/null
           http://127.0.0.1:{{ qbittorrent_http_port }}/api/v2/app/version
@@ -83,6 +85,13 @@ services:
     image: "{{ qbittorrent_port_sync_image }}"
     container_name: qbittorrent-port-sync
     restart: unless-stopped
+    # Check Gluetun in this namespace so autoheal repairs stale VPN attachments.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://127.0.0.1:9999/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     network_mode: service:gluetun
     depends_on:
       gluetun:
