@@ -209,7 +209,7 @@
             - kuma.z2m-container.docker.docker_host_name=local
             - kuma.z2m-container.docker.interval=60
         matter-server:
-          image: ghcr.io/home-assistant-libs/python-matter-server:stable
+          image: ghcr.io/matter-js/python-matter-server:stable
           container_name: matter-server
           restart: unless-stopped
           # Required for mDNS to work correctly
