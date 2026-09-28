@@ -53,6 +53,18 @@ litellm_extra_models:
       api_key: os.environ/CPA_API_KEY
       api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
 
+  - model_name: gpt-6-sol-cpa
+    litellm_params:
+      model: openai/gpt-6-sol
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: gpt-6-luna-cpa
+    litellm_params:
+      model: openai/gpt-6-luna
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
   - model_name: gemini-3.8-flash-high-cpa
     litellm_params:
       model: openai/gemini-3.8-flash-high
@@ -136,6 +148,38 @@ litellm_extra_models:
   - model_name: gpt-image-2
     litellm_params:
       model: openai/gpt-image-2
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: image_generation
+
+  - model_name: gpt-image-2.5-sunburst-cpa
+    litellm_params:
+      model: openai/gpt-image-2.5-sunburst
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: image_generation
+
+  - model_name: gpt-image-2.5-sunburst
+    litellm_params:
+      model: openai/gpt-image-2.5-sunburst
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: image_generation
+
+  - model_name: gpt-image-2.5-flare-cpa
+    litellm_params:
+      model: openai/gpt-image-2.5-flare
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+    model_info:
+      mode: image_generation
+
+  - model_name: gpt-image-2.5-flare
+    litellm_params:
+      model: openai/gpt-image-2.5-flare
       api_key: os.environ/CPA_API_KEY
       api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
     model_info:

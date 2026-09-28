@@ -139,6 +139,9 @@ hermes_docker_agents_config_overrides:
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     fallback_providers: "{{ hermes_docker_fallback_providers }}"
+    agent:
+      reasoning_effort: medium
+    delegation: "{{ hermes_litellm_cloud_delegation }}"
     skills:
       external_dirs:
         - /skills/global
@@ -152,6 +155,9 @@ hermes_docker_agents_config_overrides:
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     fallback_providers: "{{ hermes_docker_fallback_providers }}"
+    agent:
+      reasoning_effort: medium
+    delegation: "{{ hermes_litellm_cloud_delegation }}"
     skills:
       external_dirs:
         - /skills/global
@@ -165,6 +171,9 @@ hermes_docker_agents_config_overrides:
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     fallback_providers: "{{ hermes_docker_fallback_providers }}"
+    agent:
+      reasoning_effort: medium
+    delegation: "{{ hermes_litellm_cloud_delegation }}"
     moa:
       presets:
         default:
@@ -194,6 +203,9 @@ hermes_docker_agents_config_overrides:
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     fallback_providers: "{{ hermes_docker_fallback_providers }}"
+    agent:
+      reasoning_effort: medium
+    delegation: "{{ hermes_litellm_cloud_delegation }}"
     skills:
       external_dirs:
         - /skills/global
@@ -207,6 +219,9 @@ hermes_docker_agents_config_overrides:
       api_key: "{{ hermes_docker_config_delete_marker }}"
     custom_providers: "{{ hermes_docker_kirelabs_custom_providers }}"
     fallback_providers: "{{ hermes_docker_fallback_providers }}"
+    agent:
+      reasoning_effort: medium
+    delegation: "{{ hermes_litellm_cloud_delegation }}"
     skills:
       external_dirs:
         - /skills/global
@@ -226,6 +241,7 @@ hermes_baremetal_caddy_version: "{{ hermes_caddy_version }}"
 hermes_baremetal_publish_static_roots:
   - /home/daniel
 hermes_baremetal_env:
+  OPENAI_BASE_URL: https://litellm.kirelabs.org/v1
   API_SERVER_ENABLED: "true"
   API_SERVER_HOST: "{{ ansible_host }}"
   API_SERVER_KEY: "{{ vault_hermes_baremetal_api_server_key | trim }}"

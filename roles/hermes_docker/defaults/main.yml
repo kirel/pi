@@ -216,7 +216,7 @@ hermes_docker_config_overrides:
   image_gen:
     provider: openai
     openai:
-      model: gpt-image-2-medium
+      model: gpt-image-2.5-flare
   tts:
     enabled: true
     provider: openai
