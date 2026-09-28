@@ -1,0 +1,1589 @@
+{
+  "date": "2026-09-22",
+  "production_restored": true,
+  "candidate_image_digest": "sha256:c2914767605584b6d8f45686b82de173ecc99e781897aa3d0a66dacd72c51ae1",
+  "candidate_model_revision": "7fb3aaca2d21c0db4716572945208db40cef9966",
+  "method_notes": [
+    "Synthetic numeric-record prompts; fresh prefixes and exact requested token lengths.",
+    "Cold input rate includes time to first nonempty streamed output, not pure prefill kernel time.",
+    "Initial baseline and no-MTP inherited remaining model sampling defaults; MTP3 and warmed baseline explicitly equalized penalties/top-p/top-k.",
+    "MTP3 full-context run included deliberate mixed load and was aborted after preemption and poor short-request responsiveness, not after a 600-second timeout.",
+    "Red Hat no-MTP full-context request timed out at 600 seconds; cause not isolated.",
+    "Red Hat functional tool, vision, and long-retrieval checks were not completed; do not infer quality parity.",
+    "The exact long-prefill plus short-chat concurrency scenario was not run on production."
+  ],
+  "runs": {
+    "baseline": [
+      {
+        "label": "baseline",
+        "case": "prefill-8192-0",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 3.022888687439263,
+            "elapsed_s": 3.5060770446434617,
+            "input_tokens_per_ttft_s": 2709.990623882209,
+            "decode_tokens_s": 64.15717501839387
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 9.12431208513044,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 3.015658467076719
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "prefill-8192-1",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 3.023680141195655,
+            "elapsed_s": 3.5095672830939293,
+            "input_tokens_per_ttft_s": 2709.281278925434,
+            "decode_tokens_s": 63.80082395036948
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 9.117307620727363,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 3.0184129690751433
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "prefill-8192-2",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 3.0390855483710766,
+            "elapsed_s": 3.51075750682503,
+            "input_tokens_per_ttft_s": 2695.547680252318,
+            "decode_tokens_s": 65.72364424972777
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 9.114338219920322,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 3.0193230221047997
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "prefill-32768-0",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 13.904438013210893,
+            "elapsed_s": 14.40414351131767,
+            "input_tokens_per_ttft_s": 2356.6576346966667,
+            "decode_tokens_s": 62.03653975681469
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 2.2215492330248474,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 13.882026975043118
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "warm-prefix-32768",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 0.7471005031839013,
+            "elapsed_s": 1.2473321640864015,
+            "input_tokens_per_ttft_s": 43860.23013015432,
+            "decode_tokens_s": 61.97128735128621
+          }
+        ],
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 31360.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 0.7282944684848189
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "prefill-32768-1",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 14.077029835432768,
+            "elapsed_s": 14.585859326645732,
+            "input_tokens_per_ttft_s": 2327.763767149295,
+            "decode_tokens_s": 60.92414165323084
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 2.193871462945559,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 14.061533560976386
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "prefill-32768-2",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 14.591177579946816,
+            "elapsed_s": 15.185877897776663,
+            "input_tokens_per_ttft_s": 2245.740607326598,
+            "decode_tokens_s": 52.127095060456256
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 2.1071904076512236,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 14.572564003057778
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "prefill-65536-0",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 36.386091449297965,
+            "elapsed_s": 36.91260378714651,
+            "input_tokens_per_ttft_s": 1801.1277768407977,
+            "decode_tokens_s": 58.87801248243004
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.8669064520165827,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 36.31675397604704
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "prefill-65536-1",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 35.887540612369776,
+            "elapsed_s": 36.43317052721977,
+            "input_tokens_per_ttft_s": 1826.1491002649243,
+            "decode_tokens_s": 56.8150666895206
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.8783145063888471,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 35.8596762875095
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "prefill-65536-2",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 35.250044506043196,
+            "elapsed_s": 35.803096572868526,
+            "input_tokens_per_ttft_s": 1859.1749576022419,
+            "decode_tokens_s": 56.05258864314251
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.8937720905945554,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 35.21884642634541
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "decode-c1",
+        "results": [
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 0.7991249347105622,
+            "elapsed_s": 5.02056691609323,
+            "input_tokens_per_ttft_s": 2562.803275237272,
+            "decode_tokens_s": 60.405899482829966
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 50.987984216816415,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 2048.0,
+          "request_prefill_time_seconds_sum": 0.79569096211344
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "decode-c3",
+        "results": [
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 0.8004314098507166,
+            "elapsed_s": 7.36282286606729,
+            "input_tokens_per_ttft_s": 2558.6202325343024,
+            "decode_tokens_s": 38.85778556511403
+          },
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 2.3865070808678865,
+            "elapsed_s": 7.398933104239404,
+            "input_tokens_per_ttft_s": 858.1579398688465,
+            "decode_tokens_s": 50.873568769096536
+          },
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 2.386195377446711,
+            "elapsed_s": 7.398649639450014,
+            "input_tokens_per_ttft_s": 858.2700391413093,
+            "decode_tokens_s": 50.873282162994826
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 103.7910688482636,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 6144.0,
+          "request_prefill_time_seconds_sum": 4.364592062309384
+        }
+      },
+      {
+        "label": "baseline",
+        "case": "prefill-near-full",
+        "results": [
+          {
+            "prompt_tokens": 260000,
+            "output_tokens": 32,
+            "ttft_s": 273.45496407244354,
+            "elapsed_s": 274.1371861938387,
+            "input_tokens_per_ttft_s": 950.7964168137058,
+            "decode_tokens_s": 45.43974612931606
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.11672976680152994,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 260000.0,
+          "request_prefill_time_seconds_sum": 273.2194765713066
+        }
+      }
+    ],
+    "baseline-warm": [
+      {
+        "label": "baseline-warm",
+        "case": "prefill-8192-0",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 3.3438554080203176,
+            "elapsed_s": 3.868968508206308,
+            "input_tokens_per_ttft_s": 2449.866695895789,
+            "decode_tokens_s": 59.03490122227017
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 8.250897485300772,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 3.33889848459512
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "prefill-8192-1",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 3.355635085143149,
+            "elapsed_s": 3.8749241586774588,
+            "input_tokens_per_ttft_s": 2441.266643166754,
+            "decode_tokens_s": 59.69700034127871
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 8.257731047252008,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 3.3490673368796706
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "prefill-8192-2",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 3.359928854741156,
+            "elapsed_s": 3.866391838528216,
+            "input_tokens_per_ttft_s": 2438.146863865991,
+            "decode_tokens_s": 61.20881681855316
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 8.275980725858139,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 3.3392516681924462
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "prefill-32768-0",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 15.505016528069973,
+            "elapsed_s": 16.03833343088627,
+            "input_tokens_per_ttft_s": 2113.380526920269,
+            "decode_tokens_s": 58.12679072479753
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 1.9951931269290513,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 15.491436740383506
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "warm-prefix-32768",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 0.8217644775286317,
+            "elapsed_s": 1.3537548882886767,
+            "input_tokens_per_ttft_s": 39875.17214001052,
+            "decode_tokens_s": 58.27172703303216
+          }
+        ],
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 31360.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 0.807450913824141
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "prefill-32768-1",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 15.177083091810346,
+            "elapsed_s": 15.70714478008449,
+            "input_tokens_per_ttft_s": 2159.0446465751925,
+            "decode_tokens_s": 58.48375893933115
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 2.0372546816937622,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 15.163375739008188
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "prefill-32768-2",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 15.113702720031142,
+            "elapsed_s": 15.640294265933335,
+            "input_tokens_per_ttft_s": 2168.098751642806,
+            "decode_tokens_s": 58.86915625826974
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 2.0459672561781184,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 15.096710488200188
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "prefill-65536-0",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 35.73151755426079,
+            "elapsed_s": 36.27649347856641,
+            "input_tokens_per_ttft_s": 1834.1230511824479,
+            "decode_tokens_s": 56.88324679571618
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.8821047669980466,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 35.699678495526314
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "prefill-65536-1",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 35.79512109141797,
+            "elapsed_s": 36.34163216687739,
+            "input_tokens_per_ttft_s": 1830.8640396166318,
+            "decode_tokens_s": 56.723461594881805
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.88052782351531,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 35.770205065608025
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "prefill-65536-2",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 35.8481559464708,
+            "elapsed_s": 36.389967078343034,
+            "input_tokens_per_ttft_s": 1828.155403526466,
+            "decode_tokens_s": 57.21550956858162
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.879358062424292,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 35.817513009533286
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "decode-c1",
+        "results": [
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 0.8141248319298029,
+            "elapsed_s": 5.073940649628639,
+            "input_tokens_per_ttft_s": 2515.5847355072283,
+            "decode_tokens_s": 59.86174306891787
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 50.451744556468,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 2048.0,
+          "request_prefill_time_seconds_sum": 0.8111218959093094
+        }
+      },
+      {
+        "label": "baseline-warm",
+        "case": "decode-c3",
+        "results": [
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 0.8133603483438492,
+            "elapsed_s": 7.442854695022106,
+            "input_tokens_per_ttft_s": 2517.949152758803,
+            "decode_tokens_s": 38.46447204948129
+          },
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 2.423865109682083,
+            "elapsed_s": 7.479446584358811,
+            "input_tokens_per_ttft_s": 844.931507046041,
+            "decode_tokens_s": 50.43930184436511
+          },
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 2.4233160940930247,
+            "elapsed_s": 7.478970693424344,
+            "input_tokens_per_ttft_s": 845.122930925982,
+            "decode_tokens_s": 50.43857229363084
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 102.67400755137093,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 6144.0,
+          "request_prefill_time_seconds_sum": 4.436832503415644
+        }
+      }
+    ],
+    "redhat-no-mtp": [
+      {
+        "label": "redhat-no-mtp",
+        "case": "prefill-8192-0",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 5.126436878927052,
+            "elapsed_s": 5.614248293451965,
+            "input_tokens_per_ttft_s": 1597.9910010546275,
+            "decode_tokens_s": 63.54914845564117
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 5.690124300517824,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 5.1209314009174705
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "prefill-8192-1",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 5.216802062466741,
+            "elapsed_s": 5.703602314926684,
+            "input_tokens_per_ttft_s": 1570.3106811237633,
+            "decode_tokens_s": 63.681150211710005
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 5.610244611820981,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 5.211087453179061
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "prefill-8192-2",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 5.584934045560658,
+            "elapsed_s": 6.067352586425841,
+            "input_tokens_per_ttft_s": 1466.8033558089448,
+            "decode_tokens_s": 64.25955342513107
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 5.273922549061952,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 5.563994428142905
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "prefill-32768-0",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 28.370700012892485,
+            "elapsed_s": 28.963476359844208,
+            "input_tokens_per_ttft_s": 1154.9944127254264,
+            "decode_tokens_s": 52.29628368171833
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 1.1048317444747828,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 28.35642040055245
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "warm-prefix-32768",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 1.2776055708527565,
+            "elapsed_s": 1.8041158402338624,
+            "input_tokens_per_ttft_s": 25647.978333507515,
+            "decode_tokens_s": 58.87824379273627
+          }
+        ],
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 31360.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 1.26037638168782
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "prefill-32768-1",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 25.549525526352227,
+            "elapsed_s": 26.053772118873894,
+            "input_tokens_per_ttft_s": 1282.5287094354262,
+            "decode_tokens_s": 61.4778571828781
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 1.2282191049972317,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 25.533250426873565
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "prefill-32768-2",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 24.258483256213367,
+            "elapsed_s": 24.76320780813694,
+            "input_tokens_per_ttft_s": 1350.7851935304766,
+            "decode_tokens_s": 61.41963944859595
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 1.2922293322296237,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 24.243022101931274
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "prefill-65536-0",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 53.32311930321157,
+            "elapsed_s": 53.845396507531404,
+            "input_tokens_per_ttft_s": 1229.0353763316482,
+            "decode_tokens_s": 59.35545289665001
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.5942912533263661,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 53.29163058195263
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "prefill-65536-1",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 53.15957572031766,
+            "elapsed_s": 53.684483271092176,
+            "input_tokens_per_ttft_s": 1232.8164608535815,
+            "decode_tokens_s": 59.058018796374135
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.596072948628172,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 53.134557507932186
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "prefill-65536-2",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 53.169701053760946,
+            "elapsed_s": 53.69254577066749,
+            "input_tokens_per_ttft_s": 1232.5816903453199,
+            "decode_tokens_s": 59.29102656600218
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.5959835983780373,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 53.14445752650499
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "decode-c1",
+        "results": [
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 1.3472999911755323,
+            "elapsed_s": 5.425112990662456,
+            "input_tokens_per_ttft_s": 1520.0772013759906,
+            "decode_tokens_s": 62.53351981370516
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 47.18621145780026,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 2048.0,
+          "request_prefill_time_seconds_sum": 1.3442453248426318
+        }
+      },
+      {
+        "label": "redhat-no-mtp",
+        "case": "decode-c3",
+        "results": [
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 1.3409984540194273,
+            "elapsed_s": 9.189083282835782,
+            "input_tokens_per_ttft_s": 1527.2202543272508,
+            "decode_tokens_s": 32.492003534887765
+          },
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 4.10424710996449,
+            "elapsed_s": 9.223646618425846,
+            "input_tokens_per_ttft_s": 498.99529563601726,
+            "decode_tokens_s": 49.81052945341253
+          },
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 4.103927223943174,
+            "elapsed_s": 9.223358567804098,
+            "input_tokens_per_ttft_s": 499.0341904826035,
+            "decode_tokens_s": 49.810219704535875
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 83.25915987787963,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 6144.0,
+          "request_prefill_time_seconds_sum": 7.522485510446131
+        }
+      }
+    ],
+    "redhat-mtp3": [
+      {
+        "label": "redhat-mtp3",
+        "case": "prefill-8192-0",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 5.376624319702387,
+            "elapsed_s": 5.689250814728439,
+            "input_tokens_per_ttft_s": 1523.6325829909301,
+            "decode_tokens_s": 99.15986166628868
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 5.623264866387296,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 5.370381820015609
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "prefill-8192-1",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 5.834891381673515,
+            "elapsed_s": 6.191865826956928,
+            "input_tokens_per_ttft_s": 1403.9678657480747,
+            "decode_tokens_s": 86.84095012848371
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 5.1678434532162765,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 5.828755150549114
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "prefill-8192-2",
+        "results": [
+          {
+            "prompt_tokens": 8192,
+            "output_tokens": 32,
+            "ttft_s": 6.8835000256076455,
+            "elapsed_s": 7.31584067735821,
+            "input_tokens_per_ttft_s": 1190.092245155014,
+            "decode_tokens_s": 71.70271838764123
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 4.373924993597469,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 8192.0,
+          "request_prefill_time_seconds_sum": 6.8479357762262225
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "prefill-32768-0",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 31.359648338519037,
+            "elapsed_s": 31.609327086247504,
+            "input_tokens_per_ttft_s": 1044.90967648228,
+            "decode_tokens_s": 124.15954614492627
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 1.012353157363922,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 31.344981716945767
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "warm-prefix-32768",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 2.1828882209956646,
+            "elapsed_s": 2.429136316291988,
+            "input_tokens_per_ttft_s": 15011.304603152686,
+            "decode_tokens_s": 125.88929860633468
+          }
+        ],
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 30400.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 2.1524529168382287
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "prefill-32768-1",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 26.171565886586905,
+            "elapsed_s": 26.526761269196868,
+            "input_tokens_per_ttft_s": 1252.0458325649445,
+            "decode_tokens_s": 87.27590931000586
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 1.2063193846974345,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 26.156985397450626
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "prefill-32768-2",
+        "results": [
+          {
+            "prompt_tokens": 32768,
+            "output_tokens": 32,
+            "ttft_s": 24.863916787318885,
+            "elapsed_s": 25.21706734970212,
+            "input_tokens_per_ttft_s": 1317.893728501873,
+            "decode_tokens_s": 87.78125621773523
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 1.2689697417085066,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 32768.0,
+          "request_prefill_time_seconds_sum": 24.849665072746575
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "prefill-65536-0",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 54.95160540193319,
+            "elapsed_s": 55.3166786050424,
+            "input_tokens_per_ttft_s": 1192.6130186852456,
+            "decode_tokens_s": 84.91447670216138
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.5784852820595935,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 54.918420813046396
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "prefill-65536-1",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 54.84065789729357,
+            "elapsed_s": 55.30190225690603,
+            "input_tokens_per_ttft_s": 1195.0257803751522,
+            "decode_tokens_s": 67.20949395683893
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.5786395702352003,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 54.808462996035814
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "prefill-65536-2",
+        "results": [
+          {
+            "prompt_tokens": 65536,
+            "output_tokens": 32,
+            "ttft_s": 54.76270980760455,
+            "elapsed_s": 55.29476487170905,
+            "input_tokens_per_ttft_s": 1196.7267549440994,
+            "decode_tokens_s": 58.26464607037646
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 0.5787140943438674,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 65536.0,
+          "request_prefill_time_seconds_sum": 54.732583933509886
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "decode-c1",
+        "results": [
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 1.3571442868560553,
+            "elapsed_s": 3.4995931908488274,
+            "input_tokens_per_ttft_s": 1509.051041834596,
+            "decode_tokens_s": 119.02267518481752
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 73.14627540758835,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 2048.0,
+          "request_prefill_time_seconds_sum": 1.3541127350181341
+        }
+      },
+      {
+        "label": "redhat-mtp3",
+        "case": "decode-c3",
+        "results": [
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 1.3512811921536922,
+            "elapsed_s": 6.511524815112352,
+            "input_tokens_per_ttft_s": 1515.5986865589884,
+            "decode_tokens_s": 49.416271523590204
+          },
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 4.1004004664719105,
+            "elapsed_s": 6.388358658179641,
+            "input_tokens_per_ttft_s": 499.4634101586062,
+            "decode_tokens_s": 111.45308551712135
+          },
+          {
+            "prompt_tokens": 2048,
+            "output_tokens": 256,
+            "ttft_s": 4.100007567554712,
+            "elapsed_s": 6.736678649671376,
+            "input_tokens_per_ttft_s": 499.5112731514905,
+            "decode_tokens_s": 96.71285953320026
+          }
+        ],
+        "aggregate_output_tokens_per_wall_s": 113.98565451665588,
+        "metrics_delta": {
+          "num_requests_running": 0.0,
+          "prefix_cache_hits_total": 0.0,
+          "prompt_tokens_total": 6144.0,
+          "request_prefill_time_seconds_sum": 6.843197264708579
+        }
+      }
+    ]
+  },
+  "baseline_warmup": [
+    {
+      "prompt_tokens": 65536,
+      "output_tokens": 32,
+      "ttft_s": 35.53521139547229,
+      "elapsed_s": 36.15268645156175,
+      "input_tokens_per_ttft_s": 1844.255245048303,
+      "decode_tokens_s": 50.204457158685074
+    },
+    {
+      "prompt_tokens": 65536,
+      "output_tokens": 32,
+      "ttft_s": 39.98060592543334,
+      "elapsed_s": 40.53101997822523,
+      "input_tokens_per_ttft_s": 1639.1947666383367,
+      "decode_tokens_s": 56.32123642693552
+    }
+  ],
+  "baseline_quality": [
+    {
+      "label": "baseline",
+      "check": "thinking-False",
+      "elapsed": 3.8246041648089886,
+      "message": {
+        "role": "assistant",
+        "content": "To calculate $17 \\times 19$, you can use standard multiplication or a mental math trick.\n\n**Method 1: Standard Multiplication**\n$$\n\\begin{array}{r@{\\quad}l}\n  17 & \\\\\n\\times 19 & \\\\\n\\hline\n 153 & (17 \\times 9) \\\\\n170 & (17 \\times 10) \\\\\n\\hline\n323 &\n\\end{array}\n$$\n\n**Method 2: Mental Math (Using the base of 20)**\nYou can think of 19 as $20 - 1$.\n$$\n17 \\times 19 = 17 \\times (20 - 1)\n$$\n$$\n= (17 \\times 20) - (17 \\times 1)\n$$\n$$\n= 340 - 17\n$$\n$$\n= 323\n$$\n\n**Answer:**\n323",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "pass_content": true,
+      "usage": {
+        "prompt_tokens": 27,
+        "total_tokens": 255,
+        "completion_tokens": 228,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "label": "baseline",
+      "check": "thinking-True",
+      "elapsed": 1.083893614821136,
+      "message": {
+        "role": "assistant",
+        "content": "\n\n17 \u00d7 19 = **323**",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": "The user wants me to calculate 17 \u00d7 19.\n\n17 \u00d7 19 = 17 \u00d7 (20 - 1) = 340 - 17 = 323\n"
+      },
+      "pass_content": true,
+      "usage": {
+        "prompt_tokens": 55,
+        "total_tokens": 118,
+        "completion_tokens": 63,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "label": "baseline",
+      "check": "tool-call",
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": [
+          {
+            "id": "chatcmpl-tool-a5d9af0cd819e7d8",
+            "type": "function",
+            "function": {
+              "name": "get_temperature",
+              "arguments": "{\"room\": \"kitchen\"}"
+            }
+          }
+        ],
+        "reasoning": null
+      },
+      "pass_content": true
+    },
+    {
+      "label": "baseline",
+      "check": "tool-result",
+      "message": {
+        "role": "assistant",
+        "content": "The temperature in the kitchen is **21.5\u00b0C**.",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "pass_content": true
+    },
+    {
+      "label": "baseline",
+      "check": "vision",
+      "message": {
+        "role": "assistant",
+        "content": "Red",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "pass_content": true
+    },
+    {
+      "label": "baseline",
+      "check": "concurrent-embedding",
+      "elapsed": 0.23476881720125675,
+      "dimensions": 1024,
+      "pass_content": true
+    },
+    {
+      "label": "baseline",
+      "check": "concurrent-llm",
+      "usage": {
+        "prompt_tokens": 22,
+        "total_tokens": 534,
+        "completion_tokens": 512,
+        "prompt_tokens_details": null
+      },
+      "pass_content": true
+    },
+    {
+      "label": "baseline",
+      "check": "concurrent-audio",
+      "tts_s": 9.906848995015025,
+      "asr_s": 0.10483369044959545,
+      "audio_bytes": 232284,
+      "transcript": {
+        "text": " Dies ist ein kurzer Test. Die blaue Tasse steht auf dem Tisch."
+      },
+      "pass_content": true
+    },
+    {
+      "label": "baseline",
+      "check": "near-full-retrieval",
+      "elapsed": 275.5492822173983,
+      "message": {
+        "role": "assistant",
+        "content": "BENCH-COPPER-7419",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "usage": {
+        "prompt_tokens": 260047,
+        "total_tokens": 260058,
+        "completion_tokens": 11,
+        "prompt_tokens_details": null
+      },
+      "pass_content": true
+    }
+  ],
+  "restored_quality": [
+    {
+      "label": "restored",
+      "check": "thinking-False",
+      "elapsed": 3.732174150645733,
+      "message": {
+        "role": "assistant",
+        "content": "To calculate $17 \\times 19$, you can use standard multiplication or a mental math trick.\n\n**Method 1: Standard Multiplication**\n$$\n\\begin{array}{r@{\\quad}l}\n  17 & \\\\\n\\times 19 & \\\\\n\\hline\n 153 & (17 \\times 9) \\\\\n170 & (17 \\times 10) \\\\\n\\hline\n323 &\n\\end{array}\n$$\n\n**Method 2: Mental Math (Using the base of 20)**\nYou can think of 19 as $20 - 1$.\n$$\n17 \\times 19 = 17 \\times (20 - 1)\n$$\n$$\n= (17 \\times 20) - (17 \\times 1)\n$$\n$$\n= 340 - 17\n$$\n$$\n= 323\n$$\n\n**Answer:**\n323",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "pass_content": true,
+      "usage": {
+        "prompt_tokens": 27,
+        "total_tokens": 255,
+        "completion_tokens": 228,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "label": "restored",
+      "check": "thinking-True",
+      "elapsed": 1.0583462240174413,
+      "message": {
+        "role": "assistant",
+        "content": "\n\n17 \u00d7 19 = **323**",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": "The user wants me to calculate 17 \u00d7 19.\n\n17 \u00d7 19 = 17 \u00d7 (20 - 1) = 340 - 17 = 323\n"
+      },
+      "pass_content": true,
+      "usage": {
+        "prompt_tokens": 55,
+        "total_tokens": 118,
+        "completion_tokens": 63,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "label": "restored",
+      "check": "tool-call",
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": [
+          {
+            "id": "chatcmpl-tool-8fe773f9717682eb",
+            "type": "function",
+            "function": {
+              "name": "get_temperature",
+              "arguments": "{\"room\": \"kitchen\"}"
+            }
+          }
+        ],
+        "reasoning": null
+      },
+      "pass_content": true
+    },
+    {
+      "label": "restored",
+      "check": "tool-result",
+      "message": {
+        "role": "assistant",
+        "content": "The temperature in the kitchen is **21.5\u00b0C**.",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "pass_content": true
+    },
+    {
+      "label": "restored",
+      "check": "vision",
+      "message": {
+        "role": "assistant",
+        "content": "Red",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "pass_content": true
+    },
+    {
+      "label": "restored",
+      "check": "concurrent-embedding",
+      "elapsed": 0.019017820246517658,
+      "dimensions": 1024,
+      "pass_content": true
+    },
+    {
+      "label": "restored",
+      "check": "concurrent-llm",
+      "usage": {
+        "prompt_tokens": 22,
+        "total_tokens": 534,
+        "completion_tokens": 512,
+        "prompt_tokens_details": null
+      },
+      "pass_content": true
+    },
+    {
+      "label": "restored",
+      "check": "concurrent-audio",
+      "tts_s": 9.86837830208242,
+      "asr_s": 0.1017193216830492,
+      "audio_bytes": 232284,
+      "transcript": {
+        "text": " Dies ist ein kurzer Test. Die blaue Tasse steht auf dem Tisch."
+      },
+      "pass_content": true
+    }
+  ],
+  "candidate_commands": {
+    "redhat-no-mtp": [
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "qwen-redhat-test",
+      "--runtime",
+      "nvidia",
+      "--gpus",
+      "\"device=GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc,GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c\"",
+      "--ipc=host",
+      "-p",
+      "127.0.0.1:5819:8000",
+      "-v",
+      "/home/daniel/config/llama-swap/cache:/root/.cache",
+      "-e",
+      "HF_HOME=/root/.cache/huggingface",
+      "-e",
+      "HF_HUB_OFFLINE=1",
+      "-e",
+      "VLLM_CACHE_ROOT=/root/.cache/vllm-redhat-test",
+      "-e",
+      "VLLM_WORKER_MULTIPROC_METHOD=spawn",
+      "-e",
+      "NCCL_CUMEM_ENABLE=0",
+      "-e",
+      "NCCL_P2P_DISABLE=1",
+      "-e",
+      "VLLM_ALLREDUCE_USE_FLASHINFER=0",
+      "-e",
+      "VLLM_NO_USAGE_STATS=1",
+      "-e",
+      "OMP_NUM_THREADS=1",
+      "vllm/vllm-openai:v0.29.0",
+      "RedHatAI/Qwen3.8-27B-INT4",
+      "--revision",
+      "7fb3aaca2d21c0db4716572945208db40cef9966",
+      "--served-model-name",
+      "qwen-redhat-test",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8000",
+      "--dtype",
+      "bfloat16",
+      "--tensor-parallel-size",
+      "2",
+      "--gpu-memory-utilization",
+      "0.755",
+      "--max-model-len",
+      "262144",
+      "--max-num-seqs",
+      "3",
+      "--max-num-batched-tokens",
+      "8192",
+      "--long-prefill-token-threshold",
+      "4096",
+      "--kv-cache-dtype",
+      "fp8",
+      "--enable-prefix-caching",
+      "--enable-chunked-prefill",
+      "--disable-custom-all-reduce",
+      "--reasoning-parser",
+      "qwen3",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser",
+      "qwen3_xml",
+      "--mm-encoder-tp-mode",
+      "data",
+      "--default-chat-template-kwargs",
+      "{\"enable_thinking\":false,\"reasoning_effort\":\"low\"}"
+    ],
+    "redhat-mtp3": [
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "qwen-redhat-test",
+      "--runtime",
+      "nvidia",
+      "--gpus",
+      "\"device=GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc,GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c\"",
+      "--ipc=host",
+      "-p",
+      "127.0.0.1:5819:8000",
+      "-v",
+      "/home/daniel/config/llama-swap/cache:/root/.cache",
+      "-e",
+      "HF_HOME=/root/.cache/huggingface",
+      "-e",
+      "HF_HUB_OFFLINE=1",
+      "-e",
+      "VLLM_CACHE_ROOT=/root/.cache/vllm-redhat-test",
+      "-e",
+      "VLLM_WORKER_MULTIPROC_METHOD=spawn",
+      "-e",
+      "NCCL_CUMEM_ENABLE=0",
+      "-e",
+      "NCCL_P2P_DISABLE=1",
+      "-e",
+      "VLLM_ALLREDUCE_USE_FLASHINFER=0",
+      "-e",
+      "VLLM_NO_USAGE_STATS=1",
+      "-e",
+      "OMP_NUM_THREADS=1",
+      "vllm/vllm-openai:v0.29.0",
+      "RedHatAI/Qwen3.8-27B-INT4",
+      "--revision",
+      "7fb3aaca2d21c0db4716572945208db40cef9966",
+      "--served-model-name",
+      "qwen-redhat-test",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8000",
+      "--dtype",
+      "bfloat16",
+      "--tensor-parallel-size",
+      "2",
+      "--gpu-memory-utilization",
+      "0.755",
+      "--max-model-len",
+      "262144",
+      "--max-num-seqs",
+      "3",
+      "--max-num-batched-tokens",
+      "8192",
+      "--long-prefill-token-threshold",
+      "4096",
+      "--kv-cache-dtype",
+      "fp8",
+      "--enable-prefix-caching",
+      "--enable-chunked-prefill",
+      "--disable-custom-all-reduce",
+      "--reasoning-parser",
+      "qwen3",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser",
+      "qwen3_xml",
+      "--mm-encoder-tp-mode",
+      "data",
+      "--default-chat-template-kwargs",
+      "{\"enable_thinking\":false,\"reasoning_effort\":\"low\"}",
+      "--speculative-config",
+      "{\"method\":\"mtp\",\"num_speculative_tokens\":3}"
+    ]
+  },
+  "mixed_load_audio": "tts_seconds=11.921866\n{\"text\": \" Dies ist ein kurzer Test. Die blaue Tasse steht auf dem Tisch.\"}\nasr_seconds=0.345923\n",
+  "mixed_load_embedding": {
+    "embedding_dimensions": 1024,
+    "success": true
+  },
+  "mixed_load_request_abort": {
+    "check": "short-request-during-260k-prefill",
+    "aborted_after_seconds": 135,
+    "reason": "First simple math response did not complete within two-minute usability bound"
+  },
+  "mtp_stress_abort": {
+    "stage": "MTP full-context mixed load",
+    "benchmark_process_elapsed_seconds": 512,
+    "reason": "Stop after preemption and short-request usability failure; trigger controller restoration"
+  },
+  "mixed_load_metrics_snapshot": [
+    "vllm:num_requests_running{engine=\"0\",model_name=\"qwen-redhat-test\"} 2.0",
+    "vllm:kv_cache_usage_perc{engine=\"0\",model_name=\"qwen-redhat-test\"} 0.755",
+    "vllm:num_preemptions_total{engine=\"0\",model_name=\"qwen-redhat-test\"} 1.0"
+  ],
+  "thermal_monitor_summary": {
+    "0": {
+      "max_temperature_c": 92,
+      "min_free_mib": 1336,
+      "thermal_slowdown_observed": true
+    },
+    "1": {
+      "max_temperature_c": 93,
+      "min_free_mib": 2272,
+      "thermal_slowdown_observed": true
+    },
+    "2": {
+      "max_temperature_c": 52,
+      "min_free_mib": 14111,
+      "thermal_slowdown_observed": false
+    }
+  },
+  "controller_log": "2026-09-22T18:14:12Z unloading production Qwen; other services stay running\na966365f4de3bb9412a4759b0ada2737a267a1d237c193298f022e6c003770c6\n2026-09-22T18:14:12Z starting redhat-no-mtp\ne70676d32e1e7ed97ea9be6569729b340ee29d503710b42fea853853417a2e9f\n2026-09-22T18:17:33Z redhat-no-mtp ready\n2026-09-22T18:32:11Z redhat-no-mtp FAILED: Command '['python3', '/tmp/benchmark_qwen_serving.py', '--url', 'http://127.0.0.1:5819', '--model', 'qwen-redhat-test', '--label', 'redhat-no-mtp', '--long']' returned non-zero exit status 1.\n2026-09-22T18:32:12Z starting redhat-mtp3\n5e7f571edaa6238552d65ba030381eca434c063574318958fb9539421bc9685e\n2026-09-22T18:35:37Z redhat-mtp3 ready\n2026-09-22T18:44:10Z redhat-mtp3 FAILED: Command '['python3', '/tmp/benchmark_qwen_serving.py', '--url', 'http://127.0.0.1:5819', '--model', 'qwen-redhat-test', '--label', 'redhat-mtp3', '--long']' died with <Signals.SIGTERM: 15>.\nQwen3.8-27B-Instruct-AutoRound-vLLM\n2026-09-22T18:44:11Z restoring production Qwen\n2026-09-22T18:46:30Z production completion verified\n"
+}
