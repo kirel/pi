@@ -48,7 +48,7 @@ my_server:
   command: my-mcp-binary        # direct installed binary; avoid npx/uvx at runtime
   env:
     API_KEY: "{{ my_secret }}"
-  access_groups: ["private"]
+  access_groups: ["code"]      # choose the appropriate existing capability group
   install:                      # optional preinstall in LiteLLM image
     manager: npm                # or: uv
     package: my-mcp-package     # npm
@@ -59,6 +59,15 @@ my_server:
 - **remote HTTP/SSE:** use `url` plus auth fields (`auth_type`, `auth_value`, `static_headers`, etc.).
 - **Do not** add standalone containers or `services.yml` entries for MCP servers only used by LiteLLM. Exception: direct network clients need an HTTP endpoint (example: `google-workspace-mcp`).
 - Verify via `https://litellm.kirelabs.org/mcp/` with a valid LiteLLM bearer token and `Accept: application/json, text/event-stream`, or inspect `docker logs litellm-proxy-container` for MCP allowlist/discovery errors.
+
+### MCP Permission Model
+
+- **Server membership:** `litellm_mcp_servers.<server>.access_groups` in `roles/llm_tools/defaults/main.yml` assigns servers to capability groups. Current groups are `web`, `maps`, `home_control`, `home_admin`, `shopping`, `photos`, `notes`, `workflow_admin`, `code`, `coding_agents`, `media_generation`, `craft_personal_pilot`, and `craft_family`.
+- **Client grants:** Virtual keys and teams receive `mcp_access_groups` through their LiteLLM `object_permission`. Shared managed keys/teams live in `group_vars/all/hermes_mcp.yml`; Docker Hermes key grants live in `group_vars/hetzner.yml` and `group_vars/ailab_ubuntus.yml`. Match the actual key and its team when checking access; a team restriction can narrow a key's grants.
+- **Broad availability remains group-based:** When a server should be available to everyone, use the existing groups. DIYFPV belongs to all current capability groups. Do not substitute `allow_all_keys: true`, remove group restrictions, or widen unrelated client grants. When adding a new group, review membership of shared servers as well.
+- **Model and tool permissions are separate:** Model lists and model access groups do not grant MCP access. `mcp_tool_permissions` further limits individual tools by server ID; preserve existing allowlists such as Todoist's shopping tools. URL/header server selection narrows discovery and does not grant permissions.
+- **Shared credentials and user OAuth are distinct:** A server-side bearer token is shared by authorized clients; resolve handover secrets securely and store them encrypted in Ansible Vault. OAuth servers can additionally require each user's authorization. Group membership alone is not proof that downstream authentication works.
+- **Verification:** After deploying server membership changes with `--tags llm-tools --limit homelab`, test actual MCP discovery and a read-only call using a restricted key with a matching group. Also check denial for a key with explicit unrelated permissions. An admin/master-key test alone does not validate group access.
 
 ## Hermes Agents
 

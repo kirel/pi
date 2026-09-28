@@ -101,6 +101,27 @@ litellm_mcp_stdio_default_commands:
   - uvx
 
 litellm_mcp_servers:
+  diyfpv:
+    url: "https://api.diyfpv.com/mcp"
+    transport: http
+    auth_type: bearer_token
+    # Encrypted in group_vars/all/diyfpv.yml; handed over through 1Password.
+    auth_value: "{{ vault_diyfpv_mcp_key | string }}"
+    # Shared with every existing MCP capability group; retain group-based access.
+    access_groups:
+      - web
+      - maps
+      - home_control
+      - home_admin
+      - shopping
+      - photos
+      - notes
+      - workflow_admin
+      - code
+      - coding_agents
+      - media_generation
+      - craft_personal_pilot
+      - craft_family
   fetch:
     transport: stdio
     command: mcp-server-fetch
