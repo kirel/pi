@@ -105,6 +105,9 @@ hermes_docker_litellm_keys:
       todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
 hermes_docker_agents_external_skill_dirs:
   multipurpose:
+    - host_dir: /home/daniel/projects/agent-skills/skills/household
+      container_dir: /skills/household
+      read_only: false
     - host_dir: /home/daniel/projects/agent-skills/skills/global
       container_dir: /skills/global
     - host_dir: /home/daniel/projects/agent-skills/skills/family

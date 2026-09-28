@@ -15,6 +15,7 @@
       changed_when: false
 
 - name: Build effective Hermes environment and agent maps
+  tags: [hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_effective_global_env: >-
       {{
@@ -41,6 +42,7 @@
   no_log: true
 
 - name: Build effective Hermes WebUI agent list
+  tags: [hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_webui_agent_names: >-
       {%- set agents = [] -%}
@@ -54,6 +56,7 @@
       {{ agents }}
 
 - name: Build effective Hermes WebUI workspace directory map
+  tags: [hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_webui_effective_workspace_host_dirs: >-
       {%- set dirs = {} -%}
@@ -90,6 +93,7 @@
   when: hermes_docker_isolate_agents | bool
 
 - name: Build per-agent Hermes Docker network map
+  tags: [hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_agent_networks: >-
       {%- set networks = {} -%}
@@ -106,11 +110,13 @@
   when: hermes_docker_isolate_agents | bool
 
 - name: Reset Hermes Docker extra_hosts list
+  tags: [hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_extra_hosts: []
   when: hermes_docker_isolate_agents | bool
 
 - name: Build Hermes Docker extra_hosts entries
+  tags: [hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_extra_hosts: >-
       {{
@@ -121,6 +127,7 @@
   when: hermes_docker_isolate_agents | bool
 
 - name: Build per-agent Hermes Docker extra_hosts map
+  tags: [hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_agent_extra_hosts: >-
       {%- set agent_hosts = {} -%}
@@ -346,6 +353,10 @@
   loop_control:
     label: "{{ item.item }}"
 
+- name: Configure writable external Hermes skills
+  ansible.builtin.import_tasks: writable-skills.yml
+  tags: [hermes-skills]
+
 - name: Ensure external Hermes skills ownership is readable by containers
   ansible.builtin.command:
     argv:
@@ -354,17 +365,17 @@
       - "{{ hermes_external_skills_host_owner }}:{{ hermes_external_skills_host_group }}"
       - "{{ item }}"
   changed_when: false
-  loop: "{{ hermes_docker_external_skill_host_dirs }}"
+  loop: "{{ hermes_docker_external_skill_host_dirs | difference(hermes_docker_writable_skill_dirs) }}"
 
 - name: Ensure external Hermes skill directories are traversable
   ansible.builtin.command: "find {{ item | quote }} -type d -exec chmod 755 {} +"
   changed_when: false
-  loop: "{{ hermes_docker_external_skill_host_dirs }}"
+  loop: "{{ hermes_docker_external_skill_host_dirs | difference(hermes_docker_writable_skill_dirs) }}"
 
 - name: Ensure external Hermes skill files are world-readable
   ansible.builtin.command: "find {{ item | quote }} -type f -exec chmod a+r {} +"
   changed_when: false
-  loop: "{{ hermes_docker_external_skill_host_dirs }}"
+  loop: "{{ hermes_docker_external_skill_host_dirs | difference(hermes_docker_writable_skill_dirs) }}"
 
 - name: Create per-agent parent directories
   ansible.builtin.file:
@@ -777,6 +788,7 @@
     - hermes_docker_watchdog_enabled | bool
 
 - name: Render Hermes Docker Compose file
+  tags: [hermes-skills]
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ hermes_docker_base_dir }}/docker-compose.yml"
@@ -786,6 +798,7 @@
   notify: Recreate Hermes Docker agents
 
 - name: Apply pending Hermes Docker Compose changes
+  tags: [hermes-skills]
   ansible.builtin.meta: flush_handlers
 
 - name: Ensure Hermes Docker Compose stack is running

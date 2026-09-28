@@ -136,7 +136,7 @@ services:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/skills/caddy-proxy:{{ hermes_docker_agent_caddy_skill_dir }}:ro
 {% endif %}
 {% for skill_dir in hermes_docker_agents_external_skill_dirs.get(agent_name, []) %}
-      - {{ skill_dir.host_dir }}:{{ skill_dir.container_dir }}:ro
+      - {{ skill_dir.host_dir }}:{{ skill_dir.container_dir }}:{{ (skill_dir.read_only | default(true) | bool) | ternary("ro", "rw") }}
 {% endfor %}
 {% if not (hermes_docker_tailscale_enabled | bool) %}
 {% if hermes_docker_isolate_agents | bool %}

@@ -191,7 +191,8 @@ hermes_docker_firewall_service_name: hermes-docker-firewall.service
 hermes_container_data_dir: /opt/data
 
 # External skill directories mounted into specific Hermes Docker agents.
-# Values are lists of {host_dir, container_dir}; mounts are always read-only.
+# Values are lists of {host_dir, container_dir, read_only?: true}.
+# Writable roots grant inherited ACLs to the host owner and container UID.
 hermes_external_skills_host_owner: daniel
 hermes_external_skills_host_group: daniel
 hermes_external_skills_repo_url: https://github.com/kirel/agent-skills.git

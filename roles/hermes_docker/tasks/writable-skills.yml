@@ -1,0 +1,40 @@
+---
+- name: Collect writable external skill roots
+  ansible.builtin.set_fact:
+    hermes_docker_writable_skill_dirs: >-
+      {%- set paths = [] -%}
+      {%- for mounts in hermes_docker_agents_external_skill_dirs.values() -%}
+        {%- for mount in mounts -%}
+          {%- if not (mount.read_only | default(true) | bool) -%}
+            {%- set _ = paths.append(mount.host_dir) -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+      {{ paths | unique }}
+
+- name: Install ACL support for shared writable skills
+  ansible.builtin.package:
+    name: acl
+    state: present
+  when: hermes_docker_writable_skill_dirs | length > 0
+
+- name: Grant both Hermes runtime users access to existing household files
+  ansible.posix.acl:
+    path: "{{ item.0 }}"
+    entity: "{{ item.1 }}"
+    etype: user
+    permissions: rwX
+    recursive: true
+    state: present
+  loop: "{{ hermes_docker_writable_skill_dirs | product([hermes_external_skills_host_owner, hermes_docker_data_uid | string]) | list }}"
+
+- name: Inherit both runtime users' access in new household directories
+  ansible.posix.acl:
+    path: "{{ item.0 }}"
+    entity: "{{ item.1 }}"
+    etype: user
+    permissions: rwx
+    default: true
+    recursive: true
+    state: present
+  loop: "{{ hermes_docker_writable_skill_dirs | product([hermes_external_skills_host_owner, hermes_docker_data_uid | string]) | list }}"
