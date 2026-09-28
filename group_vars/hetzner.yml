@@ -45,6 +45,8 @@ hermes_docker_agents_env:
 hermes_docker_litellm_manage_keys: true
 hermes_docker_litellm_team:
   team_id: hermes-docker
+  metadata:
+    allowed_passthrough_routes: [/v1/audio/speech/stream]
   team_alias: Hermes Docker
   models: "{{ hermes_litellm_model_profiles.docker_chat }}"
   object_permission:

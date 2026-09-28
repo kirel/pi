@@ -98,6 +98,8 @@ hermes_docker_agents_env_secret:
 hermes_docker_litellm_manage_keys: true
 hermes_docker_litellm_team:
   team_id: hermes-ailab
+  metadata:
+    allowed_passthrough_routes: [/v1/audio/speech/stream]
   team_alias: Hermes Ailab
   models: "{{ hermes_litellm_model_profiles.local_hermes }}"
   object_permission:

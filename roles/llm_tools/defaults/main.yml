@@ -50,12 +50,18 @@ litellm_extra_models: []
 # voices endpoint defaults to the actual llama-swap TTS model so clients do not
 # need to know its backend alias.
 litellm_pass_through_endpoints:
+  # The regular speech adapter buffers audio and drops CrispASR's stream flag.
+  # Native passthrough checks key/team route grants and forwards PCM unchanged.
+  - path: /v1/audio/speech/stream
+    target: "http://{{ llm_inference_host }}:{{ llamaswap_port }}/upstream/{{ model_group_alias['home-tts'] }}/v1/audio/speech"
+    methods: ["POST"]
+    auth: true
+    forward_headers: false
   - path: /v1/audio/voices
     target: "http://{{ llm_inference_host }}:{{ llamaswap_port }}/v1/audio/voices"
     methods: ["GET"]
-    # LiteLLM OSS restricts authenticated passthrough routes to the master key;
-    # per-key/team grants require Enterprise. This endpoint exposes only the
-    # non-sensitive, read-only voice catalog.
+    # This endpoint deliberately exposes only the non-sensitive, read-only
+    # voice catalog. Speech generation above requires explicit route grants.
     auth: false
     default_query_params:
       model: "{{ model_group_alias['home-tts'] }}"

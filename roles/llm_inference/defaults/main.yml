@@ -27,6 +27,8 @@ llamaswap_crispasr_image: "ghcr.io/crispstrobe/crispasr@sha256:242d3ee300b4c5593
 llamaswap_crispasr_container_name: "llamaswap-crispasr-asr"
 llamaswap_crispasr_internal_port: 8080
 llamaswap_crispasr_wyoming_port: 10302
+# JSON Realtime WebSocket is --ws-port + 1; raw PCM socket stays container-local.
+llamaswap_crispasr_ws_port: 8081
 llamaswap_crispasr_cache_path: "{{ llamaswap_config_path }}/crispasr-cache"
 llamaswap_crispasr_cache_container_path: "/cache"
 llamaswap_crispasr_model_repo: "ggerganov/whisper.cpp"

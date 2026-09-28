@@ -1,4 +1,5 @@
 llamaswap_enabled: true
+llamaswap_crispasr_realtime_port: 10303
 
 model_group_alias:
   home: "Qwen3.8-27B-Instruct-AutoRound-vLLM-nothink"
@@ -44,6 +45,14 @@ openrouter_models:
   - google/gemini-3.1-flash-lite
 
 litellm_extra_models:
+  - model_name: home-asr-stream
+    litellm_params:
+      model: openai/whisper-large-v3-turbo-q8-crispasr
+      api_key: unused
+      api_base: "http://{{ llm_inference_host }}:{{ llamaswap_crispasr_realtime_port }}/v1"
+    model_info:
+      mode: realtime
+
   # CLIProxyAPI is exposed to LiteLLM as an OpenAI-compatible upstream. Keep
   # the public aliases suffixed with -cpa so callers can select this quota pool
   # explicitly and usage remains attributable in both LiteLLM and Usage Keeper.
@@ -548,6 +557,7 @@ llamaswap_models:
       --network {{ llamaswap_backend_network }}
       --gpus device={{ llamaswap_crispasr_gpu_uuid }}
       -p {{ llamaswap_crispasr_wyoming_port }}:{{ llamaswap_crispasr_wyoming_port }}
+      -p {{ ansible_host }}:{{ llamaswap_crispasr_realtime_port }}:{{ llamaswap_crispasr_ws_port + 1 }}
       -v {{ llamaswap_crispasr_cache_path }}:{{ llamaswap_crispasr_cache_container_path }}
       --entrypoint crispasr
       {{ llamaswap_crispasr_image }}
@@ -555,6 +565,7 @@ llamaswap_models:
       --host 0.0.0.0
       --port {{ llamaswap_crispasr_internal_port }}
       --wyoming-port {{ llamaswap_crispasr_wyoming_port }}
+      --ws-port {{ llamaswap_crispasr_ws_port }}
       --cache-dir {{ llamaswap_crispasr_cache_container_path }}
       --backend whisper
       --hf-repo {{ llamaswap_crispasr_model_repo }}:{{ llamaswap_crispasr_model_file }}

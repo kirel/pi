@@ -17,10 +17,12 @@ hermes_litellm_model_profiles:
     - grok-4.5-cpa
     - claude-opus-4-6-thinking-cpa
     - home-asr
+    - home-asr-stream
     - home-tts
     - home-tts-design
   voice_only:
     - home-asr
+    - home-asr-stream
     - home-tts
     - home-tts-design
   all_models:
@@ -28,6 +30,7 @@ hermes_litellm_model_profiles:
     # public model catalog; all-proxy-models would hide glm-5.3 in /v1/models.
     - all-team-models
     - glm-5.3
+    - home-asr-stream
   docker_chat:
     - gpt-image-2.5-flare
     - gpt-image-2.5-flare-cpa
@@ -49,6 +52,7 @@ hermes_litellm_model_profiles:
     - grok-imagine-image-cpa
     - grok-imagine-image-quality-cpa
     - home-asr
+    - home-asr-stream
     - home-tts
     - home-tts-design
 
@@ -85,6 +89,8 @@ litellm_managed_virtual_keys:
 litellm_managed_virtual_key_teams:
   daniel_personal_pilot:
     team_id: hermes-daniel-personal-pilot
+    metadata:
+      allowed_passthrough_routes: [/v1/audio/speech/stream]
     team_alias: Daniel Personal Hermes Pilot
     members_with_roles:
       - user_id: fa559a90-e4e0-4793-8aaa-594bce6fbe06
@@ -105,6 +111,8 @@ litellm_managed_virtual_key_teams:
         - craft_personal_pilot
   baremetal:
     team_id: hermes-baremetal
+    metadata:
+      allowed_passthrough_routes: [/v1/audio/speech/stream]
     team_alias: Hermes Bare Metal
     models: "{{ hermes_litellm_model_profiles.all_models }}"
     object_permission:

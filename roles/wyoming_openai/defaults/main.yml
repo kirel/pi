@@ -31,8 +31,8 @@ tts_extra_body: '{"response_format":"pcm"}'
 
 # Streaming Configuration for your models.
 # wyoming_openai streams TTS incrementally by sentence-chunking and pipelining
-# OpenAI-compatible /audio/speech requests; the Qwen backend itself can still
-# return normal WAV responses per chunk.
+# OpenAI-compatible /audio/speech requests. Wyoming OpenAI 0.5.0 rejects
+# stream in TTS_EXTRA_BODY, so CrispASR currently buffers each audio chunk.
 stt_streaming_models: "{{ stt_model }}"
 tts_streaming_models: "qwen3-tts"
 tts_streaming_min_words: 3
