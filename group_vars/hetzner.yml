@@ -15,6 +15,7 @@ hermes_caddy_version: 2.11.4
 hermes_docker_base_image: nousresearch/hermes-agent:v2026.9.14
 hermes_docker_agent_caddy_version: "{{ hermes_caddy_version }}"
 hermes_docker_watchdog_enabled: true
+hermes_hausfee_enabled: true
 hermes_docker_agent_order:
   - multipurpose
   - marian
@@ -38,6 +39,15 @@ hermes_docker_shared_workspaces:
       - nele
 hermes_docker_agents_env:
   multipurpose:
+    WHATSAPP_ENABLED: "true"
+    WHATSAPP_MODE: bot
+    WHATSAPP_ALLOWED_USERS: "{{ hermes_hausfee_daniel_whatsapp }},{{ hermes_hausfee_sabine_whatsapp }}"
+    WHATSAPP_DM_POLICY: allowlist
+    WHATSAPP_GROUP_POLICY: allowlist
+    WHATSAPP_GROUP_ALLOWED_USERS: "{{ hermes_hausfee_group_id }}"
+    WHATSAPP_REQUIRE_MENTION: "true"
+    WHATSAPP_REPLY_PREFIX: ""
+    GOOGLE_WORKSPACE_CLI_CONFIG_DIR: /opt/data/.config/gws
     API_SERVER_ENABLED: "true"
     API_SERVER_HOST: "0.0.0.0"
     API_SERVER_PORT: "8642"
@@ -63,14 +73,15 @@ hermes_docker_litellm_team:
 hermes_docker_litellm_keys:
   multipurpose:
     key_alias: hermes-multipurpose
+    user_id: "{{ litellm_family_users.hausfee.id }}"
+    team_id: hermes-hausfee
     models: "{{ hermes_litellm_model_profiles.docker_chat }}"
     mcp_access_groups:
+      - craft_family
       - web
       - maps
-      - home_admin
+      - home_control
       - shopping
-      - photos
-      - notes
     mcp_tool_permissions:
       todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
   marian:
@@ -93,8 +104,11 @@ hermes_docker_litellm_keys:
       - maps
   sabine:
     key_alias: hermes-sabine
+    user_id: "{{ litellm_family_users.sabine.id }}"
+    team_id: hermes-sabine-personal
     models: "{{ hermes_litellm_model_profiles.docker_chat }}"
     mcp_access_groups:
+      - craft_family
       - web
       - maps
       - home_control
@@ -280,3 +294,6 @@ hetzner_daniel_authorized_keys:
   - "{{ lookup('ansible.builtin.file', lookup('ansible.builtin.env', 'HOME') + '/.ssh/id_rsa.pub') }}"
   # OpenClaw public key.
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGOtmOfi47EnpdA/9ciKYhLI2b9+aGCWby3aRWgRb5D7 shrimp-openclaw@github.com"
+
+hermes_docker_family_oauth_agents: [multipurpose, sabine]
+hermes_baremetal_manage_litellm_oauth_header: true

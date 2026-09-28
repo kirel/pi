@@ -1,0 +1,43 @@
+---
+- name: Check bare-metal LiteLLM OAuth admission header
+  ansible.builtin.command:
+    argv:
+      - python3
+      - -c
+      - |
+        import yaml
+        from pathlib import Path
+        c = yaml.safe_load((Path.home() / '.hermes/config.yaml').read_text())
+        expected = {'x-litellm-api-key': 'Bearer ${LITELLM_API_KEY}'}
+        print('ok' if c['mcp_servers']['litellm'].get('headers') == expected else 'update')
+  become: true
+  become_user: "{{ item }}"
+  loop: "{{ hermes_baremetal_users }}"
+  register: hermes_baremetal_header_checks
+  changed_when: false
+
+- name: Configure only the bare-metal LiteLLM header using Hermes CLI
+  ansible.builtin.command:
+    argv:
+      - "/home/{{ item.item }}/.local/bin/hermes"
+      - config
+      - set
+      - mcp_servers.litellm.headers
+      - '{"x-litellm-api-key":"Bearer ${LITELLM_API_KEY}"}'
+  become: true
+  become_user: "{{ item.item }}"
+  loop: "{{ hermes_baremetal_header_checks.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: item.stdout == 'update'
+  no_log: true
+
+- name: Reload gateway after the explicitly managed OAuth header change
+  ansible.builtin.shell: >-
+    XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user restart hermes-gateway.service
+  become: true
+  become_user: "{{ item.item }}"
+  loop: "{{ hermes_baremetal_header_checks.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: item.stdout == 'update'

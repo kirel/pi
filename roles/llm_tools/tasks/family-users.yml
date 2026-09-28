@@ -1,0 +1,19 @@
+---
+- name: Install LiteLLM family access reconciler
+  ansible.builtin.copy:
+    src: family-access.py
+    dest: "{{ config_root }}/family-litellm-access.py"
+    owner: root
+    mode: '0700'
+
+- name: Reconcile LiteLLM family SSO subjects
+  ansible.builtin.command:
+    argv: [python3, "{{ config_root }}/family-litellm-access.py", users]
+    stdin: >-
+      {{ {'base_url': litellm_managed_keys_api_base_url,
+          'master_key': litellm_master_key,
+          'users': litellm_family_users} | to_json }}
+  register: litellm_family_users_result
+  changed_when: "'CHANGED' in litellm_family_users_result.stdout"
+  no_log: true
+  diff: false

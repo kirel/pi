@@ -180,6 +180,12 @@ litellm_mcp_servers:
     auth_type: oauth2
     oauth2_flow: authorization_code
     access_groups: ["craft_personal_pilot"]
+  craft_family:
+    url: "https://mcp.craft.do/my/mcp"
+    transport: http
+    auth_type: oauth2
+    oauth2_flow: authorization_code
+    access_groups: ["craft_family"]
   google_maps:
     url: "https://mapstools.googleapis.com/mcp"
     static_headers:

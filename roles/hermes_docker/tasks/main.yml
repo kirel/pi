@@ -940,3 +940,15 @@
   when:
     - hermes_docker_ensure_running | bool
     - hermes_docker_managed_mcp_servers | length > 0
+
+- name: Configure shared Hausfee profile
+  ansible.builtin.import_tasks: hausfee.yml
+  tags: [hausfee]
+
+- name: Configure per-user OAuth gateway headers
+  ansible.builtin.import_tasks: oauth-headers.yml
+  tags: [hermes-oauth]
+
+- name: Configure Hausfee 1Password access
+  ansible.builtin.import_tasks: hausfee-onepassword.yml
+  tags: [hausfee-onepassword]

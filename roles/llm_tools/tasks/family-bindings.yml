@@ -1,0 +1,13 @@
+---
+- name: Bind existing Hermes keys to the corresponding family SSO subject
+  ansible.builtin.command:
+    argv: [python3, "{{ config_root }}/family-litellm-access.py", bindings]
+    stdin: >-
+      {{ {'base_url': litellm_managed_keys_api_base_url,
+          'master_key': litellm_master_key,
+          'users': litellm_family_users,
+          'bindings': litellm_family_key_bindings} | to_json }}
+  register: litellm_family_bindings_result
+  changed_when: "'CHANGED' in litellm_family_bindings_result.stdout"
+  no_log: true
+  diff: false

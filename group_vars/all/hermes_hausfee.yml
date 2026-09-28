@@ -1,0 +1,151 @@
+---
+# Transport ownership stays with the existing multipurpose gateway.
+hermes_hausfee_group_id: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          34336639356330333435323936333133363061393237313834323634386564643838383236376263
+          6634353930656232323839313832613733303433333132310a646134343136613038613531626262
+          63633531353261356663393162653362346330393366356437316365333037313237626137643465
+          6139303132363661310a366532386365363132373930663364666231616532306236653439633037
+          32663166663534373436366665666664633532636538613234386436633864653937
+hermes_hausfee_daniel_whatsapp: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35663032623336376638333135336431386361363537373465633462343638303236303938653664
+          3338633064396364386631623037346165326265643130660a366334336430333336393936323865
+          62626161346533303564643135343037363865323462393732623330363364343737646131363338
+          3065316264633434650a373065666661366134333633636466393537643962323735346631343433
+          6361
+hermes_hausfee_sabine_whatsapp: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35636366313833663930356435623066666363356138666431656331653933326537346365373930
+          6361666463393865326462326438643532656436646466340a653561363135393461396131323864
+          37353966366464633537656134393134363437316563626233366639663236376266333062363533
+          3366643438373532630a623063386438646633313333626463366334333932306361313834353732
+          3134
+hermes_hausfee_daniel_telegram: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          36376564343963613039616138393039336130306165363865353661336564336665336436656331
+          3166346264613062616537383637643161386461336232660a393131643630323236633730343334
+          62316339303334303762343437393038313530353333323538363661366265303666656230353636
+          6266653466313731360a386230656632343239653533356334313832366139366264386439663736
+          6639
+hermes_hausfee_google_account: hausfee.kirsch@gmail.com
+hermes_hausfee_shopping_project: "6Jhc7FCRmrMQPgW7"
+
+hermes_hausfee_transport_env:
+  WHATSAPP_ENABLED: "true"
+  WHATSAPP_MODE: bot
+  # Bridge intake permits both household members. The Python adapter below
+  # independently permits both members in DMs and only the household group.
+  WHATSAPP_ALLOWED_USERS: "{{ hermes_hausfee_daniel_whatsapp }},{{ hermes_hausfee_sabine_whatsapp }}"
+  WHATSAPP_DM_POLICY: allowlist
+  WHATSAPP_GROUP_POLICY: allowlist
+  WHATSAPP_GROUP_ALLOWED_USERS: "{{ hermes_hausfee_group_id }}"
+  WHATSAPP_REQUIRE_MENTION: "true"
+  WHATSAPP_REPLY_PREFIX: ""
+  GOOGLE_WORKSPACE_CLI_CONFIG_DIR: /opt/data/.config/gws
+
+hermes_hausfee_transport_config:
+  whatsapp:
+    dm_policy: allowlist
+    allow_from: ["{{ hermes_hausfee_daniel_whatsapp }}", "{{ hermes_hausfee_sabine_whatsapp }}"]
+    group_policy: allowlist
+    group_allow_from: ["{{ hermes_hausfee_group_id }}"]
+    require_mention: true
+  platforms:
+    whatsapp:
+      enabled: true
+      extra:
+        dm_policy: allowlist
+        allow_from: ["{{ hermes_hausfee_daniel_whatsapp }}", "{{ hermes_hausfee_sabine_whatsapp }}"]
+        group_policy: allowlist
+        group_allow_from: ["{{ hermes_hausfee_group_id }}"]
+        require_mention: true
+        # Intake controls who may talk to Hausfee. All accepted conversations
+        # have the same commands and tools; empty lists disable slash gating.
+        allow_admin_from: []
+        user_allowed_commands: []
+        group_allow_admin_from: []
+        group_user_allowed_commands: []
+    telegram:
+      enabled: true
+      extra:
+        allow_from: ["{{ hermes_hausfee_daniel_telegram }}"]
+        allow_admin_from: []
+        user_allowed_commands: []
+        group_allow_admin_from: []
+        group_user_allowed_commands: []
+        group_policy: disabled
+  gateway:
+    multiplex_profiles: false
+    multiplex_profile_allowlist: []
+    profile_routes: []
+    group_sessions_per_user: false
+  multiplex_profiles: false
+  multiplex_profile_allowlist: []
+  profile_routes: []
+  model:
+    default: "{{ hermes_litellm_cloud_default_model }}"
+    provider: custom:kirelabs-litellm
+  custom_providers: "{{ hermes_litellm_custom_providers }}"
+  fallback_providers: "{{ hermes_litellm_cloud_fallbacks }}"
+  timezone: Europe/Berlin
+  terminal:
+    shell_init_files:
+      - ~/.profile
+      - ~/.bash_profile
+      - ~/.bashrc
+      - /opt/data/hausfee-shell.sh
+  toolsets: [hermes-cli]
+  platform_toolsets:
+    whatsapp: [hermes-whatsapp]
+    telegram: [hermes-telegram]
+    cli: [hermes-cli]
+  agent:
+    disabled_toolsets: []
+    system_prompt: |
+      Du bist Hausfee, die gemeinsame Haushaltsassistentin für Daniel und Sabine.
+      Sprich freundlich, praktisch und knapp auf Deutsch. Beide sind gleichberechtigt.
+      Hilf bei Einkauf, Kochen, Haushaltsplanung, Ausflügen und Haussteuerung.
+      Du bist in WhatsApp-Gruppe, WhatsApp-DM und Telegram-DM dieselbe Hausfee:
+      ein Profil, ein gemeinsames Gedächtnis, dieselben Fähigkeiten und Rechte.
+      Die Chatverläufe bleiben pro Unterhaltung geordnet. Wissen und Erinnerungen
+      sind kanalübergreifend nutzbar. Unterscheide persönliche Vorlieben nach Person;
+      stelle Einzelmeinungen nicht als gemeinsame Entscheidung dar.
+      Du darfst im eigenen Container Shell, Dateien, Browser, Skills, Delegation
+      und gws verwenden, ebenso Konfiguration und Routinen bearbeiten. Das gilt
+      auch für Aufträge aus der Gruppe. Daniels DMs dienen lediglich dazu,
+      Admin-Unterhaltungen aus der Gruppe herauszuhalten. Melde Ergebnisse in
+      dem Kanal, aus dem der Auftrag kam. Infrastruktur außerhalb dieses
+      Containers bleibt bei Daniels persönlichem Bare-Metal-Hermes.
+      Haushalts-Skills liegen gemeinsam mit Bare-Metal-Hermes in /skills/household.
+      Lege neue Haushalts-Skills dort an und pflege bestehende direkt dort.
+      Beide Agenten sehen dieselben Dateien; lies vor Änderungen den aktuellen Stand.
+      Nutze die tatsächlich verfügbaren MCP-Tools. Einkaufsziel ist ausschließlich
+      das gemeinsame Todoist-Projekt Einkaufsliste ({{ hermes_hausfee_shopping_project }}).
+      Suche darin vor dem Hinzufügen nach Duplikaten, löse Abschnitte live auf,
+      und kontrolliere Änderungen anschließend. Andere Projekte nicht bearbeiten.
+      Der Einkaufsliste-Skill erwähnt noch get_overview; dieses Werkzeug ist
+      nicht freigegeben. Verwende stattdessen find_tasks mit projectId, limit=100
+      und responsibleUserFiltering=all und folge bei Bedarf dem nächsten Cursor.
+      Markiere gekaufte Artikel als erledigt, statt sie endgültig zu löschen.
+      Haussteuerung: normale Bedienung; keine Konfigurations- oder Adminänderungen.
+      Bestätige ausgeführte Aktionen erst nach erfolgreichem Werkzeugergebnis.
+      Google Drive läuft über gws mit {{ hermes_hausfee_google_account }} und den
+      für dieses Konto freigegebenen Ressourcen. Prüfe vor Zugriff die Anmeldung;
+      ohne gültige Anmeldung keinen erfolgreichen Google-Zugriff behaupten.
+  memory:
+    memory_enabled: true
+    user_profile_enabled: true
+  group_sessions_per_user: false
+  skills:
+    create_dir: /skills/household
+    external_dirs:
+      - /skills/household
+      - /skills/global
+      - /skills/family
+      - /skills/caddy-proxy
+  mcp_servers: "{{ hermes_docker_managed_mcp_servers }}"
+
+# Resolve only on Ailab and transfer directly into the private container data.
+hermes_hausfee_onepassword_reference: op://homelab/y2h5jcyffdhf2pn4syn6rebxk4/credential
+hermes_hausfee_onepassword_cli_version: "2.38.1"

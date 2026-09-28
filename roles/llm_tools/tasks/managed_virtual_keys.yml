@@ -116,7 +116,9 @@
           key_alias: "{{ item.item.value.key_alias }}"
           team_id: "{{ item.item.value.team_id }}"
           agent_id: "{{ item.item.value.agent_id | default(none) }}"
+          user_id: "{{ item.item.value.user_id | default(omit) }}"
           models: "{{ item.item.value.models }}"
+          allowed_routes: "{{ item.item.value.allowed_routes | default(omit) }}"
           object_permission:
             mcp_access_groups: "{{ item.item.value.mcp_access_groups }}"
             mcp_servers: "{{ item.item.value.mcp_servers | default([]) }}"
@@ -148,7 +150,9 @@
           key_alias: "{{ item.value.key_alias }}"
           team_id: "{{ item.value.team_id }}"
           agent_id: "{{ item.value.agent_id | default(none) }}"
+          user_id: "{{ item.value.user_id | default(omit) }}"
           models: "{{ item.value.models }}"
+          allowed_routes: "{{ item.value.allowed_routes | default(omit) }}"
           object_permission:
             mcp_access_groups: "{{ item.value.mcp_access_groups }}"
             mcp_servers: "{{ item.value.mcp_servers | default([]) }}"

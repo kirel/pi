@@ -7,7 +7,7 @@ pocket_id_clients:
     name: LiteLLM
     url: https://litellm.kirelabs.org/ui
     callbacks: [https://litellm.kirelabs.org/sso/callback]
-    groups: [admins]
+    groups: [admins, family]
     pkce: true
   linkding:
     name: Linkding

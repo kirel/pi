@@ -114,3 +114,7 @@
       - "{{ pocket_id_config_folder }}/clients.json"
   register: pocket_id_client_result
   changed_when: "'CLIENT_CHANGED' in pocket_id_client_result.stdout"
+
+- name: Reconcile declared family identities
+  ansible.builtin.import_tasks: family-users.yml
+  tags: [pocket-id-family]

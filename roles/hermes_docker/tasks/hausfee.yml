@@ -1,0 +1,107 @@
+---
+- name: Configure Hausfee household and admin channels
+  when: hermes_hausfee_enabled | bool
+  block:
+    - name: Create private Hausfee migration backup directory
+      ansible.builtin.file:
+        path: "{{ hermes_docker_base_dir }}/hausfee-migration-backup"
+        state: directory
+        mode: "0700"
+
+    - name: Preserve pre-migration admin configuration
+      ansible.builtin.command:
+        argv:
+          - docker
+          - cp
+          - "hermes-multipurpose:{{ hermes_container_data_dir }}/{{ item }}"
+          - "{{ hermes_docker_base_dir }}/hausfee-migration-backup/{{ item }}"
+        creates: "{{ hermes_docker_base_dir }}/hausfee-migration-backup/{{ item }}"
+      loop: [config.yaml, .env]
+      no_log: true
+      diff: false
+
+    - name: Install Hausfee reconciliation helper
+      ansible.builtin.copy:
+        src: configure-hausfee.py
+        dest: "{{ hermes_docker_base_dir }}/configure-hausfee.py"
+        mode: "0600"
+
+    - name: Copy Hausfee helper into existing container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - cp
+          - "{{ hermes_docker_base_dir }}/configure-hausfee.py"
+          - hermes-multipurpose:/tmp/configure-hausfee.py
+      changed_when: false
+
+    - name: Apply one Hausfee profile with equal capabilities across channels
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - -i
+          - --user
+          - root
+          - hermes-multipurpose
+          - /opt/hermes/.venv/bin/python
+          - /tmp/configure-hausfee.py
+        stdin: >-
+          {{ {
+            'transport_env': hermes_hausfee_transport_env,
+            'transport_config': hermes_docker_config_overrides | combine(hermes_hausfee_transport_config, recursive=True)
+          } | to_json }}
+      register: hermes_hausfee_apply
+      changed_when: "'changed' in hermes_hausfee_apply.stdout"
+      no_log: true
+      diff: false
+
+    - name: Restore Hermes ownership of managed profile and config
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - --user
+          - root
+          - hermes-multipurpose
+          - /opt/hermes/.venv/bin/python
+          - -c
+          - |
+            import os
+            from pathlib import Path
+            uid, gid = {{ hermes_docker_data_uid | int }}, {{ hermes_docker_data_gid | int }}
+            root = Path('{{ hermes_container_data_dir }}')
+            changed = False
+            for name in ('config.yaml', 'profile.yaml', 'SOUL.md', 'hausfee-shell.sh', 'state.db', '.env', 'whatsapp/session', '.config/gws', 'archives', 'home/.npm', 'npm-global'):
+                path = root / name
+                if not path.exists():
+                    continue
+                for item in [path, *(path.rglob('*') if path.is_dir() else [])]:
+                    stat = item.lstat()
+                    if (stat.st_uid, stat.st_gid) != (uid, gid):
+                        os.lchown(item, uid, gid)
+                        changed = True
+            print('changed' if changed else 'ok')
+      register: hermes_hausfee_ownership
+      changed_when: "'changed' in hermes_hausfee_ownership.stdout"
+
+    - name: Apply only the existing Multipurpose LiteLLM key permissions
+      ansible.builtin.uri:
+        url: "{{ hermes_docker_litellm_api_base_url }}/key/update"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ litellm_master_key }}"
+        body_format: json
+        body:
+          key: "{{ hermes_docker_agents_env_secret.multipurpose.LITELLM_API_KEY }}"
+          object_permission:
+            mcp_access_groups: "{{ hermes_docker_litellm_keys.multipurpose.mcp_access_groups }}"
+            mcp_servers: []
+            mcp_tool_permissions: "{{ hermes_docker_litellm_keys.multipurpose.mcp_tool_permissions }}"
+        status_code: 200
+      no_log: true
+      diff: false
+
+    - name: Restart only the Hausfee gateway container after configuration changes
+      ansible.builtin.command: docker restart hermes-multipurpose
+      when: hermes_hausfee_apply is changed or hermes_hausfee_ownership is changed

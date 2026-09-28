@@ -1,0 +1,19 @@
+---
+- name: Install family identity reconciler
+  ansible.builtin.copy:
+    src: family-users.py
+    dest: "{{ pocket_id_config_folder }}/family-users.py"
+    owner: root
+    mode: '0700'
+
+- name: Ensure declared family users and group exist
+  ansible.builtin.command:
+    argv:
+      - python3
+      - "{{ pocket_id_config_folder }}/family-users.py"
+      - "{{ pocket_id_config_folder }}"
+      - "http://127.0.0.1:{{ pocket_id_http_port }}"
+    stdin: "{{ litellm_family_users | default({}) | to_json }}"
+  register: pocket_id_family_result
+  changed_when: "'CHANGED' in pocket_id_family_result.stdout"
+  when: not ansible_check_mode

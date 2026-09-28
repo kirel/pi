@@ -1,0 +1,36 @@
+---
+# Stable Pocket ID subjects also own each user's LiteLLM OAuth credentials.
+litellm_family_users:
+  daniel:
+    id: fa559a90-e4e0-4793-8aaa-594bce6fbe06
+    user_role: proxy_admin_viewer
+    email: danishkirel@gmail.com
+    firstName: Daniel
+  hausfee:
+    id: 2abf7dd6-4ec3-59f1-8b7e-2a2f8d6f942c
+    email: hausfee.kirsch@gmail.com
+    firstName: Hausfee
+  sabine:
+    id: 12edb7b3-5b26-56ea-bdbc-30e7ae1270a6
+    email: Bienee2013@gmail.com
+    firstName: Sabine
+
+# Existing keys are retained. No tokens or invitation emails are generated.
+litellm_family_key_bindings:
+  hermes:
+    username: daniel
+    team_id: hermes-baremetal
+  hermes-daniel-personal-pilot:
+    username: daniel
+    team_id: hermes-daniel-personal-pilot
+  hermes-multipurpose:
+    username: hausfee
+    team_id: hermes-hausfee
+  hermes-sabine:
+    username: sabine
+    team_id: hermes-sabine-personal
+
+# Stable IDs for the config-defined entries; registrations live encrypted in DB.
+litellm_craft_oauth_server_ids:
+  craft: 6b0c22d994ef87244fdb8ae082868bf9
+  craft_family: 398b4a4c7e5ec4ece902824c5a48000c

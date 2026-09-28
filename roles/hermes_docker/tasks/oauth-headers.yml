@@ -1,0 +1,49 @@
+---
+- name: Check family bot MCP authentication headers
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - --user
+      - hermes
+      - "hermes-{{ item }}"
+      - /opt/hermes/.venv/bin/python
+      - -c
+      - |
+        import yaml
+        from pathlib import Path
+        c = yaml.safe_load(Path('/opt/data/config.yaml').read_text())
+        expected = {'x-litellm-api-key': 'Bearer ${LITELLM_API_KEY}'}
+        print('ok' if c['mcp_servers']['litellm'].get('headers') == expected else 'update')
+  loop: "{{ hermes_docker_family_oauth_agents | default([]) }}"
+  register: hermes_family_header_checks
+  changed_when: false
+
+- name: Configure dedicated LiteLLM gateway header using Hermes CLI
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - --user
+      - hermes
+      - "hermes-{{ item.item }}"
+      - /opt/hermes/.venv/bin/python
+      - -m
+      - hermes_cli.main
+      - config
+      - set
+      - mcp_servers.litellm.headers
+      - '{"x-litellm-api-key":"Bearer ${LITELLM_API_KEY}"}'
+  loop: "{{ hermes_family_header_checks.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: item.stdout == 'update'
+  no_log: true
+
+- name: Restart family bots whose MCP header changed
+  ansible.builtin.command:
+    argv: [docker, restart, "hermes-{{ item.item }}"]
+  loop: "{{ hermes_family_header_checks.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: item.stdout == 'update'

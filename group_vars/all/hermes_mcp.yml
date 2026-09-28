@@ -71,6 +71,24 @@ litellm_managed_virtual_keys:
   baremetal_daniel:
     key: "{{ vault_hermes_baremetal_litellm_api_key | trim }}"
     key_alias: hermes
+    # Global statistics require Daniel's proxy_admin_viewer role as well.
+    allowed_routes:
+      - llm_api_routes
+      - /user/daily/activity
+      - /user/daily/activity/aggregated
+      - /team/daily/activity
+      - /team/daily/activity/aggregated
+      - /organization/daily/activity
+      - /customer/daily/activity
+      - /tag/daily/activity
+      - /agent/daily/activity
+      - /gateway/daily/activity
+      - /spend/logs/v2
+      - /spend/tags
+      - /v1/tool/spend
+      - /management/v1/spend_logs/users
+      - /management/v1/spend_logs/end_users
+    user_id: "{{ litellm_family_users.daniel.id }}"
     team_id: hermes-baremetal
     models: "{{ hermes_litellm_model_profiles.all_models }}"
     mcp_access_groups:
@@ -83,6 +101,8 @@ litellm_managed_virtual_keys:
       - workflow_admin
       - code
       - media_generation
+      - craft_family
+      - craft_personal_pilot
     mcp_tool_permissions:
       todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
 
@@ -97,7 +117,7 @@ litellm_managed_virtual_key_teams:
         role: user
     models: "{{ hermes_litellm_model_profiles.all_models }}"
     object_permission:
-      mcp_servers: [todoist, craft]
+      mcp_servers: [todoist, craft, craft_family]
       mcp_access_groups:
         - web
         - maps
@@ -109,15 +129,21 @@ litellm_managed_virtual_key_teams:
         - code
         - media_generation
         - craft_personal_pilot
+        - craft_family
   baremetal:
     team_id: hermes-baremetal
     metadata:
       allowed_passthrough_routes: [/v1/audio/speech/stream]
+    members_with_roles:
+      - user_id: "{{ litellm_family_users.daniel.id }}"
+        role: user
     team_alias: Hermes Bare Metal
     models: "{{ hermes_litellm_model_profiles.all_models }}"
     object_permission:
       mcp_servers:
         - todoist
+        - craft_family
+        - craft
       mcp_access_groups:
         - web
         - maps
@@ -128,6 +154,38 @@ litellm_managed_virtual_key_teams:
         - workflow_admin
         - code
         - media_generation
+        - craft_personal_pilot
+        - craft_family
+
+  hausfee:
+    team_id: hermes-hausfee
+    metadata:
+      allowed_passthrough_routes: [/v1/audio/speech/stream]
+    team_alias: Hausfee Hermes
+    members_with_roles:
+      - user_id: "{{ litellm_family_users.hausfee.id }}"
+        role: user
+    models: "{{ hermes_litellm_model_profiles.docker_chat }}"
+    object_permission:
+      mcp_servers: [todoist, craft_family]
+      mcp_access_groups: [web, maps, home_control, shopping, craft_family]
+      mcp_tool_permissions:
+        todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
+
+  sabine_personal:
+    team_id: hermes-sabine-personal
+    metadata:
+      allowed_passthrough_routes: [/v1/audio/speech/stream]
+    team_alias: Sabine Hermes
+    members_with_roles:
+      - user_id: "{{ litellm_family_users.sabine.id }}"
+        role: user
+    models: "{{ hermes_litellm_model_profiles.docker_chat }}"
+    object_permission:
+      mcp_servers: [todoist, craft_family]
+      mcp_access_groups: [web, maps, home_control, shopping, photos, notes, craft_family]
+      mcp_tool_permissions:
+        todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
 
 # Shared routing defaults; session /reasoning takes precedence in Hermes.
 hermes_litellm_cloud_default_model: gpt-6-sol-cpa

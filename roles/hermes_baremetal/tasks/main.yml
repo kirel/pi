@@ -452,3 +452,8 @@
   when:
     - hermes_baremetal_publish_enabled | bool
     - not ansible_check_mode
+
+- name: Configure opt-in LiteLLM OAuth admission header
+  ansible.builtin.import_tasks: oauth-header.yml
+  when: hermes_baremetal_manage_litellm_oauth_header | default(false) | bool
+  tags: [hermes-oauth]

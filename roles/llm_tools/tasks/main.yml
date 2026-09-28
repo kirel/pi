@@ -339,8 +339,20 @@
     - litellm_managed_virtual_keys | length > 0
     - not ansible_check_mode
 
+- name: Prepare family SSO identities before team membership
+  ansible.builtin.include_tasks: family-users.yml
+  when: litellm_family_users is defined and not ansible_check_mode
+
 - name: Sync managed LiteLLM virtual keys
   ansible.builtin.include_tasks: managed_virtual_keys.yml
   when:
     - litellm_managed_virtual_keys | length > 0
     - not ansible_check_mode
+
+- name: Reconcile family OAuth key ownership
+  ansible.builtin.include_tasks: family-bindings.yml
+  when: litellm_family_key_bindings is defined and not ansible_check_mode
+
+- name: Bootstrap persisted Craft OAuth clients
+  ansible.builtin.import_tasks: craft-oauth-bootstrap.yml
+  tags: [litellm-oauth-bootstrap]

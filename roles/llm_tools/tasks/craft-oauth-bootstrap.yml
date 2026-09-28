@@ -1,0 +1,25 @@
+---
+# User consent cannot persist the shared OAuth client. Bootstrap once as proxy
+# admin; subsequent registrations reuse the encrypted server-scoped store.
+- name: Initialize durable Craft OAuth clients
+  ansible.builtin.uri:
+    url: "{{ litellm_managed_keys_api_base_url }}/v1/mcp/server/oauth/{{ item.value }}/register"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ litellm_master_key }}"
+    body_format: json
+    body:
+      client_name: "LiteLLM {{ item.key }}"
+      grant_types: [authorization_code, refresh_token]
+      response_types: [code]
+      token_endpoint_auth_method: none
+    status_code: 200
+    return_content: true
+  loop: "{{ litellm_craft_oauth_server_ids | default({}) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: litellm_craft_oauth_registration
+  changed_when: litellm_craft_oauth_registration.json.client_id != item.value
+  no_log: true
+  diff: false
+  when: not ansible_check_mode

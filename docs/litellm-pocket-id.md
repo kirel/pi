@@ -1,7 +1,7 @@
 # LiteLLM Pocket ID login
 
 The first stage adds native OIDC browser login to LiteLLM. Pocket ID currently
-allows only its `admins` group to use `litellm-pocket-id`. This does not grant
+allows its `admins` and `family` groups to use `litellm-pocket-id`. This does not grant
 LiteLLM administrator privileges: new accounts without an assigned role default
 to `internal_user_viewer` (the installed version's INTERNAL_USER_VIEW_ONLY role).
 The stable identity is Pocket ID's `sub`; existing keys are not reassigned.
@@ -76,3 +76,5 @@ by a Craft authorization redirect (307). Daniel must connect Craft through his
 personal LiteLLM UI before end-to-end tool calls and token refresh can be tested.
 The initial authorize probe without DCR returned `missing_client_id`; the normal
 registration followed by authorization succeeded.
+
+Current Family Space onboarding and account bindings: [Craft Family](litellm-craft-family.md).
