@@ -1,0 +1,7 @@
+---
+- name: Manage Regfish DNS from the controller
+  hosts: homelab
+  connection: local
+  gather_facts: false
+  roles:
+    - { role: regfish_dns, tags: [regfish-dns] }

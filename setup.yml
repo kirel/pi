@@ -2,6 +2,7 @@
 - name: Set up homelab
   hosts: homelab
   roles:
+    - { role: regfish_dns, tags: [regfish-dns] }
     - { role: nuc, become: true, tags: [nuc] }
     - { role: basic, become: true, tags: [basic] }
     - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
