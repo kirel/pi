@@ -47,6 +47,9 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ immich_http_port }}"
     domain: immich.kirelabs.org
+    dns:
+      type: CNAME
+      data: "{{ regfish_dns_home_target }}"
     group: Media
     icon: immich
     public: true
@@ -198,6 +201,9 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ n8n_http_port }}"
     domain: n8n.kirelabs.org
+    dns:
+      type: CNAME
+      data: "{{ regfish_dns_home_target }}"
     # force_tls_internal: true
     group: Productivity
     icon: n8n.svg
@@ -244,6 +250,9 @@ services:
     target: homelab-nuc.lan
     http_port: "{{ jellyfin_http_port }}"
     domain: jellyfin.kirelabs.org
+    dns:
+      type: CNAME
+      data: "{{ regfish_dns_home_target }}"
     group: Media
     public: true
   music:
@@ -438,6 +447,9 @@ services:
     target: clawd.lan
     http_port: 3333
     domain: brumm.kirelabs.org
+    dns:
+      type: CNAME
+      data: "{{ regfish_dns_home_target }}"
     group: Games
     icon: mdi-car-sports
     public: true

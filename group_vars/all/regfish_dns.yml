@@ -1,0 +1,221 @@
+---
+# Imported from Regfish on 2026-09-29; preserve values, TTLs and inactive records.
+# Service records live in services.<name>.dns. ACME TXT records remain Caddy-owned.
+# observed = inventory only; never create, update, activate or delete these records.
+regfish_dns_home_target: danishkirel.asuscomm.com.
+
+regfish_dns_zones:
+  countdown.email:
+    - name: "@"
+      type: A
+      data: "185.8.168.6"
+      ttl: 300
+      state: observed
+      auto: true
+      active: true
+    - name: "*"
+      type: A
+      data: "185.8.168.6"
+      ttl: 300
+      state: observed
+      auto: true
+      active: true
+  dance-x-press.de:
+    - name: "@"
+      type: A
+      data: "185.8.168.6"
+      ttl: 300
+      state: observed
+      auto: true
+      active: true
+    - name: "*"
+      type: A
+      data: "185.8.168.6"
+      ttl: 300
+      state: observed
+      auto: true
+      active: true
+    - name: "@"
+      type: MX
+      data: "mailserv.regfish.com."
+      ttl: 86400
+      priority: 0
+  danielkirs.ch:
+    - name: "@"
+      type: MX
+      data: "mailserv.regfish.com."
+      ttl: 86400
+      priority: 0
+    - name: "www"
+      type: A
+      data: "185.8.168.6"
+      ttl: 300
+    - name: "@"
+      type: TXT
+      data: "v=spf1 include:_spf.google.com include:posteo.de ~all"
+      ttl: 86400
+    - name: "@"
+      type: A
+      data: "185.199.108.153"
+      ttl: 600
+      id: 3251222  # Disambiguates updates within this multi-value record set.
+    - name: "@"
+      type: A
+      data: "185.199.109.153"
+      ttl: 600
+      id: 3251223  # Disambiguates updates within this multi-value record set.
+    - name: "@"
+      type: A
+      data: "185.199.110.153"
+      ttl: 600
+      id: 3251224  # Disambiguates updates within this multi-value record set.
+    - name: "@"
+      type: A
+      data: "185.199.111.153"
+      ttl: 600
+      id: 3251225  # Disambiguates updates within this multi-value record set.
+  kirel.de:
+    - name: "@"
+      type: A
+      data: "184.106.20.102"
+      ttl: 86400
+      state: observed
+      auto: true
+      active: false
+    - name: "*"
+      type: A
+      data: "184.106.20.102"
+      ttl: 86400
+      annotation: "Posterous"
+      state: observed
+      auto: false
+      active: false
+    - name: "www"
+      type: A
+      data: "184.106.20.102"
+      ttl: 86400
+      state: observed
+      auto: false
+      active: false
+  kirelabs.org:
+    - name: "@"
+      type: A
+      data: "185.199.108.153"
+      ttl: 86400
+      state: observed
+      auto: true
+      active: true
+    - name: "detexify"
+      type: CNAME
+      data: "kirel.github.io."
+      ttl: 86400
+    - name: "detexify-service"
+      type: CNAME
+      data: "detexify3.herokuapp.com."
+      ttl: 86400
+    - name: "sketch-a-char"
+      type: CNAME
+      data: "sketch-a-char.herokuapp.com."
+      ttl: 86400
+    - name: "errbit"
+      type: CNAME
+      data: "errbit-kirel.herokuapp.com."
+      ttl: 86400
+    - name: "@"
+      type: A
+      data: "185.199.109.153"
+      ttl: 86400
+      id: 2713168  # Disambiguates updates within this multi-value record set.
+    - name: "mg"
+      type: TXT
+      data: "v=spf1 include:mailgun.org ~all"
+      ttl: 86400
+    - name: "krs._domainkey.mg"
+      type: TXT
+      # yamllint disable-line rule:line-length
+      data: "k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDHVNd8nlOUUn6mq6LcBfZLKqjgkKasuR2itgtSJUR2gvKh53XPMI+fb96mHIUE53dAoE8BQxwlgmiF9VrANr2jZ4iSHRjjoPzYjT++nwGrKcjSJw93CEpxPp9v2461G/HrRZYOrNcYrGwPaKm+86yQxc22Cy0yG9i16z/34+Xn9QIDAQAB"
+      ttl: 86400
+    - name: "email.mg"
+      type: CNAME
+      data: "mailgun.org."
+      ttl: 86400
+    - name: "@"
+      type: MX
+      data: "mailserv.regfish.com."
+      ttl: 86400
+      priority: 0
+    - name: "@"
+      type: A
+      data: "185.199.110.153"
+      ttl: 86400
+      id: 3015020  # Disambiguates updates within this multi-value record set.
+    - name: "@"
+      type: A
+      data: "185.199.111.153"
+      ttl: 86400
+      id: 3015021  # Disambiguates updates within this multi-value record set.
+    - name: "detexify-next"
+      type: CNAME
+      data: "kirel.github.io."
+      ttl: 600
+    - name: "*.marian"
+      type: A
+      data: "{{ hostvars['ubuntu-8gb-fsn1-1'].hermes_docker_agent_tailnet_ips.marian }}"
+      ttl: 600
+    - name: "*.anna"
+      type: A
+      data: "{{ hostvars['ubuntu-8gb-fsn1-1'].hermes_docker_agent_tailnet_ips.anna }}"
+      ttl: 600
+    - name: "*.sabine"
+      type: A
+      data: "{{ hostvars['ubuntu-8gb-fsn1-1'].hermes_docker_agent_tailnet_ips.sabine }}"
+      ttl: 600
+    - name: "*.hermes"
+      type: A
+      data: "{{ tailscale_hetzner_ip }}"
+      ttl: 600
+    - name: "mail"
+      type: TXT
+      data: "brevo-code:5268291ffa2a3d5e9b6fd201942d4430"
+      ttl: 86400
+    - name: "brevo1._domainkey.mail"
+      type: CNAME
+      data: "b1.mail-kirelabs-org.dkim.brevo.com."
+      ttl: 86400
+    - name: "brevo2._domainkey.mail"
+      type: CNAME
+      data: "b2.mail-kirelabs-org.dkim.brevo.com."
+      ttl: 86400
+    - name: "_dmarc.mail"
+      type: TXT
+      data: "v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com"
+      ttl: 86400
+    - name: "*.multipurpose"
+      type: A
+      data: "{{ hostvars['ubuntu-8gb-fsn1-1'].hermes_docker_agent_tailnet_ips.multipurpose }}"
+      ttl: 600
+  kirelog.de:
+    - name: "@"
+      type: A
+      data: "66.6.44.4"
+      ttl: 86400
+      state: observed
+      auto: true
+      active: false
+    - name: "*"
+      type: A
+      data: "66.6.44.4"
+      ttl: 86400
+      state: observed
+      auto: true
+      active: false
+  lalog.de: []
+  leistungsphase.com:
+    - name: "www"
+      type: CNAME
+      data: "leistungsphase-cedar.herokuapp.com."
+      ttl: 86400
+    - name: "media"
+      type: CNAME
+      data: "media.leistungsphase.com.s3.amazonaws.com."
+      ttl: 86400

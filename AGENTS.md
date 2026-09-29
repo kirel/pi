@@ -7,6 +7,7 @@ Guidance for AI agents working in this **Ansible-based homelab infrastructure**.
 - **Services:** `group_vars/all/services.yml` is the source of truth for proxied services (`target`, `http_port`, `domain`, `group`).
 - **MCP:** `litellm_mcp_servers` in `roles/llm_tools/defaults/main.yml` is the source of truth. LiteLLM config, Dockerfile npm/uv preinstalls, and stdio allowlist are rendered from it.
 - **DNS/SSL:** Pi-hole creates host A-records and service CNAMEs; Caddy terminates `*.kirelabs.org` TLS via Regfish DNS-01.
+- **Regfish DNS:** `group_vars/all/regfish_dns.yml` owns standalone records; optional `services.<name>.dns` owns the record for that service's `domain`. DNS publication and Caddy's `public` access policy are independent. See `roles/regfish_dns/README.md`.
 
 ## Secret Handover through 1Password
 
@@ -23,6 +24,10 @@ Guidance for AI agents working in this **Ansible-based homelab infrastructure**.
 # Full deploy
 uv run ansible-playbook setup.yml
 
+# Regfish DNS: inspect the live plan, then apply
+uv run ansible-playbook regfish-dns.yml --check
+uv run ansible-playbook regfish-dns.yml
+
 # Services/DNS/proxy after group_vars/all/services.yml changes
 uv run ansible-playbook setup.yml --tags caddy --limit homelab
 uv run ansible-playbook setup.yml --tags pihole --limit nameserver,homelab
@@ -36,6 +41,7 @@ uv run ansible-playbook setup.yml --tags llm-inference --limit ailab_ubuntus
 
 **Rules:**
 - After editing `services.yml`, redeploy **Caddy + Pi-hole**.
+- After changing a service `dns` block or `regfish_dns.yml`, also run the Regfish playbook. Never purge undeclared records; deletion requires `state: absent`. Keep ACME records with Caddy and automatic/inactive records `state: observed`.
 - After editing `litellm_mcp_servers`, deploy **llm-tools only** unless a service entry also changed.
 
 ## MCP Setup
