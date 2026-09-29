@@ -24,7 +24,7 @@
             HOST_APPS_STATE_FOLDER: /etc/wolf
             NVIDIA_DRIVER_CAPABILITIES: all
             NVIDIA_VISIBLE_DEVICES: "{{ gpu_5060ti_uuid }}"
-            WOLF_RENDER_NODE: /dev/dri/renderD131
+            WOLF_RENDER_NODE: /dev/dri/renderD130
           volumes:
             - /etc/wolf/:/etc/wolf
             - /tmp/sockets:/tmp/sockets:rw
@@ -36,8 +36,8 @@
             - /dev/nvidia-modeset:/dev/nvidia-modeset
             - /dev/nvidia-uvm:/dev/nvidia-uvm
             - /dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools
-            - /dev/dri/card3:/dev/dri/card3
-            - /dev/dri/renderD131:/dev/dri/renderD131
+            - /dev/dri/card2:/dev/dri/card2
+            - /dev/dri/renderD130:/dev/dri/renderD130
             - /dev/uinput
             - /dev/uhid
           device_cgroup_rules:
