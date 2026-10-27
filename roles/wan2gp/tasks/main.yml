@@ -412,8 +412,12 @@
           '--mcp',
           '--mcp-transport', wan2gp_mcp_transport,
           '--mcp-host', wan2gp_mcp_host,
-          '--mcp-port', wan2gp_mcp_port | string
-        ] + wan2gp_runtime_args
+          '--mcp-port', wan2gp_mcp_port | string,
+          '--mcp-api-version', wan2gp_mcp_api_version | string
+        ]
+        + (['--mcp-allow-read-file-system'] if wan2gp_mcp_allow_read_file_system | bool else [])
+        + (['--mcp-async'] if wan2gp_mcp_async | bool else [])
+        + wan2gp_runtime_args
         if wan2gp_mode == 'mcp'
         else wan2gp_runtime_args
       }}

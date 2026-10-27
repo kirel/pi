@@ -75,7 +75,7 @@ ha_mcp_container_name: "ha-mcp"
 ha_mcp_port: 8086
 
 # --- ComfyUI MCP Settings ---
-comfyui_mcp_version: "0.50.25"
+comfyui_mcp_version: "0.52.205"
 comfyui_mcp_url: "http://ailab-ubuntu.lan:{{ comfyui_port | default(8188) }}"
 
 # --- Google Workspace MCP Settings ---
@@ -120,6 +120,7 @@ litellm_mcp_servers:
       - code
       - coding_agents
       - media_generation
+      - comfyui
       - craft_personal_pilot
       - craft_family
   fetch:
@@ -234,7 +235,7 @@ litellm_mcp_servers:
     env:
       COMFYUI_MCP_TOOL_MODE: compact
       PATH: /usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
-    access_groups: ["media_generation"]
+    access_groups: ["comfyui"]
     install:
       manager: npm
       package: "comfyui-mcp@{{ comfyui_mcp_version }}"

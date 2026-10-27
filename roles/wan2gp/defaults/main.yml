@@ -1,6 +1,6 @@
 ---
 wan2gp_repo_url: https://github.com/deepbeepmeep/Wan2GP.git
-wan2gp_repo_version: main
+wan2gp_repo_version: 6479db36bdc2619a904a852bba9c2d78e1a83f82
 wan2gp_base_dir: /opt/wan2gp
 wan2gp_app_path: "{{ wan2gp_base_dir }}/app"
 wan2gp_cache_root: "{{ wan2gp_base_dir }}/cache"
@@ -22,16 +22,22 @@ wan2gp_lightx2v_cuda12_compat_packages:
 wan2gp_gguf_cuda_wheel: "https://github.com/deepbeepmeep/kernels/releases/download/GGUF_Kernels/\
   llamacpp_gguf_cuda-1.0.2+torch210cu13py311-cp311-cp311-linux_x86_64.whl"
 wan2gp_cuda_architectures: auto
-# WanGP memory profile. Profile 5 is documented as minimum system-RAM usage;
+# WanGP memory profile. Profile 4 is selected for Daniel's Hermes comparison;
+# profile 5 remains the minimum system-RAM fallback.
 # profile 2 keeps unused models in reserved RAM and caused host memory pressure
 # when MCP generation jobs were started from LiteLLM.
-wan2gp_profile: "5"
+wan2gp_profile: "4"
 wan2gp_mode: mcp
 wan2gp_mcp_transport: streamable-http
 wan2gp_mcp_host: "0.0.0.0"
 wan2gp_mcp_port: "{{ wan2gp_port }}"
-wan2gp_attention: sdpa
-wan2gp_fp16: true
+# MCP v2 uses explicit asynchronous jobs; keep the trusted Hermes SSH path fallback.
+wan2gp_mcp_api_version: 2
+wan2gp_mcp_async: true
+wan2gp_mcp_allow_read_file_system: true
+wan2gp_attention: sage2
+# Keep model-native/automatic precision so H3 can use BF16-only Sol attention.
+wan2gp_fp16: false
 wan2gp_compile: false
 wan2gp_preload: 0
 wan2gp_perc_reserved_mem_max: "0.2"
