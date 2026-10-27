@@ -1,0 +1,59 @@
+---
+# Data is copied during a controlled migration, never by a normal deployment.
+- name: Mount the existing Hetzner data volume
+  ansible.posix.mount:
+    path: "{{ hetzner_storage_mount }}"
+    src: "UUID={{ hetzner_storage_uuid }}"
+    fstype: ext4
+    opts: defaults,discard,nofail
+    dump: '0'
+    passno: '0'
+    state: mounted
+  register: hetzner_storage_volume
+
+- name: Check that the initial data migration was completed
+  ansible.builtin.stat:
+    path: "{{ hetzner_storage_mount }}/.migration-complete"
+  register: hetzner_storage_migration
+
+- name: Refuse to mount an unprepared data directory
+  ansible.builtin.assert:
+    that: hetzner_storage_migration.stat.exists
+    fail_msg: Complete the controlled data migration before deploying this role.
+
+- name: Mount migrated directories at their original paths
+  ansible.posix.mount:
+    path: "{{ item.target }}"
+    src: "{{ hetzner_storage_mount }}/{{ item.directory }}"
+    fstype: none
+    opts: "bind,nofail,x-systemd.requires-mounts-for={{ hetzner_storage_mount }}"
+    dump: '0'
+    passno: '0'
+    state: mounted
+  loop: "{{ hetzner_storage_bind_mounts }}"
+  register: hetzner_storage_binds
+
+- name: Create service dependency directories
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ item }}.d"
+    state: directory
+    mode: '0755'
+  loop: "{{ hetzner_storage_dependent_units }}"
+
+- name: Require migrated filesystems before starting applications
+  ansible.builtin.copy:
+    dest: "/etc/systemd/system/{{ item }}.d/hetzner-storage.conf"
+    mode: '0644'
+    content: |
+      [Unit]
+      RequiresMountsFor={{ hetzner_storage_mount }} {{ hetzner_storage_bind_mounts | map(attribute='target') | join(' ') }}
+      AssertPathIsMountPoint={{ hetzner_storage_mount }}
+      AssertPathIsMountPoint=/home/daniel
+      AssertPathIsMountPoint=/opt/hermes-agents
+  loop: "{{ hetzner_storage_dependent_units }}"
+  register: hetzner_storage_units
+
+- name: Reload systemd mount and service dependencies
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when: hetzner_storage_units is changed or hetzner_storage_volume is changed or hetzner_storage_binds is changed

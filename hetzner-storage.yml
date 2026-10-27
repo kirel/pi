@@ -1,0 +1,6 @@
+---
+- name: Manage the migrated Hetzner data volume
+  hosts: hetzner
+  become: true
+  roles:
+    - hetzner_storage
