@@ -30,17 +30,3 @@ RUN npm install -g t3@{{ t3_code_version }}
 RUN npm install -g --prefix /opt/codex {{ t3_code_codex_package }} \
     && chown -R {{ t3_code_user }} /opt/codex \
     && ln -s /opt/codex/bin/codex /usr/local/bin/codex
-
-# T3 Code only exposes project actions below its phone breakpoint. Keep the
-# action tappable on wider touch devices such as an iPad in landscape.
-COPY touch-device-fixes.css /tmp/t3-code-touch-device-fixes.css
-
-RUN npm_root="$(npm root -g)" \
-    && t3_client_dir="$npm_root/t3/dist/client" \
-    && if [ ! -f "$t3_client_dir/index.html" ]; then \
-         t3_client_index="$(find "$npm_root/t3/node_modules/@t3code" -type f -path '*/t3-*/client/index.html' -print -quit)"; \
-         test -n "$t3_client_index"; \
-         t3_client_dir="$(dirname "$t3_client_index")"; \
-       fi \
-    && cp /tmp/t3-code-touch-device-fixes.css "$t3_client_dir/touch-device-fixes.css" \
-    && sed -i 's#</head>#<link rel="stylesheet" href="/touch-device-fixes.css"></head>#' "$t3_client_dir/index.html"
