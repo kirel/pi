@@ -11,16 +11,16 @@ class AutoKumaLabelsTest(unittest.TestCase):
                                   'group_vars/all/services.yml').read_text())['services']
         static = {key for key, value in catalog.items()
                   if (value.get('homepage') or {}).get('source') == 'static'}
-        self.assertEqual(static, {'hermes-local', 'hermes-local-webui',
-                                  'hermes-baremetal-daniel', 'syncthing-ailab'})
+        self.assertEqual(static, {'hermes-local',
+                                  'hermes-baremetal-daniel', 'syncthing-ailab', 'strata'})
         for key, service in catalog.items():
             autokuma_labels(service, key, 'validation-only')
 
     def test_ailab_is_monitored_without_obsolete_wol(self):
         catalog = yaml.safe_load((Path(__file__).resolve().parents[1] /
                                   'group_vars/all/services.yml').read_text())['services']
-        for key in ['llama-swap', 'comfyui', 'wan2gp', 't3-code-ailab',
-                    'hermes-local', 'hermes-local-webui', 'syncthing-ailab']:
+        for key in ['llama-swap', 'strata', 'comfyui', 'wan2gp', 't3-code-ailab',
+                    'hermes-local', 'syncthing-ailab']:
             self.assertNotIn('wol', catalog[key])
             self.assertNotIn('try', catalog[key])
             self.assertTrue(catalog[key]['monitoring'])

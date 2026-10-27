@@ -307,6 +307,26 @@ services:
     domain: litellm.kirelabs.org
     group: AI
     icon: https://litellm.kirelabs.org/swagger/favicon.png
+  litellm-remote:
+    name: LiteLLM Remote
+    target: "100.121.44.75"
+    http_port: 4000
+    domain: litellm-remote.kirelabs.org
+    dns_target: dashserv-m-1.lan
+    group: AI
+    icon: https://litellm.kirelabs.org/swagger/favicon.png
+    dns:
+      type: A
+      data: "100.121.44.75"
+      ttl: 300
+  agentgateway:
+    name: Agentgateway
+    target: homelab-nuc.lan
+    http_port: 4010
+    domain: agentgateway.kirelabs.org
+    group: AI
+    icon: mdi-api
+    public: false
   cpa:
     monitoring:
       docker: true
@@ -366,6 +386,20 @@ services:
     domain: llama-swap.kirelabs.org
     group: AI
     icon: https://cdn.jsdelivr.net/gh/mostlygeek/llama-swap@main/ui-svelte/public/favicon.svg
+  strata:
+    monitoring:
+      http:
+        path: /health
+    name: Strata
+    target: ailab-ubuntu.lan
+    http_port: "{{ llamaswap_port }}"
+    upstream_path: /upstream/Qwen3.8-Flash-Next-IQ3_XXS-Strata
+    domain: strata.kirelabs.org
+    homepage:
+      source: static
+    href: https://strata.kirelabs.org
+    group: AI
+    icon: mdi-brain
   comfyui:
     monitoring:
       http:
@@ -402,18 +436,6 @@ services:
     target: ailab-ubuntu.lan
     http_port: 18080
     domain: hermes-local.kirelabs.org
-    homepage:
-      source: static
-    group: AI
-    icon: hermes-icon.png
-  hermes-local-webui:
-    monitoring:
-      http:
-        path: /health
-    name: Hermes Local WebUI
-    target: ailab-ubuntu.lan
-    http_port: 18787
-    domain: hermes-local-webui.kirelabs.org
     homepage:
       source: static
     group: AI

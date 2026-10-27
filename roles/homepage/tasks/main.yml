@@ -13,6 +13,7 @@
     dest: "{{ homepage_config_folder }}/{{ item | basename | regex_replace('.j2', '') }}"
   loop: "{{ lookup('fileglob', 'templates/*.j2', wantlist=True) }}"
   notify: Restart homepage container
+  tags: [homepage-config]
 
 - name: Create network
   community.docker.docker_network:

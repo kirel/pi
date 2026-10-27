@@ -36,6 +36,9 @@ danishkirel.asuscomm.com {
         {% set backend_port = props.auth.proxy_port %}
 {% endif %}
         reverse_proxy {% if props.upstream_scheme is defined %}{{ props.upstream_scheme }}://{% elif props.tls_skip | default(false) %}http://{% endif %}{{ backend_host }}:{{ backend_port }} {
+{% if props.upstream_path is defined %}
+                rewrite {{ props.upstream_path }}{uri}
+{% endif %}
 {% if props.auth is defined and props.auth.provider | default('') == 'pocket_id' %}
                 header_up -Remote-User
                 header_up -Remote-Groups
