@@ -1,5 +1,12 @@
 ---
 static_dhcp:
+  # Building systems: preserve the working addresses after the move.
+  luxtronik:
+    mac: "04:D1:6E:D9:D8:33"
+    ip_suffix: 194
+  sigenergy:
+    mac: "BC:31:98:D6:20:0A"
+    ip_suffix: 188
   # Infra .1-.9
   powerline:
     mac: E8:48:B8:C6:CC:36
@@ -171,6 +178,9 @@ static_dhcp:
   fan:
     mac: CC:B5:D1:6A:45:8F
     ip_suffix: 81
+  maveo-connect:
+    mac: "86:8B:71:6C:24:52"
+    ip_suffix: 82
   daniels-mac:
     mac: e6:d8:be:f9:04:b6
     ip_suffix: 90

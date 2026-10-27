@@ -47,8 +47,8 @@ regfish_dns_zones:
       ttl: 86400
       priority: 0
     - name: "www"
-      type: A
-      data: "185.8.168.6"
+      type: CNAME
+      data: "kirel.github.io."
       ttl: 300
     - name: "@"
       type: TXT
