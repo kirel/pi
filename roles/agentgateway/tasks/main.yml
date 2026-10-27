@@ -1,0 +1,55 @@
+---
+- name: Create writable Agentgateway configuration directory
+  ansible.builtin.file:
+    path: "{{ agentgateway_config_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0700"
+
+- name: Seed Agentgateway configuration without overwriting UI edits
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ agentgateway_config_dir }}/config.yaml"
+    owner: "1000"
+    group: "1000"
+    mode: "0600"
+    force: false
+  no_log: true
+  diff: false
+
+- name: Provide the existing CPA credential to the playground
+  ansible.builtin.copy:
+    content: "CPA_API_KEY={{ vault_cpa_api_key | trim }}\n"
+    dest: "{{ agentgateway_config_dir }}/provider.env"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  diff: false
+
+- name: Write the standalone Compose deployment
+  ansible.builtin.template:
+    src: compose.yaml.j2
+    dest: "{{ agentgateway_config_dir }}/compose.yaml"
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Deploy only Agentgateway
+  community.docker.docker_compose_v2:
+    project_src: "{{ agentgateway_config_dir }}"
+    project_name: agentgateway
+    state: present
+    pull: missing
+  no_log: true
+
+- name: Wait for the Agentgateway UI
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ agentgateway_http_port }}/ui/"
+    status_code: 200
+    timeout: 5
+  register: agentgateway_readiness
+  until: agentgateway_readiness.status | default(0) == 200
+  retries: 15
+  delay: 2

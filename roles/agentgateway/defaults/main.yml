@@ -1,0 +1,4 @@
+---
+agentgateway_image: cr.agentgateway.dev/agentgateway:v1.6.0
+agentgateway_config_dir: "{{ config_root }}/agentgateway"
+agentgateway_http_port: "{{ services['agentgateway'].http_port }}"

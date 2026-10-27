@@ -1,0 +1,7 @@
+---
+# Opt-in playground; deliberately separate from the normal setup.yml deploy.
+- name: Deploy the parallel Agentgateway playground
+  hosts: homelab
+  become: true
+  roles:
+    - agentgateway

@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://agentgateway.dev/schema/config
+# Initial seed only. Subsequent UI edits are preserved by Ansible.
+config:
+  storage:
+    mode: file
+  database:
+    url: sqlite:///config/data.db
+gateways:
+  default:
+    port: 4000
+ui:
+  gateways: default
+llm:
+  gateways: default
+  providers:
+    - name: cpa
+      provider:
+        custom:
+          formats:
+            - type: completions
+            - type: responses
+      params:
+        baseUrl: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+        apiKey: "$CPA_API_KEY"
+    - name: llamaswap
+      provider:
+        custom:
+          formats:
+            - type: completions
+            - type: embeddings
+      params:
+        baseUrl: "http://{{ llm_inference_host }}:{{ llamaswap_port }}/v1"
+        apiKey: unused
+  models:
+    - name: gpt-6.1-sol-cpa
+      provider:
+        reference: cpa
+      params:
+        model: gpt-6.1-sol
+    - name: gemini-3.8-flash-high-cpa
+      provider:
+        reference: cpa
+      params:
+        model: gemini-3.8-flash-high
+    - name: home-hermes
+      provider:
+        reference: llamaswap
+      params:
+        model: "{{ model_group_alias['home-hermes'] }}"
+      defaults:
+        reasoning_effort: low
+    - name: home-embed
+      provider:
+        reference: llamaswap
+      params:
+        model: "{{ model_group_alias['home-embed'] }}"
+mcp:
+  gateways: default
+  targets: []

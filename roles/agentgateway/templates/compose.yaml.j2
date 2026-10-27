@@ -1,0 +1,29 @@
+services:
+  agentgateway:
+    image: "{{ agentgateway_image }}"
+    container_name: agentgateway
+    restart: unless-stopped
+    user: "1000:1000"
+    command: ["-f", "/config/config.yaml"]
+    ports:
+      - "127.0.0.1:{{ agentgateway_http_port }}:4000"
+    volumes:
+      - "{{ agentgateway_config_dir }}:/config"
+    env_file:
+      - provider.env
+    mem_limit: 512m
+    cpus: 1.0
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Docker's next automatic pool overlaps a Tailscale subnet route on the NUC.
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.206.0.0/24
