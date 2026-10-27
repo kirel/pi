@@ -6,6 +6,73 @@
     mode: "0644"
   notify: Restart udev
 
+- name: Find Wolf GPU PCI address
+  ansible.builtin.command:
+    argv:
+      - nvidia-smi
+      - "--id={{ gpu_5060ti_uuid }}"
+      - --query-gpu=pci.bus_id
+      - --format=csv,noheader
+  register: wolf_gpu_pci
+  changed_when: false
+  check_mode: false
+
+- name: Resolve Wolf GPU render node
+  ansible.builtin.command:
+    argv:
+      - readlink
+      - -e
+      - "/dev/dri/by-path/pci-{{ wolf_gpu_pci.stdout | trim | lower | regex_replace('^00000000:', '0000:') }}-render"
+  register: wolf_gpu_render_node
+  changed_when: false
+  check_mode: false
+
+- name: Remove fixed GPU devices from the saved Steam profile
+  ansible.builtin.replace:
+    path: /etc/wolf/cfg/config.toml
+    after: "    title = 'Steam'"
+    before: "        name = 'WolfSteam'"
+    regexp: '(?ms)^        devices = \[\n.*?^        \]'
+    replace: '        devices = []'
+    backup: true
+    validate: >-
+      /usr/bin/python3 -c "import sys,tomllib;tomllib.load(open(sys.argv[1],'rb'))" %s
+  no_log: true
+  diff: false
+  notify: Restart wolf
+
+- name: Let Steam discover the GPU devices provided by the toolkit
+  ansible.builtin.replace:
+    path: /etc/wolf/cfg/config.toml
+    after: "    title = 'Steam'"
+    before: "        name = 'WolfSteam'"
+    regexp: 'GOW_REQUIRED_DEVICES=[^\x27\n]+'
+    replace: 'GOW_REQUIRED_DEVICES=/dev/input/* /dev/dri/* /dev/nvidia*'
+    backup: true
+    validate: >-
+      /usr/bin/python3 -c "import sys,tomllib;tomllib.load(open(sys.argv[1],'rb'))" %s
+  no_log: true
+  diff: false
+  notify: Restart wolf
+
+- name: Install Wolf app GPU configuration helper
+  ansible.builtin.copy:
+    src: restrict-app-gpus.py
+    dest: /usr/local/bin/wolf-restrict-app-gpus
+    mode: "0755"
+
+- name: Restrict saved app profiles to the RTX 5060 Ti
+  ansible.builtin.command:
+    argv:
+      - /usr/local/bin/wolf-restrict-app-gpus
+      - /etc/wolf/cfg/config.toml
+      - "{{ gpu_5060ti_uuid }}"
+  register: wolf_app_gpu_config
+  changed_when: "'changed' in wolf_app_gpu_config.stdout"
+  no_log: true
+  diff: false
+  notify: Restart wolf
+
 - name: Start wolf
   community.docker.docker_compose_v2:
     project_name: wolf
@@ -24,20 +91,17 @@
             HOST_APPS_STATE_FOLDER: /etc/wolf
             NVIDIA_DRIVER_CAPABILITIES: all
             NVIDIA_VISIBLE_DEVICES: "{{ gpu_5060ti_uuid }}"
-            WOLF_RENDER_NODE: /dev/dri/renderD130
+            WOLF_RENDER_NODE: "{{ wolf_gpu_render_node.stdout }}"
           volumes:
             - /etc/wolf/:/etc/wolf
             - /tmp/sockets:/tmp/sockets:rw
             - /var/run/docker.sock:/var/run/docker.sock:rw
             - /run/udev:/run/udev:rw
           devices:
-            - /dev/nvidia2:/dev/nvidia2
             - /dev/nvidiactl:/dev/nvidiactl
             - /dev/nvidia-modeset:/dev/nvidia-modeset
             - /dev/nvidia-uvm:/dev/nvidia-uvm
             - /dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools
-            - /dev/dri/card2:/dev/dri/card2
-            - /dev/dri/renderD130:/dev/dri/renderD130
             - /dev/uinput
             - /dev/uhid
           device_cgroup_rules:

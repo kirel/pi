@@ -1,0 +1,13 @@
+original_config_restored
+001d
+001d
+Qwen3.8-27B-Instruct-AutoRound-vLLM ready
+qwen3-embedding ready
+qwen3-tts ready
+whisper-large-v3-turbo-q8-crispasr ready
+NCCL_P2P_DISABLE=1
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+index, driver_version, memory.free [MiB], power.limit [W]
+0, 615.71.09, 3719 MiB, 250.00 W
+1, 615.71.09, 3747 MiB, 250.00 W
+2, 615.71.09, 15411 MiB, 180.00 W

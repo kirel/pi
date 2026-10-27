@@ -1,0 +1,7 @@
+87d0d7bee4db:130:130 [0] NCCL INFO NCCL_P2P_LEVEL set by environment to PHB
+87d0d7bee4db:131:131 [1] NCCL INFO NCCL_P2P_LEVEL set by environment to PHB
+87d0d7bee4db:130:130 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[1] via P2P/IPC
+87d0d7bee4db:130:130 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[1] via P2P/IPC
+87d0d7bee4db:131:131 [1] NCCL INFO Channel 00/0 : 1[1] -> 0[0] via P2P/IPC
+87d0d7bee4db:131:131 [1] NCCL INFO Channel 01/0 : 1[1] -> 0[0] via P2P/IPC
+(EngineCore pid=119) INFO 09-29 14:46:02 [kv_cache_utils.py:2235] GPU KV cache size: 364,591 tokens

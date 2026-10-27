@@ -1,0 +1,136 @@
+---
+- name: Controlled NVIDIA PCIe P2P experiment
+  hosts: ailab_ubuntus
+  become: true
+  gather_facts: true
+  vars_files:
+    - ../../roles/gpu/defaults/main.yml
+  vars:
+    p2p_action: prepare
+    p2p_version: 615.71.09
+    p2p_package_version: 615.71.09-2ubuntu1
+    p2p_revision: c8bff5400e2fc8bda4cb9a141fb596aad607a35f
+    p2p_root: /var/lib/nvidia-p2p-test
+    p2p_packages: "{{ nvidia_driver_hold_packages | map('regex_replace', '$', '=' ~ p2p_package_version) | list }}"
+  tasks:
+    - name: Validate action and target
+      ansible.builtin.assert:
+        that:
+          - p2p_action in ['prepare', 'apply', 'rollback']
+          - inventory_hostname == 'ailab-ubuntu'
+          - ansible_kernel == '6.8.0-142-generic'
+
+    - name: Prepare source and offline recovery
+      when: p2p_action in ['prepare', 'apply']
+      block:
+        - name: Create experiment directory
+          ansible.builtin.file:
+            path: "{{ p2p_root }}"
+            state: directory
+            mode: '0700'
+
+        - name: Save installed driver packages and recovery command once
+          ansible.builtin.shell: |
+            python3 - <<'PY'
+            import pathlib, subprocess, shlex
+            root = pathlib.Path('{{ p2p_root }}')
+            rows = subprocess.check_output(['dpkg-query', '-W', '-f=${binary:Package} ${Version} ${db:Status-Status}\n'], text=True)
+            packages = [r.split()[:2] for r in rows.splitlines() if len(r.split()) == 3 and r.split()[2] == 'installed' and r.split()[1] == '590.48.01-0ubuntu1']
+            assert len(packages) >= 19, 'Expected original 590 driver; refusing to overwrite recovery baseline'
+            backup = root / 'debs'
+            backup.mkdir(exist_ok=True)
+            subprocess.run(['apt-get', 'download', *[p+'='+v for p,v in packages]], cwd=backup, check=True)
+            debs = sorted(backup.glob('*.deb'))
+            assert len(debs) == len(packages)
+            script = '#!/bin/bash\nset -euo pipefail\n'
+            script += 'apt-get install -y --no-download --reinstall --allow-downgrades --allow-change-held-packages ' + ' '.join(shlex.quote(str(p)) for p in debs) + '\n'
+            script += 'rm -f /etc/default/grub.d/99-nvidia-p2p-test.cfg\nupdate-grub\nupdate-initramfs -u -k all\n'
+            (root / 'rollback.sh').write_text(script)
+            (root / 'rollback.sh').chmod(0o700)
+            (root / 'packages.txt').write_text('\n'.join(p+'='+v for p,v in packages)+'\n')
+            (root / 'prepared').touch()
+            PY
+          args:
+            creates: "{{ p2p_root }}/prepared"
+
+        - name: Put offline rollback packages in the APT cache
+          ansible.builtin.shell: "cp {{ p2p_root }}/debs/*.deb /var/cache/apt/archives/"
+
+        - name: Fetch immutable fork revision
+          ansible.builtin.git:
+            repo: https://github.com/aikitoria/open-gpu-kernel-modules.git
+            dest: "{{ p2p_root }}/source"
+            version: "{{ p2p_revision }}"
+
+        - name: Build before disrupting services
+          ansible.builtin.command:
+            cmd: "make -j8 modules KERNEL_UNAME={{ ansible_kernel }}"
+            chdir: "{{ p2p_root }}/source"
+            creates: "{{ p2p_root }}/source/kernel-open/nvidia.ko"
+
+        - name: Verify complete package transaction
+          ansible.builtin.command:
+            argv: "{{ ['apt-get', '-s', 'install', '--no-remove', '--allow-change-held-packages'] + p2p_packages }}"
+          changed_when: false
+
+        - name: Download target packages before stopping services
+          ansible.builtin.command:
+            argv: "{{ ['apt-get', '-y', '--download-only', 'install', '--no-remove', '--allow-change-held-packages'] + p2p_packages }}"
+          changed_when: false
+
+    - name: Activate experimental driver
+      when: p2p_action == 'apply'
+      block:
+        - name: Record running containers
+          ansible.builtin.shell: |
+            docker ps -q | xargs -r docker inspect --format '{% raw %}{{if not .HostConfig.AutoRemove}}{{.Name}}{{end}}{% endraw %}' | sed -e '/^$/d' -e 's|^/||' -e '/^Wolf-UI_/d' > {{ p2p_root }}/containers.txt
+          changed_when: false
+          when: not (p2p_resume | default(false) | bool)
+
+        - name: Install matching userspace and firmware
+          ansible.builtin.apt:
+            name: "{{ p2p_packages }}"
+            allow_change_held_packages: true
+            fail_on_autoremove: true
+
+        - name: Preserve driver package holds
+          ansible.builtin.dpkg_selections:
+            name: "{{ item }}"
+            selection: hold
+          loop: "{{ nvidia_driver_hold_packages }}"
+
+        - name: Replace packaged source with pinned fork while retaining native DKMS configuration
+          tags: [p2p-build]
+          ansible.builtin.shell: |
+            set -euo pipefail
+            cp /usr/src/nvidia-{{ p2p_version }}/dkms.conf {{ p2p_root }}/dkms.conf
+            dkms remove -m nvidia -v {{ p2p_version }} --all
+            cp -a {{ p2p_root }}/source/. /usr/src/nvidia-{{ p2p_version }}/
+            cp {{ p2p_root }}/dkms.conf /usr/src/nvidia-{{ p2p_version }}/dkms.conf
+            sed -i '/^BUILT_MODULE_LOCATION\[/d' /usr/src/nvidia-{{ p2p_version }}/dkms.conf
+            for i in 0 1 2 3 4; do
+              printf 'BUILT_MODULE_LOCATION[%s]="kernel-open"\n' "$i" >> /usr/src/nvidia-{{ p2p_version }}/dkms.conf
+            done
+            dkms install -m nvidia -v {{ p2p_version }} -k {{ ansible_kernel }}
+          args:
+            executable: /bin/bash
+
+        - name: Enable IOMMU passthrough using a dedicated GRUB drop-in
+          tags: [p2p-boot]
+          ansible.builtin.copy:
+            dest: /etc/default/grub.d/99-nvidia-p2p-test.cfg
+            mode: '0644'
+            content: |
+              # Managed by the isolated NVIDIA P2P experiment.
+              GRUB_CMDLINE_LINUX_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT intel_iommu=on iommu=pt"
+
+        - name: Rebuild boot configuration
+          tags: [p2p-boot]
+          ansible.builtin.shell: |
+            set -e
+            update-grub
+            update-initramfs -u -k all
+
+    - name: Explicit rollback
+      ansible.builtin.include_tasks: rollback.yml
+      when: p2p_action == 'rollback'

@@ -1,0 +1,21 @@
+index, pcie.link.gen.current, pcie.link.width.current, temperature.gpu, power.limit [W]
+0, 4, 8, 54, 250.00 W
+1, 4, 8, 53, 250.00 W
+nvbandwidth Version: v0.10.0
+Built from Git version: v0.10
+
+CUDA Runtime Version: 13.4 (13040)
+CUDA Driver Version (API): 13.4 (13040)
+Driver Version: 615.71.09
+
+Running device_to_device_memcpy_read_ce.
+memcpy CE GPU(row) -> GPU(column) bandwidth (GB/s)
+           0         1
+ 0       N/A      6.83
+ 1      6.83       N/A
+
+SUM device_to_device_memcpy_read_ce 13.65
+COEFFICIENT_OF_VARIATION device_to_device_memcpy_read_ce 0.00
+
+NOTE: The reported results may not reflect the full capabilities of the platform.
+Performance can vary with software drivers, hardware clocks, and system topology.

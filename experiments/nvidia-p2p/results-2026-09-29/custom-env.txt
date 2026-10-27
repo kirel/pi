@@ -1,0 +1,1 @@
+{'NCCL_P2P_DISABLE': '0', 'NCCL_P2P_LEVEL': 'PHB', 'PYTORCH_CUDA_ALLOC_CONF': 'expandable_segments:False'}

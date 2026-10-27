@@ -5,3 +5,7 @@
     name: udev
     state: restarted
   become: true
+
+- name: Restart wolf
+  ansible.builtin.command: docker restart wolf-wolf-1
+  changed_when: true

@@ -1,0 +1,95 @@
+{
+  "off": {
+    "prefill_8192_tokens_s": 2479.664038213665,
+    "prefill_32768_tokens_s": 2182.6080033040744,
+    "prefill_65536_tokens_s": 1864.9190863071824,
+    "warm_prefix_ttft_s": 0.8213286549998884,
+    "decode_single_tokens_s": 60.41396311368149,
+    "parallel_total_tokens_s": 101.25208303468126,
+    "thermal_window_timing": "approximate, reconstructed",
+    "prefill_telemetry": {
+      "0": {
+        "samples": 165,
+        "peak_c": 91.0,
+        "median_sm_mhz": 1425.0,
+        "thermal_fraction": 0.3939393939393939
+      },
+      "1": {
+        "samples": 165,
+        "peak_c": 92.0,
+        "median_sm_mhz": 1530.0,
+        "thermal_fraction": 0.15757575757575756
+      }
+    }
+  },
+  "on": {
+    "prefill_8192_tokens_s": 2069.178385291712,
+    "prefill_32768_tokens_s": 1872.9188891763988,
+    "prefill_65536_tokens_s": 1621.3039639714584,
+    "warm_prefix_ttft_s": 0.9107153239999661,
+    "decode_single_tokens_s": 60.79974853338425,
+    "parallel_total_tokens_s": 94.91257813324366,
+    "thermal_window_timing": "approximate, reconstructed",
+    "prefill_telemetry": {
+      "0": {
+        "samples": 189,
+        "peak_c": 90.0,
+        "median_sm_mhz": 1470.0,
+        "thermal_fraction": 0.9417989417989417
+      },
+      "1": {
+        "samples": 189,
+        "peak_c": 90.0,
+        "median_sm_mhz": 1590.0,
+        "thermal_fraction": 0.2222222222222222
+      }
+    }
+  },
+  "custom": {
+    "correctness": "FAILED: standalone custom all-reduce returns NaN; performance not valid",
+    "prefill_8192_tokens_s": 2043.763535704763,
+    "prefill_32768_tokens_s": 1857.9267468574023,
+    "prefill_65536_tokens_s": 1616.9693523738056,
+    "warm_prefix_ttft_s": 0.9208108850002645,
+    "decode_single_tokens_s": 62.46579663871041,
+    "parallel_total_tokens_s": 101.55273435295362,
+    "thermal_window_timing": "recorded",
+    "prefill_telemetry": {
+      "0": {
+        "samples": 191,
+        "peak_c": 90.0,
+        "median_sm_mhz": 1440.0,
+        "thermal_fraction": 0.93717277486911
+      },
+      "1": {
+        "samples": 191,
+        "peak_c": 91.0,
+        "median_sm_mhz": 1575.0,
+        "thermal_fraction": 0.44502617801047123
+      }
+    }
+  },
+  "off-repeat": {
+    "prefill_8192_tokens_s": 2489.9314521508,
+    "prefill_32768_tokens_s": 2186.120183613136,
+    "prefill_65536_tokens_s": 1851.2364983736886,
+    "warm_prefix_ttft_s": 0.8046988189998956,
+    "decode_single_tokens_s": 60.20472527584963,
+    "parallel_total_tokens_s": 101.13212379687671,
+    "thermal_window_timing": "recorded",
+    "prefill_telemetry": {
+      "0": {
+        "samples": 163,
+        "peak_c": 91.0,
+        "median_sm_mhz": 1425.0,
+        "thermal_fraction": 0.6134969325153374
+      },
+      "1": {
+        "samples": 163,
+        "peak_c": 93.0,
+        "median_sm_mhz": 1515.0,
+        "thermal_fraction": 0.2147239263803681
+      }
+    }
+  }
+}

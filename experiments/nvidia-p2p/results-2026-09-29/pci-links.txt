@@ -1,0 +1,22 @@
+01:00.0
+		DevCap:	MaxPayload 256 bytes, PhantFunc 0, Latency L0s unlimited, L1 <64us
+			MaxPayload 256 bytes, MaxReadReq 512 bytes
+		LnkCap:	Port #0, Speed 16GT/s, Width x16, ASPM L0s L1, Exit Latency L0s <512ns, L1 <4us
+		LnkSta:	Speed 2.5GT/s (downgraded), Width x8 (downgraded)
+02:00.0
+		DevCap:	MaxPayload 256 bytes, PhantFunc 0, Latency L0s unlimited, L1 <64us
+			MaxPayload 256 bytes, MaxReadReq 512 bytes
+		LnkCap:	Port #0, Speed 16GT/s, Width x16, ASPM L0s L1, Exit Latency L0s <512ns, L1 <4us
+		LnkSta:	Speed 2.5GT/s (downgraded), Width x8 (downgraded)
+00:01.0
+		DevCap:	MaxPayload 256 bytes, PhantFunc 0
+			MaxPayload 256 bytes, MaxReadReq 128 bytes
+		LnkCap:	Port #2, Speed 32GT/s, Width x8, ASPM not supported
+		LnkSta:	Speed 2.5GT/s, Width x8
+		ACSCtl:	SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans-
+00:01.1
+		DevCap:	MaxPayload 256 bytes, PhantFunc 0
+			MaxPayload 256 bytes, MaxReadReq 128 bytes
+		LnkCap:	Port #4, Speed 32GT/s, Width x8, ASPM not supported
+		LnkSta:	Speed 2.5GT/s, Width x8
+		ACSCtl:	SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans-

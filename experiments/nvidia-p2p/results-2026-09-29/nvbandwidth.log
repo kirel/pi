@@ -1,0 +1,12 @@
+nvbandwidth Version: v0.10.0
+Built from Git version: v0.10
+
+NOTE: You have chosen a buffer size that is smaller than the default buffer size. It is suggested to use the default buffer size (512MB) to achieve maximal peak bandwidth.
+CUDA Runtime Version: 13.4 (13040)
+CUDA Driver Version (API): 13.4 (13040)
+Driver Version: 615.71.09
+
+Running device_to_device_memcpy_write_ce.
+ Invalid value when checking the pattern at 0x73c9ae200000
+ Current offset : 44000
+ASSERT in expression h_errorFlag == 0 in void memcmpPatternHelper(CUstream, CUdeviceptr, long long unsigned int, unsigned int, CompareKernelFunc, std::shared_ptr<NodeHelper>, uint32_t)() : /var/tmp/p2p-nvbandwidth/memcpy.cpp:170

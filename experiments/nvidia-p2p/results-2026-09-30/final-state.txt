@@ -1,0 +1,7 @@
+HTTP 200 reply 42
+Qwen3.8-27B-Instruct-AutoRound-vLLM ready
+qwen3-embedding ready
+qwen3-tts ready
+whisper-large-v3-turbo-q8-crispasr ready
+NCCL_P2P_DISABLE=1
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True

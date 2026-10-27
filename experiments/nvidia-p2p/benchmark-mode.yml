@@ -1,0 +1,76 @@
+---
+- name: Switch only NCCL P2P for the Qwen3.8 comparison
+  hosts: ailab_ubuntus
+  become: true
+  gather_facts: false
+  vars:
+    benchmark_mode: "off"
+    benchmark_config: /home/daniel/config/llama-swap/config.yaml
+    benchmark_original: /var/lib/nvidia-p2p-test/benchmark-config.original.yaml
+  tasks:
+    - name: Validate requested mode
+      ansible.builtin.assert:
+        that:
+          - benchmark_mode in ['off', 'on', 'custom', 'restore']
+          - inventory_hostname == 'ailab-ubuntu'
+
+    - name: Preserve original runtime config
+      ansible.builtin.copy:
+        src: "{{ benchmark_config }}"
+        dest: "{{ benchmark_original }}"
+        remote_src: true
+        force: false
+        mode: '0600'
+      diff: false
+
+    - name: Read original config without exposing contents
+      ansible.builtin.slurp:
+        src: "{{ benchmark_original }}"
+      register: original_config
+      no_log: true
+
+    - name: Require exactly one existing P2P switch
+      ansible.builtin.assert:
+        that: (original_config.content | b64decode).count('-e NCCL_P2P_DISABLE=1') == 1
+      no_log: true
+
+    - name: Set the benchmark transport while preserving all other settings
+      ansible.builtin.copy:
+        dest: "{{ benchmark_config }}"
+        content: >-
+          {{ (original_config.content | b64decode) if benchmark_mode == 'restore' else
+             (original_config.content | b64decode | replace('-e NCCL_P2P_DISABLE=1',
+             '-e NCCL_P2P_DISABLE=' ~ ('1' if benchmark_mode == 'off' else '0') ~
+             ' -e NCCL_P2P_LEVEL=PHB -e NCCL_DEBUG=INFO -e NCCL_DEBUG_SUBSYS=INIT,GRAPH,P2P,SHM,NET')
+             | replace('--disable-custom-all-reduce', '' if benchmark_mode == 'custom' else '--disable-custom-all-reduce')
+             | replace('expandable_segments:True', 'expandable_segments:False' if benchmark_mode == 'custom' else 'expandable_segments:True')) }}
+      no_log: true
+      diff: false
+
+    - name: Restart LlamaSwap to apply mode and discard previous benchmark caches
+      ansible.builtin.command: docker restart -t 60 llama-swap
+
+    - name: Wait for LlamaSwap
+      ansible.builtin.uri:
+        url: http://127.0.0.1:9292/v1/models
+      register: ready
+      retries: 30
+      delay: 5
+      until: ready.status == 200
+
+    - name: Wait for actual Qwen generation and model preload
+      ansible.builtin.uri:
+        url: http://127.0.0.1:9292/v1/chat/completions
+        method: POST
+        body_format: json
+        body:
+          model: Qwen3.8-27B-Instruct-AutoRound-vLLM
+          messages:
+            - role: user
+              content: Say OK.
+          max_tokens: 8
+        timeout: 600
+      register: generated
+      retries: 2
+      delay: 5
+      until: generated.status == 200

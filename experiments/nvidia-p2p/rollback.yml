@@ -1,0 +1,25 @@
+---
+- name: Populate APT cache from saved packages for offline restoration
+  ansible.builtin.shell: "cp /var/lib/nvidia-p2p-test/debs/*.deb /var/cache/apt/archives/"
+
+- name: Restore offline driver packages and boot configuration
+  ansible.builtin.command: /var/lib/nvidia-p2p-test/rollback.sh
+
+- name: Preserve original driver package holds after downgrade
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop: "{{ nvidia_driver_hold_packages }}"
+
+- name: Verify original module is installed for the next boot
+  ansible.builtin.command: "modinfo -k {{ ansible_kernel }} -F version nvidia"
+  register: restored_nvidia_module
+  changed_when: false
+
+- name: Require the saved original driver version
+  ansible.builtin.assert:
+    that: restored_nvidia_module.stdout == '590.48.01'
+
+- name: Report required manual reboot
+  ansible.builtin.debug:
+    msg: "590.48.01 is installed. Reboot separately, then verify nvidia-smi, LlamaSwap and Wolf. The running kernel still uses the experimental module until reboot."

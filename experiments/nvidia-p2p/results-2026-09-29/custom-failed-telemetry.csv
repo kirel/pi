@@ -1,0 +1,587 @@
+timestamp, index, temperature.gpu, power.draw [W], power.limit [W], clocks.current.sm [MHz], clocks.current.memory [MHz], memory.used [MiB], clocks_event_reasons.sw_thermal_slowdown, clocks_event_reasons.hw_thermal_slowdown, clocks_event_reasons.sw_power_cap
+2026/09/29 16:52:31.532, 0, 82, 140.23 W, 250.00 W, 1695 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:31.536, 1, 73, 121.96 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:32.538, 0, 82, 140.31 W, 250.00 W, 1695 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:32.539, 1, 73, 122.16 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:33.540, 0, 82, 140.29 W, 250.00 W, 1695 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:33.540, 1, 73, 122.18 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:34.540, 0, 82, 140.37 W, 250.00 W, 1695 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:34.541, 1, 73, 122.01 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:35.542, 0, 82, 140.80 W, 250.00 W, 1695 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:35.542, 1, 73, 121.89 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:36.543, 0, 82, 140.92 W, 250.00 W, 1695 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:36.550, 1, 73, 122.00 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:37.551, 0, 82, 140.77 W, 250.00 W, 1695 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:37.551, 1, 73, 122.04 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:38.552, 0, 82, 135.20 W, 250.00 W, 345 MHz, 810 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:38.552, 1, 73, 122.11 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:39.553, 0, 79, 77.83 W, 250.00 W, 210 MHz, 810 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:39.554, 1, 73, 122.14 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:40.554, 0, 79, 21.30 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:40.555, 1, 73, 122.19 W, 250.00 W, 1695 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:41.557, 0, 78, 15.97 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:41.563, 1, 70, 87.81 W, 250.00 W, 225 MHz, 810 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:42.564, 0, 78, 14.98 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:42.566, 1, 69, 40.48 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:43.567, 0, 77, 15.02 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:43.569, 1, 69, 26.73 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:44.570, 0, 77, 15.19 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:44.571, 1, 68, 26.06 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:45.572, 0, 77, 14.66 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:45.574, 1, 68, 26.20 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:46.576, 0, 77, 14.61 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:46.577, 1, 68, 25.86 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:47.579, 0, 76, 15.51 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:47.581, 1, 68, 25.80 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:48.582, 0, 76, 15.63 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:48.584, 1, 68, 25.73 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:49.585, 0, 76, 15.01 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:49.586, 1, 68, 25.36 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:50.587, 0, 76, 15.21 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:50.588, 1, 67, 25.56 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:51.590, 0, 75, 15.19 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:51.591, 1, 67, 25.62 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:52.593, 0, 75, 14.55 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:52.595, 1, 67, 25.24 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:53.596, 0, 75, 14.51 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:53.597, 1, 67, 25.31 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:54.599, 0, 74, 14.82 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:54.600, 1, 66, 25.34 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:55.600, 0, 74, 14.36 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:55.602, 1, 66, 25.08 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:56.603, 0, 74, 14.18 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:56.605, 1, 66, 25.38 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:57.606, 0, 74, 14.33 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:57.608, 1, 66, 25.44 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:58.609, 0, 74, 14.40 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:58.610, 1, 66, 25.09 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:59.612, 0, 74, 14.03 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:52:59.613, 1, 66, 25.12 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:00.614, 0, 73, 13.91 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:00.615, 1, 66, 25.07 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:01.616, 0, 73, 14.24 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:01.618, 1, 66, 24.87 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:02.619, 0, 73, 13.65 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:02.620, 1, 65, 25.06 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:03.621, 0, 72, 13.65 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:03.622, 1, 65, 25.02 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:04.623, 0, 72, 14.45 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:04.623, 1, 65, 25.04 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:05.624, 0, 72, 14.59 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:05.625, 1, 65, 25.00 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:06.626, 0, 72, 14.01 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:06.628, 1, 65, 24.82 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:07.629, 0, 73, 31.38 W, 250.00 W, 1695 MHz, 9501 MHz, 3368 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:07.630, 1, 67, 37.36 W, 250.00 W, 1695 MHz, 9501 MHz, 3789 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:08.630, 0, 75, 133.17 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:08.631, 1, 68, 117.51 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:09.631, 0, 75, 132.57 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:09.632, 1, 68, 117.44 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:10.632, 0, 76, 132.47 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:10.633, 1, 68, 117.43 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:11.633, 0, 76, 132.46 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:11.634, 1, 68, 117.68 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:12.635, 0, 76, 132.69 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:12.635, 1, 68, 117.74 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:13.636, 0, 76, 132.85 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:13.636, 1, 69, 117.68 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:14.637, 0, 76, 133.01 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:14.637, 1, 69, 117.67 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:15.638, 0, 76, 133.08 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:15.638, 1, 69, 117.81 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:16.639, 0, 76, 132.96 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:16.639, 1, 69, 118.04 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:17.640, 0, 77, 132.95 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:17.640, 1, 69, 118.21 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:18.641, 0, 77, 133.07 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:18.641, 1, 69, 118.66 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:19.642, 0, 77, 134.01 W, 250.00 W, 1695 MHz, 9501 MHz, 13164 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:19.642, 1, 69, 118.99 W, 250.00 W, 1695 MHz, 9501 MHz, 13585 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:20.643, 0, 77, 133.88 W, 250.00 W, 1695 MHz, 9501 MHz, 13184 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:20.643, 1, 69, 120.04 W, 250.00 W, 1695 MHz, 9501 MHz, 13605 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:21.644, 0, 77, 137.40 W, 250.00 W, 1695 MHz, 9501 MHz, 13184 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:21.644, 1, 69, 122.12 W, 250.00 W, 1695 MHz, 9501 MHz, 13605 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:22.645, 0, 79, 153.51 W, 250.00 W, 1740 MHz, 9501 MHz, 16686 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:22.645, 1, 71, 153.04 W, 250.00 W, 1695 MHz, 9501 MHz, 19907 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:23.645, 0, 79, 205.96 W, 250.00 W, 1905 MHz, 9501 MHz, 18926 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:23.646, 1, 74, 203.94 W, 250.00 W, 1800 MHz, 9501 MHz, 17227 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:24.647, 0, 79, 216.84 W, 250.00 W, 1905 MHz, 9501 MHz, 16186 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:24.648, 1, 74, 207.65 W, 250.00 W, 1800 MHz, 9501 MHz, 23687 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:25.648, 0, 80, 194.85 W, 250.00 W, 1905 MHz, 9501 MHz, 13528 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:25.648, 1, 72, 151.85 W, 250.00 W, 1890 MHz, 9501 MHz, 13849 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:26.649, 0, 80, 168.51 W, 250.00 W, 1905 MHz, 9501 MHz, 14000 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:26.649, 1, 72, 140.67 W, 250.00 W, 1890 MHz, 9501 MHz, 14341 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:27.649, 0, 82, 224.64 W, 250.00 W, 1605 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:27.650, 1, 77, 212.21 W, 250.00 W, 1635 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:28.650, 0, 83, 245.29 W, 250.00 W, 1680 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:28.651, 1, 79, 239.78 W, 250.00 W, 1830 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:29.651, 0, 83, 245.88 W, 250.00 W, 1575 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:29.652, 1, 79, 241.38 W, 250.00 W, 1635 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:30.652, 0, 84, 248.14 W, 250.00 W, 1800 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:30.652, 1, 80, 240.36 W, 250.00 W, 1830 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:31.653, 0, 84, 246.87 W, 250.00 W, 1590 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:31.653, 1, 80, 241.67 W, 250.00 W, 1620 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:32.655, 0, 84, 247.96 W, 250.00 W, 1695 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:32.656, 1, 81, 241.19 W, 250.00 W, 1815 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:33.656, 0, 84, 246.28 W, 250.00 W, 1575 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:33.656, 1, 81, 242.13 W, 250.00 W, 1620 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:34.658, 0, 85, 250.40 W, 250.00 W, 1545 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:34.658, 1, 82, 245.19 W, 250.00 W, 1740 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:35.659, 0, 83, 183.15 W, 250.00 W, 1890 MHz, 9501 MHz, 15302 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:35.659, 1, 77, 157.70 W, 250.00 W, 1875 MHz, 9501 MHz, 15863 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:36.659, 0, 84, 184.01 W, 250.00 W, 1680 MHz, 9501 MHz, 14804 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:36.660, 1, 79, 157.54 W, 250.00 W, 1725 MHz, 9501 MHz, 15085 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:37.662, 0, 85, 237.45 W, 250.00 W, 1575 MHz, 9501 MHz, 14964 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:37.663, 1, 80, 219.80 W, 250.00 W, 1755 MHz, 9501 MHz, 15105 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:38.663, 0, 85, 234.73 W, 250.00 W, 1680 MHz, 9501 MHz, 14524 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:38.663, 1, 80, 219.12 W, 250.00 W, 1620 MHz, 9501 MHz, 14825 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:39.664, 0, 85, 235.35 W, 250.00 W, 1725 MHz, 9501 MHz, 14804 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:39.665, 1, 80, 218.07 W, 250.00 W, 1845 MHz, 9501 MHz, 15105 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:40.667, 0, 86, 234.91 W, 250.00 W, 1530 MHz, 9501 MHz, 14964 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:40.667, 1, 81, 218.42 W, 250.00 W, 1680 MHz, 9501 MHz, 15105 MiB, Not Active, Not Active, Active
+2026/09/29 16:53:41.668, 0, 85, 192.95 W, 250.00 W, 1890 MHz, 9501 MHz, 13546 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:41.668, 1, 79, 165.43 W, 250.00 W, 1875 MHz, 9501 MHz, 13867 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:42.668, 0, 85, 188.73 W, 250.00 W, 1890 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:42.669, 1, 79, 160.38 W, 250.00 W, 1875 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:43.669, 0, 85, 178.93 W, 250.00 W, 1890 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:43.670, 1, 78, 147.58 W, 250.00 W, 1875 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:44.670, 0, 85, 176.94 W, 250.00 W, 480 MHz, 5001 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:44.670, 1, 78, 145.98 W, 250.00 W, 1875 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:45.671, 0, 82, 91.95 W, 250.00 W, 270 MHz, 5001 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:45.671, 1, 74, 83.94 W, 250.00 W, 240 MHz, 5001 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:46.672, 0, 82, 91.36 W, 250.00 W, 255 MHz, 5001 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:46.673, 1, 74, 82.37 W, 250.00 W, 210 MHz, 5001 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:47.674, 0, 82, 46.21 W, 250.00 W, 210 MHz, 810 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:47.674, 1, 74, 51.46 W, 250.00 W, 210 MHz, 810 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:48.675, 0, 80, 31.55 W, 250.00 W, 210 MHz, 810 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:48.676, 1, 71, 39.28 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:49.677, 0, 80, 19.26 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:49.678, 1, 71, 28.25 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:50.679, 0, 79, 16.47 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:50.680, 1, 71, 26.64 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:51.680, 0, 79, 15.16 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:51.681, 1, 71, 26.40 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:52.682, 0, 78, 15.01 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:52.683, 1, 70, 26.35 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:53.683, 0, 78, 15.37 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:53.684, 1, 70, 26.35 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:54.685, 0, 78, 14.87 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:54.685, 1, 70, 26.29 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:55.686, 0, 78, 14.61 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:55.687, 1, 70, 26.07 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:56.688, 0, 77, 14.99 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:56.689, 1, 69, 26.04 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:57.689, 0, 77, 14.64 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:57.690, 1, 69, 26.15 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:58.691, 0, 77, 15.08 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:58.692, 1, 69, 26.02 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:59.692, 0, 76, 15.37 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:53:59.693, 1, 69, 25.90 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:00.694, 0, 76, 14.77 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:00.695, 1, 68, 25.93 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:01.695, 0, 76, 14.28 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:01.696, 1, 68, 25.90 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:02.697, 0, 76, 14.19 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:02.698, 1, 68, 25.63 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:03.699, 0, 75, 14.51 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:03.700, 1, 68, 25.72 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:04.700, 0, 75, 14.04 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:04.701, 1, 67, 25.71 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:05.702, 0, 75, 13.97 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:05.703, 1, 67, 25.31 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:06.703, 0, 74, 14.95 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:06.704, 1, 67, 25.52 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:07.705, 0, 74, 14.44 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:07.706, 1, 67, 25.45 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:08.707, 0, 74, 13.72 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:08.707, 1, 67, 25.08 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:09.708, 0, 74, 14.06 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:09.709, 1, 67, 25.48 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:10.710, 0, 74, 13.78 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:10.710, 1, 66, 25.62 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:11.711, 0, 73, 13.75 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:11.712, 1, 66, 25.15 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:12.713, 0, 73, 13.95 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:12.714, 1, 66, 25.30 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:13.714, 0, 73, 13.61 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:13.715, 1, 66, 25.35 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:14.716, 0, 72, 13.58 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:14.717, 1, 66, 24.98 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:15.718, 0, 72, 14.00 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:15.719, 1, 65, 25.16 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:16.719, 0, 72, 13.70 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:16.721, 1, 65, 25.14 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:17.722, 0, 72, 13.54 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:17.722, 1, 65, 24.80 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:18.723, 0, 71, 14.47 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:18.724, 1, 65, 24.99 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:19.725, 0, 71, 14.46 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:19.726, 1, 65, 25.05 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:20.726, 0, 71, 13.79 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:20.728, 1, 65, 24.76 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:21.728, 0, 71, 13.53 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:21.729, 1, 65, 24.93 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:22.730, 0, 71, 13.56 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:22.731, 1, 64, 24.99 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:23.731, 0, 70, 13.80 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:23.732, 1, 64, 24.72 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:24.733, 0, 70, 13.34 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:24.734, 1, 64, 24.86 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:25.735, 0, 70, 13.24 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:25.736, 1, 64, 24.81 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:26.736, 0, 70, 13.58 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:26.737, 1, 64, 24.53 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:27.738, 0, 70, 13.76 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:27.739, 1, 64, 24.75 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:28.740, 0, 70, 13.80 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:28.740, 1, 64, 24.85 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:29.741, 0, 69, 13.69 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:29.742, 1, 63, 24.62 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:30.742, 0, 69, 13.72 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:30.743, 1, 63, 24.44 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:31.744, 0, 69, 13.74 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:31.745, 1, 63, 24.23 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:32.746, 0, 69, 13.33 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:32.746, 1, 63, 24.25 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:33.747, 0, 69, 13.27 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:33.748, 1, 63, 24.15 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:34.749, 0, 68, 13.64 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:34.749, 1, 63, 24.16 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:35.750, 0, 68, 14.20 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:35.751, 1, 63, 24.53 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:36.751, 0, 68, 13.83 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:36.752, 1, 63, 24.27 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:37.753, 0, 68, 13.36 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:37.754, 1, 63, 23.92 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:38.754, 0, 70, 36.35 W, 250.00 W, 210 MHz, 405 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:38.755, 1, 65, 47.28 W, 250.00 W, 210 MHz, 405 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:39.756, 0, 71, 127.99 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:39.756, 1, 65, 115.36 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:40.757, 0, 71, 128.13 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:40.757, 1, 65, 115.32 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:41.758, 0, 71, 128.33 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:41.758, 1, 66, 115.49 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:42.759, 0, 72, 128.40 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:42.760, 1, 66, 115.52 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:43.760, 0, 72, 128.53 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:43.761, 1, 66, 115.61 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:44.761, 0, 72, 128.64 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:44.762, 1, 66, 115.70 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:45.762, 0, 72, 128.71 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:45.763, 1, 66, 115.72 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:46.763, 0, 72, 128.89 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:46.764, 1, 66, 115.86 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:47.764, 0, 72, 129.12 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:47.765, 1, 66, 116.02 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:48.765, 0, 72, 129.32 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:48.766, 1, 67, 116.01 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:49.766, 0, 73, 129.43 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:49.767, 1, 67, 116.04 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:50.767, 0, 73, 130.03 W, 250.00 W, 1695 MHz, 9501 MHz, 13164 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:50.768, 1, 67, 116.92 W, 250.00 W, 1695 MHz, 9501 MHz, 13585 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:51.768, 0, 73, 130.06 W, 250.00 W, 1695 MHz, 9501 MHz, 13184 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:51.769, 1, 67, 117.93 W, 250.00 W, 1695 MHz, 9501 MHz, 13605 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:52.770, 0, 73, 132.76 W, 250.00 W, 1695 MHz, 9501 MHz, 13184 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:52.770, 1, 67, 120.41 W, 250.00 W, 1695 MHz, 9501 MHz, 13605 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:53.770, 0, 76, 145.60 W, 250.00 W, 1770 MHz, 9501 MHz, 13346 MiB, Not Active, Not Active, Active
+2026/09/29 16:54:53.771, 1, 69, 140.98 W, 250.00 W, 1905 MHz, 9501 MHz, 17867 MiB, Not Active, Not Active, Active
+2026/09/29 16:54:54.771, 0, 75, 203.55 W, 250.00 W, 1890 MHz, 9501 MHz, 23706 MiB, Not Active, Not Active, Active
+2026/09/29 16:54:54.772, 1, 71, 195.97 W, 250.00 W, 1710 MHz, 9501 MHz, 15247 MiB, Not Active, Not Active, Active
+2026/09/29 16:54:55.772, 0, 76, 212.44 W, 250.00 W, 1890 MHz, 9501 MHz, 20746 MiB, Not Active, Not Active, Active
+2026/09/29 16:54:55.773, 1, 72, 208.00 W, 250.00 W, 1710 MHz, 9501 MHz, 22627 MiB, Not Active, Not Active, Active
+2026/09/29 16:54:56.774, 0, 76, 189.32 W, 250.00 W, 1905 MHz, 9501 MHz, 13526 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:56.774, 1, 69, 160.56 W, 250.00 W, 1890 MHz, 9501 MHz, 13847 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:57.774, 0, 76, 164.83 W, 250.00 W, 1905 MHz, 9501 MHz, 14640 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:57.775, 1, 70, 139.28 W, 250.00 W, 1890 MHz, 9501 MHz, 14961 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:54:58.775, 0, 79, 216.48 W, 250.00 W, 1620 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:54:58.776, 1, 75, 200.52 W, 250.00 W, 1650 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:54:59.776, 0, 79, 248.26 W, 250.00 W, 1710 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:54:59.777, 1, 75, 242.68 W, 250.00 W, 1770 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:00.778, 0, 80, 244.67 W, 250.00 W, 1590 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:00.779, 1, 76, 239.74 W, 250.00 W, 1635 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:01.779, 0, 80, 247.76 W, 250.00 W, 1695 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:01.780, 1, 76, 243.00 W, 250.00 W, 1725 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:02.781, 0, 81, 246.78 W, 250.00 W, 1605 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:02.782, 1, 78, 239.55 W, 250.00 W, 1635 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:03.782, 0, 81, 249.03 W, 250.00 W, 1740 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:03.783, 1, 77, 243.66 W, 250.00 W, 1725 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:04.785, 0, 82, 247.15 W, 250.00 W, 1590 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:04.785, 1, 79, 242.38 W, 250.00 W, 1620 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:05.785, 0, 82, 250.20 W, 250.00 W, 1770 MHz, 9501 MHz, 15302 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:05.786, 1, 79, 245.38 W, 250.00 W, 1815 MHz, 9501 MHz, 15863 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:06.786, 0, 80, 179.78 W, 250.00 W, 1890 MHz, 9501 MHz, 15302 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:06.786, 1, 74, 156.23 W, 250.00 W, 1875 MHz, 9501 MHz, 15863 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:07.787, 0, 82, 182.26 W, 250.00 W, 1800 MHz, 9501 MHz, 14964 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:07.787, 1, 77, 156.05 W, 250.00 W, 1770 MHz, 9501 MHz, 15125 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:08.788, 0, 82, 231.58 W, 250.00 W, 1815 MHz, 9501 MHz, 14964 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:08.788, 1, 77, 217.71 W, 250.00 W, 1830 MHz, 9501 MHz, 15105 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:09.789, 0, 82, 231.27 W, 250.00 W, 1710 MHz, 9501 MHz, 14764 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:09.789, 1, 78, 219.18 W, 250.00 W, 1725 MHz, 9501 MHz, 15105 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:10.790, 0, 83, 231.32 W, 250.00 W, 1545 MHz, 9501 MHz, 14444 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:10.791, 1, 78, 218.64 W, 250.00 W, 1740 MHz, 9501 MHz, 14585 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:11.791, 0, 83, 234.79 W, 250.00 W, 1800 MHz, 9501 MHz, 14966 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:11.792, 1, 79, 219.06 W, 250.00 W, 1830 MHz, 9501 MHz, 15107 MiB, Not Active, Not Active, Active
+2026/09/29 16:55:12.792, 0, 82, 184.87 W, 250.00 W, 1890 MHz, 9501 MHz, 14032 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:12.792, 1, 76, 158.98 W, 250.00 W, 1875 MHz, 9501 MHz, 14353 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:13.793, 0, 82, 183.38 W, 250.00 W, 1890 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:13.793, 1, 76, 156.82 W, 250.00 W, 1875 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:14.794, 0, 82, 170.27 W, 250.00 W, 1890 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:14.794, 1, 76, 142.18 W, 250.00 W, 1875 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:15.794, 0, 82, 170.29 W, 250.00 W, 1890 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:15.795, 1, 75, 141.63 W, 250.00 W, 435 MHz, 5001 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:16.795, 0, 79, 95.33 W, 250.00 W, 225 MHz, 5001 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:16.796, 1, 72, 77.07 W, 250.00 W, 255 MHz, 5001 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:17.797, 0, 79, 94.21 W, 250.00 W, 210 MHz, 810 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:17.798, 1, 72, 76.77 W, 250.00 W, 225 MHz, 5001 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:18.798, 0, 79, 27.70 W, 250.00 W, 210 MHz, 810 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:18.800, 1, 72, 38.19 W, 250.00 W, 210 MHz, 810 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:19.800, 0, 77, 21.35 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:19.801, 1, 70, 32.19 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:20.802, 0, 77, 17.45 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:20.803, 1, 69, 27.82 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:21.804, 0, 76, 14.40 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:21.805, 1, 69, 25.94 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:22.806, 0, 76, 15.38 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:22.806, 1, 69, 25.82 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:23.807, 0, 75, 15.09 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:23.808, 1, 69, 25.48 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:24.809, 0, 75, 14.44 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:24.809, 1, 68, 25.62 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:25.810, 0, 75, 14.38 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:25.811, 1, 68, 25.55 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:26.811, 0, 74, 14.70 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:26.812, 1, 68, 25.24 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:27.813, 0, 74, 13.85 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:27.814, 1, 67, 25.35 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:28.814, 0, 74, 14.15 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:28.815, 1, 67, 25.38 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:29.816, 0, 74, 14.41 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:29.817, 1, 67, 25.10 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:30.817, 0, 74, 13.97 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:30.818, 1, 67, 25.29 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:31.819, 0, 73, 13.88 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:31.820, 1, 67, 25.27 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:32.820, 0, 73, 14.12 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:32.821, 1, 67, 25.14 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:33.822, 0, 73, 13.80 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:33.823, 1, 67, 25.19 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:34.824, 0, 72, 13.81 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:34.825, 1, 66, 25.17 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:35.825, 0, 72, 14.07 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:35.826, 1, 66, 25.06 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:36.827, 0, 72, 14.21 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:36.828, 1, 66, 24.77 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:37.828, 0, 72, 13.95 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:37.829, 1, 66, 24.80 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:38.830, 0, 72, 15.06 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:38.831, 1, 65, 24.76 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:39.831, 0, 71, 14.67 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:39.832, 1, 65, 24.56 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:40.832, 0, 71, 14.21 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:40.833, 1, 65, 24.63 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:41.834, 0, 71, 14.31 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:41.835, 1, 65, 24.64 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:42.836, 0, 71, 14.16 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:42.836, 1, 65, 24.27 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:43.837, 0, 70, 13.87 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:43.838, 1, 65, 24.54 W, 250.00 W, 420 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:44.838, 0, 70, 13.51 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:44.839, 1, 65, 24.91 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:45.840, 0, 70, 13.50 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:45.841, 1, 64, 24.72 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:46.842, 0, 70, 13.86 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:46.843, 1, 64, 24.33 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:47.844, 0, 70, 13.50 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:47.845, 1, 64, 24.28 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:48.845, 0, 69, 13.51 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:48.846, 1, 64, 24.09 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:49.847, 0, 69, 13.82 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:49.848, 1, 64, 24.05 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:50.848, 0, 69, 13.44 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:50.850, 1, 64, 24.28 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:51.850, 0, 69, 13.45 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:51.851, 1, 63, 24.39 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:52.852, 0, 68, 13.69 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:52.853, 1, 63, 24.25 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:53.853, 0, 68, 12.93 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:53.855, 1, 63, 24.11 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:54.855, 0, 68, 13.19 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:54.856, 1, 63, 24.23 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:55.857, 0, 68, 13.45 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:55.858, 1, 63, 24.28 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:56.858, 0, 68, 13.19 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:56.859, 1, 63, 24.06 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:57.860, 0, 68, 13.11 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:57.861, 1, 63, 23.90 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:58.861, 0, 67, 13.39 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:58.866, 1, 63, 23.97 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:59.868, 0, 67, 13.17 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:55:59.868, 1, 62, 24.05 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:00.869, 0, 67, 13.29 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:00.870, 1, 62, 24.05 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:01.871, 0, 67, 13.75 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:01.872, 1, 62, 23.99 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:02.872, 0, 67, 13.39 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:02.873, 1, 62, 23.84 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:03.874, 0, 67, 13.20 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:03.875, 1, 62, 23.73 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:04.875, 0, 66, 13.48 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:04.876, 1, 62, 23.68 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:05.877, 0, 66, 14.78 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:05.877, 1, 62, 23.79 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:06.878, 0, 66, 14.07 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:06.879, 1, 62, 23.92 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:07.879, 0, 66, 13.54 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:07.880, 1, 62, 23.63 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:08.881, 0, 68, 28.14 W, 250.00 W, 210 MHz, 405 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:08.881, 1, 64, 37.78 W, 250.00 W, 210 MHz, 405 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:09.882, 0, 69, 126.53 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:09.883, 1, 64, 115.04 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:10.883, 0, 69, 126.51 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:10.883, 1, 64, 114.71 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:11.884, 0, 69, 126.64 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:11.885, 1, 65, 114.58 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:12.885, 0, 70, 126.83 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:12.886, 1, 65, 114.65 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:13.886, 0, 70, 127.00 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:13.887, 1, 65, 114.70 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:14.887, 0, 70, 127.07 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:14.888, 1, 65, 114.73 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:15.888, 0, 70, 127.19 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:15.889, 1, 65, 114.72 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:16.889, 0, 70, 127.34 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:16.890, 1, 65, 114.73 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:17.890, 0, 70, 127.50 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:17.890, 1, 65, 114.92 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:18.891, 0, 71, 127.55 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:18.892, 1, 65, 115.07 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:19.892, 0, 71, 127.60 W, 250.00 W, 1695 MHz, 9501 MHz, 3448 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:19.892, 1, 66, 115.22 W, 250.00 W, 1695 MHz, 9501 MHz, 3869 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:20.901, 0, 71, 128.15 W, 250.00 W, 1695 MHz, 9501 MHz, 13164 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:20.901, 1, 66, 115.93 W, 250.00 W, 1695 MHz, 9501 MHz, 13585 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:21.902, 0, 71, 129.22 W, 250.00 W, 1695 MHz, 9501 MHz, 13184 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:21.902, 1, 66, 115.82 W, 250.00 W, 1695 MHz, 9501 MHz, 13605 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:22.903, 0, 71, 131.08 W, 250.00 W, 1695 MHz, 9501 MHz, 13184 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:22.903, 1, 66, 119.12 W, 250.00 W, 1695 MHz, 9501 MHz, 13605 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:23.904, 0, 73, 156.32 W, 250.00 W, 1905 MHz, 9501 MHz, 14026 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:23.904, 1, 67, 122.16 W, 250.00 W, 1740 MHz, 9501 MHz, 23607 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:24.905, 0, 75, 209.45 W, 250.00 W, 1665 MHz, 9501 MHz, 16246 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:24.905, 1, 68, 189.72 W, 250.00 W, 1890 MHz, 9501 MHz, 21067 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:25.906, 0, 75, 217.13 W, 250.00 W, 1665 MHz, 9501 MHz, 20066 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:25.906, 1, 69, 199.09 W, 250.00 W, 1890 MHz, 9501 MHz, 23687 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:26.907, 0, 74, 179.56 W, 250.00 W, 1920 MHz, 9501 MHz, 13526 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:26.907, 1, 68, 169.85 W, 250.00 W, 1890 MHz, 9501 MHz, 13847 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:27.907, 0, 74, 162.64 W, 250.00 W, 1920 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:27.908, 1, 69, 138.16 W, 250.00 W, 1890 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:28.908, 0, 77, 221.57 W, 250.00 W, 1605 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:28.909, 1, 73, 201.22 W, 250.00 W, 1650 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:29.910, 0, 78, 247.40 W, 250.00 W, 1575 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:29.911, 1, 74, 242.81 W, 250.00 W, 1845 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:30.911, 0, 79, 245.12 W, 250.00 W, 1620 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:30.912, 1, 75, 239.58 W, 250.00 W, 1650 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:31.913, 0, 79, 245.61 W, 250.00 W, 1635 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:31.913, 1, 74, 242.83 W, 250.00 W, 1815 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:32.914, 0, 79, 245.11 W, 250.00 W, 1605 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:32.914, 1, 76, 239.87 W, 250.00 W, 1635 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:33.916, 0, 80, 246.55 W, 250.00 W, 1620 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:33.917, 1, 76, 242.13 W, 250.00 W, 1845 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:34.917, 0, 80, 247.09 W, 250.00 W, 1605 MHz, 9501 MHz, 15300 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:34.918, 1, 77, 241.29 W, 250.00 W, 1635 MHz, 9501 MHz, 15861 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:35.918, 0, 80, 242.89 W, 250.00 W, 1875 MHz, 9501 MHz, 15302 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:35.918, 1, 77, 243.46 W, 250.00 W, 1830 MHz, 9501 MHz, 15863 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:36.919, 0, 79, 170.70 W, 250.00 W, 1905 MHz, 9501 MHz, 15302 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:36.919, 1, 73, 153.80 W, 250.00 W, 1875 MHz, 9501 MHz, 15863 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:37.920, 0, 80, 188.01 W, 250.00 W, 1845 MHz, 9501 MHz, 14964 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:37.920, 1, 75, 163.90 W, 250.00 W, 1800 MHz, 9501 MHz, 15245 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:38.920, 0, 81, 229.06 W, 250.00 W, 1860 MHz, 9501 MHz, 14184 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:38.921, 1, 76, 218.13 W, 250.00 W, 1800 MHz, 9501 MHz, 14525 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:39.921, 0, 81, 228.38 W, 250.00 W, 1710 MHz, 9501 MHz, 14664 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:39.922, 1, 77, 218.64 W, 250.00 W, 1620 MHz, 9501 MHz, 14945 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:40.922, 0, 81, 232.24 W, 250.00 W, 1710 MHz, 9501 MHz, 14964 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:40.923, 1, 77, 217.01 W, 250.00 W, 1785 MHz, 9501 MHz, 15105 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:41.924, 0, 80, 227.34 W, 250.00 W, 1860 MHz, 9501 MHz, 14966 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:41.924, 1, 77, 216.83 W, 250.00 W, 1860 MHz, 9501 MHz, 15107 MiB, Not Active, Not Active, Active
+2026/09/29 16:56:42.925, 0, 81, 171.93 W, 250.00 W, 1890 MHz, 9501 MHz, 14044 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:42.925, 1, 74, 150.82 W, 250.00 W, 1875 MHz, 9501 MHz, 14365 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:43.925, 0, 80, 180.20 W, 250.00 W, 1890 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:43.926, 1, 74, 156.60 W, 250.00 W, 1875 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:44.926, 0, 80, 167.40 W, 250.00 W, 1890 MHz, 9501 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:44.926, 1, 74, 141.45 W, 250.00 W, 1875 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:45.927, 0, 81, 167.56 W, 250.00 W, 480 MHz, 5001 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:45.927, 1, 74, 141.51 W, 250.00 W, 1875 MHz, 9501 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:46.928, 0, 78, 88.19 W, 250.00 W, 255 MHz, 5001 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:46.928, 1, 71, 81.30 W, 250.00 W, 225 MHz, 5001 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:47.929, 0, 76, 33.58 W, 250.00 W, 255 MHz, 5001 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:47.930, 1, 71, 80.85 W, 250.00 W, 210 MHz, 5001 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:48.931, 0, 75, 24.21 W, 250.00 W, 210 MHz, 810 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:48.932, 1, 71, 42.15 W, 250.00 W, 210 MHz, 810 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:49.932, 0, 75, 17.69 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:49.933, 1, 69, 34.39 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:50.934, 0, 74, 15.01 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:50.935, 1, 69, 27.95 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:51.936, 0, 74, 14.39 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:51.937, 1, 68, 25.73 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:52.938, 0, 74, 14.26 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:52.939, 1, 68, 25.50 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:53.940, 0, 73, 14.44 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:53.941, 1, 68, 25.58 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:54.942, 0, 73, 14.06 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:54.943, 1, 68, 25.48 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:55.944, 0, 73, 13.99 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:55.945, 1, 67, 25.35 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:56.946, 0, 73, 14.23 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:56.947, 1, 67, 25.24 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:57.948, 0, 73, 13.94 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:57.949, 1, 67, 25.15 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:58.950, 0, 72, 13.93 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:58.951, 1, 67, 25.20 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:59.952, 0, 72, 14.18 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:56:59.953, 1, 66, 25.18 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:00.954, 0, 72, 13.78 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:00.955, 1, 66, 25.12 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:01.956, 0, 72, 13.76 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:01.957, 1, 66, 25.12 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:02.958, 0, 71, 14.18 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:02.959, 1, 66, 25.11 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:03.960, 0, 71, 13.91 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:03.961, 1, 66, 25.01 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:04.962, 0, 71, 14.30 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:04.963, 1, 66, 24.95 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:05.964, 0, 71, 14.52 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:05.965, 1, 65, 24.88 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:06.965, 0, 70, 13.90 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:06.966, 1, 65, 24.67 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:07.967, 0, 70, 13.53 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:07.968, 1, 65, 24.61 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:08.969, 0, 70, 13.57 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:08.970, 1, 65, 24.66 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:09.971, 0, 70, 13.90 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:09.972, 1, 65, 24.53 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:10.973, 0, 70, 14.13 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:10.974, 1, 65, 24.46 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:11.974, 0, 69, 14.10 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:11.976, 1, 64, 24.49 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:12.976, 0, 69, 13.52 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:12.977, 1, 64, 24.47 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:13.978, 0, 69, 13.52 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:13.980, 1, 64, 24.62 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:14.980, 0, 69, 13.76 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:14.981, 1, 64, 24.59 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:15.982, 0, 69, 13.36 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:15.983, 1, 64, 24.48 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:16.984, 0, 68, 13.26 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:16.985, 1, 64, 24.31 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:17.986, 0, 68, 13.55 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:17.987, 1, 64, 24.28 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:18.988, 0, 68, 13.29 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:18.989, 1, 63, 24.36 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:19.990, 0, 68, 13.25 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:19.991, 1, 63, 24.24 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:20.992, 0, 68, 13.54 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:20.993, 1, 63, 24.29 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:22.001, 0, 68, 13.28 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:22.002, 1, 63, 24.32 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:23.003, 0, 67, 13.26 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:23.004, 1, 63, 24.11 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:24.005, 0, 67, 13.61 W, 250.00 W, 210 MHz, 405 MHz, 2877 MiB, Not Active, Not Active, Not Active
+2026/09/29 16:57:24.006, 1, 63, 24.11 W, 250.00 W, 210 MHz, 405 MHz, 3298 MiB, Not Active, Not Active, Not Active

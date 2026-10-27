@@ -1,0 +1,1892 @@
+[
+  {
+    "variant": "off",
+    "graph": 0,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 10.26,
+        "out_gbs": 0.4,
+        "in_us": 10.08,
+        "in_gbs": 0.41
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.62,
+        "out_gbs": 1.2,
+        "in_us": 13.34,
+        "in_gbs": 1.23
+      },
+      {
+        "bytes": 65536,
+        "out_us": 25.08,
+        "out_gbs": 2.61,
+        "in_us": 25.09,
+        "in_gbs": 2.61
+      },
+      {
+        "bytes": 262144,
+        "out_us": 62.29,
+        "out_gbs": 4.21,
+        "in_us": 62.1,
+        "in_gbs": 4.22
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 165.82,
+        "out_gbs": 6.32,
+        "in_us": 165.24,
+        "in_gbs": 6.35
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 578.36,
+        "out_gbs": 7.25,
+        "in_us": 570.44,
+        "in_gbs": 7.35
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 2205.68,
+        "out_gbs": 7.61,
+        "in_us": 2206.47,
+        "in_gbs": 7.6
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 8745.27,
+        "out_gbs": 7.67,
+        "in_us": 8747.24,
+        "in_gbs": 7.67
+      }
+    ]
+  },
+  {
+    "variant": "off",
+    "graph": 1,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 9.0,
+        "out_gbs": 0.46,
+        "in_us": 8.59,
+        "in_gbs": 0.48
+      },
+      {
+        "bytes": 16384,
+        "out_us": 11.33,
+        "out_gbs": 1.45,
+        "in_us": 11.28,
+        "in_gbs": 1.45
+      },
+      {
+        "bytes": 65536,
+        "out_us": 22.8,
+        "out_gbs": 2.87,
+        "in_us": 22.84,
+        "in_gbs": 2.87
+      },
+      {
+        "bytes": 262144,
+        "out_us": 58.79,
+        "out_gbs": 4.46,
+        "in_us": 58.76,
+        "in_gbs": 4.46
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 161.08,
+        "out_gbs": 6.51,
+        "in_us": 159.59,
+        "in_gbs": 6.57
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 570.09,
+        "out_gbs": 7.36,
+        "in_us": 569.46,
+        "in_gbs": 7.37
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 2195.84,
+        "out_gbs": 7.64,
+        "in_us": 2194.8,
+        "in_gbs": 7.64
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 8669.88,
+        "out_gbs": 7.74,
+        "in_us": 8675.86,
+        "in_gbs": 7.74
+      }
+    ]
+  },
+  {
+    "variant": "on-default",
+    "graph": 0,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 8.62,
+        "out_gbs": 0.48,
+        "in_us": 7.6,
+        "in_gbs": 0.54
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.13,
+        "out_gbs": 1.25,
+        "in_us": 12.97,
+        "in_gbs": 1.26
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.55,
+        "out_gbs": 2.08,
+        "in_us": 31.56,
+        "in_gbs": 2.08
+      },
+      {
+        "bytes": 262144,
+        "out_us": 71.81,
+        "out_gbs": 3.65,
+        "in_us": 71.18,
+        "in_gbs": 3.68
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 233.97,
+        "out_gbs": 4.48,
+        "in_us": 233.6,
+        "in_gbs": 4.49
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 875.14,
+        "out_gbs": 4.79,
+        "in_us": 875.09,
+        "in_gbs": 4.79
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3463.77,
+        "out_gbs": 4.84,
+        "in_us": 3462.97,
+        "in_gbs": 4.84
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13763.1,
+        "out_gbs": 4.88,
+        "in_us": 13758.6,
+        "in_gbs": 4.88
+      }
+    ]
+  },
+  {
+    "variant": "on-default",
+    "graph": 1,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 7.61,
+        "out_gbs": 0.54,
+        "in_us": 7.2,
+        "in_gbs": 0.57
+      },
+      {
+        "bytes": 16384,
+        "out_us": 11.93,
+        "out_gbs": 1.37,
+        "in_us": 11.79,
+        "in_gbs": 1.39
+      },
+      {
+        "bytes": 65536,
+        "out_us": 29.2,
+        "out_gbs": 2.24,
+        "in_us": 29.26,
+        "in_gbs": 2.24
+      },
+      {
+        "bytes": 262144,
+        "out_us": 72.72,
+        "out_gbs": 3.6,
+        "in_us": 71.93,
+        "in_gbs": 3.64
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 231.67,
+        "out_gbs": 4.53,
+        "in_us": 231.39,
+        "in_gbs": 4.53
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 873.43,
+        "out_gbs": 4.8,
+        "in_us": 873.05,
+        "in_gbs": 4.8
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3461.58,
+        "out_gbs": 4.85,
+        "in_us": 3461.89,
+        "in_gbs": 4.85
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13727.1,
+        "out_gbs": 4.89,
+        "in_us": 13748.0,
+        "in_gbs": 4.88
+      }
+    ]
+  },
+  {
+    "variant": "on-copy-engine",
+    "graph": 0,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 8.53,
+        "out_gbs": 0.48,
+        "in_us": 9.33,
+        "in_gbs": 0.44
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.27,
+        "out_gbs": 1.23,
+        "in_us": 13.16,
+        "in_gbs": 1.25
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.91,
+        "out_gbs": 2.05,
+        "in_us": 31.94,
+        "in_gbs": 2.05
+      },
+      {
+        "bytes": 262144,
+        "out_us": 86.41,
+        "out_gbs": 3.03,
+        "in_us": 86.38,
+        "in_gbs": 3.03
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 234.68,
+        "out_gbs": 4.47,
+        "in_us": 233.79,
+        "in_gbs": 4.49
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 859.89,
+        "out_gbs": 4.88,
+        "in_us": 859.97,
+        "in_gbs": 4.88
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3418.03,
+        "out_gbs": 4.91,
+        "in_us": 3417.47,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13660.7,
+        "out_gbs": 4.91,
+        "in_us": 13660.3,
+        "in_gbs": 4.91
+      }
+    ]
+  },
+  {
+    "variant": "on-copy-engine",
+    "graph": 1,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 11.74,
+        "out_gbs": 0.35,
+        "in_us": 10.57,
+        "in_gbs": 0.39
+      },
+      {
+        "bytes": 16384,
+        "out_us": 15.01,
+        "out_gbs": 1.09,
+        "in_us": 14.71,
+        "in_gbs": 1.11
+      },
+      {
+        "bytes": 65536,
+        "out_us": 33.8,
+        "out_gbs": 1.94,
+        "in_us": 33.63,
+        "in_gbs": 1.95
+      },
+      {
+        "bytes": 262144,
+        "out_us": 89.36,
+        "out_gbs": 2.93,
+        "in_us": 89.52,
+        "in_gbs": 2.93
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 236.23,
+        "out_gbs": 4.44,
+        "in_us": 235.86,
+        "in_gbs": 4.45
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 863.63,
+        "out_gbs": 4.86,
+        "in_us": 862.56,
+        "in_gbs": 4.86
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3421.16,
+        "out_gbs": 4.9,
+        "in_us": 3420.33,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13663.4,
+        "out_gbs": 4.91,
+        "in_us": 13663.0,
+        "in_gbs": 4.91
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas4",
+    "graph": 0,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 9.01,
+        "out_gbs": 0.45,
+        "in_us": 7.72,
+        "in_gbs": 0.53
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.07,
+        "out_gbs": 1.25,
+        "in_us": 12.93,
+        "in_gbs": 1.27
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.55,
+        "out_gbs": 2.08,
+        "in_us": 31.56,
+        "in_gbs": 2.08
+      },
+      {
+        "bytes": 262144,
+        "out_us": 74.78,
+        "out_gbs": 3.51,
+        "in_us": 74.68,
+        "in_gbs": 3.51
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 232.18,
+        "out_gbs": 4.52,
+        "in_us": 231.86,
+        "in_gbs": 4.52
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 869.3,
+        "out_gbs": 4.82,
+        "in_us": 869.38,
+        "in_gbs": 4.82
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3435.13,
+        "out_gbs": 4.88,
+        "in_us": 3436.12,
+        "in_gbs": 4.88
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13649.9,
+        "out_gbs": 4.92,
+        "in_us": 13642.0,
+        "in_gbs": 4.92
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas4",
+    "graph": 1,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 7.82,
+        "out_gbs": 0.52,
+        "in_us": 7.29,
+        "in_gbs": 0.56
+      },
+      {
+        "bytes": 16384,
+        "out_us": 12.05,
+        "out_gbs": 1.36,
+        "in_us": 11.92,
+        "in_gbs": 1.37
+      },
+      {
+        "bytes": 65536,
+        "out_us": 29.13,
+        "out_gbs": 2.25,
+        "in_us": 29.37,
+        "in_gbs": 2.23
+      },
+      {
+        "bytes": 262144,
+        "out_us": 73.64,
+        "out_gbs": 3.56,
+        "in_us": 73.52,
+        "in_gbs": 3.57
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 230.72,
+        "out_gbs": 4.54,
+        "in_us": 230.45,
+        "in_gbs": 4.55
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 867.2,
+        "out_gbs": 4.84,
+        "in_us": 867.0,
+        "in_gbs": 4.84
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3432.79,
+        "out_gbs": 4.89,
+        "in_us": 3432.0,
+        "in_gbs": 4.89
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13648.6,
+        "out_gbs": 4.92,
+        "in_us": 13635.9,
+        "in_gbs": 4.92
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas8",
+    "graph": 0,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 9.19,
+        "out_gbs": 0.45,
+        "in_us": 8.03,
+        "in_gbs": 0.51
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.09,
+        "out_gbs": 1.25,
+        "in_us": 12.95,
+        "in_gbs": 1.27
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.69,
+        "out_gbs": 2.07,
+        "in_us": 31.69,
+        "in_gbs": 2.07
+      },
+      {
+        "bytes": 262144,
+        "out_us": 74.58,
+        "out_gbs": 3.52,
+        "in_us": 74.55,
+        "in_gbs": 3.52
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 233.71,
+        "out_gbs": 4.49,
+        "in_us": 232.91,
+        "in_gbs": 4.5
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 867.99,
+        "out_gbs": 4.83,
+        "in_us": 867.4,
+        "in_gbs": 4.84
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3416.99,
+        "out_gbs": 4.91,
+        "in_us": 3416.71,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13584.2,
+        "out_gbs": 4.94,
+        "in_us": 13586.4,
+        "in_gbs": 4.94
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas8",
+    "graph": 1,
+    "repeat": 0,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 7.84,
+        "out_gbs": 0.52,
+        "in_us": 7.16,
+        "in_gbs": 0.57
+      },
+      {
+        "bytes": 16384,
+        "out_us": 11.96,
+        "out_gbs": 1.37,
+        "in_us": 11.82,
+        "in_gbs": 1.39
+      },
+      {
+        "bytes": 65536,
+        "out_us": 29.13,
+        "out_gbs": 2.25,
+        "in_us": 29.15,
+        "in_gbs": 2.25
+      },
+      {
+        "bytes": 262144,
+        "out_us": 73.3,
+        "out_gbs": 3.58,
+        "in_us": 73.32,
+        "in_gbs": 3.58
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 231.22,
+        "out_gbs": 4.54,
+        "in_us": 230.74,
+        "in_gbs": 4.54
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 865.8,
+        "out_gbs": 4.84,
+        "in_us": 865.76,
+        "in_gbs": 4.84
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3415.53,
+        "out_gbs": 4.91,
+        "in_us": 3416.77,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13572.2,
+        "out_gbs": 4.94,
+        "in_us": 13582.8,
+        "in_gbs": 4.94
+      }
+    ]
+  },
+  {
+    "variant": "on-default",
+    "graph": 0,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 8.15,
+        "out_gbs": 0.5,
+        "in_us": 7.95,
+        "in_gbs": 0.52
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.12,
+        "out_gbs": 1.25,
+        "in_us": 13.0,
+        "in_gbs": 1.26
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.59,
+        "out_gbs": 2.07,
+        "in_us": 31.58,
+        "in_gbs": 2.08
+      },
+      {
+        "bytes": 262144,
+        "out_us": 73.26,
+        "out_gbs": 3.58,
+        "in_us": 72.77,
+        "in_gbs": 3.6
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 233.48,
+        "out_gbs": 4.49,
+        "in_us": 233.05,
+        "in_gbs": 4.5
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 875.19,
+        "out_gbs": 4.79,
+        "in_us": 874.87,
+        "in_gbs": 4.79
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3464.41,
+        "out_gbs": 4.84,
+        "in_us": 3463.38,
+        "in_gbs": 4.84
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13747.9,
+        "out_gbs": 4.88,
+        "in_us": 13757.7,
+        "in_gbs": 4.88
+      }
+    ]
+  },
+  {
+    "variant": "on-default",
+    "graph": 1,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 7.59,
+        "out_gbs": 0.54,
+        "in_us": 7.18,
+        "in_gbs": 0.57
+      },
+      {
+        "bytes": 16384,
+        "out_us": 12.08,
+        "out_gbs": 1.36,
+        "in_us": 11.99,
+        "in_gbs": 1.37
+      },
+      {
+        "bytes": 65536,
+        "out_us": 29.15,
+        "out_gbs": 2.25,
+        "in_us": 29.16,
+        "in_gbs": 2.25
+      },
+      {
+        "bytes": 262144,
+        "out_us": 70.64,
+        "out_gbs": 3.71,
+        "in_us": 70.55,
+        "in_gbs": 3.72
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 231.76,
+        "out_gbs": 4.52,
+        "in_us": 231.59,
+        "in_gbs": 4.53
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 873.64,
+        "out_gbs": 4.8,
+        "in_us": 873.14,
+        "in_gbs": 4.8
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3464.41,
+        "out_gbs": 4.84,
+        "in_us": 3462.07,
+        "in_gbs": 4.85
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13767.8,
+        "out_gbs": 4.87,
+        "in_us": 13756.2,
+        "in_gbs": 4.88
+      }
+    ]
+  },
+  {
+    "variant": "on-copy-engine",
+    "graph": 0,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 8.58,
+        "out_gbs": 0.48,
+        "in_us": 8.41,
+        "in_gbs": 0.49
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.35,
+        "out_gbs": 1.23,
+        "in_us": 13.24,
+        "in_gbs": 1.24
+      },
+      {
+        "bytes": 65536,
+        "out_us": 32.02,
+        "out_gbs": 2.05,
+        "in_us": 31.97,
+        "in_gbs": 2.05
+      },
+      {
+        "bytes": 262144,
+        "out_us": 87.44,
+        "out_gbs": 3.0,
+        "in_us": 87.59,
+        "in_gbs": 2.99
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 235.64,
+        "out_gbs": 4.45,
+        "in_us": 235.19,
+        "in_gbs": 4.46
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 860.3,
+        "out_gbs": 4.88,
+        "in_us": 860.28,
+        "in_gbs": 4.88
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3418.07,
+        "out_gbs": 4.91,
+        "in_us": 3417.97,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13662.9,
+        "out_gbs": 4.91,
+        "in_us": 13662.9,
+        "in_gbs": 4.91
+      }
+    ]
+  },
+  {
+    "variant": "on-copy-engine",
+    "graph": 1,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 11.11,
+        "out_gbs": 0.37,
+        "in_us": 10.05,
+        "in_gbs": 0.41
+      },
+      {
+        "bytes": 16384,
+        "out_us": 14.56,
+        "out_gbs": 1.12,
+        "in_us": 14.35,
+        "in_gbs": 1.14
+      },
+      {
+        "bytes": 65536,
+        "out_us": 32.88,
+        "out_gbs": 1.99,
+        "in_us": 32.96,
+        "in_gbs": 1.99
+      },
+      {
+        "bytes": 262144,
+        "out_us": 89.37,
+        "out_gbs": 2.93,
+        "in_us": 91.67,
+        "in_gbs": 2.86
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 237.43,
+        "out_gbs": 4.42,
+        "in_us": 237.75,
+        "in_gbs": 4.41
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 862.94,
+        "out_gbs": 4.86,
+        "in_us": 863.06,
+        "in_gbs": 4.86
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3423.45,
+        "out_gbs": 4.9,
+        "in_us": 3422.84,
+        "in_gbs": 4.9
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13676.0,
+        "out_gbs": 4.91,
+        "in_us": 13675.1,
+        "in_gbs": 4.91
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas4",
+    "graph": 0,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 9.34,
+        "out_gbs": 0.44,
+        "in_us": 8.02,
+        "in_gbs": 0.51
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.16,
+        "out_gbs": 1.24,
+        "in_us": 13.02,
+        "in_gbs": 1.26
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.66,
+        "out_gbs": 2.07,
+        "in_us": 31.65,
+        "in_gbs": 2.07
+      },
+      {
+        "bytes": 262144,
+        "out_us": 75.11,
+        "out_gbs": 3.49,
+        "in_us": 75.05,
+        "in_gbs": 3.49
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 232.73,
+        "out_gbs": 4.51,
+        "in_us": 232.42,
+        "in_gbs": 4.51
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 869.25,
+        "out_gbs": 4.83,
+        "in_us": 869.06,
+        "in_gbs": 4.83
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3434.13,
+        "out_gbs": 4.89,
+        "in_us": 3434.3,
+        "in_gbs": 4.89
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13629.4,
+        "out_gbs": 4.92,
+        "in_us": 13635.1,
+        "in_gbs": 4.92
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas4",
+    "graph": 1,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 7.71,
+        "out_gbs": 0.53,
+        "in_us": 7.19,
+        "in_gbs": 0.57
+      },
+      {
+        "bytes": 16384,
+        "out_us": 11.99,
+        "out_gbs": 1.37,
+        "in_us": 11.85,
+        "in_gbs": 1.38
+      },
+      {
+        "bytes": 65536,
+        "out_us": 29.1,
+        "out_gbs": 2.25,
+        "in_us": 29.14,
+        "in_gbs": 2.25
+      },
+      {
+        "bytes": 262144,
+        "out_us": 73.66,
+        "out_gbs": 3.56,
+        "in_us": 73.63,
+        "in_gbs": 3.56
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 230.82,
+        "out_gbs": 4.54,
+        "in_us": 230.89,
+        "in_gbs": 4.54
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 867.41,
+        "out_gbs": 4.84,
+        "in_us": 867.0,
+        "in_gbs": 4.84
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3433.39,
+        "out_gbs": 4.89,
+        "in_us": 3432.75,
+        "in_gbs": 4.89
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13655.8,
+        "out_gbs": 4.91,
+        "in_us": 13629.9,
+        "in_gbs": 4.92
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas8",
+    "graph": 0,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 8.22,
+        "out_gbs": 0.5,
+        "in_us": 8.08,
+        "in_gbs": 0.51
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.23,
+        "out_gbs": 1.24,
+        "in_us": 13.11,
+        "in_gbs": 1.25
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.79,
+        "out_gbs": 2.06,
+        "in_us": 31.74,
+        "in_gbs": 2.06
+      },
+      {
+        "bytes": 262144,
+        "out_us": 74.93,
+        "out_gbs": 3.5,
+        "in_us": 74.84,
+        "in_gbs": 3.5
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 233.46,
+        "out_gbs": 4.49,
+        "in_us": 233.4,
+        "in_gbs": 4.49
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 868.21,
+        "out_gbs": 4.83,
+        "in_us": 867.83,
+        "in_gbs": 4.83
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3419.21,
+        "out_gbs": 4.91,
+        "in_us": 3419.61,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13574.1,
+        "out_gbs": 4.94,
+        "in_us": 13578.1,
+        "in_gbs": 4.94
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas8",
+    "graph": 1,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 7.76,
+        "out_gbs": 0.53,
+        "in_us": 7.19,
+        "in_gbs": 0.57
+      },
+      {
+        "bytes": 16384,
+        "out_us": 11.99,
+        "out_gbs": 1.37,
+        "in_us": 11.85,
+        "in_gbs": 1.38
+      },
+      {
+        "bytes": 65536,
+        "out_us": 29.13,
+        "out_gbs": 2.25,
+        "in_us": 29.15,
+        "in_gbs": 2.25
+      },
+      {
+        "bytes": 262144,
+        "out_us": 73.31,
+        "out_gbs": 3.58,
+        "in_us": 73.27,
+        "in_gbs": 3.58
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 231.66,
+        "out_gbs": 4.53,
+        "in_us": 231.42,
+        "in_gbs": 4.53
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 865.71,
+        "out_gbs": 4.84,
+        "in_us": 865.63,
+        "in_gbs": 4.85
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3416.06,
+        "out_gbs": 4.91,
+        "in_us": 3415.95,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13582.9,
+        "out_gbs": 4.94,
+        "in_us": 13585.6,
+        "in_gbs": 4.94
+      }
+    ]
+  },
+  {
+    "variant": "off",
+    "graph": 0,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 9.55,
+        "out_gbs": 0.43,
+        "in_us": 9.3,
+        "in_gbs": 0.44
+      },
+      {
+        "bytes": 16384,
+        "out_us": 12.63,
+        "out_gbs": 1.3,
+        "in_us": 12.6,
+        "in_gbs": 1.3
+      },
+      {
+        "bytes": 65536,
+        "out_us": 24.15,
+        "out_gbs": 2.71,
+        "in_us": 24.2,
+        "in_gbs": 2.71
+      },
+      {
+        "bytes": 262144,
+        "out_us": 60.02,
+        "out_gbs": 4.37,
+        "in_us": 59.98,
+        "in_gbs": 4.37
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 162.37,
+        "out_gbs": 6.46,
+        "in_us": 162.27,
+        "in_gbs": 6.46
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 572.46,
+        "out_gbs": 7.33,
+        "in_us": 569.77,
+        "in_gbs": 7.36
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 2193.35,
+        "out_gbs": 7.65,
+        "in_us": 2190.45,
+        "in_gbs": 7.66
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 8658.36,
+        "out_gbs": 7.75,
+        "in_us": 8675.54,
+        "in_gbs": 7.74
+      }
+    ]
+  },
+  {
+    "variant": "off",
+    "graph": 1,
+    "repeat": 1,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 9.17,
+        "out_gbs": 0.45,
+        "in_us": 8.39,
+        "in_gbs": 0.49
+      },
+      {
+        "bytes": 16384,
+        "out_us": 11.46,
+        "out_gbs": 1.43,
+        "in_us": 11.38,
+        "in_gbs": 1.44
+      },
+      {
+        "bytes": 65536,
+        "out_us": 23.05,
+        "out_gbs": 2.84,
+        "in_us": 23.16,
+        "in_gbs": 2.83
+      },
+      {
+        "bytes": 262144,
+        "out_us": 58.44,
+        "out_gbs": 4.49,
+        "in_us": 58.56,
+        "in_gbs": 4.48
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 159.5,
+        "out_gbs": 6.57,
+        "in_us": 159.21,
+        "in_gbs": 6.59
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 568.25,
+        "out_gbs": 7.38,
+        "in_us": 567.68,
+        "in_gbs": 7.39
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 2187.54,
+        "out_gbs": 7.67,
+        "in_us": 2186.19,
+        "in_gbs": 7.67
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 8637.9,
+        "out_gbs": 7.77,
+        "in_us": 8646.98,
+        "in_gbs": 7.76
+      }
+    ]
+  },
+  {
+    "variant": "on-copy-engine",
+    "graph": 0,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 11.18,
+        "out_gbs": 0.37,
+        "in_us": 9.34,
+        "in_gbs": 0.44
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.49,
+        "out_gbs": 1.21,
+        "in_us": 13.35,
+        "in_gbs": 1.23
+      },
+      {
+        "bytes": 65536,
+        "out_us": 32.03,
+        "out_gbs": 2.05,
+        "in_us": 32.04,
+        "in_gbs": 2.05
+      },
+      {
+        "bytes": 262144,
+        "out_us": 86.62,
+        "out_gbs": 3.03,
+        "in_us": 86.85,
+        "in_gbs": 3.02
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 235.2,
+        "out_gbs": 4.46,
+        "in_us": 234.68,
+        "in_gbs": 4.47
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 860.75,
+        "out_gbs": 4.87,
+        "in_us": 861.01,
+        "in_gbs": 4.87
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3417.69,
+        "out_gbs": 4.91,
+        "in_us": 3417.57,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13661.1,
+        "out_gbs": 4.91,
+        "in_us": 13659.9,
+        "in_gbs": 4.91
+      }
+    ]
+  },
+  {
+    "variant": "on-copy-engine",
+    "graph": 1,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 10.88,
+        "out_gbs": 0.38,
+        "in_us": 10.0,
+        "in_gbs": 0.41
+      },
+      {
+        "bytes": 16384,
+        "out_us": 14.58,
+        "out_gbs": 1.12,
+        "in_us": 14.29,
+        "in_gbs": 1.15
+      },
+      {
+        "bytes": 65536,
+        "out_us": 32.87,
+        "out_gbs": 1.99,
+        "in_us": 33.0,
+        "in_gbs": 1.99
+      },
+      {
+        "bytes": 262144,
+        "out_us": 90.41,
+        "out_gbs": 2.9,
+        "in_us": 90.12,
+        "in_gbs": 2.91
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 236.78,
+        "out_gbs": 4.43,
+        "in_us": 236.05,
+        "in_gbs": 4.44
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 862.82,
+        "out_gbs": 4.86,
+        "in_us": 862.48,
+        "in_gbs": 4.86
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3421.38,
+        "out_gbs": 4.9,
+        "in_us": 3421.0,
+        "in_gbs": 4.9
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13670.6,
+        "out_gbs": 4.91,
+        "in_us": 13669.9,
+        "in_gbs": 4.91
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas4",
+    "graph": 0,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 9.08,
+        "out_gbs": 0.45,
+        "in_us": 7.85,
+        "in_gbs": 0.52
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.31,
+        "out_gbs": 1.23,
+        "in_us": 13.1,
+        "in_gbs": 1.25
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.66,
+        "out_gbs": 2.07,
+        "in_us": 31.65,
+        "in_gbs": 2.07
+      },
+      {
+        "bytes": 262144,
+        "out_us": 75.15,
+        "out_gbs": 3.49,
+        "in_us": 75.13,
+        "in_gbs": 3.49
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 232.94,
+        "out_gbs": 4.5,
+        "in_us": 233.11,
+        "in_gbs": 4.5
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 869.31,
+        "out_gbs": 4.82,
+        "in_us": 869.27,
+        "in_gbs": 4.83
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3435.01,
+        "out_gbs": 4.88,
+        "in_us": 3435.37,
+        "in_gbs": 4.88
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13642.9,
+        "out_gbs": 4.92,
+        "in_us": 13642.5,
+        "in_gbs": 4.92
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas4",
+    "graph": 1,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 7.65,
+        "out_gbs": 0.54,
+        "in_us": 7.24,
+        "in_gbs": 0.57
+      },
+      {
+        "bytes": 16384,
+        "out_us": 12.02,
+        "out_gbs": 1.36,
+        "in_us": 11.97,
+        "in_gbs": 1.37
+      },
+      {
+        "bytes": 65536,
+        "out_us": 29.16,
+        "out_gbs": 2.25,
+        "in_us": 29.14,
+        "in_gbs": 2.25
+      },
+      {
+        "bytes": 262144,
+        "out_us": 73.84,
+        "out_gbs": 3.55,
+        "in_us": 73.77,
+        "in_gbs": 3.55
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 231.43,
+        "out_gbs": 4.53,
+        "in_us": 230.59,
+        "in_gbs": 4.55
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 867.4,
+        "out_gbs": 4.84,
+        "in_us": 867.18,
+        "in_gbs": 4.84
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3432.65,
+        "out_gbs": 4.89,
+        "in_us": 3433.27,
+        "in_gbs": 4.89
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13629.4,
+        "out_gbs": 4.92,
+        "in_us": 13660.2,
+        "in_gbs": 4.91
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas8",
+    "graph": 0,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 8.27,
+        "out_gbs": 0.5,
+        "in_us": 8.05,
+        "in_gbs": 0.51
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.27,
+        "out_gbs": 1.23,
+        "in_us": 13.17,
+        "in_gbs": 1.24
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.79,
+        "out_gbs": 2.06,
+        "in_us": 31.8,
+        "in_gbs": 2.06
+      },
+      {
+        "bytes": 262144,
+        "out_us": 74.98,
+        "out_gbs": 3.5,
+        "in_us": 74.86,
+        "in_gbs": 3.5
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 233.29,
+        "out_gbs": 4.49,
+        "in_us": 232.4,
+        "in_gbs": 4.51
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 868.11,
+        "out_gbs": 4.83,
+        "in_us": 868.09,
+        "in_gbs": 4.83
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3418.3,
+        "out_gbs": 4.91,
+        "in_us": 3418.36,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13573.2,
+        "out_gbs": 4.94,
+        "in_us": 13576.9,
+        "in_gbs": 4.94
+      }
+    ]
+  },
+  {
+    "variant": "on-ctas8",
+    "graph": 1,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 9.23,
+        "out_gbs": 0.44,
+        "in_us": 7.84,
+        "in_gbs": 0.52
+      },
+      {
+        "bytes": 16384,
+        "out_us": 12.18,
+        "out_gbs": 1.34,
+        "in_us": 11.9,
+        "in_gbs": 1.38
+      },
+      {
+        "bytes": 65536,
+        "out_us": 29.16,
+        "out_gbs": 2.25,
+        "in_us": 29.21,
+        "in_gbs": 2.24
+      },
+      {
+        "bytes": 262144,
+        "out_us": 73.52,
+        "out_gbs": 3.57,
+        "in_us": 73.44,
+        "in_gbs": 3.57
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 230.7,
+        "out_gbs": 4.55,
+        "in_us": 230.47,
+        "in_gbs": 4.55
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 866.07,
+        "out_gbs": 4.84,
+        "in_us": 865.82,
+        "in_gbs": 4.84
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3415.37,
+        "out_gbs": 4.91,
+        "in_us": 3415.74,
+        "in_gbs": 4.91
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13586.3,
+        "out_gbs": 4.94,
+        "in_us": 13587.0,
+        "in_gbs": 4.94
+      }
+    ]
+  },
+  {
+    "variant": "off",
+    "graph": 0,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 9.49,
+        "out_gbs": 0.43,
+        "in_us": 8.95,
+        "in_gbs": 0.46
+      },
+      {
+        "bytes": 16384,
+        "out_us": 12.65,
+        "out_gbs": 1.29,
+        "in_us": 12.53,
+        "in_gbs": 1.31
+      },
+      {
+        "bytes": 65536,
+        "out_us": 24.08,
+        "out_gbs": 2.72,
+        "in_us": 24.13,
+        "in_gbs": 2.72
+      },
+      {
+        "bytes": 262144,
+        "out_us": 61.0,
+        "out_gbs": 4.3,
+        "in_us": 60.79,
+        "in_gbs": 4.31
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 161.16,
+        "out_gbs": 6.51,
+        "in_us": 161.0,
+        "in_gbs": 6.51
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 572.36,
+        "out_gbs": 7.33,
+        "in_us": 570.02,
+        "in_gbs": 7.36
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 2190.35,
+        "out_gbs": 7.66,
+        "in_us": 2190.18,
+        "in_gbs": 7.66
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 8664.43,
+        "out_gbs": 7.75,
+        "in_us": 8668.37,
+        "in_gbs": 7.74
+      }
+    ]
+  },
+  {
+    "variant": "off",
+    "graph": 1,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 8.97,
+        "out_gbs": 0.46,
+        "in_us": 8.51,
+        "in_gbs": 0.48
+      },
+      {
+        "bytes": 16384,
+        "out_us": 11.43,
+        "out_gbs": 1.43,
+        "in_us": 11.35,
+        "in_gbs": 1.44
+      },
+      {
+        "bytes": 65536,
+        "out_us": 22.98,
+        "out_gbs": 2.85,
+        "in_us": 23.04,
+        "in_gbs": 2.84
+      },
+      {
+        "bytes": 262144,
+        "out_us": 58.98,
+        "out_gbs": 4.44,
+        "in_us": 58.75,
+        "in_gbs": 4.46
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 160.57,
+        "out_gbs": 6.53,
+        "in_us": 160.24,
+        "in_gbs": 6.54
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 566.31,
+        "out_gbs": 7.41,
+        "in_us": 566.34,
+        "in_gbs": 7.41
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 2183.07,
+        "out_gbs": 7.69,
+        "in_us": 2187.03,
+        "in_gbs": 7.67
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 8618.41,
+        "out_gbs": 7.79,
+        "in_us": 8619.34,
+        "in_gbs": 7.79
+      }
+    ]
+  },
+  {
+    "variant": "on-default",
+    "graph": 0,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 8.31,
+        "out_gbs": 0.49,
+        "in_us": 8.1,
+        "in_gbs": 0.51
+      },
+      {
+        "bytes": 16384,
+        "out_us": 13.27,
+        "out_gbs": 1.23,
+        "in_us": 13.16,
+        "in_gbs": 1.24
+      },
+      {
+        "bytes": 65536,
+        "out_us": 31.65,
+        "out_gbs": 2.07,
+        "in_us": 31.67,
+        "in_gbs": 2.07
+      },
+      {
+        "bytes": 262144,
+        "out_us": 71.84,
+        "out_gbs": 3.65,
+        "in_us": 71.83,
+        "in_gbs": 3.65
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 233.96,
+        "out_gbs": 4.48,
+        "in_us": 233.63,
+        "in_gbs": 4.49
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 875.99,
+        "out_gbs": 4.79,
+        "in_us": 875.83,
+        "in_gbs": 4.79
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3467.35,
+        "out_gbs": 4.84,
+        "in_us": 3466.46,
+        "in_gbs": 4.84
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13732.0,
+        "out_gbs": 4.89,
+        "in_us": 13742.6,
+        "in_gbs": 4.88
+      }
+    ]
+  },
+  {
+    "variant": "on-default",
+    "graph": 1,
+    "repeat": 2,
+    "rows": [
+      {
+        "bytes": 4096,
+        "out_us": 7.69,
+        "out_gbs": 0.53,
+        "in_us": 7.32,
+        "in_gbs": 0.56
+      },
+      {
+        "bytes": 16384,
+        "out_us": 12.07,
+        "out_gbs": 1.36,
+        "in_us": 11.96,
+        "in_gbs": 1.37
+      },
+      {
+        "bytes": 65536,
+        "out_us": 29.28,
+        "out_gbs": 2.24,
+        "in_us": 29.3,
+        "in_gbs": 2.24
+      },
+      {
+        "bytes": 262144,
+        "out_us": 70.62,
+        "out_gbs": 3.71,
+        "in_us": 70.42,
+        "in_gbs": 3.72
+      },
+      {
+        "bytes": 1048576,
+        "out_us": 231.98,
+        "out_gbs": 4.52,
+        "in_us": 231.57,
+        "in_gbs": 4.53
+      },
+      {
+        "bytes": 4194304,
+        "out_us": 874.28,
+        "out_gbs": 4.8,
+        "in_us": 873.79,
+        "in_gbs": 4.8
+      },
+      {
+        "bytes": 16777216,
+        "out_us": 3463.1,
+        "out_gbs": 4.84,
+        "in_us": 3462.35,
+        "in_gbs": 4.85
+      },
+      {
+        "bytes": 67108864,
+        "out_us": 13740.8,
+        "out_gbs": 4.88,
+        "in_us": 13747.0,
+        "in_gbs": 4.88
+      }
+    ]
+  }
+]

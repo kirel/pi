@@ -1,0 +1,39 @@
+Temporary ACS:
+0000
+0000
+0->1 CE trial=0 mismatched_words=0
+0->1 CE trial=1 mismatched_words=0
+0->1 CE trial=2 mismatched_words=0
+0->1 SM-write trial=0 mismatched_words=0
+0->1 SM-write trial=1 mismatched_words=0
+0->1 SM-write trial=2 mismatched_words=0
+0->1 SM-read trial=0 mismatched_words=4194304
+0->1 SM-read trial=1 mismatched_words=4194304
+0->1 SM-read trial=2 mismatched_words=4194304
+1->0 CE trial=0 mismatched_words=0
+1->0 CE trial=1 mismatched_words=0
+1->0 CE trial=2 mismatched_words=0
+1->0 SM-write trial=0 mismatched_words=0
+1->0 SM-write trial=1 mismatched_words=0
+1->0 SM-write trial=2 mismatched_words=0
+1->0 SM-read trial=0 mismatched_words=4194304
+1->0 SM-read trial=1 mismatched_words=4194304
+1->0 SM-read trial=2 mismatched_words=4194304
+Verification exit=1
+nvbandwidth Version: v0.10.0
+Built from Git version: v0.10
+
+NOTE: You have chosen a buffer size that is smaller than the default buffer size. It is suggested to use the default buffer size (512MB) to achieve maximal peak bandwidth.
+CUDA Runtime Version: 13.4 (13040)
+CUDA Driver Version (API): 13.4 (13040)
+Driver Version: 615.71.09
+
+Running device_to_device_memcpy_write_ce.
+ Invalid value when checking the pattern at 0x7035ee200000
+ Current offset : 1984
+ASSERT in expression h_errorFlag == 0 in void memcmpPatternHelper(CUstream, CUdeviceptr, long long unsigned int, unsigned int, CompareKernelFunc, std::shared_ptr<NodeHelper>, uint32_t)() : /var/tmp/p2p-nvbandwidth/memcpy.cpp:170
+
+nvbandwidth exit=1
+Restored ACS:
+001d
+001d

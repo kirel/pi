@@ -1,0 +1,58 @@
+rank=1 dtype=torch.float32 graph=False mismatches=1024 first=nanrank=0 dtype=torch.float32 graph=False mismatches=1024 first=nan
+
+rank=1 dtype=torch.float32 graph=True mismatches=1024 first=nan
+rank=0 dtype=torch.float32 graph=True mismatches=1024 first=nan
+rank=1 dtype=torch.bfloat16 graph=False mismatches=1024 first=nan
+rank=0 dtype=torch.bfloat16 graph=False mismatches=1024 first=nan
+rank=1 dtype=torch.bfloat16 graph=True mismatches=1024 first=nan
+rank=0 dtype=torch.bfloat16 graph=True mismatches=1024 first=nan
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/tmp/p2p-custom-check.py", line 30, in <module>
+[rank0]:     assert failures == 0, f'{failures} incorrect reductions'
+[rank0]:            ^^^^^^^^^^^^^
+[rank0]: AssertionError: 4 incorrect reductions
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/tmp/p2p-custom-check.py", line 30, in <module>
+[rank1]:     assert failures == 0, f'{failures} incorrect reductions'
+[rank1]:            ^^^^^^^^^^^^^
+[rank1]: AssertionError: 4 incorrect reductions
+E0929 15:43:09.227000 1359 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 0 (pid: 1365) of binary: /usr/bin/python3
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/local/lib/python3.12/dist-packages/torch/distributed/run.py", line 1032, in <module>
+    main()
+  File "/usr/local/lib/python3.12/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/distributed/run.py", line 1028, in main
+    run(args)
+  File "/usr/local/lib/python3.12/dist-packages/torch/distributed/run.py", line 1019, in run
+    elastic_launch(
+  File "/usr/local/lib/python3.12/dist-packages/torch/distributed/launcher/api.py", line 194, in __call__
+    return launch_agent(
+           ^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/distributed/launcher/api.py", line 383, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError:
+============================================================
+/tmp/p2p-custom-check.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-09-29_15:43:09
+  host      : 87d0d7bee4db
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 1366)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-09-29_15:43:09
+  host      : 87d0d7bee4db
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 1365)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

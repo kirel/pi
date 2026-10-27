@@ -1,0 +1,2 @@
+Original config restored byte-for-byte
+{'NCCL_P2P_DISABLE': '1', 'NCCL_P2P_LEVEL': None, 'PYTORCH_CUDA_ALLOC_CONF': 'expandable_segments:True'}
