@@ -70,7 +70,7 @@ class Bench:
    d=self.call('todoist-delete-object',{'type':'task','id':tid});assert d['success']
    del self.owned[tid];self.journal.write_text(json.dumps(self.owned))
   assert not any('[MCP-BENCH '+self.run+' ' in t['content'] for t in self.tasks())
-  self.journal.unlink();print(json.dumps({'cleanup':'verified','run':self.run}),flush=True)
+  self.journal.unlink(missing_ok=True);print(json.dumps({'cleanup':'verified','run':self.run}),flush=True)
  def cycle(self,route,cycle):
   prefix=f'[MCP-BENCH {self.run} {route}-{cycle}] '
   a=None;batch=None

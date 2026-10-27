@@ -33,12 +33,12 @@ def build():
  # only after checking the recorded execution is stopped, never a time-based lock steal.
  lock="const f=require('fs'),p='/tmp/data/shopping-apply-lock';try{f.mkdirSync(p);f.writeFileSync(p+'/owner',process.argv[1]);console.log(JSON.stringify({acquired:true}));}catch(e){if(e.code!=='EEXIST')throw e;console.log(JSON.stringify({acquired:false}));}"
  unlock="const f=require('fs'),p='/tmp/data/shopping-apply-lock';if(f.readFileSync(p+'/owner','utf8')!==process.argv[1])throw Error('lock_owner_mismatch');f.unlinkSync(p+'/owner');f.rmdirSync(p);console.log('released');"
- nodes=[node('Start','n8n-nodes-base.executeWorkflowTrigger',1.1,{'workflowInputs':{'values':[{'name':'request_id','type':'string'},{'name':'operations','type':'array'}]}}),
+ nodes=[node('Start','n8n-nodes-base.executeWorkflowTrigger',1.1,{'workflowInputs':{'values':[{'name':'query','type':'object'}]}}),
  node('Acquire lock','n8n-nodes-base.executeCommand',1,{'command':'=node -e '+shlex.quote(lock)+' {{ $execution.id }}'}),
  condition('Lock acquired','={{ JSON.parse($json.stdout).acquired }}'),
  code('Busy',"return [{json:{verified:false,status:'busy',message:'Another shopping request is running. No changes made.'}}];"),
  read('Read current'),
- code('Plan',js+"\nreturn [{json:plan($('Start').first().json,$input.first().json)}];"),
+ code('Plan',js+"\nreturn [{json:plan($('Start').first().json.query,$input.first().json)}];"),
  condition('Changes needed','={{ $json.commands.length > 0 }}'),
  write('Write first','Plan'),read('Read after first'),
  code('Verify first',js+"\nlet raw={};if($('Write first').isExecuted)raw=$('Write first').first().json;return [{json:verify($('Plan').first().json,raw,$input.first().json)}];"),
@@ -78,10 +78,23 @@ if __name__=='__main__':
  else:aid=call('n8n_create_workflow',apply)['data']['id']
  apply['id']=aid;saved.write_text(json.dumps({'apply':apply},indent=2)+'\n');print('apply',aid,flush=True)
  call('n8n_update_partial_workflow',{'id':aid,'operations':[{'type':'activateWorkflow'}]})
- tool=node('shopping_apply','@n8n/n8n-nodes-langchain.toolWorkflow',2.2,{'description':'Apply up to 25 shopping changes and verify them. Always read shopping_snapshot first. request_id: copy from shopping_snapshot and reuse only for exactly the same request. operations array: add {content,description,section,expected_candidates:[matching snapshot tasks]}; update {id,expected:snapshot task,content?,description?}; move {id,expected,section}; complete {id,expected}; merge {id:survivor,expected,duplicates:[{id,expected}]}. Section is its live name. Meaning/variants are your decision; never merge variants or invent speech. Check every result status; uncertain/partial/conflict is not success. Permanent deletion unsupported.','workflowId':{'__rl':True,'mode':'id','value':aid},'workflowInputs':{'mappingMode':'defineBelow','value':{'request_id':"={{ $fromAI('request_id', 'Copy request_id from the fresh shopping_snapshot. Preserve only for an identical retry.', 'string') }}",'operations':"={{ $fromAI('operations', 'Array of add, update, move, complete or merge operations as described. Expected tasks copied from fresh snapshot.', 'json') }}"},'matchingColumns':[],'schema':[{'id':'request_id','displayName':'request_id','type':'string','required':True,'display':True},{'id':'operations','displayName':'operations','type':'array','required':True,'display':True}],'attemptToConvertTypes':False,'convertFieldsToString':False}})
+ # Native v1.3 supports explicit JSON Schema; v2 $fromAI(json) loses the array type.
+ task={'type':'object','additionalProperties':True}
+ schema={'type':'object','required':['request_id','operations'],'additionalProperties':False,'properties':{
+  'request_id':{'type':'string','pattern':'^[a-zA-Z0-9_-]{12,80}$','description':'Copy from the fresh snapshot; reuse only for an identical retry.'},
+  'operations':{'type':'array','minItems':1,'maxItems':25,'items':{'type':'object','required':['action'],'additionalProperties':False,'properties':{
+   'action':{'type':'string','enum':['add','update','move','complete','merge']},
+   **{k:{'type':'string'} for k in ['id','content','description','section']},
+   'expected':task,'expected_candidates':{'type':'array','items':task},
+   'duplicates':{'type':'array','items':{'type':'object','required':['id','expected'],'properties':{'id':{'type':'string'},'expected':task},'additionalProperties':False}}
+  }}}}}
+ tool=node('shopping_apply','@n8n/n8n-nodes-langchain.toolWorkflow',1.3,{
+  'name':'shopping_apply','description':'Apply up to 25 shopping changes and verify them. Always read shopping_snapshot first. request_id: copy from shopping_snapshot and reuse only for exactly the same request. operations array: add {content,description,section,expected_candidates:[matching snapshot tasks]}; update {id,expected:snapshot task,content?,description?}; move {id,expected,section}; complete {id,expected}; merge {id:survivor,expected,duplicates:[{id,expected}]}. Section is its live name. Meaning/variants are your decision; never merge variants or invent speech. Check every result status; uncertain/partial/conflict is not success. Permanent deletion unsupported.','source':'database',
+  'workflowId':{'__rl':True,'mode':'id','value':aid},
+  'specifyInputSchema':True,'schemaType':'manual','inputSchema':json.dumps(schema)})
  front=call('n8n_get_workflow',{'id':base['mcp']['id']})['data']
  existing=next((n for n in front['nodes'] if n['name']=='shopping_apply'),None)
- ops=[{'type':'updateNode','nodeName':'shopping_apply','updates':{'parameters':tool['parameters']}}] if existing else [{'type':'addNode','node':tool},{'type':'addConnection','source':'shopping_apply','target':'Shopping MCP','sourceOutput':'ai_tool','targetInput':'ai_tool'}]
+ ops=[{'type':'updateNode','nodeName':'shopping_apply','updates':{'parameters':tool['parameters'],'typeVersion':tool['typeVersion']}}] if existing else [{'type':'addNode','node':tool},{'type':'addConnection','source':'shopping_apply','target':'Shopping MCP','sourceOutput':'ai_tool','targetInput':'ai_tool'}]
  call('n8n_update_partial_workflow',{'id':front['id'],'operations':ops})
  bundle={}
  for name,wid in [('snapshot',snap['id']),('apply',aid),('mcp',front['id'])]:
