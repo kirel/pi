@@ -23,9 +23,13 @@ RUN apt-get update \
     && ln -s /usr/bin/fdfind /usr/local/bin/fd \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g \
-    t3@{{ t3_code_version }} \
-    {{ t3_code_codex_package }}
+RUN npm install -g t3@{{ t3_code_version }}
+
+# T3 updates Codex as its unprivileged runtime user. Keep its npm prefix
+# writable without granting write access to T3 or the system binaries.
+RUN npm install -g --prefix /opt/codex {{ t3_code_codex_package }} \
+    && chown -R {{ t3_code_user }} /opt/codex \
+    && ln -s /opt/codex/bin/codex /usr/local/bin/codex
 
 # T3 Code only exposes project actions below its phone breakpoint. Keep the
 # action tappable on wider touch devices such as an iPad in landscape.
