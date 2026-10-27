@@ -117,6 +117,7 @@
     src: "{{ config_root }}/pocket-id/secrets/beszel-client-secret"
   register: beszel_pocket_secret
   delegate_to: "{{ beszel_hub_inventory_hostname }}"
+  when: inventory_hostname == beszel_hub_inventory_hostname
   no_log: true
 
 - name: Reconcile Pocket ID OIDC provider in Beszel

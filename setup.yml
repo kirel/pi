@@ -49,6 +49,7 @@
 - name: Setup Hetzner VPS
   hosts: hetzner
   roles:
+    - { role: hetzner_storage, become: true, tags: [hetzner-storage] }
     - { role: basic, become: true, tags: [basic] }
     - { role: hetzner, become: true, tags: [hetzner] }
     - { role: nodesource_nodejs, become: true, tags: [hetzner, node, openclaw] }
@@ -61,6 +62,7 @@
     - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
     - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
     - { role: cloud_security, become: true, tags: [security, cloud-security] }
+    - { role: beszel, become: true, tags: [beszel, monitoring] }
 
 - name: Setup Dashserv baseline
   hosts: dashserv
@@ -70,8 +72,11 @@
     - { role: geerlingguy.docker, become: true, tags: [docker], vars: { docker_install_compose: true } }
     - { role: tailscale_apt_cleanup, become: true, tags: [tailscale] }
     - { role: artis3n.tailscale.machine, become: true, tags: [tailscale] }
+    - { role: dockerproxy, become: true, tags: [docker, dockerproxy] }
     - { role: dozzle, become: true, tags: [dozzle, monitoring] }
     - { role: cloud_security, become: true, tags: [security, cloud-security] }
+    - { role: split_dns, become: true, tags: [internal-dns] }
+    - { role: beszel, become: true, tags: [beszel, monitoring] }
 
 - name: Setup nameserver
   hosts: nameserver
