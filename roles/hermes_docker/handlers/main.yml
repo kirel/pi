@@ -7,11 +7,15 @@
     project_name: "{{ hermes_docker_project_name }}"
     state: present
     # Scoped configuration deploys reuse the existing image and leave peers running.
-    services: "{{ hermes_docker_deploy_services | default(omit) }}"
-    dependencies: "{{ false if hermes_docker_deploy_services is defined else omit }}"
+    # Tool rollouts rebuild all Hermes services without updating network/proxy sidecars.
+    services: >-
+      {{ hermes_docker_deploy_services | default(
+        hermes_docker_effective_agent_names | map('regex_replace', '^', 'hermes-') | list
+        if 'hermes-tools' in ansible_run_tags else omit) }}
+    dependencies: "{{ false if hermes_docker_deploy_services is defined or 'hermes-tools' in ansible_run_tags else omit }}"
     build: "{{ 'never' if hermes_docker_deploy_services is defined else 'always' }}"
-    pull: "{{ 'never' if hermes_docker_deploy_services is defined else hermes_docker_compose_pull }}"
+    pull: "{{ 'never' if hermes_docker_deploy_services is defined or 'hermes-tools' in ansible_run_tags else hermes_docker_compose_pull }}"
     recreate: auto
-    remove_orphans: "{{ hermes_docker_deploy_services is not defined }}"
+    remove_orphans: "{{ hermes_docker_deploy_services is not defined and 'hermes-tools' not in ansible_run_tags }}"
   become: true
   when: not ansible_check_mode

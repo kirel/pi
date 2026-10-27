@@ -3,9 +3,27 @@ FROM ${HERMES_BASE_IMAGE}
 
 USER root
 
+COPY --from=ghcr.io/astral-sh/uv:0.13.1 /uv /uvx /usr/local/bin/
 COPY hermes-service /usr/local/bin/hermes-service
 
 RUN mkdir -p /etc/supervisor \
-    && uv pip install --python /opt/hermes/.venv/bin/python --no-cache supervisor \
-    && ln -sf /opt/hermes/.venv/bin/hermes /usr/local/bin/hermes \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends supervisor build-essential procps curl file git ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
     && chmod 0755 /usr/local/bin/hermes-service
+
+# Tool installs persist independently of the image-owned Hermes Python runtime.
+ENV UV_TOOL_DIR="/opt/data/.local/share/uv/tools" \
+    UV_TOOL_BIN_DIR="/opt/data/.local/bin" \
+    HOMEBREW_NO_ANALYTICS="1" \
+    HOMEBREW_NO_AUTO_UPDATE="1" \
+    HOMEBREW_NO_INSTALL_CLEANUP="1" \
+    PATH="/opt/data/.local/bin:/opt/data/npm-global/bin:${PATH}:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin"
+
+# Login shells reset PATH through /etc/profile; expose user-installed CLIs there too.
+RUN printf '%s\n' 'export PATH="/opt/hermes/bin:/opt/data/.local/bin:/opt/data/npm-global/bin:$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin"' \
+    > /etc/profile.d/hermes-user-tools.sh
+
+# v0.21.6 omits this PM inventory. Without it, a plugin environment loses the
+# image's extras. Use upstream's inventory writer; preserve future shipped files.
+RUN /opt/hermes/.venv/bin/python -c 'from pathlib import Path; from pm.features import features_path, installed_extras, write_features; root = Path("/opt/hermes"); features_path().exists() or write_features(installed_extras(root, root / ".venv", python_exe=root / ".venv/bin/python"), root)'

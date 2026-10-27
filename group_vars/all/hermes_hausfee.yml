@@ -86,7 +86,7 @@ hermes_hausfee_transport_config:
   model:
     default: "{{ hermes_litellm_cloud_default_model }}"
     provider: custom:kirelabs-litellm
-  custom_providers: "{{ hermes_litellm_custom_providers }}"
+  providers: "{{ hermes_litellm_providers }}"
   fallback_providers: "{{ hermes_litellm_cloud_fallbacks }}"
   timezone: Europe/Berlin
   terminal:

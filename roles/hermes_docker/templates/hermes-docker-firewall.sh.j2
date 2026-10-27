@@ -28,8 +28,10 @@ iptables -A HERMES-HOST-IN -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
 {% for agent_name in hermes_docker_effective_agent_names %}
 {% set subnet = hermes_docker_agent_networks[agent_name].subnet %}
+{% for proxy_ip in [hermes_docker_allowed_proxy_ip] + hermes_docker_additional_proxy_ips %}
 {% for port in hermes_docker_allowed_proxy_ports %}
-iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ hermes_docker_allowed_proxy_ip }} -p tcp --dport {{ port }} -j ACCEPT
+iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ proxy_ip }} -p tcp --dport {{ port }} -j ACCEPT
+{% endfor %}
 {% endfor %}
 {% for dns_server in hermes_docker_dns_servers %}
 iptables -A HERMES-EGRESS -s {{ subnet }} -d {{ dns_server }} -p udp --dport 53 -j ACCEPT

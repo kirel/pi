@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Configure one Hausfee profile for every channel; preserve migration history."""
 import copy
+from io import StringIO
 import json
 import os
 from pathlib import Path
@@ -9,13 +10,18 @@ import sqlite3
 import sys
 import time
 
-import yaml
+from ruamel.yaml import YAML
+
+yaml = YAML()
+yaml.preserve_quotes = True
 
 
-def merge(base, overlay):
+def merge(base, overlay, delete_marker=None):
     for key, value in overlay.items():
-        if isinstance(value, dict) and isinstance(base.get(key), dict):
-            merge(base[key], value)
+        if delete_marker is not None and value == delete_marker:
+            base.pop(key, None)
+        elif isinstance(value, dict):
+            base[key] = merge(base.get(key) if isinstance(base.get(key), dict) else {}, value, delete_marker)
         else:
             base[key] = copy.deepcopy(value)
     return base
@@ -34,13 +40,15 @@ def write_if_changed(path, text):
     return True
 
 
-def update_config(path, overlay):
-    current = yaml.safe_load(path.read_text()) if path.exists() else {}
+def update_config(path, overlay, delete_marker=None):
+    current = yaml.load(path.read_text()) if path.exists() else {}
     current = current if isinstance(current, dict) else {}
-    updated = merge(copy.deepcopy(current), overlay)
+    updated = merge(copy.deepcopy(current), overlay, delete_marker)
     if current == updated:
         return False
-    return write_if_changed(path, yaml.safe_dump(updated, sort_keys=False, allow_unicode=True))
+    output = StringIO()
+    yaml.dump(updated, output)
+    return write_if_changed(path, output.getvalue())
 
 
 def main():
@@ -88,7 +96,7 @@ def main():
             print('preserved_retired_sessions=' + str(len(fresh)))
         shutil.move(str(profile), str(archive))
         changed = True
-    changed |= update_config(root / 'config.yaml', payload['transport_config'])
+    changed |= update_config(root / 'config.yaml', payload['transport_config'], payload['config_delete_marker'])
     changed |= update_config(root / 'profile.yaml', {'display_name': 'Hausfee'})
     soul = root / 'SOUL.md'
     soul_backup = root / 'archives' / 'SOUL-before-hausfee.md'

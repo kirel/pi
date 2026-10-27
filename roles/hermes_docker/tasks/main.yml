@@ -15,7 +15,7 @@
       changed_when: false
 
 - name: Build effective Hermes environment and agent maps
-  tags: [hermes-skills]
+  tags: [hermes-tools, hermes-skills, hermes-config, hermes-network]
   ansible.builtin.set_fact:
     hermes_docker_effective_global_env: >-
       {{
@@ -42,7 +42,7 @@
   no_log: true
 
 - name: Build effective Hermes WebUI agent list
-  tags: [hermes-skills]
+  tags: [hermes-tools, hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_webui_agent_names: >-
       {%- set agents = [] -%}
@@ -56,7 +56,7 @@
       {{ agents }}
 
 - name: Build effective Hermes WebUI workspace directory map
-  tags: [hermes-skills]
+  tags: [hermes-tools, hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_webui_effective_workspace_host_dirs: >-
       {%- set dirs = {} -%}
@@ -93,7 +93,7 @@
   when: hermes_docker_isolate_agents | bool
 
 - name: Build per-agent Hermes Docker network map
-  tags: [hermes-skills]
+  tags: [hermes-tools, hermes-skills, hermes-network]
   ansible.builtin.set_fact:
     hermes_docker_agent_networks: >-
       {%- set networks = {} -%}
@@ -110,24 +110,24 @@
   when: hermes_docker_isolate_agents | bool
 
 - name: Reset Hermes Docker extra_hosts list
-  tags: [hermes-skills]
+  tags: [hermes-tools, hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_extra_hosts: []
   when: hermes_docker_isolate_agents | bool
 
 - name: Build Hermes Docker extra_hosts entries
-  tags: [hermes-skills]
+  tags: [hermes-tools, hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_extra_hosts: >-
       {{
         hermes_docker_extra_hosts +
-        [services[item].domain ~ ':' ~ hermes_docker_extra_hosts_target_ip]
+        [services[item].domain ~ ':' ~ hermes_docker_extra_host_service_ips.get(item, hermes_docker_extra_hosts_target_ip)]
       }}
   loop: "{{ hermes_docker_extra_host_services }}"
   when: hermes_docker_isolate_agents | bool
 
 - name: Build per-agent Hermes Docker extra_hosts map
-  tags: [hermes-skills]
+  tags: [hermes-tools, hermes-skills]
   ansible.builtin.set_fact:
     hermes_docker_agent_extra_hosts: >-
       {%- set agent_hosts = {} -%}
@@ -267,7 +267,11 @@
   when: hermes_docker_litellm_manage_keys | bool
 
 - name: Sync Hermes Docker LiteLLM keys
-  ansible.builtin.include_tasks: litellm_keys.yml
+  ansible.builtin.include_tasks:
+    file: litellm_keys.yml
+    apply:
+      tags: [hermes-litellm-keys]
+  tags: [hermes-litellm-keys]
   when: hermes_docker_litellm_manage_keys | bool
 
 - name: Create Hermes Docker base directory
@@ -435,6 +439,36 @@
   loop_control:
     label: "{{ item.path }}"
 
+- name: Create persistent per-agent Homebrew directories
+  tags: [hermes-tools]
+  ansible.builtin.file:
+    path: "{{ hermes_docker_base_dir }}/{{ item }}/brew"
+    state: directory
+    owner: "{{ hermes_docker_data_uid }}"
+    group: "{{ hermes_docker_data_gid }}"
+    mode: "0755"
+  loop: "{{ hermes_docker_effective_agent_names }}"
+
+- name: Create Docker Hermes skill directories
+  tags: [hermes-tools]
+  ansible.builtin.file:
+    path: "{{ hermes_docker_base_dir }}/{{ item }}/skills/docker-hermes"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop: "{{ hermes_docker_effective_agent_names }}"
+
+- name: Install shared Docker Hermes environment skill
+  tags: [hermes-tools]
+  ansible.builtin.copy:
+    src: docker-hermes/SKILL.md
+    dest: "{{ hermes_docker_base_dir }}/{{ item }}/skills/docker-hermes/SKILL.md"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ hermes_docker_effective_agent_names }}"
+
 - name: Create per-agent Hermes WebUI workspace directories
   ansible.builtin.file:
     path: "{{ item.value }}"
@@ -479,6 +513,7 @@
     label: "{{ item.path }}"
 
 - name: Create Hermes image build directory
+  tags: [hermes-tools]
   ansible.builtin.file:
     path: "{{ hermes_docker_base_dir }}/hermes-image"
     state: directory
@@ -488,6 +523,7 @@
   when: hermes_docker_build_enabled | bool
 
 - name: Copy Hermes Docker service publisher
+  tags: [hermes-tools]
   ansible.builtin.copy:
     src: hermes-service
     dest: "{{ hermes_docker_base_dir }}/hermes-image/hermes-service"
@@ -498,6 +534,7 @@
   when: hermes_docker_build_enabled | bool
 
 - name: Render Hermes image Dockerfile
+  tags: [hermes-tools]
   ansible.builtin.template:
     src: hermes-Dockerfile.j2
     dest: "{{ hermes_docker_base_dir }}/hermes-image/Dockerfile"
@@ -709,6 +746,7 @@
   when: hermes_docker_webui_agent_names | length > 0
 
 - name: Render Hermes Docker firewall script
+  tags: [hermes-network]
   ansible.builtin.template:
     src: hermes-docker-firewall.sh.j2
     dest: "{{ hermes_docker_firewall_script_path }}"
@@ -718,6 +756,7 @@
   when: hermes_docker_isolate_agents | bool
 
 - name: Render Hermes Docker firewall systemd service
+  tags: [hermes-network]
   ansible.builtin.template:
     src: hermes-docker-firewall.service.j2
     dest: "/etc/systemd/system/{{ hermes_docker_firewall_service_name }}"
@@ -728,6 +767,7 @@
   register: hermes_docker_firewall_service
 
 - name: Reload systemd when Hermes Docker firewall service changes
+  tags: [hermes-network]
   ansible.builtin.systemd:
     daemon_reload: true
   when:
@@ -735,6 +775,7 @@
     - hermes_docker_firewall_service is changed
 
 - name: Enable and apply Hermes Docker firewall
+  tags: [hermes-network]
   ansible.builtin.systemd:
     name: "{{ hermes_docker_firewall_service_name }}"
     enabled: true
@@ -788,7 +829,7 @@
     - hermes_docker_watchdog_enabled | bool
 
 - name: Render Hermes Docker Compose file
-  tags: [hermes-skills]
+  tags: [hermes-tools, hermes-skills]
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ hermes_docker_base_dir }}/docker-compose.yml"
@@ -798,7 +839,7 @@
   notify: Recreate Hermes Docker agents
 
 - name: Apply pending Hermes Docker Compose changes
-  tags: [hermes-skills]
+  tags: [hermes-tools, hermes-skills]
   ansible.builtin.meta: flush_handlers
 
 - name: Ensure Hermes Docker Compose stack is running
@@ -817,7 +858,26 @@
     remove_orphans: true
   when: hermes_docker_ensure_running | bool
 
+- name: Bootstrap each agent's Homebrew without root or changing existing installs
+  tags: [hermes-tools]
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - --user
+      - "{{ hermes_docker_data_uid }}:{{ hermes_docker_data_gid }}"
+      - "hermes-{{ item }}"
+      - git
+      - clone
+      - --depth=1
+      - https://github.com/Homebrew/brew
+      - /home/linuxbrew/.linuxbrew
+    creates: "{{ hermes_docker_base_dir }}/{{ item }}/brew/bin/brew"
+  loop: "{{ hermes_docker_effective_agent_names }}"
+  when: hermes_docker_ensure_running | bool
+
 - name: Apply Hermes config overrides
+  tags: [hermes-config]
   ansible.builtin.command:
     argv:
       - docker
@@ -836,7 +896,10 @@
         import sys
         from pathlib import Path
 
-        import yaml
+        from ruamel.yaml import YAML
+
+        yaml = YAML()
+        yaml.preserve_quotes = True
 
         delete_marker = sys.argv[2]
 
@@ -845,20 +908,20 @@
                 if value == delete_marker:
                     base.pop(key, None)
                     continue
-                if isinstance(value, dict) and isinstance(base.get(key), dict):
-                    merge(base[key], value)
+                if isinstance(value, dict):
+                    base[key] = merge(base.get(key) if isinstance(base.get(key), dict) else {}, value)
                 else:
                     base[key] = value
             return base
 
         path = Path(os.environ.get('HERMES_HOME', '{{ hermes_container_data_dir }}')) / 'config.yaml'
-        config = yaml.safe_load(path.read_text()) if path.exists() else {}
+        config = yaml.load(path.read_text()) if path.exists() else {}
         if not isinstance(config, dict):
             config = {}
         updated = merge(copy.deepcopy(config), json.loads(sys.argv[1]))
         if updated != config:
             path.chmod(path.stat().st_mode | 0o200)
-            path.write_text(yaml.safe_dump(updated, sort_keys=False))
+            yaml.dump(updated, path)
             print('changed')
         else:
             print('ok')
@@ -896,10 +959,13 @@
         import sys
         from pathlib import Path
 
-        import yaml
+        from ruamel.yaml import YAML
+
+        yaml = YAML()
+        yaml.preserve_quotes = True
 
         path = Path(os.environ.get('HERMES_HOME', '{{ hermes_container_data_dir }}')) / 'config.yaml'
-        config = yaml.safe_load(path.read_text()) if path.exists() else {}
+        config = yaml.load(path.read_text()) if path.exists() else {}
         if not isinstance(config, dict):
             config = {}
 
@@ -917,7 +983,7 @@
 
         if changed:
             path.chmod(path.stat().st_mode | 0o200)
-            path.write_text(yaml.safe_dump(config, sort_keys=False))
+            yaml.dump(config, path)
             print('changed')
         else:
             print('ok')

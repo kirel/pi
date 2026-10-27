@@ -19,6 +19,13 @@
       Configure at least one bare-metal Hermes user and, when publishing is
       enabled, provide regfish_token plus allowed static roots.
 
+- name: Configure DNS-independent endpoints for bare-metal Hermes
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^\S+\s+{{ item.key | regex_escape }}(?:\s|$)'
+    line: "{{ item.value }} {{ item.key }}"
+  loop: "{{ hermes_baremetal_static_hosts | dict2items }}"
+
 - name: Ensure user-local bin is on PATH for bare-metal Hermes users
   ansible.builtin.lineinfile:
     path: "/home/{{ item }}/.zshrc"

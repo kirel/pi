@@ -20,9 +20,6 @@ litellm_family_key_bindings:
   hermes:
     username: daniel
     team_id: hermes-baremetal
-  hermes-daniel-personal-pilot:
-    username: daniel
-    team_id: hermes-daniel-personal-pilot
   hermes-multipurpose:
     username: hausfee
     team_id: hermes-hausfee

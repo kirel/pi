@@ -9,6 +9,7 @@
   become: true
 
 - name: Define LiteLLM Proxy config path fact
+  tags: [llm-tools-config]
   ansible.builtin.set_fact:
     litellm_proxy_config_full_host_path: "{{ litellm_proxy_config_dir_host }}/{{ litellm_proxy_config_filename }}"
 
@@ -20,6 +21,7 @@
   become: true
 
 - name: Template LiteLLM Proxy config.yaml
+  tags: [llm-tools-config]
   no_log: true
   diff: false
   ansible.builtin.template:
@@ -344,7 +346,11 @@
   when: litellm_family_users is defined and not ansible_check_mode
 
 - name: Sync managed LiteLLM virtual keys
-  ansible.builtin.include_tasks: managed_virtual_keys.yml
+  ansible.builtin.include_tasks:
+    file: managed_virtual_keys.yml
+    apply:
+      tags: [litellm-managed-keys]
+  tags: [litellm-managed-keys]
   when:
     - litellm_managed_virtual_keys | length > 0
     - not ansible_check_mode

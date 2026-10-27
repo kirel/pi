@@ -114,6 +114,8 @@ services:
 {% endif %}
     volumes:
       - {{ hermes_docker_base_dir }}/{{ agent_name }}/data:{{ hermes_container_data_dir }}
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/brew:/home/linuxbrew/.linuxbrew
+      - {{ hermes_docker_base_dir }}/{{ agent_name }}/skills/docker-hermes:{{ hermes_container_data_dir }}/skills/docker-hermes:ro
 {% if agent_name in hermes_docker_webui_agent_names %}
       # Docker only seeds a named volume on first creation. Include the base
       # image in its identity so a pinned Hermes upgrade cannot keep stale code.

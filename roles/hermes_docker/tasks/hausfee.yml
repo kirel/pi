@@ -48,6 +48,7 @@
           - /tmp/configure-hausfee.py
         stdin: >-
           {{ {
+            'config_delete_marker': hermes_docker_config_delete_marker,
             'transport_env': hermes_hausfee_transport_env,
             'transport_config': hermes_docker_config_overrides | combine(hermes_hausfee_transport_config, recursive=True)
           } | to_json }}

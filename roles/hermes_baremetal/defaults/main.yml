@@ -2,6 +2,7 @@
 hermes_baremetal_users: []
 hermes_baremetal_install_url: https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh
 hermes_baremetal_env: {}
+hermes_baremetal_static_hosts: {}
 hermes_baremetal_update_check: true
 
 hermes_baremetal_publish_enabled: true

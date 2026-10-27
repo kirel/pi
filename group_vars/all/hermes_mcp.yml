@@ -15,7 +15,6 @@ hermes_litellm_model_profiles:
     - gpt-5.6-luna-cpa
     - gpt-5.5-cpa
     - grok-4.5-cpa
-    - claude-opus-4-6-thinking-cpa
     - home-asr
     - home-asr-stream
     - home-tts
@@ -29,6 +28,8 @@ hermes_litellm_model_profiles:
     # This sentinel preserves explicit team models when LiteLLM expands the
     # public model catalog; all-proxy-models would hide glm-5.3 in /v1/models.
     - all-team-models
+    - claude-opus-5-5-high-cpa
+    - claude-sonnet-5-5-high-cpa
     - glm-5.3
     - home-asr-stream
   docker_chat:
@@ -36,6 +37,7 @@ hermes_litellm_model_profiles:
     - gpt-image-2.5-flare-cpa
     - gpt-6-astra-cpa
     - gpt-6-sol-cpa
+    - gpt-6.1-sol-cpa
     - gpt-6-luna-cpa
     - gemini-3.8-flash-high-cpa
     - glm-5.3-flash-openrouter
@@ -45,7 +47,6 @@ hermes_litellm_model_profiles:
     - gpt-5.6-luna-cpa
     - gpt-5.5-cpa
     - grok-4.5-cpa
-    - claude-opus-4-6-thinking-cpa
     - gpt-image-2
     - gpt-image-2-cpa
     - gemini-3.1-flash-image-cpa
@@ -104,35 +105,13 @@ litellm_managed_virtual_keys:
       - workflow_admin
       - code
       - media_generation
+      - comfyui
       - craft_family
       - craft_personal_pilot
     mcp_tool_permissions:
       todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
 
 litellm_managed_virtual_key_teams:
-  daniel_personal_pilot:
-    team_id: hermes-daniel-personal-pilot
-    metadata:
-      allowed_passthrough_routes: [/v1/audio/speech/stream]
-    team_alias: Daniel Personal Hermes Pilot
-    members_with_roles:
-      - user_id: fa559a90-e4e0-4793-8aaa-594bce6fbe06
-        role: user
-    models: "{{ hermes_litellm_model_profiles.all_models }}"
-    object_permission:
-      mcp_servers: [todoist, craft, craft_family]
-      mcp_access_groups:
-        - web
-        - maps
-        - home_admin
-        - shopping
-        - photos
-        - notes
-        - workflow_admin
-        - code
-        - media_generation
-        - craft_personal_pilot
-        - craft_family
   baremetal:
     team_id: hermes-baremetal
     metadata:
@@ -157,6 +136,7 @@ litellm_managed_virtual_key_teams:
         - workflow_admin
         - code
         - media_generation
+        - comfyui
         - craft_personal_pilot
         - craft_family
 
@@ -191,20 +171,21 @@ litellm_managed_virtual_key_teams:
         todoist: "{{ hermes_mcp_tool_profiles.shopping.todoist }}"
 
 # Shared routing defaults; session /reasoning takes precedence in Hermes.
-hermes_litellm_cloud_default_model: gpt-6-sol-cpa
+hermes_litellm_cloud_default_model: gpt-6.1-sol-cpa
 hermes_litellm_cloud_delegation:
-  model: gpt-6-luna-cpa
+  model: gpt-6.1-sol-cpa
   provider: custom:kirelabs-litellm
-  reasoning_effort: max
-  # Installed Hermes clamps GPT-6 Luna to xhigh on the Responses path.
+  reasoning_effort: low
   request_overrides:
     reasoning:
-      effort: max
-hermes_litellm_custom_providers:
-  - name: KireLabs LiteLLM
-    base_url: https://litellm.kirelabs.org/v1
+      effort: low
+hermes_litellm_base_url: https://litellm.kirelabs.org
+hermes_litellm_providers:
+  kirelabs-litellm:
+    name: KireLabs LiteLLM
+    api: "{{ hermes_litellm_base_url }}/v1"
     key_env: LITELLM_API_KEY
-    api_mode: codex_responses
+    transport: codex_responses
     discover_models: true
 
 hermes_litellm_reasoning_defaults:

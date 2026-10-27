@@ -10,9 +10,9 @@
       - /opt/hermes/.venv/bin/python
       - -c
       - |
-        import yaml
+        from ruamel.yaml import YAML
         from pathlib import Path
-        c = yaml.safe_load(Path('/opt/data/config.yaml').read_text())
+        c = YAML(typ='safe').load(Path('/opt/data/config.yaml').read_text())
         expected = {'x-litellm-api-key': 'Bearer ${LITELLM_API_KEY}'}
         print('ok' if c['mcp_servers']['litellm'].get('headers') == expected else 'update')
   loop: "{{ hermes_docker_family_oauth_agents | default([]) }}"

@@ -27,8 +27,8 @@ hermes_docker_command:
   - -c
   - >-
     mkdir -p /opt/data/logs/services;
-    /opt/hermes/.venv/bin/supervisord -c /etc/supervisor/supervisord.conf;
-    exec /opt/hermes/.venv/bin/hermes gateway run
+    /usr/bin/supervisord -c /etc/supervisor/supervisord.conf;
+    exec hermes gateway run
 hermes_docker_pull_policy: build
 hermes_docker_compose_pull: policy
 hermes_docker_ensure_running: true
@@ -153,6 +153,7 @@ hermes_docker_extra_host_services:
   - comfyui
 hermes_docker_agent_extra_host_services: {}
 hermes_docker_extra_hosts_target_ip: "{{ homelab_nuc_ip }}"
+hermes_docker_extra_host_service_ips: {}
 # Resolver priority for Hermes containers:
 # 1. Local Pi-hole first for LAN records and ad-blocking.
 # 2. Tailscale DNS for MagicDNS/Tailnet names if local DNS is unavailable.
@@ -165,6 +166,7 @@ hermes_docker_dns_servers:
 # Hermes agents may use the public internet, but access to private/internal
 # ranges is blocked except for explicitly allowed proxy targets.
 hermes_docker_allowed_proxy_ip: "{{ homelab_nuc_ip }}"
+hermes_docker_additional_proxy_ips: []
 hermes_docker_allowed_proxy_ports:
   - 443
 # Allow HTTPS/HTTP only to explicitly listed per-agent Tailnet IPs while still
@@ -206,25 +208,30 @@ hermes_docker_config_overrides:
   agent: "{{ hermes_litellm_reasoning_defaults }}"
   security:
     tirith_enabled: false
-  compression:
-    threshold: 0.85
+  custom_providers: "{{ hermes_docker_config_delete_marker }}"
+  session_reset: "{{ hermes_docker_config_delete_marker }}"
+  compression: "{{ hermes_docker_config_delete_marker }}"
+  auxiliary:
+    compression: "{{ hermes_docker_config_delete_marker }}"
   stt:
     enabled: true
     provider: openai
     language: de
     openai:
       model: home-asr
+      base_url: "{{ hermes_litellm_base_url }}/v1"
   image_gen:
     provider: openai
     openai:
       model: gpt-image-2.5-flare
+      base_url: "{{ hermes_litellm_base_url }}/v1"
   tts:
     enabled: true
     provider: openai
     openai:
       model: home-tts
       voice: de-host
-      base_url: https://litellm.kirelabs.org/v1
+      base_url: "{{ hermes_litellm_base_url }}/v1"
       api_key: "${LITELLM_API_KEY}"
       speed: 1.0
   group_sessions_per_user: true
@@ -243,7 +250,7 @@ hermes_docker_config_delete_marker: "__HERMES_ANSIBLE_DELETE__"
 # upserts only these names and leaves user-added MCP servers untouched.
 hermes_docker_managed_mcp_servers:
   litellm:
-    url: "https://litellm.kirelabs.org/mcp/"
+    url: "{{ hermes_litellm_base_url }}/mcp/"
     headers:
       x-litellm-api-key: "Bearer ${LITELLM_API_KEY}"
     timeout: 180
@@ -276,7 +283,7 @@ hermes_docker_agents_env_secret: {}
 # Optional LiteLLM virtual key management for Hermes Docker agents. Key values
 # stay in hermes_docker_agents_env_secret.<agent>.LITELLM_API_KEY.
 hermes_docker_litellm_manage_keys: false
-hermes_docker_litellm_api_base_url: "https://litellm.kirelabs.org"
+hermes_docker_litellm_api_base_url: "{{ hermes_litellm_base_url }}"
 hermes_docker_litellm_team: {}
 hermes_docker_litellm_keys: {}
 
@@ -287,16 +294,15 @@ hermes_docker_runtime_env:
   NPM_CONFIG_PREFIX: "{{ hermes_container_data_dir }}/npm-global"
   NPM_CONFIG_CACHE: "{{ hermes_container_data_dir }}/home/.npm"
   NPM_CONFIG_USERCONFIG: "{{ hermes_container_data_dir }}/home/.npmrc"
-  PATH: "{{ hermes_container_data_dir }}/npm-global/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
   HERMES_DASHBOARD: "1"
   HERMES_DASHBOARD_HOST: "127.0.0.1"
   HERMES_DASHBOARD_PORT: "{{ hermes_dashboard_container_port }}"
   HERMES_DASHBOARD_TUI: "1"
   HERMES_YOLO_MODE: "1"
   HERMES_EXEC_ASK: "false"
-  OPENAI_BASE_URL: https://litellm.kirelabs.org/v1
+  OPENAI_BASE_URL: "{{ hermes_litellm_base_url }}/v1"
   STT_OPENAI_MODEL: home-asr
-  STT_OPENAI_BASE_URL: https://litellm.kirelabs.org/v1
+  STT_OPENAI_BASE_URL: "{{ hermes_litellm_base_url }}/v1"
 
 # Validate that Docker and the Compose v2 plugin are available on the target.
 hermes_docker_validate_prerequisites: true
