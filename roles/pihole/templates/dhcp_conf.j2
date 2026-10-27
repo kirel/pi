@@ -1,5 +1,5 @@
-dhcp-option=option:dns-server,{{ nameserver_pi_ip }},{{ homelab_nuc_ip }}
-dhcp-option=tag:nopihole,option:dns-server,{{ google_dns_servers | join(',') }},{{ nameserver_pi_ip }},{{ homelab_nuc_ip }}
+dhcp-option=option:dns-server,{{ internal_dns_resolvers | map(attribute='lan') | join(',') }}
+dhcp-option=tag:nopihole,option:dns-server,{{ google_dns_servers | join(',') }},{{ internal_dns_resolvers | map(attribute='lan') | join(',') }}
 dhcp-option=54,{{ homelab_nuc_ip }}
 
 # Push a route from LAN DHCP clients to the Tailnet via homelab-nuc.

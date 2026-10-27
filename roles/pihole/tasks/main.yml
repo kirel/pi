@@ -149,7 +149,7 @@
       {%- set entries = [] -%}
       {%- for service_name, props in services.items() -%}
         {%- set cname = props.domain | default(service_name ~ '.lan') -%}
-        {%- set proxy = "homelab-nuc.lan" -%}
+        {%- set proxy = props.dns_target | default("homelab-nuc.lan") -%}
         {%- set _ = entries.append(cname ~ ',' ~ proxy) -%}
       {%- endfor -%}
       {{- entries | join(';') -}}

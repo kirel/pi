@@ -1,0 +1,4 @@
+---
+split_dns_listen_addresses: ["127.0.0.1", "172.30.80.1"]
+split_dns_container_subnet: "172.30.80.0/24"
+split_dns_container_address: "172.30.80.1"

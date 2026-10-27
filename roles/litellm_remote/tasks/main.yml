@@ -1,0 +1,68 @@
+---
+- name: Install snapshot preparation dependency
+  ansible.builtin.apt:
+    name: python3-yaml
+    state: present
+
+- name: Install snapshot preparation utility
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/scripts/litellm_remote_snapshot.py"
+    dest: /usr/local/sbin/litellm-remote-snapshot
+    mode: "0700"
+
+- name: Prepare isolated runtime from the original snapshot
+  ansible.builtin.command:
+    argv:
+      - /usr/local/sbin/litellm-remote-snapshot
+      - prepare
+      - "{{ litellm_remote_root }}"
+      - --backup
+      - "{{ litellm_remote_backup }}"
+      - --address
+      - "{{ litellm_remote_address }}"
+    creates: "{{ litellm_remote_root }}/compose.json"
+  no_log: true
+  diff: false
+
+- name: Configure independent TLS endpoint
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: "{{ litellm_remote_root }}/Caddyfile"
+    mode: "0600"
+  notify: Reload remote Caddy
+
+- name: Start database before restoring
+  ansible.builtin.command:
+    cmd: docker compose -f compose.json up -d --wait postgres
+    chdir: "{{ litellm_remote_root }}"
+  changed_when: false
+
+- name: Restore complete database once
+  ansible.builtin.shell:
+    cmd: >-
+      docker compose -f compose.json exec -T postgres
+      pg_restore -U litellm -d litellm --exit-on-error --single-transaction
+      < {{ litellm_remote_backup }}/postgres.dump
+      && touch .database-restored
+    chdir: "{{ litellm_remote_root }}"
+    creates: "{{ litellm_remote_root }}/.database-restored"
+  no_log: true
+  diff: false
+
+- name: Configure remote container DNS
+  ansible.builtin.import_tasks: dns.yml
+
+- name: Start restored stack
+  ansible.builtin.command:
+    cmd: docker compose -f compose.json -f dns.override.yml up -d
+    chdir: "{{ litellm_remote_root }}"
+  changed_when: false
+
+- name: Wait for database-connected LiteLLM
+  ansible.builtin.uri:
+    url: "http://{{ litellm_remote_address }}:4000/health/readiness"
+    return_content: true
+  register: remote_ready
+  until: remote_ready.status == 200 and 'connected' in remote_ready.content
+  retries: 36
+  delay: 5

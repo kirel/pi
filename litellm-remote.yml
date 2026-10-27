@@ -1,0 +1,12 @@
+---
+# Restore an already transferred, private snapshot; never alters the source stack.
+- name: Restore parallel LiteLLM on Dashserv
+  hosts: dashserv
+  become: true
+  vars:
+    litellm_remote_root: /opt/litellm-remote
+    litellm_remote_backup: /var/backups/litellm-remote-20261021
+    litellm_remote_address: 100.121.44.75
+  roles:
+    - split_dns
+    - litellm_remote

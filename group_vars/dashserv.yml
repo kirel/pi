@@ -1,7 +1,11 @@
 ---
-# Public VPS: join Tailnet as a client, consume homelab split DNS/routes,
-# but do not advertise routes from this host.
-tailscale_args: "--accept-dns=true --accept-routes=true"
+# Public VPS: accept subnet routes; the split_dns role owns host/container DNS
+# so public lookups remain available during home outages.
+tailscale_args: "--accept-dns=false --accept-routes=true"
+
+# Beszel reads Docker metrics locally; never publish the proxy on the public IP.
+dockerproxy_bind_address: "127.0.0.1"
+beszel_agent_data_folder: /var/lib/beszel-agent
 
 cloud_security_users:
   - name: daniel

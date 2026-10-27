@@ -1,0 +1,72 @@
+---
+- name: Obtain token limited to the existing DNS permission
+  ansible.builtin.uri:
+    url: https://api.tailscale.com/api/v2/oauth/token
+    method: POST
+    body_format: form-urlencoded
+    body:
+      client_secret: "{{ tailscale_dns_oauth_client_secret }}"
+      grant_type: client_credentials
+      scope: dns
+    status_code: [200, 400, 401, 403]
+  register: tailscale_dns_oauth
+  no_log: true
+  check_mode: false
+
+- name: Require DNS API authorization
+  ansible.builtin.assert:
+    that: tailscale_dns_oauth.status == 200
+    fail_msg: The existing OAuth credential cannot obtain a DNS-scoped token. Supply a dedicated DNS credential; no tailnet settings have changed.
+
+- name: Read existing split DNS without replacing unrelated domains
+  ansible.builtin.uri:
+    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailscale_dns_tailnet }}/dns/split-dns"
+    headers:
+      Authorization: "Bearer {{ tailscale_dns_oauth.json.access_token }}"
+  register: tailscale_dns_before
+  no_log: true
+  check_mode: false
+
+- name: Reset the scoped DNS plan
+  ansible.builtin.set_fact:
+    tailscale_dns_changes: {}
+
+- name: Calculate only the managed split DNS changes
+  ansible.builtin.set_fact:
+    tailscale_dns_changes: >-
+      {{ tailscale_dns_changes | default({}) | combine({item.key: item.value}) }}
+  loop: "{{ internal_dns_split_routes | dict2items }}"
+  when: tailscale_dns_before.json.get(item.key) != item.value
+
+- name: Show the scoped DNS plan
+  ansible.builtin.debug:
+    var: tailscale_dns_changes
+
+- name: Patch only changed managed DNS domains
+  ansible.builtin.uri:
+    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailscale_dns_tailnet }}/dns/split-dns"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ tailscale_dns_oauth.json.access_token }}"
+    body_format: json
+    body: "{{ tailscale_dns_changes }}"
+  when:
+    - tailscale_dns_changes | default({}) | length > 0
+    - not ansible_check_mode
+  changed_when: true
+  no_log: true
+
+- name: Read split DNS after reconciliation
+  ansible.builtin.uri:
+    url: "https://api.tailscale.com/api/v2/tailnet/{{ tailscale_dns_tailnet }}/dns/split-dns"
+    headers:
+      Authorization: "Bearer {{ tailscale_dns_oauth.json.access_token }}"
+  register: tailscale_dns_after
+  no_log: true
+  when: not ansible_check_mode
+
+- name: Verify managed routes and preservation of unrelated DNS domains
+  ansible.builtin.assert:
+    that: tailscale_dns_after.json.get(item.key) == item.value
+  loop: "{{ (tailscale_dns_before.json | combine(internal_dns_split_routes)) | dict2items }}"
+  when: not ansible_check_mode

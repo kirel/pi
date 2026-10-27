@@ -1,8 +1,9 @@
 # Dienste zwischen Homelab und VPS aufteilen
 
-Stand: 2026-09-28. **Plan, nicht implementiert.** Grundlage sind die lesenden
-Prüfungen vom 26./27. September und der aktuelle, bereits anderweitig veränderte
-Worktree. Kapazitäten, Versionen und Endpunkte vor Umsetzung erneut prüfen.
+Stand: 2026-09-29. **Plan, nicht implementiert.** Grundlage sind die lesenden
+Prüfungen vom 26./27. September, die DNS-Nachprüfung vom 29. September und der
+bereits anderweitig veränderte Worktree. Kapazitäten, Versionen und Endpunkte vor
+Umsetzung erneut prüfen.
 
 ## 1. Ziel und Grenzen
 
@@ -237,26 +238,85 @@ nachdem deren Verbraucher umgestellt sind; keine pauschale DB-Löschung.
 ### DNS, Proxy und Deployment
 
 - Pi-hole setzt derzeit jeden Service-CNAME auf `homelab-nuc.lan`, unabhängig
-  von `target`. Caddy rendert ebenfalls den gesamten Katalog auf NUC. Beides an
-  `proxy_host` binden, mit bisherigem NUC als Default für bestehende Dienste.
+  von `target`. Caddy rendert ebenfalls den gesamten Katalog auf NUC. Caddy nach
+  `proxy_host` auswählen, mit NUC als Default. Lokale Pi-hole-CNAMEs auf den
+  jeweiligen lokalen Proxy führen; bei Cloud-Diensten die lokale Überschreibung
+  entfernen und den Regfish-Record auflösen lassen. Die Entscheidung folgt dem
+  Proxy-Standort, nicht `public` oder der Existenz eines `dns`-Blocks: auch lokale
+  Dienste wie Immich besitzen öffentliche Records.
 - Vorhandene Caddy-Rolle hostfähig machen: feste `localhost`-Erkennung für NUC,
   LAN-DNS, Benutzer/Verzeichnisse und Homepage-/Monitoring-Metadaten bereinigen.
   Host-Caddy von Bare-Metal-Hermes auf Hetzner nicht überschreiben.
 - Dashserv bekommt eigenen Caddy und DNS-01, getrennte Zertifikatsdaten. Cloud-
   Dienste über ihre bisherigen FQDNs direkt dorthin führen. Bestehende private
   Dienste bleiben privat; ein VPS bedeutet keine Freigabe der APIs ins Internet.
-- Cloud-Hosts und Hermes-Tailscale-Namespaces müssen Cloud-Namen ohne Heim-DNS
-  auflösen. Öffentliche autoritative Records bzw. unabhängig auflösbare Tailnet-
-  Namen vorsehen; vorhandenes Split-DNS darf sie nicht nach Hause zwingen.
-  Optionale Hausziele separat über private Adressen/gezielte Hostzuordnung
-  erreichbar machen, mit korrektem TLS-Namen. Keinen neuen DNS-Dienst bauen.
+- Die neue Rolle `regfish_dns` für öffentliche autoritative Records verwenden:
+  `services.<name>.dns` für Service-Domains, `regfish_dns_zones` für Wildcards und
+  andere Records. Cloud-APIs bekommen private Tailnet-Ziele; DNS-Veröffentlichung
+  ändert weder Caddy-Zugriffsregeln noch ACLs. ACME bleibt bei Caddy. Vor Änderungen
+  `regfish-dns.yml --check`, danach Apply und Readback; kein implizites Löschen.
 - PostgreSQL/Redis nur im jeweiligen Stack erreichbar; Inferenz/HA-MCP nur für
   benötigte private Clients. Aktuelle öffentliche Host-Port-Bindings nicht
   unverändert auf den VPS übernehmen. Bestehende Proxy-Trust-Ranges überprüfen.
 - `setup.yml` ruft Rollen auf den tatsächlichen Zielhosts auf. Eng begrenzte Tags
   für Gateway, Anwendungen und Monitoring erhalten. Kein Full-Deploy zur Migration.
 - Nach Service-Katalogänderungen betroffene Caddys und beide Pi-holes ausrollen.
+  Nach Änderungen an öffentlichen Records zusätzlich `regfish-dns.yml` ausführen.
   Neue Befehle/Scopes und Zuständigkeiten danach in `AGENTS.md` dokumentieren.
+
+### Tailscale: gezielte Cloud-Ausnahmen statt zusätzlichem DNS-Server
+
+Am 29. September auf Hetzner bestätigt: MagicDNS ist aktiv, `kirelabs.org` und
+`lan` gehen an `192.168.50.5` und `.4`; globale Tailscale-Resolver sind nicht
+gesetzt. Damit erreichen selbst öffentlich vorhandene Hermes-Records zunächst
+das Heimnetz. `kuehlschrank.multipurpose.kirelabs.org` liefert dagegen direkt bei
+Cloudflare und Google bereits `100.88.41.45`. `litellm.kirelabs.org` liefert bei
+Cloudflare derzeit NXDOMAIN und muss erst zum Umschaltpunkt veröffentlicht werden.
+
+Die bestehende breite Heimnetz-Regel bleibt erhalten. Für Cloud-Namen kommen
+spezifischere eingeschränkte Nameserver hinzu:
+
+| DNS-Suffix | Resolver nach Umschaltung |
+| --- | --- |
+| `lan`, `kirelabs.org` | Bestehende beide Pi-holes |
+| `litellm.kirelabs.org`, `cpa.kirelabs.org`, `cpa-usage.kirelabs.org` | `1.1.1.1`, `8.8.8.8`, jeweils erst nach Veröffentlichung und Zielprüfung |
+| `hermes.kirelabs.org`, `multipurpose.kirelabs.org`, `anna.kirelabs.org`, `marian.kirelabs.org`, `sabine.kirelabs.org` | Dieselben unabhängigen Resolver; umfasst auch Unterdomains |
+| MagicDNS / bestehende `ts.net`-Route | Bestehende Konfiguration erhalten |
+
+Tailscale verwendet den spezifischsten passenden Suffix; die Cloud-Ausnahmen
+umgehen damit die breite `kirelabs.org`-Route. Sie enthalten keine `*`-Zeichen.
+Weitere Cloud-Domains erst bei tatsächlicher Migration aufnehmen. Lokale Namen
+wie `litellm-local.kirelabs.org` und `id.kirelabs.org` bleiben bei Pi-hole.
+Siehe [Tailscale DNS](https://tailscale.com/docs/reference/dns-in-tailscale) und
+[Suffix-Auswahl im Resolver](https://github.com/tailscale/tailscale/blob/main/net/dns/resolver/tsdns.go).
+
+Die Tailscale-Regeln gehören in `group_vars/all/tailscale.yml`, getrennt von den
+autoritativen Regfish-Records. Mit nativen `ansible.builtin.uri`-Tasks den Bestand
+lesen, nur deklarierte Änderungen per PATCH setzen und erneut lesen. Die
+[Split-DNS-API](https://github.com/tailscale/tailscale-client-go-v2/blob/main/dns.go)
+erhält bei PATCH nicht angegebene Suffixe. Kein PUT des gesamten Bestands und keine
+neue Collection nötig. Dafür nötigen DNS-API-Zugang erst prüfen; der vorhandene
+OAuth-Zugang zum Gerätebeitritt beweist keine Berechtigung zur DNS-Verwaltung.
+
+**Clientpfad ebenfalls umstellen:** Im laufenden Multipurpose-Hermes sind als
+Docker-DNS-Upstreams Pi-hole `.4`, `100.100.100.100` und `1.1.1.1` eingetragen.
+Zusätzlich setzt `/etc/hosts` `litellm.kirelabs.org` fest auf `192.168.50.5`.
+Beides würde die zentrale DNS-Korrektur umgehen. Deshalb:
+
+- Cloud-Hermes standortspezifisch über den erreichbaren Tailscale-Resolver
+  auflösen lassen; Pi-hole nicht als direkten gemischten Upstream behalten.
+  Erreichbarkeit und Bootstrap nach Neustart des Tailscale-Sidecars prüfen,
+  bevor `100.100.100.100` als alleiniger Container-Upstream festgelegt wird.
+  Keine globale Änderung der Resolver aller lokalen Hermes-Instanzen.
+- Feste Hosts-Einträge für migrierte Cloud-Domains entfernen; Firewall/ACLs für
+  deren neue private Ziele gezielt anpassen. Optionale Hausziele und ihre
+  vorhandenen Einschränkungen erhalten. Alle Agenten einzeln prüfen.
+- Im LAN lokale Cloud-CNAMEs entfernen; Pi-hole löst dann dieselben Regfish-Ziele
+  auf. LAN-Zugriff auf Tailnet-Adressen nutzt weiterhin den vorhandenen NUC-Router.
+  Cloud-Clients brauchen diesen Router nicht.
+- Nach Cutover echte Systemauflösung und HTTPS/API-Aufruf aus LAN, Hetzner,
+  Dashserv und Hermes-Netznamespace testen, anschließend den geplanten Test ohne
+  Heimnetzverbindung. `dig @1.1.1.1` allein prüft nicht den Anwendungspfad.
 
 ## 6. Monitoring und Anmeldung
 
@@ -456,8 +516,10 @@ Clients. Alte lokale Konfiguration bis zur erfolgreichen Prüfung zurücksetzbar
    neue DNS-Records führen direkt nach Dashserv. Das überbrückt alte DNS-Caches,
    ohne den alten Gateway-/CPA-Prozess erneut zu starten. Upstream explizit per
    privater Adresse und korrektem TLS-SNI wählen, keine DNS-Proxy-Schleife.
-6. Beide Pi-holes und betroffene Caddys umschalten, dann Cloud-DNS unabhängig vom
-   Zuhause prüfen. Alte feste CPA-IP-Clients, Quota-Monitore und Admin-URLs ebenfalls
+6. Regfish-Records veröffentlichen und prüfen, dann Tailscale-Cloud-Ausnahmen
+   aktivieren. Beide Pi-holes und betroffene Caddys umschalten, Hermes-Resolver und
+   feste Hosts-Einträge korrigieren; Cloud-DNS unabhängig vom Zuhause prüfen.
+   Alte feste CPA-IP-Clients, Quota-Monitore und Admin-URLs ebenfalls
    umstellen. Bestehende Domains und OAuth-Callback-Pfade möglichst unverändert.
 7. Jeden Hermes einzeln sowie Android in WLAN/Mobilfunk testen. Web-/Haus-MCP,
    Toolnamen, Streaming und Chat-Historie prüfen. Keine zustandsändernden Tool-

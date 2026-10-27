@@ -1,0 +1,8 @@
+---
+# API reconciliation is separate from local DNS so missing API permission does
+# not prevent installing the host/container resolver or updating LAN DHCP.
+- name: Reconcile managed Tailscale split DNS domains
+  hosts: homelab
+  gather_facts: false
+  roles:
+    - tailscale_dns

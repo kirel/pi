@@ -1,0 +1,14 @@
+# Ansible-managed split DNS; public lookups do not depend on the home site.
+no-resolv
+bind-dynamic
+listen-address={{ split_dns_listen_addresses | join(',') }}
+cache-size=1000
+{% for resolver in internal_dns_public_resolvers %}
+server={{ resolver }}
+{% endfor %}
+{% for domain, resolvers in internal_dns_split_routes.items() %}
+{% for resolver in resolvers %}
+server=/{{ domain }}/{{ resolver }}
+{% endfor %}
+{% endfor %}
+server=/{{ tailscale_tailnet_domain }}/{{ tailscale_dns_ip }}

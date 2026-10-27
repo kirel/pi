@@ -1,0 +1,13 @@
+{
+    email danishkirel@gmail.com
+}
+
+{{ services['litellm-remote'].domain }} {
+    tls {
+        dns regfish {env.REGFISH_TOKEN}
+        resolvers 1.1.1.1 8.8.8.8
+    }
+    reverse_proxy proxy:4000 {
+        flush_interval -1
+    }
+}

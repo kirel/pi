@@ -1,0 +1,14 @@
+---
+- name: Configure cloud host and Docker split DNS
+  hosts: dashserv
+  become: true
+  gather_facts: false
+  roles:
+    - split_dns
+  tasks:
+    - name: Apply cloud container DNS
+      ansible.builtin.include_role:
+        name: litellm_remote
+        tasks_from: dns.yml
+      vars:
+        litellm_remote_root: /opt/litellm-remote

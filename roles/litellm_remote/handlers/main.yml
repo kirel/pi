@@ -1,0 +1,6 @@
+---
+- name: Reload remote Caddy
+  ansible.builtin.command:
+    cmd: docker compose -f compose.json exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+    chdir: "{{ litellm_remote_root }}"
+  changed_when: true

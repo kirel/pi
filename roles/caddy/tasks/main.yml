@@ -83,9 +83,15 @@
           environment:
             CADDY_ADMIN: "0.0.0.0:2019"
             REGFISH_TOKEN: "{{ regfish_token }}"
+          # Prefer the co-located Pi-hole, but retain the Pi as a fallback.
+          # Go's default DNS timeout (5s) exceeds Caddy's upstream dial timeout
+          # (3s), so an offline first resolver otherwise prevents failover.
           dns:
-            - "{{ nameserver_pi_ip }}"
             - "{{ homelab_nuc_ip }}"
+            - "{{ nameserver_pi_ip }}"
+          dns_opt:
+            - "timeout:1"
+            - "attempts:2"
           cap_add:
             - NET_ADMIN
           labels:
@@ -98,6 +104,8 @@
             - homepage.widget.url=http://homelab-nuc.lan:2019 # Use host-resolvable name as Caddy is in host network mode
 
   register: caddy_compose
+  no_log: true
+  diff: false
 
 - name: Debug docker compose output
   ansible.builtin.debug:

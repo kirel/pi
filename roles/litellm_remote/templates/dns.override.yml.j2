@@ -1,0 +1,10 @@
+# Ansible-managed; credentials remain in the private snapshot Compose file.
+services:
+{% for service in ['proxy', 'cpa', 'ha-mcp', 'caddy'] %}
+  {{ service }}:
+    dns: !override
+      - {{ split_dns_container_address | default('172.30.80.1') }}
+{% if service == 'proxy' %}
+    stop_grace_period: 60s
+{% endif %}
+{% endfor %}

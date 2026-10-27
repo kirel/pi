@@ -1,0 +1,14 @@
+---
+- name: Configure split DNS for remote application containers
+  ansible.builtin.template:
+    src: dns.override.yml.j2
+    dest: "{{ litellm_remote_root }}/dns.override.yml"
+    mode: '0600'
+  register: litellm_remote_dns_override
+
+- name: Apply DNS to remote applications without restarting their databases
+  ansible.builtin.command:
+    cmd: docker compose -f compose.json -f dns.override.yml up -d --no-deps --wait proxy cpa ha-mcp caddy
+    chdir: "{{ litellm_remote_root }}"
+  when: litellm_remote_dns_override is changed  # noqa: no-handler -- ordered after database restore
+  changed_when: true

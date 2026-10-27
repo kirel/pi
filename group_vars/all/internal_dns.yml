@@ -1,0 +1,13 @@
+---
+# Enable the Pi again only after its DNS service has been verified online.
+internal_dns_resolvers:
+  - lan: "{{ homelab_nuc_ip }}"
+    tailnet: "100.124.155.112"
+# - lan: "{{ nameserver_pi_ip }}"
+#   tailnet: "100.93.80.21"
+internal_dns_public_resolvers: ["1.1.1.1", "8.8.8.8"]
+internal_dns_split_routes:
+  lan: "{{ internal_dns_resolvers | map(attribute='tailnet') | list }}"
+  kirelabs.org: "{{ internal_dns_resolvers | map(attribute='tailnet') | list }}"
+  # More-specific cloud route must keep working when the home site is offline.
+  litellm-remote.kirelabs.org: "{{ internal_dns_public_resolvers }}"

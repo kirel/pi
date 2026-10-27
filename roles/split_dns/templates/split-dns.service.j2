@@ -1,0 +1,13 @@
+[Unit]
+Description=Internal and public DNS forwarding for host and Docker
+Wants=network-online.target tailscaled.service
+After=network-online.target tailscaled.service
+
+[Service]
+ExecStartPre=/usr/sbin/dnsmasq --test --conf-file=/etc/dnsmasq-split.conf
+ExecStart=/usr/sbin/dnsmasq --keep-in-foreground --conf-file=/etc/dnsmasq-split.conf --pid-file=
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

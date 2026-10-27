@@ -95,6 +95,22 @@ improvement than the tested batch changes. The reserved context-pool size was
 held constant during that matrix and still requires a separate benchmark before
 any conclusion about changing it.
 
+The [Strata Flash Q2/Q3 Low versus NoThink benchmark](docs/strata-low-reasoning-benchmark-2026-10-06.md)
+compares Home Assistant task quality, unintended action attempts and added
+latency on the two RTX 3090s, with separate warm-prefix measurements.
+
+The [dual-3090 PCIe P2P experiment](docs/qwen38-p2p-benchmark-2026-09-29.md)
+with the patched NVIDIA 615.71.09 driver reduced Qwen3.8 prefill throughput by
+13–17%; direct peer reads failed verification and Custom All-Reduce returned
+NaNs. [NCCL tuning and disabling ACS](docs/qwen38-p2p-tuning-2026-09-30.md)
+did not recover the performance gap. Keep NCCL P2P and Custom All-Reduce disabled
+on this hardware. The original serving configuration and standard driver
+590.48.01 were restored, with the loaded driver and real Qwen inference verified
+after reboot on September 30. Wolf's changed GPU render-node assignment was
+refreshed through Ansible; NVIDIA encoding passed a server-side test.
+Reproduction files and raw results
+are archived under [`experiments/nvidia-p2p/`](experiments/nvidia-p2p/README.md).
+
 ### Qwen3-TTS Stable Voices
 
 `qwen3-tts` is served by CrispASR as an OpenAI-compatible sibling container
@@ -240,3 +256,18 @@ HOST_PATH=/home/nuc/config/ring-mqtt/
 docker run -it --rm --mount type=bind,source=$HOST_PATH,target=/data --entrypoint /app/ring-mqtt/init-ring-mqtt.js tsightler/ring-mqtt
 docker restart ring-mqtt
 ```
+
+### Internal DNS for LAN, Tailnet and cloud containers
+
+Resolver membership and split domains live in `group_vars/all/internal_dns.yml`.
+Keep offline resolvers out of the active list. Deploy LAN DHCP using
+`uv run ansible-playbook setup.yml --tags pihole --limit homelab -e pihole_pull_policy=never`.
+Deploy Dashserv host/container DNS using `uv run ansible-playbook internal-dns.yml`.
+The remote LiteLLM playbook also applies this resolver and its Compose override.
+
+Central Tailnet split DNS is a separate, scoped API reconciliation:
+`uv run ansible-playbook tailscale-dns.yml --check`, then omit `--check` to apply.
+It requires a DNS-authorized OAuth client secret; the existing device-join
+credential is insufficient. The more-specific cloud gateway DNS route and existing
+Hermes hosts entries preserve remote access during a home outage. See
+[the remote LiteLLM deployment notes](docs/litellm-remote-2026-10-21.md).

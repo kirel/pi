@@ -1,0 +1,77 @@
+---
+- name: Read Tailscale DNS preference
+  ansible.builtin.command: tailscale debug prefs
+  register: split_dns_tailscale_prefs
+  changed_when: false
+  check_mode: false
+  no_log: true
+
+- name: Let the managed local resolver handle DNS on this cloud host
+  ansible.builtin.command: tailscale set --accept-dns=false --accept-routes=true
+  when: >-
+    (split_dns_tailscale_prefs.stdout | from_json).CorpDNS or
+    not (split_dns_tailscale_prefs.stdout | from_json).RouteAll
+  changed_when: true
+
+- name: Check local forwarding resolver installation
+  ansible.builtin.stat:
+    path: /usr/sbin/dnsmasq
+  register: split_dns_binary
+
+- name: Bootstrap public DNS for package installation
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    content: "{% for resolver in internal_dns_public_resolvers %}nameserver {{ resolver }}\n{% endfor %}"
+    mode: '0644'
+  when: not split_dns_binary.stat.exists
+
+- name: Install forwarding resolver without the default daemon
+  ansible.builtin.apt:
+    name: dnsmasq-base
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Configure internal domains and independent public resolution
+  ansible.builtin.template:
+    src: dnsmasq.conf.j2
+    dest: /etc/dnsmasq-split.conf
+    mode: '0644'
+    validate: /usr/sbin/dnsmasq --test --conf-file=%s
+  notify: Restart split DNS
+
+- name: Install forwarding resolver service
+  ansible.builtin.template:
+    src: split-dns.service.j2
+    dest: /etc/systemd/system/split-dns.service
+    mode: '0644'
+  notify: Restart split DNS
+
+- name: Allow DNS from the private LiteLLM container network
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ split_dns_container_subnet }}"
+    to_ip: "{{ split_dns_container_address }}"
+    port: '53'
+    proto: "{{ item }}"
+    comment: Internal Docker DNS
+  loop: [udp, tcp]
+
+- name: Apply resolver configuration before switching the host
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable forwarding resolver
+  ansible.builtin.systemd:
+    name: split-dns
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Use forwarding resolver on the cloud host
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    content: |
+      # Ansible-managed; split_dns owns DNS on this host.
+      nameserver 127.0.0.1
+      search {{ tailscale_tailnet_domain }}
+    mode: '0644'

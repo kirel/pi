@@ -1,6 +1,7 @@
 ---
 # Additional DNS entries not derived from inventory
 additional_dns_entries:
+  dashserv-m-1.lan: "100.121.44.75"
   router.lan: "{{ router_ip }}"
   clawd.lan: "{{ tailscale_hetzner_ip }}"
   ha-hausfee.lan: "{{ tailscale_hetzner_ip }}"
