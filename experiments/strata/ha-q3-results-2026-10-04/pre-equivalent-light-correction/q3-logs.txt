@@ -1,0 +1,856 @@
+Strata - Qwen3.8-Flash-Next on a normal PC (a GPU + system RAM + CPU)
+
+=== Step 1: checking your PC ===
+  Your NVIDIA GPUs:
+    GPU 0: NVIDIA GeForce RTX 3090, 24 GB VRAM - can be used
+    GPU 1: NVIDIA GeForce RTX 3090, 24 GB VRAM - can be used
+  [ok] GPUs: GPU 0 (NVIDIA GeForce RTX 3090, 24 GB) + GPU 1 (NVIDIA GeForce RTX 3090, 24 GB) together (the model's layers are split across them)
+  [ok] GPU: NVIDIA GeForce RTX 3090, 24.0 GB VRAM, compute capability 8.6, driver 590.48.01
+  [ok] RAM: 47 GB
+  [ok] CPU: 12th Gen Intel(R) Core(TM) i5-12500 (AVX2)
+
+=== Step 2: your choices ===
+  [ok] model: Qwen3.8-Flash-Next
+
+  1) Q2_0     2-bit, the fastest; download 66 GB, uses ~34 GB of RAM   <- needs 48 GB RAM, you have 47
+  2) IQ2_XS   2-bit i-quant, a little better quality, close in speed; download 68 GB, uses ~36 GB of RAM   <- needs 48 GB RAM, you have 47
+  3) IQ3_XXS  3-bit i-quant, better quality, slower (more CPU work per token); download 76 GB, uses ~43 GB of RAM   <- fits in the low-RAM mode (the GPU holds ~44%, the rest in RAM)
+  4) IQ3_S    3.5-bit i-quant, the best quality (matches the full model), the slowest; needs a 64 GB PC with little else running; download 84 GB, uses ~50 GB of RAM   <- fits in the low-RAM mode (the GPU holds ~38%, the rest in RAM)
+  [!]  the low-RAM mode on GPU 0 (NVIDIA GeForce RTX 3090, 24 GB) + GPU 1 (NVIDIA GeForce RTX 3090, 24 GB), as you chose (--gpus): the experts the GPUs do not hold are read through the OS file cache (the resident variant has no layer split yet), and RAM can fill up to 0 free during long prompts
+       One GPU keeps them in RAM (steady RAM use, recommended): --gpu 0
+  [ok] size: IQ3_XXS
+  [ok] context: 131072 tokens
+  [ok] KV cache: 8-bit
+  [ok] images: off
+  [ok] low-RAM mode on 2 GPUs: IQ3_XXS's experts (43 GB) are read from the model folder through the OS file cache instead of a copy in RAM (47 GB); the GPUs hold ~82% of them
+
+  EXPERIMENTAL - speed projection: a small control vector applied while the model runs (layers 4-44).
+  It changes how the model answers: its package describes it as a refusal-direction projection (the
+  model declines far fewer requests). Off unless you choose it; when on, the web app can switch it off
+  per chat. Details: data/experimental-speed-projection/README.md
+  [ok] experimental speed projection: off
+
+=== Step 3: Python packages ===
+  Installing numpy, jinja2, regex, pyyaml, tqdm, requests, cmake, ninja, pillow, psutil ...
+  > /opt/strata/.venv/bin/python -m pip install --quiet --disable-pip-version-check numpy==2.5.3; python_version >= "3.12" numpy==2.4.6; python_version == "3.11" numpy==2.2.6; python_version < "3.11" jinja2==3.1.6 regex==2026.9.10 pyyaml==6.0.3 tqdm==4.70.1 requests==2.34.2 cmake==4.4.3 ninja==1.13.2 pillow==12.3.0 psutil==7.2.2 markupsafe==3.0.3 certifi==2026.7.22 charset-normalizer==3.5.1 idna==3.20 urllib3==2.8.0 colorama==0.4.6; sys_platform == "win32"
+  [ok] numpy, jinja2, regex, pyyaml, tqdm, requests, cmake, ninja, pillow, psutil installed
+
+=== Step 4: the Strata engine ===
+  [ok] llama.cpp 3cf0325 (gguf-py, ggml, mtmd)
+  [ok] engine already built for this PC
+  [ok] engine: /opt/strata/engine/strata
+
+=== Step 5: downloading Qwen3.8-Flash-Next IQ3_XXS ===
+  [ok] Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf already downloaded
+  [ok] Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00002-of-00002.gguf already downloaded
+  [ok] model files present
+
+=== Step 6: preparing the model for Strata ===
+  [ok] model prepared: /data/packs/iq3_xxs
+  [ok] MTP draft layer: /data/mtp/rt
+
+=== Step 7: writing the start script ===
+  [ok] VRAM kept free for other programs: 4608 MiB (--vram-reserve-mib; the expert cache takes that much less)
+  [ok] layer split across GPUs [0, 1] (auto)
+  [ok] start script: run-iq3_xxs.sh
+
+All set.
+  API (OpenAI):     http://127.0.0.1:5804/v1   (any API key; model name: anything)
+  API (Anthropic):  http://127.0.0.1:5804/v1/messages
+  Next time:        just run ./setup.sh (or run-iq3_xxs.sh) - it starts right away
+Strata - Qwen3.8-Flash-Next on a normal PC (a GPU + system RAM + CPU)
+  [ok] saved for this model: 4608 MiB of VRAM kept free for other programs (--vram-reserve-mib)
+  [ok] GPUs: GPU 0 (NVIDIA GeForce RTX 3090, 24 GB) + GPU 1 (NVIDIA GeForce RTX 3090, 24 GB) together (layers split auto)
+
+  ----------------------------------------------------------------------------------------------------
+  Starting qwen3.8-flash-next-iq3_xxs: it maps about 47 GB of experts from the model files (the OS file cache reads them).
+  While it does, YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES (longer the first time after a
+  restart). That is normal: please wait and don't close this window - the browser opens when it is ready.
+  Later, closing this window stops the model.
+  ----------------------------------------------------------------------------------------------------
+  Settings (strata-iq3_xxs.json): --expert-cache auto --prefill auto --spec 4 --spec-min-p 0.5
+    --max-context 131072 --kv int8 --mmap-experts --vram-reserve-mib 4608; server 127.0.0.1:5804, gpu
+    0,1, layer_split auto
+loading the model (the first start takes a minute or two) ...
+[strata] layer split across GPUs [0, 1] (auto)
+[strata] starting the engine: reading the model's weights ...
+[strata] mapping the experts from the model files (about 47 GB, --mmap-experts): they are not loaded into RAM - the OS file cache reads them as the GPU's expert cache fills and as requests need them.
+         YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES NOW - this is normal.
+         Please wait and don't close this window; the browser opens when it is ready.
+[strata] filling the GPU's expert cache (7952 experts, 11.56 GiB of VRAM) ...
+[strata] still starting (26 s) - please wait ...
+[strata] almost ready ...
+ready: http://127.0.0.1:5804/v1  (OpenAI: /v1/chat/completions, Anthropic: /v1/messages, context 131072 tokens)
+       open http://127.0.0.1:5804/ in a browser to chat; close this window to stop the model
+[strata] reading the prompt: 21 of 28 tokens, 1 s so far
+[strata] done: 3 tokens in 2 s (7.4 tok/s) (stop, cancel=False), expert cache 67.0% hit
+[strata] reading the prompt: 6,284 tokens, 10 s so far
+[strata] reading the prompt: 6,262 of 6,284 tokens, 13 s so far
+[strata] reading the prompt: 6,277 of 6,284 tokens, 17 s so far
+[strata] writing a tool call: intent__HassTurnOff: 35 of max 384 tokens, 39.2 tok/s, 18 s
+[strata] done: 74 tokens in 19 s (43.0 tok/s) (stop, cancel=False), expert cache 73.1% hit
+[strata] done: 8 tokens in 1 s (40.8 tok/s) (stop, cancel=False), expert cache 78.5% hit
+[strata] writing a tool call: intent__HassTurnOn: 61 of max 384 tokens, 79.4 tok/s, 1 s
+[strata] done: 72 tokens in 1 s (79.3 tok/s) (stop, cancel=False), expert cache 87.0% hit
+[strata] done: 8 tokens in 0 s (46.6 tok/s) (stop, cancel=False), expert cache 90.2% hit
+[strata] done: 46 tokens in 1 s (97.5 tok/s) (stop, cancel=False), expert cache 92.2% hit
+[strata] done: 8 tokens in 0 s (89.0 tok/s) (stop, cancel=False), expert cache 94.8% hit
+[strata] done: 74 tokens in 1 s (98.8 tok/s) (stop, cancel=False), expert cache 94.9% hit
+[strata] done: 8 tokens in 0 s (95.7 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 61 tokens in 1 s (109.1 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 9 tokens in 0 s (100.3 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 47 tokens in 1 s (119.2 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 7 tokens in 0 s (71.4 tok/s) (stop, cancel=False), expert cache 96.9% hit
+[strata] done: 45 tokens in 1 s (106.3 tok/s) (stop, cancel=False), expert cache 96.9% hit
+[strata] reading the prompt: 6,423 of 6,424 tokens, 1 s so far
+[strata] done: 74 tokens in 2 s (91.6 tok/s) (stop, cancel=False), expert cache 96.0% hit
+[strata] answering: 19 of max 384 tokens, 24.7 tok/s, 1 s
+[strata] done: 25 tokens in 1 s (24.0 tok/s) (stop, cancel=False), expert cache 94.2% hit
+[strata] done: 44 tokens in 1 s (126.5 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] writing a tool call: intent__HassTurnOn: 22 of max 384 tokens, 105.6 tok/s, 1 s
+[strata] done: 73 tokens in 1 s (118.2 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 20 tokens in 1 s (50.8 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 44 tokens in 1 s (111.6 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 44 tokens in 1 s (95.1 tok/s) (stop, cancel=False), expert cache 95.9% hit
+[strata] writing a tool call: intent__HassTurnOn: 43 of max 384 tokens, 105.1 tok/s, 1 s
+[strata] done: 74 tokens in 1 s (110.0 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] writing a tool call: intent__HassTurnOff: 47 of max 384 tokens, 61.1 tok/s, 1 s
+[strata] done: 74 tokens in 1 s (64.2 tok/s) (stop, cancel=False), expert cache 93.4% hit
+[strata] done: 10 tokens in 0 s (83.7 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 45 tokens in 1 s (126.1 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] writing a tool call: light__HassLightSet: 36 of max 384 tokens, 94.4 tok/s, 1 s
+[strata] done: 118 tokens in 2 s (92.3 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 18 tokens in 1 s (61.8 tok/s) (stop, cancel=False), expert cache 96.9% hit
+[strata] done: 72 tokens in 1 s (116.4 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: homeassistant__GetLiveContext: 35 of max 384 tokens, 59.6 tok/s, 1 s
+[strata] done: 57 tokens in 1 s (74.9 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] reading the prompt: 8 of max 384 tokens, 75.3 tok/s, 1 s
+[strata] done: 71 tokens in 2 s (99.1 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 10 tokens in 0 s (64.4 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 45 tokens in 1 s (128.5 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 47 tokens in 1 s (122.8 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 12 tokens in 1 s (40.7 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 32 tokens in 1 s (116.4 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 9 tokens in 0 s (85.8 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 31 tokens in 1 s (108.7 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] writing a tool call: intent__HassSetPosition: 41 of max 384 tokens, 86.0 tok/s, 1 s
+[strata] done: 69 tokens in 1 s (91.4 tok/s) (stop, cancel=False), expert cache 96.9% hit
+[strata] done: 17 tokens in 1 s (38.8 tok/s) (stop, cancel=False), expert cache 93.4% hit
+[strata] done: 68 tokens in 1 s (104.4 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 11 tokens in 0 s (81.2 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 75 tokens in 1 s (108.7 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 8 tokens in 0 s (105.4 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 63 tokens in 1 s (105.0 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 48 tokens in 1 s (116.8 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] writing a tool call: media_player__HassSetVolume: 54 of max 384 tokens, 96.8 tok/s, 1 s
+[strata] done: 76 tokens in 1 s (100.4 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 12 tokens in 0 s (73.3 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 49 tokens in 1 s (130.5 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 9 tokens in 0 s (49.5 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 46 tokens in 1 s (99.8 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 50 tokens in 1 s (110.9 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 8 tokens in 0 s (57.2 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 19 tokens in 0 s (113.3 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 11 tokens in 0 s (58.0 tok/s) (stop, cancel=False), expert cache 95.9% hit
+[strata] done: 44 tokens in 1 s (122.4 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 33 tokens in 1 s (112.9 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] answering: 23 of max 384 tokens, 42.6 tok/s, 1 s
+[strata] done: 25 tokens in 1 s (43.5 tok/s) (stop, cancel=False), expert cache 93.7% hit
+[strata] done: 45 tokens in 1 s (130.6 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 13 tokens in 1 s (98.1 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 30 tokens in 0 s (103.9 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 31 tokens in 1 s (101.4 tok/s) (stop, cancel=False), expert cache 96.4% hit
+[strata] done: 9 tokens in 1 s (66.5 tok/s) (stop, cancel=False), expert cache 96.1% hit
+[strata] done: 34 tokens in 0 s (112.0 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 51 tokens in 1 s (70.6 tok/s) (stop, cancel=False), expert cache 96.0% hit
+[strata] done: 33 tokens in 1 s (47.1 tok/s) (stop, cancel=False), expert cache 93.6% hit
+[strata] done: 43 tokens in 1 s (107.2 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 15 tokens in 1 s (73.5 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 31 tokens in 0 s (123.3 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 32 tokens in 1 s (120.2 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] answering: 22 of max 384 tokens, 69.2 tok/s, 1 s
+[strata] done: 35 tokens in 1 s (59.6 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 37 tokens in 0 s (119.6 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] answering: 20 of max 384 tokens, 71.3 tok/s, 1 s
+[strata] done: 43 tokens in 1 s (62.8 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] done: 55 tokens in 1 s (115.2 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 32 tokens in 1 s (66.4 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 43 tokens in 1 s (133.1 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 31 tokens in 1 s (91.0 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] answering: 15 of max 384 tokens, 63.6 tok/s, 1 s
+[strata] done: 31 tokens in 1 s (60.0 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] done: 46 tokens in 1 s (124.8 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 12 tokens in 1 s (51.0 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 45 tokens in 1 s (128.5 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 27 tokens in 1 s (89.7 tok/s) (stop, cancel=False), expert cache 96.9% hit
+[strata] done: 46 tokens in 1 s (125.8 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 14 tokens in 1 s (95.6 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 60 tokens in 1 s (108.1 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 11 tokens in 0 s (65.0 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 33 tokens in 0 s (121.7 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] writing a tool call: intent__HassSetPosition: 40 of max 384 tokens, 98.6 tok/s, 1 s
+[strata] done: 74 tokens in 1 s (96.1 tok/s) (stop, cancel=False), expert cache 95.4% hit
+[strata] writing a tool call: intent__HassSetPosition: 75 of max 384 tokens, 98.6 tok/s, 1 s
+[strata] done: 86 tokens in 1 s (102.0 tok/s) (stop, cancel=False), expert cache 95.1% hit
+[strata] writing a tool call: intent__HassSetPosition: 66 of max 384 tokens, 89.6 tok/s, 1 s
+[strata] done: 73 tokens in 1 s (94.1 tok/s) (stop, cancel=False), expert cache 95.1% hit
+[strata] writing a tool call: intent__HassSetPosition: 72 of max 384 tokens, 97.3 tok/s, 1 s
+[strata] done: 87 tokens in 1 s (100.8 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] writing a tool call: intent__HassSetPosition: 62 of max 384 tokens, 84.9 tok/s, 1 s
+[strata] done: 87 tokens in 1 s (82.1 tok/s) (stop, cancel=False), expert cache 94.6% hit
+[strata] done: 19 tokens in 0 s (112.3 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] reading the prompt: 6,933 of 6,940 tokens, 2 s so far
+[strata] writing a tool call: intent__HassTurnOn: 75 of max 384 tokens, 99.1 tok/s, 3 s
+[strata] done: 105 tokens in 3 s (105.8 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] writing a tool call: light__HassLightSet: 63 of max 384 tokens, 101.1 tok/s, 1 s
+[strata] done: 73 tokens in 1 s (105.0 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 18 tokens in 0 s (85.8 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 74 tokens in 1 s (108.8 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 46 tokens in 1 s (105.3 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 6 tokens in 0 s (81.4 tok/s) (stop, cancel=False), expert cache 95.7% hit
+[strata] done: 47 tokens in 1 s (114.6 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 43 tokens in 1 s (127.0 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 32 tokens in 0 s (130.1 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 18 tokens in 1 s (51.2 tok/s) (stop, cancel=False), expert cache 92.5% hit
+[strata] done: 54 tokens in 1 s (104.7 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 43 tokens in 1 s (84.5 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] answering: 26 of max 384 tokens, 67.3 tok/s, 1 s
+[strata] done: 51 tokens in 1 s (89.3 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] done: 65 tokens in 1 s (87.3 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] done: 23 tokens in 1 s (61.2 tok/s) (stop, cancel=False), expert cache 96.3% hit
+[strata] answering: 45 of max 384 tokens, 58.3 tok/s, 1 s
+[strata] done: 65 tokens in 1 s (60.0 tok/s) (stop, cancel=False), expert cache 95.1% hit
+[strata] done: 14 tokens in 0 s (56.6 tok/s) (stop, cancel=False), expert cache 97.3% hit
+[strata] done: 6 tokens in 0 s (61.5 tok/s) (stop, cancel=False), expert cache 95.4% hit
+[strata] done: 6 tokens in 0 s (95.4 tok/s) (stop, cancel=False), expert cache 95.9% hit
+[strata] done: 6 tokens in 0 s (84.5 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 6 tokens in 0 s (80.9 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 6 tokens in 0 s (78.9 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 49 tokens in 1 s (101.9 tok/s) (stop, cancel=False), expert cache 96.9% hit
+[strata] done: 9 tokens in 0 s (73.0 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 27 tokens in 1 s (75.0 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 10 tokens in 1 s (64.9 tok/s) (stop, cancel=False), expert cache 96.9% hit
+[strata] done: 72 tokens in 1 s (103.3 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 45 tokens in 1 s (108.0 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] writing a tool call: intent__HassTurnOn: 35 of max 384 tokens, 103.5 tok/s, 1 s
+[strata] done: 72 tokens in 1 s (101.9 tok/s) (stop, cancel=False), expert cache 95.5% hit
+[strata] done: 27 tokens in 1 s (56.1 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 69 tokens in 1 s (107.3 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 45 tokens in 1 s (121.3 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 59 tokens in 1 s (102.0 tok/s) (stop, cancel=False), expert cache 97.3% hit
+[strata] done: 19 tokens in 1 s (68.8 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 49 tokens in 1 s (122.0 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 46 tokens in 1 s (117.5 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 62 tokens in 1 s (113.4 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 17 tokens in 1 s (41.8 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] writing a tool call: intent__HassTurnOn: 87 of max 384 tokens, 109.8 tok/s, 1 s
+[strata] done: 120 tokens in 1 s (110.3 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 22 tokens in 1 s (77.3 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 46 tokens in 1 s (107.9 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 60 tokens in 1 s (110.9 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 8 tokens in 0 s (94.5 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 32 tokens in 0 s (118.2 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 60 tokens in 1 s (114.8 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 6 tokens in 0 s (96.7 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 46 tokens in 1 s (121.5 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 8 tokens in 0 s (132.3 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 46 tokens in 1 s (111.0 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 60 tokens in 1 s (116.3 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 6 tokens in 0 s (118.5 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 59 tokens in 1 s (116.2 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] writing a tool call: intent__HassTurnOn: 71 of max 384 tokens, 114.8 tok/s, 1 s
+[strata] done: 75 tokens in 1 s (115.7 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 9 tokens in 0 s (98.7 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 47 tokens in 1 s (121.9 tok/s) (stop, cancel=False), expert cache 99.1% hit
+[strata] done: 8 tokens in 0 s (62.3 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 44 tokens in 1 s (124.8 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] writing a tool call: intent__HassTurnOff: 55 of max 384 tokens, 125.3 tok/s, 1 s
+[strata] done: 74 tokens in 1 s (126.5 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 7 tokens in 0 s (84.7 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 44 tokens in 1 s (132.8 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] writing a tool call: intent__HassTurnOn: 58 of max 384 tokens, 127.0 tok/s, 1 s
+[strata] done: 73 tokens in 1 s (126.0 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 17 tokens in 0 s (79.1 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] writing a tool call: intent__HassTurnOff: 94 of max 384 tokens, 119.6 tok/s, 1 s
+[strata] done: 144 tokens in 1 s (116.9 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 10 tokens in 0 s (100.6 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] writing a tool call: light__HassLightSet: 82 of max 384 tokens, 110.1 tok/s, 1 s
+[strata] done: 117 tokens in 1 s (111.4 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 45 tokens in 1 s (121.1 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] writing a tool call: light__HassLightSet: 40 of max 384 tokens, 101.9 tok/s, 1 s
+[strata] done: 59 tokens in 1 s (107.1 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 18 tokens in 0 s (87.5 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 72 tokens in 1 s (111.3 tok/s) (stop, cancel=False), expert cache 99.1% hit
+[strata] done: 44 tokens in 1 s (132.9 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] writing a tool call: intent__HassTurnOff: 52 of max 384 tokens, 118.2 tok/s, 1 s
+[strata] done: 71 tokens in 1 s (119.4 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 13 tokens in 1 s (42.0 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] done: 45 tokens in 1 s (127.4 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 47 tokens in 1 s (118.1 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 12 tokens in 0 s (56.5 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 32 tokens in 1 s (115.5 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 9 tokens in 0 s (107.9 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 43 tokens in 1 s (112.7 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] writing a tool call: intent__HassTurnOff: 62 of max 384 tokens, 102.7 tok/s, 1 s
+[strata] done: 76 tokens in 1 s (108.0 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 7 tokens in 0 s (79.4 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 64 tokens in 1 s (112.2 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 11 tokens in 0 s (106.6 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] writing a tool call: intent__HassSetPosition: 81 of max 384 tokens, 99.0 tok/s, 1 s
+[strata] done: 106 tokens in 1 s (101.8 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 9 tokens in 0 s (65.6 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 62 tokens in 1 s (105.4 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 46 tokens in 1 s (118.2 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 61 tokens in 1 s (107.1 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 8 tokens in 0 s (92.1 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 34 tokens in 1 s (106.6 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 9 tokens in 0 s (70.1 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] done: 35 tokens in 1 s (104.7 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 8 tokens in 0 s (70.1 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 19 tokens in 0 s (119.4 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 10 tokens in 0 s (82.5 tok/s) (stop, cancel=False), expert cache 96.7% hit
+[strata] done: 33 tokens in 0 s (134.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 25 tokens in 1 s (56.7 tok/s) (stop, cancel=False), expert cache 94.1% hit
+[strata] done: 45 tokens in 1 s (118.7 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 45 tokens in 1 s (119.3 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 13 tokens in 1 s (102.5 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 70 tokens in 1 s (112.2 tok/s) (stop, cancel=False), expert cache 95.9% hit
+[strata] done: 31 tokens in 1 s (113.2 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 11 tokens in 1 s (61.9 tok/s) (stop, cancel=False), expert cache 96.1% hit
+[strata] done: 43 tokens in 1 s (118.2 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 10 tokens in 0 s (100.4 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 43 tokens in 1 s (117.8 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 16 tokens in 1 s (72.2 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 49 tokens in 1 s (116.3 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 31 tokens in 1 s (115.8 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 32 tokens in 1 s (130.9 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] answering: 24 of max 384 tokens, 64.8 tok/s, 1 s
+[strata] done: 27 tokens in 1 s (65.4 tok/s) (stop, cancel=False), expert cache 94.5% hit
+[strata] done: 37 tokens in 0 s (124.2 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] answering: 20 of max 384 tokens, 69.5 tok/s, 1 s
+[strata] done: 40 tokens in 1 s (65.8 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 55 tokens in 1 s (113.6 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 26 tokens in 1 s (64.6 tok/s) (stop, cancel=False), expert cache 94.7% hit
+[strata] done: 49 tokens in 1 s (121.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 24 tokens in 1 s (64.4 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 46 tokens in 1 s (128.4 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 12 tokens in 1 s (54.3 tok/s) (stop, cancel=False), expert cache 96.4% hit
+[strata] done: 45 tokens in 1 s (126.8 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 27 tokens in 1 s (95.5 tok/s) (stop, cancel=False), expert cache 96.7% hit
+[strata] done: 46 tokens in 1 s (124.2 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 14 tokens in 1 s (106.6 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 32 tokens in 0 s (123.1 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 46 tokens in 1 s (109.3 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 18 tokens in 0 s (75.8 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 33 tokens in 0 s (118.3 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] writing a tool call: intent__HassSetPosition: 44 of max 384 tokens, 106.5 tok/s, 1 s
+[strata] done: 74 tokens in 1 s (107.1 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 73 tokens in 1 s (107.6 tok/s) (stop, cancel=False), expert cache 95.7% hit
+[strata] writing a tool call: intent__HassSetPosition: 43 of max 384 tokens, 96.8 tok/s, 1 s
+[strata] done: 86 tokens in 1 s (104.1 tok/s) (stop, cancel=False), expert cache 95.4% hit
+[strata] writing a tool call: intent__HassSetPosition: 76 of max 384 tokens, 101.2 tok/s, 1 s
+[strata] done: 87 tokens in 1 s (105.6 tok/s) (stop, cancel=False), expert cache 95.9% hit
+[strata] writing a tool call: intent__HassSetPosition: 77 of max 384 tokens, 101.8 tok/s, 1 s
+[strata] done: 87 tokens in 1 s (105.0 tok/s) (stop, cancel=False), expert cache 95.3% hit
+[strata] done: 19 tokens in 0 s (94.6 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] reading the prompt: 6,933 of 6,940 tokens, 1 s so far
+[strata] writing a tool call: light__HassLightSet: 70 of max 384 tokens, 86.3 tok/s, 3 s
+[strata] done: 85 tokens in 3 s (90.9 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 59 tokens in 1 s (109.9 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 46 tokens in 1 s (107.2 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 60 tokens in 1 s (108.3 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 45 tokens in 1 s (110.4 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 6 tokens in 0 s (80.3 tok/s) (stop, cancel=False), expert cache 95.7% hit
+[strata] done: 33 tokens in 1 s (108.1 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 26 tokens in 1 s (57.3 tok/s) (stop, cancel=False), expert cache 93.6% hit
+[strata] done: 43 tokens in 1 s (117.2 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 31 tokens in 0 s (117.8 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 32 tokens in 0 s (113.7 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 42 tokens in 1 s (54.9 tok/s) (stop, cancel=False), expert cache 94.0% hit
+[strata] done: 44 tokens in 1 s (121.3 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 31 tokens in 1 s (112.7 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 60 tokens in 1 s (105.8 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 31 tokens in 1 s (113.4 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] writing a tool call: intent__HassTurnOff: 60 of max 384 tokens, 78.0 tok/s, 1 s
+[strata] done: 80 tokens in 1 s (86.2 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] done: 18 tokens in 1 s (62.4 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 45 tokens in 1 s (107.3 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 11 tokens in 1 s (84.9 tok/s) (stop, cancel=False), expert cache 96.7% hit
+[strata] done: 6 tokens in 0 s (89.8 tok/s) (stop, cancel=False), expert cache 95.6% hit
+[strata] done: 6 tokens in 0 s (82.0 tok/s) (stop, cancel=False), expert cache 95.6% hit
+[strata] done: 6 tokens in 0 s (79.9 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 6 tokens in 0 s (105.2 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 6 tokens in 0 s (86.1 tok/s) (stop, cancel=False), expert cache 99.2% hit
+[strata] done: 34 tokens in 1 s (96.9 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 7 tokens in 0 s (103.7 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 7 tokens in 1 s (46.5 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 10 tokens in 1 s (69.9 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 58 tokens in 1 s (115.0 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 60 tokens in 1 s (113.6 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] done: 17 tokens in 1 s (75.0 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 61 tokens in 1 s (109.6 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 47 tokens in 1 s (119.1 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] writing a tool call: intent__HassTurnOff: 69 of max 384 tokens, 113.9 tok/s, 1 s
+[strata] done: 73 tokens in 1 s (114.7 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 27 tokens in 1 s (52.5 tok/s) (stop, cancel=False), expert cache 95.9% hit
+[strata] done: 34 tokens in 1 s (104.2 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 20 tokens in 1 s (80.8 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] writing a tool call: intent__HassTurnOn: 91 of max 384 tokens, 116.8 tok/s, 1 s
+[strata] done: 120 tokens in 1 s (116.8 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 23 tokens in 1 s (81.9 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 3 tokens in 1 s (27.9 tok/s) (stop, cancel=False), expert cache 84.2% hit
+[strata] reading the prompt: 6,284 tokens, 10 s so far
+[strata] reading the prompt: 6,277 of 6,284 tokens, 13 s so far
+[strata] done: 74 tokens in 14 s (114.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 45 tokens in 1 s (121.3 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] reading the prompt: 6,567 of 6,568 tokens, 1 s so far
+[strata] done: 60 tokens in 2 s (101.1 tok/s) (stop, cancel=False), expert cache 97.3% hit
+[strata] done: 6 tokens in 0 s (58.4 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 72 tokens in 1 s (123.5 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 8 tokens in 0 s (65.1 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 46 tokens in 1 s (133.1 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 7 tokens in 0 s (126.8 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 46 tokens in 1 s (118.6 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] writing a tool call: intent__HassTurnOff: 39 of max 384 tokens, 120.7 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (122.4 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 6 tokens in 0 s (129.7 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 73 tokens in 1 s (125.3 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 9 tokens in 0 s (118.6 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 47 tokens in 1 s (132.9 tok/s) (stop, cancel=False), expert cache 99.1% hit
+[strata] done: 7 tokens in 0 s (94.9 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 45 tokens in 1 s (135.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: intent__HassTurnOff: 22 of max 384 tokens, 136.0 tok/s, 1 s
+[strata] done: 61 tokens in 1 s (113.5 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 47 tokens in 1 s (104.2 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 25 tokens in 1 s (61.2 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 44 tokens in 1 s (135.6 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] reading the prompt: 9 of max 384 tokens, 115.0 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (116.2 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 17 tokens in 0 s (65.9 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 44 tokens in 1 s (123.4 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] writing a tool call: homeassistant__GetLiveContext: 42 of max 384 tokens, 117.2 tok/s, 1 s
+[strata] done: 44 tokens in 1 s (122.7 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] writing a tool call: intent__HassTurnOn: 31 of max 384 tokens, 121.4 tok/s, 1 s
+[strata] done: 120 tokens in 2 s (102.8 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 10 tokens in 0 s (91.3 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 45 tokens in 1 s (129.4 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: light__HassLightSet: 22 of max 384 tokens, 133.7 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (104.1 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 60 tokens in 1 s (95.3 tok/s) (stop, cancel=False), expert cache 96.3% hit
+[strata] done: 18 tokens in 0 s (70.9 tok/s) (stop, cancel=False), expert cache 96.9% hit
+[strata] done: 72 tokens in 1 s (113.8 tok/s) (stop, cancel=False), expert cache 99.1% hit
+[strata] done: 9 tokens in 0 s (60.8 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 45 tokens in 1 s (131.6 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] writing a tool call: intent__HassTurnOn: 34 of max 384 tokens, 126.9 tok/s, 1 s
+[strata] done: 47 tokens in 1 s (130.2 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 12 tokens in 1 s (45.2 tok/s) (stop, cancel=False), expert cache 95.7% hit
+[strata] done: 32 tokens in 1 s (123.6 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 9 tokens in 1 s (96.1 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 31 tokens in 1 s (120.4 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] answering: 18 of max 384 tokens, 78.9 tok/s, 1 s
+[strata] done: 74 tokens in 2 s (104.4 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 33 tokens in 1 s (114.9 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] reading the prompt: 6,881 of 6,888 tokens, 1 s so far
+[strata] done: 73 tokens in 2 s (103.7 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 13 tokens in 0 s (47.8 tok/s) (stop, cancel=False), expert cache 94.5% hit
+[strata] done: 60 tokens in 1 s (118.0 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 33 tokens in 0 s (130.5 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] reading the prompt: 6,742 of 6,749 tokens, 1 s so far
+[strata] done: 61 tokens in 2 s (122.2 tok/s) (stop, cancel=False), expert cache 97.3% hit
+[strata] done: 12 tokens in 0 s (65.6 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 61 tokens in 1 s (114.3 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 33 tokens in 0 s (127.7 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] reading the prompt: 8 of max 384 tokens, 93.3 tok/s, 1 s
+[strata] done: 62 tokens in 1 s (128.6 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 9 tokens in 0 s (78.1 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 63 tokens in 1 s (115.6 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 10 tokens in 0 s (105.2 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 49 tokens in 1 s (129.6 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 9 tokens in 0 s (60.6 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 50 tokens in 1 s (123.1 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 8 tokens in 0 s (71.4 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 19 tokens in 0 s (118.4 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 10 tokens in 0 s (78.3 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 49 tokens in 1 s (118.2 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 32 tokens in 1 s (110.1 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 33 tokens in 1 s (101.8 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] reading the prompt: 6,663 of 6,664 tokens, 1 s so far
+[strata] done: 31 tokens in 2 s (44.1 tok/s) (stop, cancel=False), expert cache 91.8% hit
+[strata] done: 45 tokens in 1 s (126.6 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 13 tokens in 1 s (122.8 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 30 tokens in 0 s (107.6 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 31 tokens in 1 s (108.7 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 11 tokens in 1 s (68.9 tok/s) (stop, cancel=False), expert cache 96.3% hit
+[strata] done: 31 tokens in 0 s (133.2 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 10 tokens in 1 s (116.5 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 43 tokens in 1 s (124.3 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 12 tokens in 1 s (73.7 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 37 tokens in 0 s (119.9 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] reading the prompt: 6,595 of 6,596 tokens, 1 s so far
+[strata] done: 37 tokens in 2 s (63.6 tok/s) (stop, cancel=False), expert cache 95.3% hit
+[strata] done: 31 tokens in 0 s (128.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: homeassistant__GetLiveContext: 14 of max 384 tokens, 114.2 tok/s, 1 s
+[strata] done: 36 tokens in 1 s (117.3 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 37 tokens in 1 s (116.8 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] reading the prompt: 6,843 of 6,844 tokens, 1 s so far
+[strata] done: 33 tokens in 2 s (65.4 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] done: 43 tokens in 1 s (129.5 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] answering: 22 of max 384 tokens, 66.7 tok/s, 1 s
+[strata] done: 32 tokens in 1 s (68.3 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 43 tokens in 1 s (134.5 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 43 tokens in 1 s (106.7 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] answering: 22 of max 384 tokens, 59.2 tok/s, 1 s
+[strata] done: 25 tokens in 1 s (61.9 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 46 tokens in 1 s (130.1 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] answering: 13 of max 384 tokens, 44.8 tok/s, 1 s
+[strata] done: 15 tokens in 1 s (47.3 tok/s) (stop, cancel=False), expert cache 95.3% hit
+[strata] done: 45 tokens in 1 s (129.0 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 3 tokens in 1 s (19.4 tok/s) (stop, cancel=False), expert cache 82.5% hit
+[strata] reading the prompt: 6,284 tokens, 10 s so far
+[strata] reading the prompt: 6,262 of 6,284 tokens, 12 s so far
+[strata] reading the prompt: 6,277 of 6,284 tokens, 14 s so far
+[strata] writing a tool call: intent__HassTurnOff: 72 of max 384 tokens, 80.5 tok/s, 15 s
+[strata] done: 74 tokens in 15 s (82.7 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 45 tokens in 1 s (115.5 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] reading the prompt: 6,569 of 6,570 tokens, 1 s so far
+[strata] done: 61 tokens in 2 s (87.7 tok/s) (stop, cancel=False), expert cache 95.7% hit
+[strata] done: 8 tokens in 0 s (82.7 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 72 tokens in 1 s (115.6 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 8 tokens in 0 s (64.2 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 46 tokens in 1 s (123.5 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 7 tokens in 0 s (120.5 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 72 tokens in 1 s (120.2 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 6 tokens in 0 s (80.1 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 75 tokens in 1 s (123.5 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 45 tokens in 1 s (121.1 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] writing a tool call: intent__HassTurnOn: 26 of max 384 tokens, 101.8 tok/s, 1 s
+[strata] done: 76 tokens in 2 s (99.1 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] done: 62 tokens in 1 s (90.9 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 9 tokens in 0 s (102.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 47 tokens in 1 s (126.7 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 7 tokens in 0 s (85.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 45 tokens in 1 s (125.1 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: intent__HassTurnOff: 14 of max 384 tokens, 116.5 tok/s, 1 s
+[strata] done: 75 tokens in 2 s (113.2 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 61 tokens in 1 s (110.8 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 21 tokens in 1 s (33.8 tok/s) (stop, cancel=False), expert cache 95.9% hit
+[strata] done: 44 tokens in 1 s (127.9 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] writing a tool call: intent__HassTurnOn: 21 of max 384 tokens, 128.7 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (109.8 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 17 tokens in 0 s (64.3 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 44 tokens in 1 s (113.0 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: homeassistant__GetLiveContext: 34 of max 384 tokens, 100.2 tok/s, 1 s
+[strata] done: 44 tokens in 1 s (108.6 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] writing a tool call: intent__HassTurnOn: 27 of max 384 tokens, 112.0 tok/s, 1 s
+[strata] done: 120 tokens in 2 s (98.7 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] done: 10 tokens in 0 s (72.2 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 45 tokens in 1 s (122.3 tok/s) (stop, cancel=False), expert cache 99.1% hit
+[strata] writing a tool call: light__HassLightSet: 14 of max 384 tokens, 98.4 tok/s, 1 s
+[strata] writing a tool call: light__HassLightSet: 104 of max 384 tokens, 90.7 tok/s, 2 s
+[strata] done: 120 tokens in 2 s (91.3 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 18 tokens in 1 s (61.5 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] done: 74 tokens in 1 s (105.7 tok/s) (stop, cancel=False), expert cache 99.1% hit
+[strata] done: 44 tokens in 1 s (113.7 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] writing a tool call: intent__HassTurnOff: 16 of max 384 tokens, 93.7 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (109.7 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 10 tokens in 1 s (76.3 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 45 tokens in 1 s (111.4 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] writing a tool call: intent__HassTurnOn: 30 of max 384 tokens, 120.7 tok/s, 1 s
+[strata] done: 47 tokens in 1 s (122.6 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 8 tokens in 0 s (43.5 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 32 tokens in 1 s (112.8 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 9 tokens in 1 s (90.5 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 31 tokens in 1 s (111.1 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] answering: 18 of max 384 tokens, 70.2 tok/s, 1 s
+[strata] done: 74 tokens in 2 s (98.2 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 33 tokens in 1 s (114.0 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] reading the prompt: 6,884 of 6,891 tokens, 1 s so far
+[strata] done: 73 tokens in 2 s (105.9 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 13 tokens in 1 s (52.8 tok/s) (stop, cancel=False), expert cache 95.5% hit
+[strata] done: 71 tokens in 1 s (99.6 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 11 tokens in 0 s (78.9 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 61 tokens in 1 s (103.4 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 33 tokens in 1 s (120.3 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] reading the prompt: 2 of max 384 tokens, 61.7 tok/s, 1 s
+[strata] done: 62 tokens in 2 s (108.4 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 9 tokens in 0 s (63.6 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 63 tokens in 1 s (106.5 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 10 tokens in 0 s (96.7 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 49 tokens in 1 s (121.2 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 9 tokens in 0 s (52.4 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 50 tokens in 1 s (112.5 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 8 tokens in 0 s (59.1 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 19 tokens in 0 s (104.6 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 11 tokens in 0 s (68.0 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 44 tokens in 1 s (119.4 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 32 tokens in 1 s (111.5 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 33 tokens in 1 s (99.6 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] answering: 13 of max 384 tokens, 55.0 tok/s, 1 s
+[strata] done: 25 tokens in 1 s (41.7 tok/s) (stop, cancel=False), expert cache 91.9% hit
+[strata] done: 45 tokens in 1 s (115.7 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 13 tokens in 1 s (102.9 tok/s) (stop, cancel=False), expert cache 96.7% hit
+[strata] done: 30 tokens in 0 s (104.4 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 31 tokens in 1 s (102.1 tok/s) (stop, cancel=False), expert cache 96.3% hit
+[strata] done: 11 tokens in 1 s (63.9 tok/s) (stop, cancel=False), expert cache 96.7% hit
+[strata] done: 31 tokens in 0 s (123.9 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 10 tokens in 1 s (104.8 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 31 tokens in 0 s (120.5 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 12 tokens in 1 s (58.5 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] done: 31 tokens in 0 s (118.6 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] writing a tool call: homeassistant__GetLiveContext: 17 of max 384 tokens, 101.5 tok/s, 1 s
+[strata] done: 43 tokens in 1 s (114.2 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 31 tokens in 1 s (97.5 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] answering: 7 of max 384 tokens, 48.5 tok/s, 1 s
+[strata] done: 18 tokens in 1 s (54.5 tok/s) (stop, cancel=False), expert cache 95.0% hit
+[strata] done: 31 tokens in 0 s (120.1 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] writing a tool call: homeassistant__GetLiveContext: 18 of max 384 tokens, 116.5 tok/s, 1 s
+[strata] done: 32 tokens in 1 s (127.1 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] answering: 12 of max 384 tokens, 69.3 tok/s, 1 s
+[strata] done: 37 tokens in 1 s (63.3 tok/s) (stop, cancel=False), expert cache 95.6% hit
+[strata] done: 55 tokens in 1 s (107.3 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] answering: 24 of max 384 tokens, 68.9 tok/s, 1 s
+[strata] done: 42 tokens in 1 s (68.5 tok/s) (stop, cancel=False), expert cache 95.7% hit
+[strata] done: 43 tokens in 1 s (121.8 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 31 tokens in 1 s (98.1 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] answering: 15 of max 384 tokens, 71.8 tok/s, 1 s
+[strata] done: 29 tokens in 1 s (81.2 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 46 tokens in 1 s (118.4 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] answering: 12 of max 384 tokens, 41.5 tok/s, 1 s
+[strata] done: 15 tokens in 1 s (44.2 tok/s) (stop, cancel=False), expert cache 95.1% hit
+[strata] done: 45 tokens in 1 s (119.5 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 18 tokens in 1 s (98.4 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 46 tokens in 1 s (119.4 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 14 tokens in 1 s (102.5 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 32 tokens in 0 s (110.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] answering: 14 of max 384 tokens, 76.4 tok/s, 1 s
+[strata] done: 16 tokens in 1 s (66.9 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 31 tokens in 0 s (122.3 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] answering: 10 of max 384 tokens, 59.5 tok/s, 1 s
+[strata] done: 19 tokens in 1 s (61.1 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 19 tokens in 0 s (96.5 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] reading the prompt: 7,217 of 7,224 tokens, 2 s so far
+[strata] writing a tool call: light__HassLightSet: 64 of max 384 tokens, 93.4 tok/s, 3 s
+[strata] done: 72 tokens in 3 s (94.6 tok/s) (stop, cancel=False), expert cache 95.2% hit
+[strata] writing a tool call: light__HassLightSet: 64 of max 384 tokens, 88.5 tok/s, 1 s
+[strata] done: 74 tokens in 1 s (92.4 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 60 tokens in 1 s (95.7 tok/s) (stop, cancel=False), expert cache 95.6% hit
+[strata] done: 46 tokens in 1 s (90.2 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] writing a tool call: light__HassLightSet: 55 of max 384 tokens, 81.2 tok/s, 1 s
+[strata] done: 58 tokens in 1 s (85.0 tok/s) (stop, cancel=False), expert cache 95.4% hit
+[strata] done: 8 tokens in 0 s (39.9 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 33 tokens in 1 s (109.4 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] done: 43 tokens in 1 s (105.3 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 32 tokens in 1 s (124.4 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 31 tokens in 1 s (107.3 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] reading the prompt: 6,831 of 6,838 tokens, 1 s so far
+[strata] done: 32 tokens in 2 s (119.7 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 26 tokens in 1 s (52.0 tok/s) (stop, cancel=False), expert cache 94.4% hit
+[strata] done: 54 tokens in 1 s (103.9 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 44 tokens in 1 s (86.6 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] answering: 11 of max 384 tokens, 55.5 tok/s, 1 s
+[strata] done: 53 tokens in 1 s (87.9 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 17 tokens in 1 s (51.1 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] answering: 43 of max 384 tokens, 56.5 tok/s, 1 s
+[strata] done: 44 tokens in 1 s (57.8 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 14 tokens in 0 s (54.1 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 6 tokens in 0 s (70.2 tok/s) (stop, cancel=False), expert cache 95.2% hit
+[strata] done: 6 tokens in 0 s (76.3 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 6 tokens in 0 s (96.0 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 6 tokens in 0 s (76.4 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 6 tokens in 0 s (88.5 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 49 tokens in 1 s (101.8 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 7 tokens in 0 s (86.1 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 10 tokens in 1 s (66.9 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 10 tokens in 1 s (70.6 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 72 tokens in 1 s (102.6 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 45 tokens in 1 s (111.1 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] writing a tool call: intent__HassTurnOn: 12 of max 384 tokens, 82.2 tok/s, 1 s
+[strata] done: 73 tokens in 2 s (94.2 tok/s) (stop, cancel=False), expert cache 95.9% hit
+[strata] done: 59 tokens in 1 s (98.1 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 21 tokens in 1 s (64.7 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 69 tokens in 1 s (103.8 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 45 tokens in 1 s (122.5 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] writing a tool call: intent__HassTurnOff: 26 of max 384 tokens, 90.7 tok/s, 1 s
+[strata] done: 46 tokens in 1 s (101.9 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 58 tokens in 1 s (97.9 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 19 tokens in 1 s (62.2 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] done: 49 tokens in 1 s (118.1 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 17 tokens in 0 s (82.1 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] writing a tool call: intent__HassTurnOn: 83 of max 384 tokens, 107.4 tok/s, 1 s
+[strata] done: 120 tokens in 1 s (106.8 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 22 tokens in 1 s (71.2 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 33 tokens in 1 s (96.4 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: intent__HassTurnOff: 39 of max 384 tokens, 115.3 tok/s, 1 s
+[strata] done: 61 tokens in 1 s (109.9 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 8 tokens in 0 s (89.0 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 46 tokens in 1 s (106.5 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: intent__HassTurnOn: 39 of max 384 tokens, 116.4 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (119.2 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 8 tokens in 0 s (62.8 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 46 tokens in 1 s (120.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 7 tokens in 0 s (123.9 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 46 tokens in 1 s (110.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: intent__HassTurnOff: 35 of max 384 tokens, 106.9 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (111.2 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 6 tokens in 0 s (102.6 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 59 tokens in 1 s (106.6 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] writing a tool call: intent__HassTurnOn: 39 of max 384 tokens, 113.2 tok/s, 1 s
+[strata] done: 75 tokens in 1 s (118.3 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 76 tokens in 1 s (112.7 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] writing a tool call: light__HassLightSet: 74 of max 384 tokens, 100.9 tok/s, 1 s
+[strata] done: 76 tokens in 1 s (103.6 tok/s) (stop, cancel=False), expert cache 95.9% hit
+[strata] writing a tool call: intent__HassTurnOn: 45 of max 384 tokens, 92.3 tok/s, 1 s
+[strata] done: 62 tokens in 1 s (96.4 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 9 tokens in 0 s (97.4 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 47 tokens in 1 s (117.1 tok/s) (stop, cancel=False), expert cache 99.0% hit
+[strata] done: 8 tokens in 0 s (59.4 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 75 tokens in 1 s (114.4 tok/s) (stop, cancel=False), expert cache 99.1% hit
+[strata] done: 45 tokens in 1 s (121.2 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] reading the prompt: 8 of max 384 tokens, 86.7 tok/s, 1 s
+[strata] done: 74 tokens in 2 s (110.3 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 75 tokens in 1 s (106.0 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 61 tokens in 1 s (97.9 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 65 tokens in 1 s (93.1 tok/s) (stop, cancel=False), expert cache 96.1% hit
+[strata] done: 44 tokens in 1 s (121.2 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] writing a tool call: intent__HassTurnOn: 22 of max 384 tokens, 114.3 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (109.1 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 19 tokens in 1 s (61.7 tok/s) (stop, cancel=False), expert cache 95.6% hit
+[strata] writing a tool call: intent__HassTurnOff: 88 of max 384 tokens, 112.2 tok/s, 1 s
+[strata] done: 144 tokens in 2 s (111.1 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 10 tokens in 1 s (60.4 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] tool call complete: 67 of max 384 tokens, 100.6 tok/s, 1 s
+[strata] done: 117 tokens in 2 s (99.6 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] done: 45 tokens in 1 s (112.1 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] writing a tool call: light__HassLightSet: 14 of max 384 tokens, 108.8 tok/s, 1 s
+[strata] done: 59 tokens in 1 s (103.6 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 18 tokens in 0 s (79.2 tok/s) (stop, cancel=False), expert cache 96.7% hit
+[strata] done: 72 tokens in 1 s (113.7 tok/s) (stop, cancel=False), expert cache 99.1% hit
+[strata] done: 9 tokens in 0 s (77.2 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 45 tokens in 1 s (124.0 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] writing a tool call: intent__HassTurnOn: 38 of max 384 tokens, 119.2 tok/s, 1 s
+[strata] done: 47 tokens in 1 s (123.0 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 8 tokens in 0 s (43.9 tok/s) (stop, cancel=False), expert cache 94.4% hit
+[strata] done: 32 tokens in 1 s (112.3 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 9 tokens in 1 s (94.3 tok/s) (stop, cancel=False), expert cache 97.3% hit
+[strata] done: 43 tokens in 1 s (111.3 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] writing a tool call: intent__HassSetPosition: 31 of max 384 tokens, 92.5 tok/s, 1 s
+[strata] done: 75 tokens in 1 s (108.4 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] done: 33 tokens in 1 s (117.6 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] reading the prompt: 6,897 of 6,904 tokens, 1 s so far
+[strata] done: 74 tokens in 2 s (108.1 tok/s) (stop, cancel=False), expert cache 97.1% hit
+[strata] answering: 24 of max 384 tokens, 45.9 tok/s, 1 s
+[strata] done: 39 tokens in 1 s (53.3 tok/s) (stop, cancel=False), expert cache 93.8% hit
+[strata] done: 60 tokens in 1 s (106.4 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 33 tokens in 1 s (115.5 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] reading the prompt: 6,745 of 6,752 tokens, 1 s so far
+[strata] done: 61 tokens in 2 s (115.6 tok/s) (stop, cancel=False), expert cache 97.3% hit
+[strata] done: 11 tokens in 0 s (76.4 tok/s) (stop, cancel=False), expert cache 97.5% hit
+[strata] done: 57 tokens in 1 s (107.3 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] writing a tool call: intent__HassSetPosition: 35 of max 384 tokens, 109.1 tok/s, 1 s
+[strata] done: 62 tokens in 1 s (120.8 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 9 tokens in 0 s (70.9 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 62 tokens in 1 s (104.9 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 12 tokens in 0 s (95.8 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 34 tokens in 1 s (105.6 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 9 tokens in 0 s (73.7 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 35 tokens in 1 s (103.3 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 8 tokens in 0 s (78.1 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 19 tokens in 0 s (114.2 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 10 tokens in 0 s (75.4 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] done: 49 tokens in 1 s (114.5 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 36 tokens in 1 s (115.4 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] reading the prompt: 6,644 of 6,645 tokens, 1 s so far
+[strata] done: 36 tokens in 2 s (56.1 tok/s) (stop, cancel=False), expert cache 92.3% hit
+[strata] done: 45 tokens in 1 s (117.9 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 50 tokens in 1 s (115.3 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 13 tokens in 1 s (119.6 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 34 tokens in 1 s (106.3 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 36 tokens in 1 s (110.1 tok/s) (stop, cancel=False), expert cache 95.6% hit
+[strata] done: 11 tokens in 1 s (72.1 tok/s) (stop, cancel=False), expert cache 97.4% hit
+[strata] done: 43 tokens in 1 s (118.2 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] done: 10 tokens in 1 s (111.9 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 43 tokens in 1 s (119.2 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 15 tokens in 1 s (77.7 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] done: 49 tokens in 1 s (116.6 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 31 tokens in 1 s (117.3 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] writing a tool call: homeassistant__GetLiveContext: 14 of max 384 tokens, 111.4 tok/s, 1 s
+[strata] done: 32 tokens in 1 s (127.5 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] answering: 6 of max 384 tokens, 45.8 tok/s, 1 s
+[strata] done: 36 tokens in 2 s (51.8 tok/s) (stop, cancel=False), expert cache 96.3% hit
+[strata] done: 37 tokens in 1 s (118.7 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] reading the prompt: 6,598 of 6,599 tokens, 1 s so far
+[strata] done: 30 tokens in 1 s (74.1 tok/s) (stop, cancel=False), expert cache 97.3% hit
+[strata] done: 55 tokens in 1 s (111.5 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] answering: 23 of max 384 tokens, 63.8 tok/s, 1 s
+[strata] done: 42 tokens in 1 s (71.0 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 32 tokens in 1 s (94.7 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 25 tokens in 1 s (63.5 tok/s) (stop, cancel=False), expert cache 96.8% hit
+[strata] done: 46 tokens in 1 s (122.8 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 12 tokens in 1 s (57.0 tok/s) (stop, cancel=False), expert cache 95.8% hit
+[strata] done: 45 tokens in 1 s (120.5 tok/s) (stop, cancel=False), expert cache 98.3% hit
+[strata] done: 17 tokens in 1 s (104.2 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] done: 46 tokens in 1 s (122.6 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 14 tokens in 1 s (108.5 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] done: 32 tokens in 0 s (119.8 tok/s) (stop, cancel=False), expert cache 98.9% hit
+[strata] answering: 14 of max 384 tokens, 68.0 tok/s, 1 s
+[strata] done: 16 tokens in 1 s (63.1 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 31 tokens in 0 s (129.5 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] answering: 11 of max 384 tokens, 68.4 tok/s, 1 s
+[strata] done: 16 tokens in 1 s (64.6 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 19 tokens in 0 s (119.6 tok/s) (stop, cancel=False), expert cache 98.5% hit
+[strata] reading the prompt: 7,217 of 7,224 tokens, 2 s so far
+[strata] writing a tool call: light__HassLightSet: 67 of max 384 tokens, 95.1 tok/s, 3 s
+[strata] done: 146 tokens in 4 s (97.9 tok/s) (stop, cancel=False), expert cache 95.1% hit
+[strata] writing a tool call: light__HassLightSet: 49 of max 384 tokens, 96.2 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (98.0 tok/s) (stop, cancel=False), expert cache 96.3% hit
+[strata] done: 46 tokens in 1 s (95.8 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 60 tokens in 1 s (98.2 tok/s) (stop, cancel=False), expert cache 94.8% hit
+[strata] writing a tool call: light__HassLightSet: 38 of max 384 tokens, 92.9 tok/s, 1 s
+[strata] done: 74 tokens in 1 s (90.7 tok/s) (stop, cancel=False), expert cache 95.1% hit
+[strata] done: 6 tokens in 0 s (81.3 tok/s) (stop, cancel=False), expert cache 96.2% hit
+[strata] done: 33 tokens in 1 s (98.9 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 31 tokens in 1 s (107.4 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 31 tokens in 1 s (113.3 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] reading the prompt: 6,751 of 6,758 tokens, 1 s so far
+[strata] done: 40 tokens in 2 s (56.4 tok/s) (stop, cancel=False), expert cache 93.3% hit
+[strata] done: 64 tokens in 1 s (103.3 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] done: 31 tokens in 0 s (124.3 tok/s) (stop, cancel=False), expert cache 98.8% hit
+[strata] writing a tool call: homeassistant__GetLiveContext: 22 of max 384 tokens, 123.7 tok/s, 1 s
+[strata] done: 33 tokens in 1 s (120.5 tok/s) (stop, cancel=False), expert cache 98.4% hit
+[strata] done: 32 tokens in 1 s (59.9 tok/s) (stop, cancel=False), expert cache 95.5% hit
+[strata] done: 44 tokens in 1 s (114.9 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] answering: 14 of max 384 tokens, 68.0 tok/s, 1 s
+[strata] done: 45 tokens in 1 s (65.0 tok/s) (stop, cancel=False), expert cache 95.6% hit
+[strata] done: 47 tokens in 1 s (110.5 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 10 tokens in 0 s (71.2 tok/s) (stop, cancel=False), expert cache 97.2% hit
+[strata] done: 6 tokens in 0 s (80.7 tok/s) (stop, cancel=False), expert cache 95.7% hit
+[strata] done: 6 tokens in 0 s (80.7 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] done: 6 tokens in 0 s (100.7 tok/s) (stop, cancel=False), expert cache 98.1% hit
+[strata] done: 6 tokens in 0 s (80.1 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 6 tokens in 0 s (91.6 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 34 tokens in 1 s (93.5 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 7 tokens in 0 s (102.7 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] answering: 36 of max 384 tokens, 53.6 tok/s, 1 s
+[strata] writing a tool call: intent__HassTurnOff: 116 of max 384 tokens, 69.4 tok/s, 2 s
+[strata] done: 152 tokens in 2 s (74.6 tok/s) (stop, cancel=False), expert cache 96.7% hit
+[strata] done: 11 tokens in 1 s (76.1 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] done: 10 tokens in 1 s (74.6 tok/s) (stop, cancel=False), expert cache 95.2% hit
+[strata] done: 46 tokens in 1 s (105.8 tok/s) (stop, cancel=False), expert cache 98.2% hit
+[strata] writing a tool call: intent__HassTurnOn: 33 of max 384 tokens, 103.1 tok/s, 1 s
+[strata] done: 60 tokens in 1 s (112.3 tok/s) (stop, cancel=False), expert cache 96.6% hit
+[strata] done: 21 tokens in 1 s (69.6 tok/s) (stop, cancel=False), expert cache 97.9% hit
+[strata] done: 75 tokens in 1 s (105.0 tok/s) (stop, cancel=False), expert cache 97.3% hit
+[strata] done: 47 tokens in 1 s (116.8 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] writing a tool call: intent__HassTurnOff: 33 of max 384 tokens, 113.8 tok/s, 1 s
+[strata] done: 61 tokens in 1 s (111.6 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] writing a tool call: intent__HassSetPosition: 71 of max 384 tokens, 102.1 tok/s, 1 s
+[strata] done: 73 tokens in 1 s (104.9 tok/s) (stop, cancel=False), expert cache 95.0% hit
+[strata] done: 17 tokens in 1 s (53.0 tok/s) (stop, cancel=False), expert cache 97.8% hit
+[strata] done: 34 tokens in 1 s (104.3 tok/s) (stop, cancel=False), expert cache 98.6% hit
+[strata] done: 56 tokens in 1 s (108.8 tok/s) (stop, cancel=False), expert cache 97.6% hit
+[strata] writing a tool call: media_player__HassMediaPause: 32 of max 384 tokens, 106.1 tok/s, 1 s
+[strata] done: 34 tokens in 1 s (112.7 tok/s) (stop, cancel=False), expert cache 98.0% hit
+[strata] done: 17 tokens in 0 s (82.2 tok/s) (stop, cancel=False), expert cache 98.7% hit
+[strata] writing a tool call: intent__HassTurnOn: 91 of max 384 tokens, 115.1 tok/s, 1 s
+[strata] done: 120 tokens in 1 s (114.4 tok/s) (stop, cancel=False), expert cache 97.7% hit
+[strata] done: 22 tokens in 1 s (84.5 tok/s) (stop, cancel=False), expert cache 98.7% hit

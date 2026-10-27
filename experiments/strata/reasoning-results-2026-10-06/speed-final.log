@@ -1,0 +1,35 @@
+LOAD q3
+q3-none warmup 0 2.596 2.596 cached 0
+q3-none warmup 65536 106.816 106.816 cached 0
+q3-low warmup 0 3.049 3.969 cached 0
+q3-low warmup 65536 115.36 116.265 cached 0
+q3-none warm-prime 16384 31.52 31.52 cached 0
+q3-none warm 16384 0.2 0.2 cached 16453
+q3-none warm 16384 0.155 0.155 cached 16453
+q3-none warm 16384 0.154 0.154 cached 16453
+q3-low warm-prime 16384 30.575 31.27 cached 0
+q3-low warm 16384 0.299 0.716 cached 16480
+q3-low warm 16384 0.19 0.609 cached 16480
+q3-low warm 16384 0.19 0.667 cached 16480
+LOAD q2
+q2-none warmup 0 0.948 0.948 cached 0
+q2-none warmup 65536 36.375 36.375 cached 0
+q2-low warmup 0 0.558 1.098 cached 0
+q2-low warmup 65536 29.04 29.362 cached 0
+q2-none cold 4096 3.441 3.441 cached 0
+q2-low cold 4096 3.394 3.734 cached 0
+q2-low cold 16384 9.548 9.928 cached 0
+q2-none cold 16384 9.48 9.48 cached 0
+q2-none cold 65536 29.028 29.028 cached 0
+q2-low cold 65536 29.163 29.499 cached 0
+q2-none decode 4096 3.419 3.419 cached 0
+q2-low decode 4096 3.658 4.242 cached 0
+q2-none warm-prime 16384 9.74 9.74 cached 0
+q2-none warm 16384 0.082 0.082 cached 16452
+q2-none warm 16384 0.085 0.085 cached 16452
+q2-none warm 16384 0.085 0.085 cached 16452
+q2-low warm-prime 16384 9.622 10.014 cached 0
+q2-low warm 16384 0.071 0.44 cached 16477
+q2-low warm 16384 0.078 0.443 cached 16477
+q2-low warm 16384 0.078 0.44 cached 16477
+RESTORE Qwen3.8-Flash-Next-IQ3_XXS-Strata

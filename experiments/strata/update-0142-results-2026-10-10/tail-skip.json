@@ -1,0 +1,4 @@
+[
+  "strata serve: STRATA_ROUTE_TAIL_SKIP=7 is ON (default): a missed expert that every token of a verify window routes at rank 7 or lower is skipped (+10..20% decode on 12-16 GB cards that miss experts, answers differ slightly from 0.1.41); STRATA_ROUTE_TAIL_SKIP=0 turns it off",
+  "strata serve: route tail skip: 2996 missed experts skipped (3286 entries) since the start"
+]

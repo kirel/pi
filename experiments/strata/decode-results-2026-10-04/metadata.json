@@ -1,0 +1,28 @@
+{
+  "corpus_sha256": "86b20f0d173a4c8b691cbd0d9ffeedf1cb4cc7457885b50a5fe97d997586e4e6",
+  "source_revision": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "gpu": "index, name, uuid, driver_version, power.limit [W], memory.total [MiB]\n0, NVIDIA GeForce RTX 3090, GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc, 590.48.01, 250.00 W, 24576 MiB\n1, NVIDIA GeForce RTX 3090, GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c, 590.48.01, 250.00 W, 24576 MiB\n2, NVIDIA GeForce RTX 5060 Ti, GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f, 590.48.01, 180.00 W, 16311 MiB\n",
+  "host_mem_total_bytes": 50363498496,
+  "method": {
+    "decode_tokens": 512,
+    "lengths": [
+      4096,
+      65536,
+      128000
+    ],
+    "repetitions": {
+      "4096": 3,
+      "65536": 3,
+      "128000": 1
+    },
+    "warmup": "one short 512-token generation, then one cold-prefix 64K generation",
+    "client_decode_formula": "(completion_tokens - 1) / (stream_end - first_nonempty_token)",
+    "sampling": "temperature=0,top_p=1,top_k=0,min_p=0,penalties=0,repetition_penalty=1,thinking=off",
+    "profile_order": [
+      "strata-iq2-2gpu",
+      "strata-iq2-3gpu",
+      "llamacpp-q3-3gpu"
+    ]
+  },
+  "static_model_metadata": "../results-2026-10-03/metadata.json"
+}

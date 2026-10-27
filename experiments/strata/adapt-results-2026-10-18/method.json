@@ -1,0 +1,95 @@
+{
+  "order": [
+    4,
+    6,
+    6,
+    4,
+    4,
+    6
+  ],
+  "lengths": [
+    4096,
+    65536
+  ],
+  "output_tokens": 1024,
+  "reasoning": "low",
+  "corpus_sha256": "86b20f0d173a4c8b691cbd0d9ffeedf1cb4cc7457885b50a5fe97d997586e4e6",
+  "baseline": {
+    "service": "strata",
+    "model": "qwen3.8-flash-next-iq3_xxs",
+    "loaded": true,
+    "auto_load": true,
+    "structured_output": {
+      "formats": [
+        "json_object",
+        "json_schema"
+      ],
+      "method": "prompt_and_validate",
+      "constrained_decoding": false,
+      "stream_buffered": true
+    },
+    "engine": "0.1.45",
+    "started": 1792225116,
+    "uptime_s": 99449,
+    "cache_max_tokens": 131072,
+    "context": {
+      "native": 131072,
+      "max_positions": 131072
+    },
+    "concurrency": {
+      "serving": 1,
+      "requested": 1
+    },
+    "dialects": [
+      "/v1/chat/completions",
+      "/v1/messages",
+      "/v1/responses"
+    ],
+    "vision": {
+      "enabled": true,
+      "available": true,
+      "error": null
+    },
+    "image_generation": {
+      "enabled": false
+    },
+    "activity": {
+      "requests": 4,
+      "in_flight": 0,
+      "last_request_at": 1792324004
+    },
+    "last_timings": {
+      "cache_n": 18040,
+      "prompt_n": 51,
+      "prompt_ms": 887.1,
+      "prompt_per_token_ms": 17.394,
+      "prompt_per_second": 57.5,
+      "predicted_n": 440,
+      "predicted_ms": 7165.5,
+      "predicted_per_token_ms": 16.285,
+      "predicted_per_second": 61.4,
+      "draft_n": 430,
+      "draft_n_accepted": 243,
+      "at": 1792324004
+    },
+    "vram": {
+      "elastic": false
+    },
+    "machine": {
+      "at": 1792324566,
+      "gpu": {
+        "name": "NVIDIA GeForce RTX 3090 + NVIDIA GeForce RTX 3090",
+        "used_mib": 40773.0,
+        "total_mib": 49152.0,
+        "util_pct": 0.0,
+        "temp_c": 44,
+        "power_w": 31.443
+      },
+      "ram": {
+        "used_gib": 19.9,
+        "total_gib": 46.9
+      }
+    }
+  },
+  "note": "Fresh engine per block; identical 4K decode warmup. No OS cache flush."
+}

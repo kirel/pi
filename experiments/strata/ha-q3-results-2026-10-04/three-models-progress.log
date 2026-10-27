@@ -1,0 +1,10 @@
+START q2
+q2 0
+capacity exit 0
+DONE q2
+START q3
+q3 0
+DONE q3
+START 27b
+27b 0
+DONE 27b

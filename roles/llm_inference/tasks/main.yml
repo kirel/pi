@@ -170,7 +170,13 @@
   become: true
   when: llamaswap_enabled | bool
 
+- name: Prepare the Strata test image and launcher
+  ansible.builtin.import_tasks: strata.yml
+  tags: [strata-test, strata-build]
+  when: llamaswap_enabled | bool
+
 - name: Create llama-swap config file
+  tags: [strata-test]
   ansible.builtin.template:
     src: llamaswap_config.yaml.j2
     dest: "{{ llamaswap_config_path }}/config.yaml"

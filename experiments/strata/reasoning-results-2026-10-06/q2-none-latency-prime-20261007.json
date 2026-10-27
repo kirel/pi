@@ -1,0 +1,108 @@
+{
+  "reasoning_effort": "none",
+  "max_tokens": 2048,
+  "reasoning_chars": 0,
+  "actions_pass": true,
+  "finished": true,
+  "final_text": "Licht aus.",
+  "elapsed_s": 13.176458695030306,
+  "first_reply_s": 12.830016589025036,
+  "first_action_s": 12.830076182028279,
+  "reads": 0,
+  "rounds": 2,
+  "unwanted_or_invalid_calls": [],
+  "done": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "already_satisfied": [],
+  "attempted": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "replies": [
+    {
+      "id": "chatcmpl-28b607d81a464ce195d30c89",
+      "object": "chat.completion",
+      "created": 1791265204,
+      "model": "qwen3.8-flash-next-iq2_xs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_9515a38cc1b54a2a96c8eaf7",
+                "type": "function",
+                "function": {
+                  "name": "intent__HassTurnOff",
+                  "arguments": "{\"domain\":[\"light\"],\"name\":\"Deckenlicht\",\"area\":\"Wohnzimmer\"}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6284,
+        "completion_tokens": 60,
+        "total_tokens": 6344,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6284,
+        "prompt_ms": 11807.2,
+        "prompt_per_token_ms": 1.879,
+        "prompt_per_second": 532.2,
+        "predicted_n": 60,
+        "predicted_ms": 997.1,
+        "predicted_per_token_ms": 16.618,
+        "predicted_per_second": 60.2,
+        "draft_n": 52,
+        "draft_n_accepted": 43
+      }
+    },
+    {
+      "id": "chatcmpl-a6d1f595b62748c99fc95c4e",
+      "object": "chat.completion",
+      "created": 1791265217,
+      "model": "qwen3.8-flash-next-iq2_xs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Licht aus."
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6366,
+        "completion_tokens": 5,
+        "total_tokens": 6371,
+        "prompt_tokens_details": {
+          "cached_tokens": 6344
+        }
+      },
+      "timings": {
+        "cache_n": 6344,
+        "prompt_n": 22,
+        "prompt_ms": 231.5,
+        "prompt_per_token_ms": 10.523,
+        "prompt_per_second": 95.0,
+        "predicted_n": 5,
+        "predicted_ms": 89.3,
+        "predicted_per_token_ms": 17.86,
+        "predicted_per_second": 56.0,
+        "draft_n": 6,
+        "draft_n_accepted": 4
+      }
+    }
+  ],
+  "prompt_sha256": "1afeb255158daa04bc17d1d2e5762c7890dc13dc35eec4391264415ad52a0210"
+}

@@ -1,0 +1,8 @@
+{
+  "columns": [
+    "index",
+    "clocks_event_reasons.sw_thermal_slowdown",
+    "clocks_event_reasons.hw_thermal_slowdown"
+  ],
+  "scope": "Single snapshot during the enabled arm, not a continuous thermal trace."
+}

@@ -1,0 +1,144 @@
+{
+  "image": "kirelabs/strata:7695859aa13a-sm86-sm120-vision",
+  "memory": 30064771072,
+  "memory_swap": 30064771072,
+  "devices": [
+    {
+      "Driver": "",
+      "Count": 0,
+      "DeviceIDs": [
+        "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+        "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+      ],
+      "Capabilities": [
+        [
+          "gpu"
+        ]
+      ],
+      "Options": {}
+    }
+  ],
+  "config": {
+    "gpus": null,
+    "layer_split": "auto",
+    "gpu_order": null,
+    "parallel": null,
+    "low_ram": null,
+    "context": null,
+    "kv": null,
+    "vision": {
+      "exe": "/opt/strata/engine/strata-vision",
+      "mmproj": "/data/models/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+      "model": "/data/models/IQ3_XXS/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf",
+      "gpu": true,
+      "max_tokens": 1024
+    }
+  },
+  "feature_env": {
+    "STRATA_ROUTE_TAIL_SKIP": null,
+    "STRATA_PCIE_FRAC_DEFAULT": null,
+    "STRATA_PREFILL_CPU_SHARE": null,
+    "STRATA_ALLOWED_HOSTS": "ailab-ubuntu.lan,strata.kirelabs.org"
+  },
+  "revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "source_sha_matches": {
+    "setup.py": true,
+    "serve/server.py": true
+  },
+  "build": {
+    "source": "local",
+    "version": "0.1.43",
+    "archs": [
+      86,
+      120
+    ],
+    "vision": "gpu",
+    "cuda_dirs": [
+      "/usr/local/cuda/bin",
+      "/usr/local/cuda/lib64"
+    ],
+    "src": "e568e70371a3d2e0",
+    "vision_src": "1fb2b3fb797ec402"
+  },
+  "tail_skip_activation": [
+    "strata serve: STRATA_ROUTE_TAIL_SKIP=7 is ON (default): a missed expert that every token of a verify window routes at rank 7 or lower is skipped (+10..20% decode on 12-16 GB cards that miss experts, answers differ slightly from 0.1.41); STRATA_ROUTE_TAIL_SKIP=0 turns it off"
+  ],
+  "tail_skip_counters": [
+    "strata serve: route tail skip: 2958 missed experts skipped (3266 entries) since the start",
+    "strata serve: route tail skip: 3861 missed experts skipped (4224 entries) since the start",
+    "strata serve: route tail skip: 4701 missed experts skipped (5103 entries) since the start",
+    "strata serve: route tail skip: 7900 missed experts skipped (8540 entries) since the start",
+    "strata serve: route tail skip: 8108 missed experts skipped (8767 entries) since the start"
+  ],
+  "memory_current": 30054813696,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 23234,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "memory_stat": {
+    "anon": 3617882112,
+    "file": 26253914112,
+    "kernel": 182964224,
+    "shmem": 1400508416
+  },
+  "engine": {
+    "model": "qwen3.8-flash-next-iq3_xxs",
+    "max_context": 131072,
+    "images": true,
+    "version": "0.1.43",
+    "logit_bias": 1,
+    "context": 131072,
+    "kv": "int8",
+    "kv_resident": 0,
+    "expert_slots": 12909,
+    "expert_cache_mib": 20243,
+    "expert_slots_primary": 7680,
+    "expert_cache_primary_mib": 10962,
+    "spec": 6,
+    "mtp_max": 4,
+    "lookup": 3,
+    "vram_free_mib": 4426,
+    "cvec": 0,
+    "arena_mib": 0,
+    "pool_workers": 5,
+    "pcie_frac": "0.02",
+    "spec_min_p": "0.50",
+    "conversation_cache_mib": 2048,
+    "conversation_cache_slots": 4,
+    "conversation_cache_min_free_mib": 6144,
+    "conversation_cache_min_tokens": 0,
+    "tail_role_token": -1,
+    "vram_elastic": 0,
+    "engine": "0.1.43"
+  },
+  "runtime_flags": {
+    "flags": {
+      "--layer-split": "auto"
+    },
+    "tail": false,
+    "message_boundary": "0",
+    "cuda_visible": "0,1"
+  },
+  "running": [
+    {
+      "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-embedding",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-tts",
+      "state": "ready"
+    },
+    {
+      "model": "whisper-large-v3-turbo-q8-crispasr",
+      "state": "ready"
+    }
+  ]
+}

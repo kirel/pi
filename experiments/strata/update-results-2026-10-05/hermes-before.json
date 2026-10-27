@@ -1,0 +1,7 @@
+{
+  "version": "0.1.38",
+  "title_generation": false,
+  "route": "Hermes /v1/chat/completions",
+  "elapsed_s": 31.548845593002625,
+  "content": "42"
+}

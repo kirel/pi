@@ -1,0 +1,18 @@
+{
+  "ansible_deploy_failed": 0,
+  "ansible_check_changed": 0,
+  "upstream_tests_passed": 31,
+  "upstream_tests_use_mock_engines": true,
+  "vision_cases_passed": 2,
+  "final_client_smoke_passed": 10,
+  "hermes_sessions": 45,
+  "hermes_tool_calls": 0,
+  "hermes_reasoning": {
+    "enabled": true,
+    "effort": "low"
+  },
+  "extra_checkpoint_flags_restored_off": true,
+  "native_cache_mib": 2048,
+  "native_cache_slots": 4,
+  "embedding_tts_asr_passed": true
+}

@@ -1,0 +1,8 @@
+{
+  "old_start_requests": 1,
+  "old_end_requests": 4,
+  "new_start_requests": 1,
+  "new_end_requests": 4,
+  "benchmark_requests_per_version": 3,
+  "additional_requests": 0
+}

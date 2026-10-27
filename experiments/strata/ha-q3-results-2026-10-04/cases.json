@@ -1,0 +1,878 @@
+{
+  "entities": [
+    {
+      "name": "Deckenlicht",
+      "area": "Wohnzimmer",
+      "domain": "light",
+      "state": "on",
+      "brightness": 80,
+      "entity_id": "light.deckenlicht_wohnzimmer",
+      "aliases": [
+        "Deckenlicht",
+        "Deckenlicht Wohnzimmer"
+      ]
+    },
+    {
+      "name": "Leselampe",
+      "area": "Wohnzimmer",
+      "domain": "light",
+      "state": "off",
+      "brightness": 0,
+      "entity_id": "light.leselampe_wohnzimmer",
+      "aliases": [
+        "Leselampe",
+        "Leselampe Wohnzimmer"
+      ]
+    },
+    {
+      "name": "Deckenlicht",
+      "area": "Küche",
+      "domain": "light",
+      "state": "on",
+      "brightness": 60,
+      "entity_id": "light.deckenlicht_kuche",
+      "aliases": [
+        "Deckenlicht",
+        "Deckenlicht Küche"
+      ]
+    },
+    {
+      "name": "Arbeitslicht",
+      "area": "Küche",
+      "domain": "light",
+      "state": "off",
+      "brightness": 0,
+      "entity_id": "light.arbeitslicht_kuche",
+      "aliases": [
+        "Arbeitslicht",
+        "Arbeitslicht Küche"
+      ]
+    },
+    {
+      "name": "Nachtlicht",
+      "area": "Schlafzimmer",
+      "domain": "light",
+      "state": "on",
+      "brightness": 10,
+      "entity_id": "light.nachtlicht_schlafzimmer",
+      "aliases": [
+        "Nachtlicht",
+        "Nachtlicht Schlafzimmer"
+      ]
+    },
+    {
+      "name": "Stehlampe",
+      "area": "Büro",
+      "domain": "light",
+      "state": "off",
+      "brightness": 0,
+      "entity_id": "light.stehlampe_buro",
+      "aliases": [
+        "Stehlampe",
+        "Stehlampe Büro"
+      ]
+    },
+    {
+      "name": "Rollo",
+      "area": "Wohnzimmer",
+      "domain": "cover",
+      "state": "open",
+      "position": 100,
+      "entity_id": "cover.rollo_wohnzimmer",
+      "aliases": [
+        "Rollo",
+        "Rollo Wohnzimmer"
+      ],
+      "device_class": "shutter"
+    },
+    {
+      "name": "Rollo",
+      "area": "Schlafzimmer",
+      "domain": "cover",
+      "state": "closed",
+      "position": 0,
+      "entity_id": "cover.rollo_schlafzimmer",
+      "aliases": [
+        "Rollo",
+        "Rollo Schlafzimmer"
+      ],
+      "device_class": "shutter"
+    },
+    {
+      "name": "Fenster",
+      "area": "Wohnzimmer",
+      "domain": "binary_sensor",
+      "state": "off",
+      "entity_id": "binary_sensor.fenster_wohnzimmer",
+      "aliases": [
+        "Fenster",
+        "Fenster Wohnzimmer"
+      ],
+      "device_class": "window"
+    },
+    {
+      "name": "Fenster",
+      "area": "Küche",
+      "domain": "binary_sensor",
+      "state": "on",
+      "entity_id": "binary_sensor.fenster_kuche",
+      "aliases": [
+        "Fenster",
+        "Fenster Küche"
+      ],
+      "device_class": "window"
+    },
+    {
+      "name": "Fenster",
+      "area": "Bad",
+      "domain": "binary_sensor",
+      "state": "unavailable",
+      "entity_id": "binary_sensor.fenster_bad",
+      "aliases": [
+        "Fenster",
+        "Fenster Bad"
+      ],
+      "device_class": "window"
+    },
+    {
+      "name": "Temperatur",
+      "area": "Wohnzimmer",
+      "domain": "sensor",
+      "state": "21.4",
+      "unit": "°C",
+      "entity_id": "sensor.temperatur_wohnzimmer",
+      "aliases": [
+        "Temperatur",
+        "Temperatur Wohnzimmer"
+      ],
+      "device_class": "temperature"
+    },
+    {
+      "name": "Temperatur",
+      "area": "Balkon",
+      "domain": "sensor",
+      "state": "0.0",
+      "unit": "°C",
+      "entity_id": "sensor.temperatur_balkon",
+      "aliases": [
+        "Temperatur",
+        "Temperatur Balkon"
+      ],
+      "device_class": "temperature"
+    },
+    {
+      "name": "Batterie",
+      "area": "Bad",
+      "domain": "sensor",
+      "state": "unknown",
+      "unit": "%",
+      "entity_id": "sensor.batterie_bad",
+      "aliases": [
+        "Batterie",
+        "Batterie Bad"
+      ],
+      "device_class": "battery"
+    },
+    {
+      "name": "Daniel",
+      "area": "Zuhause",
+      "domain": "person",
+      "state": "home",
+      "entity_id": "person.daniel_kirsch",
+      "aliases": [
+        "Daniel",
+        "Daniel Zuhause"
+      ]
+    },
+    {
+      "name": "Sabine",
+      "area": "Zuhause",
+      "domain": "person",
+      "state": "not_home",
+      "entity_id": "person.sabine_eichling",
+      "aliases": [
+        "Sabine",
+        "Sabine Zuhause"
+      ]
+    },
+    {
+      "name": "Zuhause",
+      "area": "Zuhause",
+      "domain": "weather",
+      "state": "rainy",
+      "temperature": 8.0,
+      "entity_id": "weather.zuhause",
+      "aliases": [
+        "Zuhause",
+        "Zuhause Zuhause"
+      ]
+    },
+    {
+      "name": "Lautsprecher",
+      "area": "Wohnzimmer",
+      "domain": "media_player",
+      "state": "playing",
+      "volume_level": 35,
+      "entity_id": "media_player.lautsprecher_wohnzimmer",
+      "aliases": [
+        "Lautsprecher",
+        "Lautsprecher Wohnzimmer"
+      ],
+      "device_class": "speaker"
+    },
+    {
+      "name": "Lautsprecher",
+      "area": "Schlafzimmer",
+      "domain": "media_player",
+      "state": "paused",
+      "volume_level": 15,
+      "entity_id": "media_player.lautsprecher_schlafzimmer",
+      "aliases": [
+        "Lautsprecher",
+        "Lautsprecher Schlafzimmer"
+      ],
+      "device_class": "speaker"
+    }
+  ],
+  "cases": [
+    {
+      "id": "light-0",
+      "category": "actions",
+      "prompt": "Mach das Deckenlicht im Wohnzimmer aus.",
+      "wanted": [
+        {
+          "name": "Deckenlicht",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Erfolg kurz und auf Deutsch bestätigen."
+    },
+    {
+      "id": "light-1",
+      "category": "actions",
+      "prompt": "Schalte die Leselampe im Wohnzimmer ein.",
+      "wanted": [
+        {
+          "name": "Leselampe",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": true
+        }
+      ],
+      "rubric": "Erfolg kurz und auf Deutsch bestätigen."
+    },
+    {
+      "id": "light-2",
+      "category": "actions",
+      "prompt": "Licht in der Küche aus.",
+      "wanted": [
+        {
+          "name": "Deckenlicht",
+          "area": "Küche",
+          "kind": "on",
+          "value": false
+        },
+        {
+          "name": "Arbeitslicht",
+          "area": "Küche",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Erfolg kurz und auf Deutsch bestätigen."
+    },
+    {
+      "id": "light-3",
+      "category": "actions",
+      "prompt": "Mach das Nachtlicht im Schlafzimmer aus.",
+      "wanted": [
+        {
+          "name": "Nachtlicht",
+          "area": "Schlafzimmer",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Erfolg kurz und auf Deutsch bestätigen."
+    },
+    {
+      "id": "light-4",
+      "category": "actions",
+      "prompt": "Schalte im Büro die Stehlampe an.",
+      "wanted": [
+        {
+          "name": "Stehlampe",
+          "area": "Büro",
+          "kind": "on",
+          "value": true
+        }
+      ],
+      "rubric": "Erfolg kurz und auf Deutsch bestätigen."
+    },
+    {
+      "id": "light-5",
+      "category": "actions",
+      "prompt": "Mach alle Lampen im Wohnzimmer aus.",
+      "wanted": [
+        {
+          "name": "Deckenlicht",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": false
+        },
+        {
+          "name": "Leselampe",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Erfolg kurz und auf Deutsch bestätigen."
+    },
+    {
+      "id": "compound-0",
+      "category": "conditional",
+      "prompt": "Wohnzimmerlicht aus, aber die Leselampe lass unverändert.",
+      "wanted": [
+        {
+          "name": "Deckenlicht",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Alle und ausschließlich angeforderten Änderungen. Bedingungen vorher lesen."
+    },
+    {
+      "id": "compound-1",
+      "category": "conditional",
+      "prompt": "Schalte in der Küche nur das Arbeitslicht ein; das Deckenlicht nicht.",
+      "wanted": [
+        {
+          "name": "Arbeitslicht",
+          "area": "Küche",
+          "kind": "on",
+          "value": true
+        }
+      ],
+      "rubric": "Alle und ausschließlich angeforderten Änderungen. Bedingungen vorher lesen."
+    },
+    {
+      "id": "compound-2",
+      "category": "conditional",
+      "prompt": "Leselampe im Wohnzimmer an und Nachtlicht im Schlafzimmer aus.",
+      "wanted": [
+        {
+          "name": "Leselampe",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": true
+        },
+        {
+          "name": "Nachtlicht",
+          "area": "Schlafzimmer",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Alle und ausschließlich angeforderten Änderungen. Bedingungen vorher lesen."
+    },
+    {
+      "id": "compound-3",
+      "category": "conditional",
+      "prompt": "Im Wohnzimmer die Decke auf 30 Prozent, die Leselampe auf 50.",
+      "wanted": [
+        {
+          "name": "Deckenlicht",
+          "area": "Wohnzimmer",
+          "kind": "brightness",
+          "value": 30
+        },
+        {
+          "name": "Leselampe",
+          "area": "Wohnzimmer",
+          "kind": "brightness",
+          "value": 50
+        }
+      ],
+      "rubric": "Alle und ausschließlich angeforderten Änderungen. Bedingungen vorher lesen."
+    },
+    {
+      "id": "compound-4",
+      "category": "conditional",
+      "prompt": "Nicht das Wohnzimmer: mach das Deckenlicht in der Küche aus.",
+      "wanted": [
+        {
+          "name": "Deckenlicht",
+          "area": "Küche",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Alle und ausschließlich angeforderten Änderungen. Bedingungen vorher lesen."
+    },
+    {
+      "id": "compound-5",
+      "category": "conditional",
+      "prompt": "Schalte das Licht im Büro nur an, wenn es gerade aus ist.",
+      "wanted": [
+        {
+          "name": "Stehlampe",
+          "area": "Büro",
+          "kind": "on",
+          "value": true
+        }
+      ],
+      "rubric": "Alle und ausschließlich angeforderten Änderungen. Bedingungen vorher lesen."
+    },
+    {
+      "id": "compound-6",
+      "category": "conditional",
+      "prompt": "Mach die Leselampe nur aus, falls sie an ist.",
+      "wanted": [],
+      "rubric": "Alle und ausschließlich angeforderten Änderungen. Bedingungen vorher lesen."
+    },
+    {
+      "id": "compound-7",
+      "category": "conditional",
+      "prompt": "Wenn es zu Hause regnet, schließe das Rollo im Wohnzimmer.",
+      "wanted": [
+        {
+          "name": "Rollo",
+          "area": "Wohnzimmer",
+          "kind": "position",
+          "value": 0
+        }
+      ],
+      "rubric": "Alle und ausschließlich angeforderten Änderungen. Bedingungen vorher lesen."
+    },
+    {
+      "id": "other-0",
+      "category": "actions",
+      "prompt": "Rollo im Wohnzimmer auf 25 Prozent.",
+      "wanted": [
+        {
+          "name": "Rollo",
+          "area": "Wohnzimmer",
+          "kind": "position",
+          "value": 25
+        }
+      ],
+      "rubric": "Gewünschte Aktion korrekt und kurz bestätigen."
+    },
+    {
+      "id": "other-1",
+      "category": "actions",
+      "prompt": "Rollo im Schlafzimmer ganz auf.",
+      "wanted": [
+        {
+          "name": "Rollo",
+          "area": "Schlafzimmer",
+          "kind": "position",
+          "value": 100
+        }
+      ],
+      "rubric": "Gewünschte Aktion korrekt und kurz bestätigen."
+    },
+    {
+      "id": "other-2",
+      "category": "actions",
+      "prompt": "Mach den Lautsprecher im Wohnzimmer leiser: auf 20 Prozent.",
+      "wanted": [
+        {
+          "name": "Lautsprecher",
+          "area": "Wohnzimmer",
+          "kind": "volume_level",
+          "value": 20
+        }
+      ],
+      "rubric": "Gewünschte Aktion korrekt und kurz bestätigen."
+    },
+    {
+      "id": "other-3",
+      "category": "actions",
+      "prompt": "Pausiere die Musik im Wohnzimmer.",
+      "wanted": [
+        {
+          "name": "Lautsprecher",
+          "area": "Wohnzimmer",
+          "kind": "state",
+          "value": "paused"
+        }
+      ],
+      "rubric": "Gewünschte Aktion korrekt und kurz bestätigen."
+    },
+    {
+      "id": "other-4",
+      "category": "actions",
+      "prompt": "Setze die Musik im Schlafzimmer fort.",
+      "wanted": [
+        {
+          "name": "Lautsprecher",
+          "area": "Schlafzimmer",
+          "kind": "state",
+          "value": "playing"
+        }
+      ],
+      "rubric": "Gewünschte Aktion korrekt und kurz bestätigen."
+    },
+    {
+      "id": "other-5",
+      "category": "actions",
+      "prompt": "Sauge die Küche.",
+      "wanted": [
+        {
+          "name": "script__saugen_kuche",
+          "area": "*",
+          "kind": "script",
+          "value": true
+        }
+      ],
+      "rubric": "Gewünschte Aktion korrekt und kurz bestätigen."
+    },
+    {
+      "id": "state-0",
+      "category": "state",
+      "prompt": "Wie warm ist es auf dem Balkon?",
+      "wanted": [],
+      "rubric": "Genau 0 Grad; nicht fehlend oder erfunden."
+    },
+    {
+      "id": "state-1",
+      "category": "state",
+      "prompt": "Wie warm ist es im Wohnzimmer?",
+      "wanted": [],
+      "rubric": "21,4 Grad."
+    },
+    {
+      "id": "state-2",
+      "category": "state",
+      "prompt": "Ist jemand zu Hause?",
+      "wanted": [],
+      "rubric": "Daniel ist da; Sabine nicht. Personen verwenden."
+    },
+    {
+      "id": "state-3",
+      "category": "state",
+      "prompt": "Ist Sabine zu Hause?",
+      "wanted": [],
+      "rubric": "Nein, Sabine ist nicht zu Hause."
+    },
+    {
+      "id": "state-4",
+      "category": "state",
+      "prompt": "Regnet es gerade zu Hause?",
+      "wanted": [],
+      "rubric": "Ja, Regen; Wetter aus HA."
+    },
+    {
+      "id": "state-5",
+      "category": "state",
+      "prompt": "Welche Fenster sind offen?",
+      "wanted": [],
+      "rubric": "Küche offen; Wohnzimmer geschlossen; Bad unbekannt/nicht erreichbar."
+    },
+    {
+      "id": "state-6",
+      "category": "state",
+      "prompt": "Sind wirklich alle Fenster zu?",
+      "wanted": [],
+      "rubric": "Nein, Küche offen; Bad nicht prüfbar."
+    },
+    {
+      "id": "state-7",
+      "category": "state",
+      "prompt": "Wie voll ist die Batterie im Bad?",
+      "wanted": [],
+      "rubric": "Unbekannt, keine Zahl erfinden."
+    },
+    {
+      "id": "state-8",
+      "category": "state",
+      "prompt": "Ist das Fenster im Bad zu?",
+      "wanted": [],
+      "rubric": "Nicht bestimmbar: nicht erreichbar."
+    },
+    {
+      "id": "state-9",
+      "category": "state",
+      "prompt": "Wie laut ist der Wohnzimmerlautsprecher?",
+      "wanted": [],
+      "rubric": "35 Prozent."
+    },
+    {
+      "id": "state-10",
+      "category": "state",
+      "prompt": "Welche Lampen sind im Wohnzimmer an?",
+      "wanted": [],
+      "rubric": "Nur das Deckenlicht."
+    },
+    {
+      "id": "state-11",
+      "category": "state",
+      "prompt": "Läuft im Schlafzimmer gerade Musik?",
+      "wanted": [],
+      "rubric": "Nein, pausiert."
+    },
+    {
+      "id": "clarify-0",
+      "category": "clarification",
+      "prompt": "Mach das Deckenlicht aus.",
+      "wanted": [],
+      "rubric": "Welcher Raum? Zwei Deckenlichter vorhanden. Keine Aktion."
+    },
+    {
+      "id": "clarify-1",
+      "category": "clarification",
+      "prompt": "Mach das Rollo halb runter.",
+      "wanted": [],
+      "rubric": "Welcher Raum? Zwei Rollos. Keine Aktion."
+    },
+    {
+      "id": "clarify-2",
+      "category": "clarification",
+      "prompt": "Mach es gemütlicher.",
+      "wanted": [],
+      "rubric": "Kurze Rückfrage nach konkretem Wunsch. Keine freie Szene erfinden."
+    },
+    {
+      "id": "clarify-3",
+      "category": "clarification",
+      "prompt": "Musik",
+      "wanted": [],
+      "rubric": "Rückfrage, keine Musik starten."
+    },
+    {
+      "id": "clarify-4",
+      "category": "clarification",
+      "prompt": "Schalte die Terrassenlampe ein.",
+      "wanted": [],
+      "rubric": "Nicht vorhanden; keinen ähnlichen Gegenstand schalten."
+    },
+    {
+      "id": "clarify-5",
+      "category": "clarification",
+      "prompt": "Stell die Heizung im Bad auf 22 Grad.",
+      "wanted": [],
+      "rubric": "Heizungsaktion nicht angeboten; keinen Erfolg behaupten."
+    },
+    {
+      "id": "clarify-6",
+      "category": "clarification",
+      "prompt": "Schalte in zehn Minuten das Licht in der Küche aus.",
+      "wanted": [],
+      "rubric": "Zeitplanung nicht angeboten; jetzt keine Lichtaktion."
+    },
+    {
+      "id": "clarify-7",
+      "category": "clarification",
+      "prompt": "Mach das Wohnzimmerlicht aus, nein, doch lieber nicht.",
+      "wanted": [],
+      "rubric": "Keine Aktion; letzten Widerruf respektieren."
+    },
+    {
+      "id": "noise-0",
+      "category": "voice",
+      "prompt": "* Musik *",
+      "wanted": [],
+      "rubric": "Exakt Abgebrochen. Keine Tools, auch keine Zustandsabfrage.",
+      "no_tools": true
+    },
+    {
+      "id": "noise-1",
+      "category": "voice",
+      "prompt": "[Musik]",
+      "wanted": [],
+      "rubric": "Exakt Abgebrochen. Keine Tools, auch keine Zustandsabfrage.",
+      "no_tools": true
+    },
+    {
+      "id": "noise-2",
+      "category": "voice",
+      "prompt": "♪",
+      "wanted": [],
+      "rubric": "Exakt Abgebrochen. Keine Tools, auch keine Zustandsabfrage.",
+      "no_tools": true
+    },
+    {
+      "id": "noise-3",
+      "category": "voice",
+      "prompt": "*hatscht*",
+      "wanted": [],
+      "rubric": "Exakt Abgebrochen. Keine Tools, auch keine Zustandsabfrage.",
+      "no_tools": true
+    },
+    {
+      "id": "noise-4",
+      "category": "voice",
+      "prompt": "*Gunsch*",
+      "wanted": [],
+      "rubric": "Exakt Abgebrochen. Keine Tools, auch keine Zustandsabfrage.",
+      "no_tools": true
+    },
+    {
+      "id": "voice-stop",
+      "category": "voice",
+      "prompt": "Stopp die Musik [Rauschen]",
+      "wanted": [
+        {
+          "name": "Lautsprecher",
+          "area": "Wohnzimmer",
+          "kind": "state",
+          "value": "paused"
+        }
+      ],
+      "rubric": "Klaren Stopp umsetzen.",
+      "history": [
+        {
+          "role": "user",
+          "content": "Die Musik läuft auf dem Lautsprecher im Wohnzimmer."
+        },
+        {
+          "role": "assistant",
+          "content": "Musik läuft im Wohnzimmer."
+        }
+      ]
+    },
+    {
+      "id": "followup-correction",
+      "category": "followup",
+      "prompt": "Nein, die im Wohnzimmer.",
+      "wanted": [
+        {
+          "name": "Deckenlicht",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Neu geklärten Raum verwenden.",
+      "history": [
+        {
+          "role": "user",
+          "content": "Mach das Deckenlicht aus."
+        },
+        {
+          "role": "assistant",
+          "content": "Meinst du Küche oder Wohnzimmer?"
+        }
+      ]
+    },
+    {
+      "id": "followup-brighter",
+      "category": "followup",
+      "prompt": "Dann stell sie auf 60 Prozent.",
+      "wanted": [
+        {
+          "name": "Leselampe",
+          "area": "Wohnzimmer",
+          "kind": "brightness",
+          "value": 60
+        }
+      ],
+      "rubric": "Die Leselampe aus dem Verlauf verwenden.",
+      "history": [
+        {
+          "role": "user",
+          "content": "Gemeint ist die Leselampe im Wohnzimmer."
+        },
+        {
+          "role": "assistant",
+          "content": "Die Leselampe ist aus."
+        }
+      ]
+    },
+    {
+      "id": "failure-0",
+      "category": "failure",
+      "prompt": "Schalte die Leselampe im Wohnzimmer ein.",
+      "wanted": [
+        {
+          "name": "Leselampe",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": true
+        }
+      ],
+      "rubric": "Fehlgeschlagene Aktion nicht als Erfolg bestätigen; bei mehreren Aktionen Teilresultat klar nennen.",
+      "fail_target": {
+        "name": "Leselampe",
+        "area": "Wohnzimmer",
+        "kind": "on",
+        "value": true
+      },
+      "allow_failed": true
+    },
+    {
+      "id": "failure-1",
+      "category": "failure",
+      "prompt": "Mach das Rollo im Wohnzimmer zu.",
+      "wanted": [
+        {
+          "name": "Rollo",
+          "area": "Wohnzimmer",
+          "kind": "position",
+          "value": 0
+        }
+      ],
+      "rubric": "Fehlgeschlagene Aktion nicht als Erfolg bestätigen; bei mehreren Aktionen Teilresultat klar nennen.",
+      "fail_target": {
+        "name": "Rollo",
+        "area": "Wohnzimmer",
+        "kind": "position",
+        "value": 0
+      },
+      "allow_failed": true
+    },
+    {
+      "id": "failure-2",
+      "category": "failure",
+      "prompt": "Pausiere den Lautsprecher im Wohnzimmer.",
+      "wanted": [
+        {
+          "name": "Lautsprecher",
+          "area": "Wohnzimmer",
+          "kind": "state",
+          "value": "paused"
+        }
+      ],
+      "rubric": "Fehlgeschlagene Aktion nicht als Erfolg bestätigen; bei mehreren Aktionen Teilresultat klar nennen.",
+      "fail_target": {
+        "name": "Lautsprecher",
+        "area": "Wohnzimmer",
+        "kind": "state",
+        "value": "paused"
+      },
+      "allow_failed": true
+    },
+    {
+      "id": "failure-3",
+      "category": "failure",
+      "prompt": "Deckenlicht im Wohnzimmer aus und Leselampe an.",
+      "wanted": [
+        {
+          "name": "Deckenlicht",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": false
+        },
+        {
+          "name": "Leselampe",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": true
+        }
+      ],
+      "rubric": "Fehlgeschlagene Aktion nicht als Erfolg bestätigen; bei mehreren Aktionen Teilresultat klar nennen.",
+      "fail_target": {
+        "name": "Leselampe",
+        "area": "Wohnzimmer",
+        "kind": "on",
+        "value": true
+      },
+      "allow_failed": true
+    }
+  ]
+}

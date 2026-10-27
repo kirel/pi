@@ -1,0 +1,39 @@
+{
+  "dashboard": {
+    "http": 200
+  },
+  "health": {
+    "http": 200,
+    "data": {
+      "status": "ok",
+      "max_context": 131072,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "images": true,
+      "api_key": false,
+      "image_generation": false,
+      "loaded": true,
+      "service": "strata"
+    }
+  },
+  "services": {
+    "http": 200,
+    "data": [
+      {
+        "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+        "state": "ready"
+      },
+      {
+        "model": "qwen3-embedding",
+        "state": "ready"
+      },
+      {
+        "model": "qwen3-tts",
+        "state": "ready"
+      },
+      {
+        "model": "whisper-large-v3-turbo-q8-crispasr",
+        "state": "ready"
+      }
+    ]
+  }
+}

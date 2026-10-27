@@ -1,0 +1,347 @@
+{
+  "at": 1791264730.267166,
+  "status": {
+    "service": "strata",
+    "model": "qwen3.8-flash-next-iq3_xxs",
+    "loaded": true,
+    "auto_load": true,
+    "structured_output": {
+      "formats": [
+        "json_object",
+        "json_schema"
+      ],
+      "method": "prompt_and_validate",
+      "constrained_decoding": false,
+      "stream_buffered": true
+    },
+    "engine": "0.1.39",
+    "started": 1791264727,
+    "uptime_s": 3,
+    "cache_max_tokens": 131072,
+    "context": {
+      "native": 131072,
+      "max_positions": 131072
+    },
+    "concurrency": {
+      "serving": 1,
+      "requested": 1
+    },
+    "dialects": [
+      "/v1/chat/completions",
+      "/v1/messages",
+      "/v1/responses"
+    ],
+    "vision": {
+      "enabled": true,
+      "available": true,
+      "error": null
+    },
+    "activity": {
+      "requests": 1,
+      "in_flight": 0,
+      "last_request_at": 1791264730
+    },
+    "last_timings": {
+      "cache_n": 0,
+      "prompt_n": 27,
+      "prompt_ms": 1830.1,
+      "prompt_per_token_ms": 67.781,
+      "prompt_per_second": 14.8,
+      "predicted_n": 3,
+      "predicted_ms": 709.8,
+      "predicted_per_token_ms": 236.6,
+      "predicted_per_second": 4.2,
+      "draft_n": 3,
+      "draft_n_accepted": 3,
+      "at": 1791264730
+    },
+    "vram": {
+      "elastic": false
+    },
+    "machine": {
+      "at": 1791264730,
+      "gpu": {
+        "name": "NVIDIA GeForce RTX 3090 + NVIDIA GeForce RTX 3090",
+        "used_mib": 40533.0,
+        "total_mib": 49152.0,
+        "util_pct": 41.5,
+        "temp_c": 85,
+        "power_w": 335.276
+      },
+      "ram": {
+        "used_gib": 17.1,
+        "total_gib": 46.9
+      }
+    }
+  },
+  "metrics": {
+    "engine": {
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "max_context": 131072,
+      "images": true,
+      "version": "0.1.39",
+      "context": 131072,
+      "kv": "int8",
+      "kv_resident": 0,
+      "expert_slots": 12255,
+      "expert_cache_mib": 20121,
+      "expert_slots_primary": 7030,
+      "expert_cache_primary_mib": 10436,
+      "spec": 6,
+      "mtp_max": 4,
+      "lookup": 3,
+      "vram_free_mib": 4376,
+      "cvec": 0,
+      "arena_mib": 0,
+      "pool_workers": 5,
+      "pcie_frac": "0.34",
+      "spec_min_p": "0.50",
+      "conversation_cache_mib": 2048,
+      "conversation_cache_slots": 4,
+      "conversation_cache_min_free_mib": 6144,
+      "tail_role_token": -1,
+      "vram_elastic": 0,
+      "engine": "0.1.39"
+    },
+    "live": {
+      "state": "idle",
+      "queued": 0,
+      "phase": null,
+      "prompt_tokens": null,
+      "prompt_read": null,
+      "prompt_total": null,
+      "generated": null,
+      "max_tokens": null,
+      "elapsed_s": null,
+      "tok_s": null,
+      "tok_s_mean": null,
+      "prefill_tok_s_mean": null,
+      "tok_s_window_s": null
+    },
+    "requests": [
+      {
+        "projection": null,
+        "time": 1791264727.7084255,
+        "duration_s": 2.5,
+        "finish": "stop",
+        "prompt_tokens": 27,
+        "reused": 0,
+        "output_tokens": 3,
+        "prompt_total": 27,
+        "prompt_read": 27,
+        "engine_generated": 3,
+        "prompt_ms": 1830.1,
+        "decode_ms": 709.8,
+        "decode_tok_s": 4.2,
+        "hit_rate": 0.623,
+        "pcie_share": 0.0,
+        "ram_blobs": 0,
+        "file_blobs": 0,
+        "file_mb": 1290.6,
+        "drafts_offered": 3,
+        "drafts_accepted": 3
+      }
+    ],
+    "conversation_cache": {
+      "enabled": true,
+      "budget_mib": 2048,
+      "slots": 4,
+      "parked": 0,
+      "bytes": 0,
+      "evictions": 0,
+      "parks": 0,
+      "restores": 0,
+      "last_event": null,
+      "last_tokens": null,
+      "last_at": null,
+      "requests": 1,
+      "requests_reused": 0,
+      "reused_tokens": 0,
+      "prompt_tokens": 27,
+      "last_reused": 0,
+      "last_prompt": 27
+    },
+    "requests_kept": 1,
+    "totals": {
+      "since": 1791264727.0425684,
+      "requests": 1,
+      "prompt_tokens": 27,
+      "reused": 0,
+      "output_tokens": 3,
+      "prompt_ms": 1830.1,
+      "decode_ms": 709.8,
+      "drafts_offered": 3,
+      "drafts_accepted": 3
+    },
+    "hardware": {
+      "gpus": [
+        {
+          "index": 0,
+          "util": 0,
+          "mem_used": 21204172800,
+          "mem_total": 25769803776,
+          "temp": 85,
+          "power": 176.102
+        },
+        {
+          "index": 1,
+          "util": 83,
+          "mem_used": 21298216960,
+          "mem_total": 25769803776,
+          "temp": 84,
+          "power": 159.174
+        }
+      ],
+      "gpu_util": 41.5,
+      "gpu_mem_used": 42502389760,
+      "gpu_mem_total": 51539607552,
+      "gpu_temp": 85,
+      "gpu_power": 335.276,
+      "gpu_power_limit": 500.0,
+      "gpu_pcie_gen": 4,
+      "gpu_pcie_gen_max": 4,
+      "gpu_pcie_width": 8,
+      "gpu_pcie_rx_mb": 0.76171875,
+      "gpu_pcie_tx_mb": 1.3818359375,
+      "cpu": 40.2,
+      "ram_used": 18405482496,
+      "ram_total": 50363498496,
+      "disk_read_mb": 2419.1240195696387,
+      "disk_write_mb": 0.0,
+      "tok_s": 0.0,
+      "tok_s_mean": 0,
+      "prefill_tok_s_mean": 13.8
+    },
+    "hardware_static": {
+      "gpu_name": "NVIDIA GeForce RTX 3090 + NVIDIA GeForce RTX 3090",
+      "gpu_count": 2,
+      "cpu_name": "12th Gen Intel(R) Core(TM) i5-12500",
+      "cores": 6,
+      "threads": 12,
+      "psutil": true
+    },
+    "history": {
+      "gpu_util": [
+        0.5,
+        0.0,
+        41.5
+      ],
+      "gpu_mem_used": [
+        42456252416,
+        42477223936,
+        42502389760
+      ],
+      "gpu_temp": [
+        84,
+        84,
+        85
+      ],
+      "gpu_power": [
+        275.58,
+        276.23,
+        335.28
+      ],
+      "gpu_pcie_rx_mb": [
+        0.76,
+        52.88,
+        0.76
+      ],
+      "cpu": [
+        0.0,
+        31.0,
+        40.2
+      ],
+      "ram_used": [
+        18138370048,
+        18213474304,
+        18405482496
+      ],
+      "disk_read_mb": [
+        null,
+        1733.43,
+        2419.12
+      ],
+      "tok_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prefill_tok_s_mean": [
+        0.0,
+        null,
+        13.8
+      ]
+    },
+    "time": 1791264730.270196
+  },
+  "image": "kirelabs/strata:6f32ec070f23-sm86-sm120-vision",
+  "state": {
+    "Status": "running",
+    "Running": true,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 3083824,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-06T05:31:36.492040892Z",
+    "FinishedAt": "0001-01-01T00:00:00Z",
+    "Health": {
+      "Status": "starting",
+      "FailingStreak": 0,
+      "Log": [
+        {
+          "Start": "2026-10-06T07:31:46.783075074+02:00",
+          "End": "2026-10-06T07:31:46.809580218+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-06T07:31:51.810446598+02:00",
+          "End": "2026-10-06T07:31:51.860323654+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-06T07:31:56.861218981+02:00",
+          "End": "2026-10-06T07:31:56.888420864+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-06T07:32:01.889739461+02:00",
+          "End": "2026-10-06T07:32:01.917671052+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-06T07:32:06.91877938+02:00",
+          "End": "2026-10-06T07:32:06.95422621+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        }
+      ]
+    }
+  },
+  "memory_limit": 30064771072,
+  "devices": [
+    {
+      "Driver": "",
+      "Count": 0,
+      "DeviceIDs": [
+        "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+        "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+      ],
+      "Capabilities": [
+        [
+          "gpu"
+        ]
+      ],
+      "Options": {}
+    }
+  ],
+  "gpu": "0, NVIDIA GeForce RTX 3090, 19784 MiB, 24576 MiB, 0 %\n1, NVIDIA GeForce RTX 3090, 19884 MiB, 24576 MiB, 73 %\n2, NVIDIA GeForce RTX 5060 Ti, 14831 MiB, 16311 MiB, 0 %\n",
+  "memory": "               total        used        free      shared  buff/cache   available\nMem:           48030       17608        2351        1602       30269       30422\nSwap:          32767       10366       22401\n",
+  "cgroup": "low 0\nhigh 0\nmax 2233\noom 0\noom_kill 0\noom_group_kill 0\n"
+}

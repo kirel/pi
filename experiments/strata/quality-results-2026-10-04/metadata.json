@@ -1,0 +1,89 @@
+{
+  "started_recorded_utc": "2026-10-03T23:32:07Z",
+  "source_revision": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "cases_sha256": "35c19d47303778111eeb8c2c142943b0a0ade41acb9a15878a33bb4d58898191",
+  "cases_file": "../quality-cases-2026-10-04.json",
+  "corpus_sha256": "86b20f0d173a4c8b691cbd0d9ffeedf1cb4cc7457885b50a5fe97d997586e4e6",
+  "client_sha256": "14b43fcabced6f0b89cdff26d6cb4d46828ede9b5715be0224947e2777b5bcbc",
+  "source_gsm8k": {
+    "repository": "https://github.com/openai/grade-school-math",
+    "revision": "3101c7d5072418e28b9008a6636bde82a006892c",
+    "url": "https://raw.githubusercontent.com/openai/grade-school-math/3101c7d5072418e28b9008a6636bde82a006892c/grade_school_math/data/test.jsonl",
+    "sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "lines": 1319,
+    "selected_indices": [
+      110,
+      193,
+      259,
+      296,
+      357,
+      367,
+      390,
+      426,
+      438,
+      509,
+      547,
+      562,
+      620,
+      736,
+      804,
+      805,
+      814,
+      974,
+      1071,
+      1222
+    ]
+  },
+  "gpu": "index, name, uuid, driver_version, power.limit [W], memory.total [MiB]\n0, NVIDIA GeForce RTX 3090, GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc, 590.48.01, 250.00 W, 24576 MiB\n1, NVIDIA GeForce RTX 3090, GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c, 590.48.01, 250.00 W, 24576 MiB\n2, NVIDIA GeForce RTX 5060 Ti, GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f, 590.48.01, 180.00 W, 16311 MiB\n",
+  "method": {
+    "thinking": false,
+    "short_modes": [
+      "greedy",
+      "production"
+    ],
+    "production_sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "presence_penalty": 1.5
+    },
+    "greedy_sampling": {
+      "temperature": 0,
+      "top_p": 1,
+      "top_k": 0,
+      "presence_penalty": 0
+    },
+    "seed": 20261004,
+    "tools": "simulated fixture-only calls; no actual tools executed",
+    "long_cases": "16K/64K/128K x ticket at beginning/middle/end, two-hop retrieval with conflicting old revisions",
+    "max_output_tokens": 256,
+    "manual_max_output_tokens": 384,
+    "order": [
+      "qwen27b-vllm",
+      "flash-iq2-2gpu"
+    ]
+  },
+  "unique_cases": 87,
+  "unique_automatic_cases": 81,
+  "scored_observations_per_model": 151,
+  "free_text_responses_per_model": 6,
+  "excluded_diagnostics": {
+    "flash-iq2-tool-sequence-invalid-stale-state.jsonl": "Invalid mock snapshot stayed unchanged after mutations. Replaced with stateful fixture; excluded from scoring."
+  },
+  "paired_correct_short_text": {
+    "n": 68,
+    "median_s": {
+      "qwen27b-vllm": 0.22332359349820763,
+      "flash-iq2-2gpu": 0.7277396434510592
+    }
+  },
+  "serving_comparison": {
+    "corpus": "first two 4K and first two 64K cases from shared prefill corpus",
+    "warmup": "one short and one 64K unscored 512-token generation",
+    "repetitions": 2,
+    "output_tokens": 512
+  },
+  "tool_sequence_client_sha256": "3df1097494162e1092f280791feb7a5ccac363bc5cd131ba963c754ad863afef",
+  "tool_sequence_client_final_sha256": "cdcbb82b8b290008e52f151df57f55754ea521dd2e7c6008358a5440c27c834d",
+  "tool_sequence_client_note": "Final source adds strict boolean comparison for completion reports. All recorded reports used JSON true; scores unchanged."
+}

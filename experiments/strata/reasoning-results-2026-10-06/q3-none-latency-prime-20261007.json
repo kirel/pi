@@ -1,0 +1,155 @@
+{
+  "reasoning_effort": "none",
+  "max_tokens": 2048,
+  "reasoning_chars": 0,
+  "actions_pass": true,
+  "finished": true,
+  "final_text": "Deckenlicht im Wohnzimmer aus.",
+  "elapsed_s": 23.128500767983496,
+  "first_reply_s": 19.762350306962617,
+  "first_action_s": 22.399790061987005,
+  "reads": 1,
+  "rounds": 3,
+  "unwanted_or_invalid_calls": [],
+  "done": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "already_satisfied": [],
+  "attempted": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "replies": [
+    {
+      "id": "chatcmpl-63d8493f3e1f4b26b72ea268",
+      "object": "chat.completion",
+      "created": 1791265115,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_ee67074b5eab4a69a3a5218b",
+                "type": "function",
+                "function": {
+                  "name": "homeassistant__GetLiveContext",
+                  "arguments": "{\"area\":\"Wohnzimmer\",\"name\":\"Deckenlicht\"}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6284,
+        "completion_tokens": 46,
+        "total_tokens": 6330,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6284,
+        "prompt_ms": 19021.3,
+        "prompt_per_token_ms": 3.027,
+        "prompt_per_second": 330.4,
+        "predicted_n": 46,
+        "predicted_ms": 712.1,
+        "predicted_per_token_ms": 15.48,
+        "predicted_per_second": 64.6,
+        "draft_n": 38,
+        "draft_n_accepted": 31
+      }
+    },
+    {
+      "id": "chatcmpl-a0ce1eb5d3514df389081102",
+      "object": "chat.completion",
+      "created": 1791265135,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_ed41f610d97e4b14b49e3673",
+                "type": "function",
+                "function": {
+                  "name": "intent__HassTurnOff",
+                  "arguments": "{\"area\":\"Wohnzimmer\",\"name\":\"Deckenlicht\",\"domain\":[\"light\"]}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6422,
+        "completion_tokens": 60,
+        "total_tokens": 6482,
+        "prompt_tokens_details": {
+          "cached_tokens": 6329
+        }
+      },
+      "timings": {
+        "cache_n": 6329,
+        "prompt_n": 93,
+        "prompt_ms": 1375.1,
+        "prompt_per_token_ms": 14.786,
+        "prompt_per_second": 67.6,
+        "predicted_n": 60,
+        "predicted_ms": 1234.9,
+        "predicted_per_token_ms": 20.582,
+        "predicted_per_second": 48.6,
+        "draft_n": 48,
+        "draft_n_accepted": 39
+      }
+    },
+    {
+      "id": "chatcmpl-d7de985d0a2b48238f396501",
+      "object": "chat.completion",
+      "created": 1791265138,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Deckenlicht im Wohnzimmer aus."
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6504,
+        "completion_tokens": 8,
+        "total_tokens": 6512,
+        "prompt_tokens_details": {
+          "cached_tokens": 6482
+        }
+      },
+      "timings": {
+        "cache_n": 6482,
+        "prompt_n": 22,
+        "prompt_ms": 506.3,
+        "prompt_per_token_ms": 23.014,
+        "prompt_per_second": 43.5,
+        "predicted_n": 8,
+        "predicted_ms": 196.8,
+        "predicted_per_token_ms": 24.6,
+        "predicted_per_second": 40.7,
+        "draft_n": 7,
+        "draft_n_accepted": 5
+      }
+    }
+  ],
+  "prompt_sha256": "1afeb255158daa04bc17d1d2e5762c7890dc13dc35eec4391264415ad52a0210"
+}

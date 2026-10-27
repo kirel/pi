@@ -1,0 +1,4 @@
+{
+  "spec_env": [],
+  "spec_help": "--spec-type none,draft-simple,draft-eagle3,draft-mtp,draft-dflash,draft-dspark,ngram-simple,ngram-map-k,ngram-map-k4v,ngram-mod,ngram-cache\n                                        comma-separated list of types of speculative decoding to use (default:\n                                        none)\n                                        \n                                        (env: LLAMA_ARG_SPEC_TYPE)\n--spec-ngram-mod-n-min N                minimum number of ngram tokens to use for ngram-based speculative\n                                        decoding (default: 48)\n--spec-ngram-mod-n-max N                maximum number of ngram tokens to us"
+}

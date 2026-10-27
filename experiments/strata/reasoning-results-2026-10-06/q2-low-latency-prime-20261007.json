@@ -1,0 +1,110 @@
+{
+  "reasoning_effort": "low",
+  "max_tokens": 2048,
+  "reasoning_chars": 294,
+  "actions_pass": true,
+  "finished": true,
+  "final_text": "Deckenlicht im Wohnzimmer aus.",
+  "elapsed_s": 7.726724416948855,
+  "first_reply_s": 6.844195420970209,
+  "first_action_s": 6.84425238595577,
+  "reads": 0,
+  "rounds": 2,
+  "unwanted_or_invalid_calls": [],
+  "done": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "already_satisfied": [],
+  "attempted": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "replies": [
+    {
+      "id": "chatcmpl-2a030a61427f4181b4c2e2ac",
+      "object": "chat.completion",
+      "created": 1791265240,
+      "model": "qwen3.8-flash-next-iq2_xs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "reasoning_content": "The user wants to turn off the ceiling light in the living room (Wohnzimmer). I'll use the HassTurnOff tool with area \"Wohnzimmer\" and domain \"light\".\n",
+            "tool_calls": [
+              {
+                "id": "call_1d26ef8a3b564957a6c54909",
+                "type": "function",
+                "function": {
+                  "name": "intent__HassTurnOff",
+                  "arguments": "{\"area\":\"Wohnzimmer\",\"domain\":[\"light\"],\"name\":\"Deckenlicht\"}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6308,
+        "completion_tokens": 101,
+        "total_tokens": 6409,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6308,
+        "prompt_ms": 5982.7,
+        "prompt_per_token_ms": 0.948,
+        "prompt_per_second": 1054.4,
+        "predicted_n": 101,
+        "predicted_ms": 832.3,
+        "predicted_per_token_ms": 8.241,
+        "predicted_per_second": 121.4,
+        "draft_n": 81,
+        "draft_n_accepted": 73
+      }
+    },
+    {
+      "id": "chatcmpl-48779c36997143cdbed9857d",
+      "object": "chat.completion",
+      "created": 1791265247,
+      "model": "qwen3.8-flash-next-iq2_xs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Deckenlicht im Wohnzimmer aus.",
+            "reasoning_content": "The user wants to turn off the ceiling light in the living room (Wohnzimmer). I used the intent tool and it succeeded. Let me confirm briefly.\n"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6390,
+        "completion_tokens": 43,
+        "total_tokens": 6433,
+        "prompt_tokens_details": {
+          "cached_tokens": 6303
+        }
+      },
+      "timings": {
+        "cache_n": 6303,
+        "prompt_n": 87,
+        "prompt_ms": 445.4,
+        "prompt_per_token_ms": 5.12,
+        "prompt_per_second": 195.3,
+        "predicted_n": 43,
+        "predicted_ms": 410.1,
+        "predicted_per_token_ms": 9.537,
+        "predicted_per_second": 104.9,
+        "draft_n": 36,
+        "draft_n_accepted": 27
+      }
+    }
+  ],
+  "prompt_sha256": "1afeb255158daa04bc17d1d2e5762c7890dc13dc35eec4391264415ad52a0210"
+}

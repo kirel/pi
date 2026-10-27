@@ -1,0 +1,14 @@
+{
+  "embedding": {
+    "dimensions": 1024,
+    "elapsed_s": 0.3057150549720973
+  },
+  "tts": {
+    "wav_bytes": 109404,
+    "elapsed_s": 1.7742942030308768
+  },
+  "asr": {
+    "text": " Das ist ein kurzer Funktionstest.",
+    "elapsed_s": 0.7784514570375904
+  }
+}

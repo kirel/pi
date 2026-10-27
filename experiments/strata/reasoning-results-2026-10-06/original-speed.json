@@ -1,0 +1,10 @@
+{
+  "at": 1791265314.270646,
+  "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+  "running": [
+    "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+    "qwen3-embedding",
+    "qwen3-tts",
+    "whisper-large-v3-turbo-q8-crispasr"
+  ]
+}

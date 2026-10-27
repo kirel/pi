@@ -1,0 +1,41 @@
+{
+  "source_release": "v0.1.40.1",
+  "source_revision": "82f46a8c8f475f001ad76d92f58f4a4f8ffb0253",
+  "engine_version": "0.1.40",
+  "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+  "reasoning_effort": "low",
+  "native_temperature": 0,
+  "native_max_tokens": 256,
+  "gpu_count": 2,
+  "gpu2_excluded": true,
+  "order": [
+    "off",
+    "on",
+    "on",
+    "off"
+  ],
+  "enabled_together": [
+    "--prompt-cache-tail",
+    "STRATA_CACHE_MESSAGE_BOUNDARY=1"
+  ],
+  "native_lengths": [
+    16384,
+    32768
+  ],
+  "native_followups_per_length_per_block": 3,
+  "auxiliary_interleave": true,
+  "ha_warm_per_agent_per_block": 4,
+  "ha_agents": [
+    "conversation.home_nano_ai_agent",
+    "conversation.local_hermes_hermes_local_ai_agent"
+  ],
+  "source_guard": "Both new checkpoint selectors require !multi_gpu; layer-split cannot use them.",
+  "purpose": "Runtime negative control on the actual layer-split deployment, not a single-GPU feature speedup benchmark.",
+  "source_docs": [
+    "https://github.com/Niko1221/Strata/blob/v0.1.40.1/docs/PROMPT_CACHE_TAIL.md",
+    "https://github.com/Niko1221/Strata/blob/v0.1.40.1/docs/MESSAGE_BOUNDARY_CACHE.md"
+  ],
+  "quality_scope": "Arithmetic correctness and Low reasoning assertions only; no real HA action tools requested.",
+  "client_rerun": "Full HA-only ABBA in ha-isolated, unique block labels, before/after native timestamp checked. Original 10 response-cache hits excluded from client timing tables.",
+  "arithmetic_failures": "Same 16K OFF followup 20 + 22 answered 44 twice; interrupted and completed attempts retained."
+}

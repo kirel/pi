@@ -1,0 +1,9 @@
+{
+  "cache_enabled": true,
+  "type": "redis",
+  "scope": "Read-only aggregate of Q3 LiteLLM spend logs over the last two hours; no keys, prompts, headers or cache keys retrieved.",
+  "cache_hit_count": 10,
+  "cache_miss_count_at_snapshot": 52,
+  "original_ha_direct_on_requests_without_new_strata_metrics": 10,
+  "correction": "Use ha-isolated client observations with a unique block label in user text and a before/after native request timestamp assertion."
+}

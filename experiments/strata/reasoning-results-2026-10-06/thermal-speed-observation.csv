@@ -1,0 +1,4 @@
+index, name, temperature.gpu, clocks_event_reasons.sw_thermal_slowdown, clocks_event_reasons.hw_thermal_slowdown, memory.used [MiB], memory.total [MiB], utilization.gpu [%]
+0, NVIDIA GeForce RTX 3090, 88, Active, Not Active, 19846 MiB, 24576 MiB, 0 %
+1, NVIDIA GeForce RTX 3090, 88, Not Active, Not Active, 19952 MiB, 24576 MiB, 17 %
+2, NVIDIA GeForce RTX 5060 Ti, 50, Not Active, Not Active, 14831 MiB, 16311 MiB, 0 %

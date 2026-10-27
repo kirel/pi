@@ -1,0 +1,148 @@
+
+PLAY [Set up homelab] **********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [homelab-nuc]
+
+TASK [dockerhub : Log into DockerHub] ******************************************
+ok: [homelab-nuc]
+
+TASK [caddy : Create Caddy config directories] *********************************
+ok: [homelab-nuc] => (item=/home/nuc/config/caddy)
+ok: [homelab-nuc] => (item=/home/nuc/config/caddy/data)
+ok: [homelab-nuc] => (item=/home/nuc/config/caddy/config)
+
+TASK [caddy : Copy Caddyfile] **************************************************
+ok: [homelab-nuc]
+
+TASK [caddy : Copy Dockerfile] *************************************************
+ok: [homelab-nuc]
+
+TASK [caddy : Inspect rendered Caddy Dockerfile] *******************************
+ok: [homelab-nuc]
+
+TASK [caddy : Read successful Caddy build checksum] ****************************
+ok: [homelab-nuc]
+
+TASK [caddy : Inspect local Caddy image] ***************************************
+ok: [homelab-nuc]
+
+TASK [caddy : Determine whether Caddy needs an image rebuild] ******************
+ok: [homelab-nuc]
+
+TASK [caddy : Start caddy] *****************************************************
+ok: [homelab-nuc]
+
+TASK [caddy : Debug docker compose output] *************************************
+ok: [homelab-nuc] => {
+    "msg": {
+        "actions": [],
+        "rebuild_image": false
+    }
+}
+
+TASK [caddy : Assert caddy container is running] *******************************
+ok: [homelab-nuc] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [caddy : Record successful Caddy build checksum] **************************
+ok: [homelab-nuc]
+
+TASK [caddy : Validate Caddy configuration] ************************************
+skipping: [homelab-nuc]
+
+TASK [caddy : Create symlink to root certificate from mounted data volume] *****
+ok: [homelab-nuc]
+
+TASK [caddy : Ensure Caddy PKI directories are world-executable for service mounts] ***
+ok: [homelab-nuc] => (item=/home/nuc/config/caddy/data/caddy/pki)
+ok: [homelab-nuc] => (item=/home/nuc/config/caddy/data/caddy/pki/authorities)
+ok: [homelab-nuc] => (item=/home/nuc/config/caddy/data/caddy/pki/authorities/local)
+
+TASK [caddy : Ensure Caddy root certificate is world-readable for service mounts] ***
+ok: [homelab-nuc]
+
+TASK [caddy : Fetch root certificate to controller for distribution] ***********
+skipping: [homelab-nuc]
+
+TASK [trust_internal_ca : Ensure CA certificates directory exists] *************
+ok: [homelab-nuc]
+
+TASK [trust_internal_ca : Check if Caddy local CA certificate exists on controller] ***
+ok: [homelab-nuc -> localhost]
+
+TASK [trust_internal_ca : Copy Caddy local CA certificate to trust store] ******
+ok: [homelab-nuc]
+
+TASK [trust_internal_ca : Update CA certificates store] ************************
+skipping: [homelab-nuc]
+
+TASK [homepage : Copy all templates to destination] ****************************
+[WARNING]: Could not match supplied host pattern, ignoring: virtualhere
+ok: [homelab-nuc] => (item=/home/daniel/code/pi/roles/homepage/templates/bookmarks.yaml.j2)
+ok: [homelab-nuc] => (item=/home/daniel/code/pi/roles/homepage/templates/widgets.yaml.j2)
+ok: [homelab-nuc] => (item=/home/daniel/code/pi/roles/homepage/templates/services.yaml.j2)
+ok: [homelab-nuc] => (item=/home/daniel/code/pi/roles/homepage/templates/settings.yaml.j2)
+ok: [homelab-nuc] => (item=/home/daniel/code/pi/roles/homepage/templates/docker.yaml.j2)
+ok: [homelab-nuc] => (item=/home/daniel/code/pi/roles/homepage/templates/kubernetes.yaml.j2)
+
+PLAY [Setup Hetzner VPS] *******************************************************
+skipping: no hosts matched
+
+PLAY [Setup Dashserv baseline] *************************************************
+skipping: no hosts matched
+
+PLAY [Setup nameserver] ********************************************************
+skipping: no hosts matched
+
+PLAY [Setup virtualhere Pi] ****************************************************
+skipping: no hosts matched
+
+PLAY [Setup ailabs] ************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ailab-ubuntu]
+
+TASK [trust_internal_ca : Ensure CA certificates directory exists] *************
+ok: [ailab-ubuntu]
+
+TASK [trust_internal_ca : Check if Caddy local CA certificate exists on controller] ***
+ok: [ailab-ubuntu -> localhost]
+
+TASK [trust_internal_ca : Copy Caddy local CA certificate to trust store] ******
+ok: [ailab-ubuntu]
+
+TASK [trust_internal_ca : Update CA certificates store] ************************
+skipping: [ailab-ubuntu]
+
+TASK [llm_inference : Check out the pinned upstream Strata container source] ***
+ok: [ailab-ubuntu]
+
+TASK [llm_inference : Build the upstream Strata image for Ampere and Blackwell] ***
+ok: [ailab-ubuntu]
+
+TASK [llm_inference : Ensure the persistent Strata data directory exists] ******
+ok: [ailab-ubuntu]
+
+TASK [llm_inference : Install the Strata launcher with native memory reserve settings] ***
+ok: [ailab-ubuntu]
+
+TASK [llm_inference : Create llama-swap config file] ***************************
+[WARNING]: Could not match supplied host pattern, ignoring: mic_satellites
+ok: [ailab-ubuntu]
+
+PLAY [Setup OpenMediaVault backup NAS] *****************************************
+skipping: no hosts matched
+
+PLAY [Setup SSH key distribution] **********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ailab-ubuntu]
+ok: [homelab-nuc]
+
+PLAY RECAP *********************************************************************
+ailab-ubuntu               : ok=10   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+homelab-nuc                : ok=21   changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0   
+

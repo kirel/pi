@@ -1,0 +1,3389 @@
+{
+  "reviewer": "Codex, nicht blind; gleiche Rubriken wie vorheriger Benchmark",
+  "grades": [
+    {
+      "label": "q3-low",
+      "id": "light-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-6",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-7",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-0",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Korrekte Temperatur, aber Markdown-Fettdruck trotz Plain-Text-Vorgabe.",
+      "style_only": true
+    },
+    {
+      "label": "q3-low",
+      "id": "state-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-3",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Korrekte Anwesenheit, aber Markdown-Codeformat trotz Plain-Text-Vorgabe.",
+      "style_only": true
+    },
+    {
+      "label": "q3-low",
+      "id": "state-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-5",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Rollos statt Fenstersensoren ausgewertet; Kuechenfenster offen und Bad unbekannt fehlen."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-6",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Rollos statt Fenstersensoren ausgewertet; Schlafzimmerzustand nicht als Fensterstatus belegt."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-7",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-8",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-9",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-1",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Behauptet Deckenlicht bleibe aus; es ist an und soll unveraendert bleiben."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-6",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-7",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-6",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Beantwortet Fensterfrage mit Rollostatus; Kuechenfenster offen und Bad unbekannt fehlen."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-7",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-8",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-9",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-10",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-10",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Korrekte Lampenauskunft, aber Markdown-Fettdruck trotz Plain-Text-Vorgabe.",
+      "style_only": true
+    },
+    {
+      "label": "q3-low",
+      "id": "state-11",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-1",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Fragt nicht nach dem Raum; erfindet eine Freigabeblockade fuer Positionierung."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-6",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-7",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "voice-stop",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "followup-correction",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "followup-brighter",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "failure-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "failure-1",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Meldet Fehler korrekt, behauptet aber eine nicht angebotene Steuerung ueber die HA-App."
+    },
+    {
+      "label": "q3-low",
+      "id": "failure-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "failure-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-11",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-0",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Keine Abschlussantwort oder erforderliche Raum-Rueckfrage."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-1",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Keine Abschlussantwort oder erforderliche Raum-Rueckfrage."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-6",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-7",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "voice-stop",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "followup-correction",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Klare Raumkorrektur als Rauschen abgebrochen."
+    },
+    {
+      "label": "q3-none",
+      "id": "followup-brighter",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Erfolg ohne erforderlichen Helligkeits-Werkzeugaufruf behauptet."
+    },
+    {
+      "label": "q3-none",
+      "id": "failure-0",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Keine Abschlussantwort zu nicht erreichbarer Lampe."
+    },
+    {
+      "label": "q3-none",
+      "id": "failure-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "failure-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "failure-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-6",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-7",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "other-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-5",
+      "seed": 20261005,
+      "text_pass": false,
+      "style_only": false,
+      "note": "Rollos statt Fenstersensoren; behauptet faelschlich, es gebe keine echten Fenstersensoren."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-6",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-7",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-8",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-9",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-10",
+      "seed": 20261005,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Korrekte Auskunft, aber Markdown-Fettdruck trotz Plain-Text-Vorgabe."
+    },
+    {
+      "label": "q3-low",
+      "id": "state-11",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-2",
+      "seed": 20261005,
+      "text_pass": false,
+      "style_only": false,
+      "note": "Keine Rueckfrage; erfindet eine allgemeine Blockade der Lichtsteuerung."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "light-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-6",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-7",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "other-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-6",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-7",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-8",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-9",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-10",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "state-11",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-2",
+      "seed": 20261005,
+      "text_pass": false,
+      "style_only": false,
+      "note": "Keine passende Rueckfrage; leitet aus abgelehnten Zusatzaktionen fehlende Lichtberechtigung ab."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-3",
+      "seed": 20261005,
+      "text_pass": false,
+      "style_only": false,
+      "note": "Bricht das mehrdeutige Wort Musik ab statt nach dem konkreten Wunsch zu fragen."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "style_only": false,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-6",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "clarify-7",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "noise-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "voice-stop",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "followup-correction",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "followup-brighter",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "failure-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "failure-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "failure-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-low",
+      "id": "failure-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-6",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Keine Antwort zur nicht angebotenen Zeitplanung."
+    },
+    {
+      "label": "q3-none",
+      "id": "clarify-7",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Widerruf mit Abgebrochen statt klarer Nichtausfuehrung beantwortet; vorher Zusatzaktion versucht."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "noise-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "voice-stop",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "followup-correction",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Behauptet ohne neuen Aufruf, das vorhandene Deckenlicht nicht zu finden."
+    },
+    {
+      "label": "q3-none",
+      "id": "followup-brighter",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Bestaetigt neue Helligkeit ohne notwendigen Werkzeugaufruf."
+    },
+    {
+      "label": "q3-none",
+      "id": "failure-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "failure-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "failure-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q3-none",
+      "id": "failure-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "note": "Erfuellt die gespeicherte Textrubrik."
+    },
+    {
+      "label": "q2-low",
+      "id": "light-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-6",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-7",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-0",
+      "seed": 20261004,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Emoji oder Markdown statt verlangter schlichter Sprachausgabe."
+    },
+    {
+      "label": "q2-low",
+      "id": "state-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-2",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Behauptet vorhandene Personen seien nicht verfügbar statt Daniel zu Hause zu melden."
+    },
+    {
+      "label": "q2-low",
+      "id": "state-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-6",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-7",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-8",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-9",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-10",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-11",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-6",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-7",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "voice-stop",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "followup-correction",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "followup-brighter",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "failure-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "failure-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "failure-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "failure-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-6",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-7",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "other-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-6",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Verwechselt Fenstersensoren mit Rollos und behauptet keine Fenstersensoren vorhanden."
+    },
+    {
+      "label": "q2-low",
+      "id": "state-7",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-8",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-9",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-10",
+      "seed": 20261005,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Emoji oder Markdown statt verlangter schlichter Sprachausgabe."
+    },
+    {
+      "label": "q2-low",
+      "id": "state-11",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-6",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "clarify-7",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "noise-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "voice-stop",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "followup-correction",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "followup-brighter",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "failure-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "failure-1",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Behauptet kein steuerbares Rollo vorhanden statt konkreten Erreichbarkeitsfehler zu nennen."
+    },
+    {
+      "label": "q2-low",
+      "id": "failure-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "failure-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-3",
+      "seed": 20261004,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Emoji oder Markdown statt verlangter schlichter Sprachausgabe."
+    },
+    {
+      "label": "q2-none",
+      "id": "light-4",
+      "seed": 20261004,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Emoji oder Markdown statt verlangter schlichter Sprachausgabe."
+    },
+    {
+      "label": "q2-none",
+      "id": "light-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-1",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Behauptet unverändertes Deckenlicht sei aus; es ist an."
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-6",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-7",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-6",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-7",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-8",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-9",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-10",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-11",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-0",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Keine abschließende Antwort."
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-1",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Keine abschließende Antwort."
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-3",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Musikwunsch wird ohne Rückfrage abgebrochen."
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-5",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-6",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Keine abschließende Antwort."
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-7",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-4",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "voice-stop",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "followup-correction",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "followup-brighter",
+      "seed": 20261004,
+      "text_pass": false,
+      "note": "Verlangt unnötig Entitätsnamen statt vorhandene Lampe zu dimmen."
+    },
+    {
+      "label": "q2-none",
+      "id": "failure-0",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "failure-1",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "failure-2",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "failure-3",
+      "seed": 20261004,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-0",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Bestätigt Einschalten obwohl Ausschalten verlangt und ausgeführt wurde."
+    },
+    {
+      "label": "q2-none",
+      "id": "light-1",
+      "seed": 20261005,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Emoji oder Markdown statt verlangter schlichter Sprachausgabe."
+    },
+    {
+      "label": "q2-none",
+      "id": "light-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-0",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Widersprüchliche Bestätigung Licht an bei Ausschaltauftrag."
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-1",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Behauptet unverändertes Deckenlicht sei aus; es ist an."
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-6",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-7",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "other-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-6",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-7",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-8",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-9",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Lautstärkefrage wird als Änderungsauftrag behandelt; gewünschter Istwert fehlt."
+    },
+    {
+      "label": "q2-none",
+      "id": "state-10",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-11",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-3",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Musikwunsch wird ohne Rückfrage abgebrochen."
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-5",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-6",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "clarify-7",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "noise-4",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "voice-stop",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "followup-correction",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "followup-brighter",
+      "seed": 20261005,
+      "text_pass": false,
+      "note": "Behauptet vorhandene Leselampe sei nicht gefunden."
+    },
+    {
+      "label": "q2-none",
+      "id": "failure-0",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "failure-1",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "failure-2",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "failure-3",
+      "seed": 20261005,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-0",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-1",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-2",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-3",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-4",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-5",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-0",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-2",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-6",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-1",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-7",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "followup-brighter",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-0",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-1",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-2",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-3",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-4",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-5",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-0",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-2",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-6",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "state-1",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "state-7",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "followup-brighter",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-0",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-1",
+      "seed": 20261006,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Emoji in schlichter Sprachausgabe."
+    },
+    {
+      "label": "q2-none",
+      "id": "light-2",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-3",
+      "seed": 20261006,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Emoji in schlichter Sprachausgabe."
+    },
+    {
+      "label": "q2-none",
+      "id": "light-4",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-5",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-0",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-2",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-6",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-1",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-7",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "followup-brighter",
+      "seed": 20261006,
+      "text_pass": false,
+      "note": "Bestreitet vorhandene Leselampe statt den Folgeauftrag auszuführen."
+    },
+    {
+      "label": "q3-low",
+      "id": "light-0",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-1",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-2",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-3",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-4",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-5",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-0",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-2",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-6",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "state-1",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "state-7",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "followup-brighter",
+      "seed": 20261006,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-0",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-1",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-2",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-3",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-4",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "light-5",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-0",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-1",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-2",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-3",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-4",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "light-5",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-0",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-2",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "compound-6",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "state-1",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "state-7",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-low",
+      "id": "followup-brighter",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-0",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-2",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "compound-6",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "state-1",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "state-7",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q3-none",
+      "id": "followup-brighter",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-0",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-1",
+      "seed": 20261007,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Emoji trotz schlichter Sprachausgabe."
+    },
+    {
+      "label": "q2-none",
+      "id": "light-2",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-3",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-4",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "light-5",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-0",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-2",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "compound-6",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-1",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "state-7",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-none",
+      "id": "followup-brighter",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-0",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-1",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-2",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-3",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-4",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "light-5",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-0",
+      "seed": 20261007,
+      "text_pass": false,
+      "note": "Behauptet unveränderte Leselampe sei bereits an; sie ist aus."
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-2",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "compound-6",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-1",
+      "seed": 20261007,
+      "text_pass": true
+    },
+    {
+      "label": "q2-low",
+      "id": "state-7",
+      "seed": 20261007,
+      "text_pass": false,
+      "style_only": true,
+      "note": "Markdown statt schlichter Sprachausgabe."
+    },
+    {
+      "label": "q2-low",
+      "id": "followup-brighter",
+      "seed": 20261007,
+      "text_pass": true
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "image": "ghcr.io/niko1221/strata@sha256:17e96f76fb85ee47b445b38ebfe9e4190b96ebde522e109d40efa2f2404a4503",
+  "image_id": "sha256:64b9e2de4f19e1155b85a023f75b2575407970ac75919ebf5febd7670104d5c5",
+  "health": "healthy",
+  "oom_killed": false,
+  "device_requests": [
+    {
+      "Driver": "",
+      "Count": 0,
+      "DeviceIDs": [
+        "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+        "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+      ],
+      "Capabilities": [
+        [
+          "gpu"
+        ]
+      ],
+      "Options": {}
+    }
+  ],
+  "memory": 30064771072,
+  "memory_swap": 30064771072,
+  "config_sha256": "285538011720f61546c7f0b55fd7821bf7ecbda3ec3b17a7978e0e6ff3468863",
+  "runtime": {
+    "exe": "/opt/strata/components/engine/0.1.47-linux-x86_64-cuda-cuda13/strata",
+    "args": [
+      "--pack",
+      "/data/packs/iq3_xxs",
+      "--native",
+      "/data/models/IQ3_XXS/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf",
+      "--ple-gguf",
+      "/data/models/IQ3_XXS/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00002-of-00002.gguf",
+      "--expert-profile",
+      "/opt/strata/terminal/data/expert-profile.bin",
+      "--expert-cache",
+      "auto",
+      "--prefill",
+      "auto",
+      "--spec",
+      "4",
+      "--spec-min-p",
+      "0.5",
+      "--mtp",
+      "/data/mtp/rt",
+      "--max-context",
+      "131072",
+      "--kv",
+      "int8",
+      "--mmap-experts",
+      "--vision",
+      "--vram-reserve-mib",
+      "4608",
+      "--conversation-cache-mib",
+      "2048",
+      "--conversation-cache-slots",
+      "4",
+      "--conversation-cache-min-free-mib",
+      "6144"
+    ],
+    "gpu": [
+      0,
+      1
+    ],
+    "layer_split": "auto",
+    "vision": {
+      "exe": "/opt/strata/components/engine/0.1.47-linux-x86_64-cuda-cuda13/strata-vision",
+      "mmproj": "/data/models/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+      "model": "/data/models/IQ3_XXS/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf",
+      "gpu": true,
+      "max_tokens": 1024
+    },
+    "lib_dirs": [
+      "/opt/strata/components/engine/0.1.47-linux-x86_64-cuda-cuda13"
+    ]
+  },
+  "memory_events": "low 0\nhigh 0\nmax 10814\noom 0\noom_kill 0\noom_group_kill 0\n"
+}

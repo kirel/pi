@@ -8,6 +8,9 @@ llamaswap_base_image: "ghcr.io/mostlygeek/llama-swap:cuda@sha256:915dea80fb2a01c
 llamaswap_llama_cpp_version: "b10353"
 llamaswap_image: "kirelabs/llama-swap:cuda-{{ llamaswap_llama_cpp_version }}"
 llamaswap_build_path: "{{ llamaswap_config_path }}/image-build"
+# Official 0.2.2-cuda13 release, pinned to the verified registry artifact (engine 0.1.47).
+llamaswap_strata_image: "ghcr.io/niko1221/strata@sha256:17e96f76fb85ee47b445b38ebfe9e4190b96ebde522e109d40efa2f2404a4503"
+llamaswap_strata_data_path: "{{ llamaswap_config_path }}/strata-data"
 # Keep the Qwen3.8-Flash-Next runtime isolated from the pinned production
 # llama.cpp binary. The MTP graph is still under review in PR #27836, so pin
 # its head, the detached-sidecar loader fix, and the two subsequently merged

@@ -4,10 +4,10 @@ llamaswap_crispasr_realtime_port: 10303
 model_group_alias:
   home: "Qwen3.8-27B-Instruct-AutoRound-vLLM-nothink"
   home-fast: "Qwen3.8-27B-Instruct-AutoRound-vLLM-nothink"
-  home-smart: "Qwen3.8-27B-Instruct-AutoRound-vLLM"
-  home-vision: "Qwen3.8-27B-Instruct-AutoRound-vLLM"
-  home-ha: "Qwen3.8-27B-Instruct-AutoRound-vLLM-nothink"
-  home-hermes: "Qwen3.8-27B-Instruct-AutoRound-vLLM-nothink"
+  home-smart: "Qwen3.8-Flash-Next-IQ3_XXS-Strata-nothink"
+  home-vision: "Qwen3.8-Flash-Next-IQ3_XXS-Strata-nothink"
+  home-ha: "Qwen3.8-Flash-Next-IQ3_XXS-Strata"
+  home-hermes: "Qwen3.8-Flash-Next-IQ3_XXS-Strata"
   home-embed: "qwen3-embedding"
   home-asr: "whisper-large-v3-turbo-q8-crispasr"
   home-tts: "qwen3-tts"
@@ -59,6 +59,12 @@ litellm_extra_models:
   - model_name: gpt-6-astra-cpa
     litellm_params:
       model: openai/gpt-6-astra
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: gpt-6.1-sol-cpa
+    litellm_params:
+      model: openai/gpt-6.1-sol
       api_key: os.environ/CPA_API_KEY
       api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
 
@@ -118,9 +124,15 @@ litellm_extra_models:
       api_key: os.environ/CPA_API_KEY
       api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
 
-  - model_name: claude-opus-4-6-thinking-cpa
+  - model_name: claude-opus-5-5-high-cpa
     litellm_params:
-      model: openai/claude-opus-4-6-thinking
+      model: openai/claude-opus-5-5-high
+      api_key: os.environ/CPA_API_KEY
+      api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
+
+  - model_name: claude-sonnet-5-5-high-cpa
+    litellm_params:
+      model: openai/claude-sonnet-5-5-high
       api_key: os.environ/CPA_API_KEY
       api_base: "http://{{ homelab_nuc_ip }}:{{ cpa_http_port }}/v1"
 
@@ -444,6 +456,119 @@ llamaswap_models:
         extra_body:
           chat_template_kwargs:
             enable_thinking: false
+
+  - alias: Qwen3.8-Flash-Next-IQ2_XS-Strata
+    # Experimental two-3090 backend. The mapped expert pool respects the
+    # container RAM limit; embedding/ASR/TTS stay resident and GPU2 stays free.
+    cmd: >-
+      docker run --rm --init --pull never --name ${MODEL_ID}
+      --runtime nvidia
+      --gpus '"device={{ gpu_3090_0_uuid }},{{ gpu_3090_1_uuid }}"'
+      --network container:llama-swap
+      --memory 28g --memory-swap 28g --ulimit memlock=-1
+      --log-driver local --log-opt max-size=10m --log-opt max-file=3
+      -v {{ llamaswap_strata_data_path }}:/data
+      -v {{ llamaswap_config_path }}/strata-start.sh:/strata-start.sh:ro
+      -e PORT=${PORT}
+      -e STRATA_GPU_UUIDS={{ gpu_3090_0_uuid }},{{ gpu_3090_1_uuid }}
+      -e STRATA_LAYER_SPLIT=auto
+      --entrypoint /bin/sh
+      {{ llamaswap_strata_image }} /strata-start.sh
+    cmd_stop: docker stop --timeout 15 ${MODEL_ID}
+    use_model_name: qwen3.8-flash-next
+    check_endpoint: /health
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    context_window: 131072
+    max_input_tokens: 131072
+    max_output_tokens: "{{ llama_n_predict_3090 }}"
+    allowed_openai_params: [reasoning_effort]
+    group: "3090"
+
+  - alias: Qwen3.8-Flash-Next-IQ3_XXS-Strata
+    # Multimodal Q3 HA experiment: native GSQ-RCO IQ3_XXS, mmap experts.
+    # Same two-3090 and 28 GiB RAM limits as the IQ2 test.
+    cmd: >-
+      docker run --rm --init --pull never --name ${MODEL_ID}
+      --runtime nvidia
+      --gpus '"device={{ gpu_3090_0_uuid }},{{ gpu_3090_1_uuid }}"'
+      --network container:llama-swap
+      --memory 28g --memory-swap 28g --ulimit memlock=-1
+      --log-driver local --log-opt max-size=10m --log-opt max-file=3
+      -v {{ llamaswap_strata_data_path }}:/data
+      -v {{ llamaswap_config_path }}/strata-start.sh:/strata-start.sh:ro
+      -e STRATA_MODEL=IQ3_XXS
+      -e STRATA_VISION=gpu
+      -e STRATA_CONVERSATION_CACHE_MIB=2048
+      -e STRATA_CONVERSATION_CACHE_SLOTS=4
+      -e STRATA_ALLOWED_HOSTS={{ llm_inference_host }},{{ services.strata.domain }}
+      -e PORT=${PORT}
+      -e STRATA_GPU_UUIDS={{ gpu_3090_0_uuid }},{{ gpu_3090_1_uuid }}
+      -e STRATA_LAYER_SPLIT=auto
+      --entrypoint /bin/sh
+      {{ llamaswap_strata_image }} /strata-start.sh
+    cmd_stop: docker stop --timeout 15 ${MODEL_ID}
+    use_model_name: qwen3.8-flash-next
+    # Keep the tested Responses-to-Chat bridge until native compatibility is verified.
+    use_chat_completions_api: true
+    check_endpoint: /health
+    supports_function_calling: true
+    supports_vision: true
+    supports_reasoning: true
+    context_window: 131072
+    max_input_tokens: 131072
+    max_output_tokens: "{{ llama_n_predict_3090 }}"
+    allowed_openai_params: [extra_body, reasoning_effort]
+    # Lowest active reasoning for the HA/Local Hermes everyday trial.
+    # Keep NoThink as an explicit request variant of this same backend.
+    litellm_params:
+      reasoning_effort: low
+      temperature: 0.7
+      top_p: 0.8
+      presence_penalty: 1.5
+      extra_body:
+        chat_template_kwargs:
+          enable_thinking: true
+    group: "3090"
+    variants:
+      nothink:
+        reasoning_effort: none
+        temperature: 0.7
+        top_p: 0.8
+        presence_penalty: 1.5
+        extra_body:
+          chat_template_kwargs:
+            enable_thinking: false
+
+  - alias: Qwen3.8-Flash-Next-IQ2_XS-Strata-3GPU
+    # Explicit experiment only: also uses GPU2, like the existing Flash-Next
+    # llama.cpp profile. Keep the same quant, context and RAM budget as 2GPU.
+    cmd: >-
+      docker run --rm --init --pull never --name ${MODEL_ID}
+      --runtime nvidia
+      --gpus '"device={{ gpu_3090_0_uuid }},{{ gpu_3090_1_uuid }},{{ gpu_5060ti_uuid }}"'
+      --network container:llama-swap
+      --memory 28g --memory-swap 28g --ulimit memlock=-1
+      --log-driver local --log-opt max-size=10m --log-opt max-file=3
+      -v {{ llamaswap_strata_data_path }}:/data
+      -v {{ llamaswap_config_path }}/strata-start.sh:/strata-start.sh:ro
+      -e PORT=${PORT}
+      -e STRATA_GPU_UUIDS={{ gpu_3090_0_uuid }},{{ gpu_3090_1_uuid }},{{ gpu_5060ti_uuid }}
+      -e STRATA_LAYER_SPLIT=16,32
+      --entrypoint /bin/sh
+      {{ llamaswap_strata_image }} /strata-start.sh
+    cmd_stop: docker stop --timeout 15 ${MODEL_ID}
+    use_model_name: qwen3.8-flash-next
+    check_endpoint: /health
+    supports_function_calling: true
+    supports_vision: false
+    supports_reasoning: true
+    context_window: 131072
+    max_input_tokens: 131072
+    max_output_tokens: "{{ llama_n_predict_3090 }}"
+    allowed_openai_params: [reasoning_effort]
+    group: "3090"
 
   - alias: Qwen3.8-Flash-Next-Q3-3GPU
     # Official llama.cpp PR #27742 merge, pinned by commit. Keep the 51B PLE

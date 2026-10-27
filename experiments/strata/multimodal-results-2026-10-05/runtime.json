@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-04T23:09:31.290322+00:00",
+  "models": [
+    {
+      "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-embedding",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-tts",
+      "state": "ready"
+    },
+    {
+      "model": "whisper-large-v3-turbo-q8-crispasr",
+      "state": "ready"
+    }
+  ],
+  "vision": {
+    "enabled": true,
+    "available": true,
+    "error": null
+  },
+  "context": {
+    "native": 131072,
+    "max_positions": 131072
+  },
+  "concurrency": {
+    "serving": 1,
+    "requested": 1
+  },
+  "memory_current_bytes": 26234245120,
+  "memory_peak_bytes": 26724675584,
+  "swap_bytes": 0,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "gpus_csv": "0, NVIDIA GeForce RTX 3090, 19846, 24576\n1, NVIDIA GeForce RTX 3090, 19952, 24576\n2, NVIDIA GeForce RTX 5060 Ti, 527, 16311\n",
+  "image_id": "sha256:a2515f2801a4b7d30901ae54a10905a0a4109e98e416c9547b27265179a5687e"
+}

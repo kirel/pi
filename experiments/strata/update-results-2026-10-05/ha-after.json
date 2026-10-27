@@ -1,0 +1,30 @@
+[
+  {
+    "agent": "conversation.home_nano_ai_agent",
+    "repeat": 0,
+    "elapsed_s": 15.92031067237258,
+    "math_pass": true,
+    "response_type": "action_done"
+  },
+  {
+    "agent": "conversation.home_nano_ai_agent",
+    "repeat": 1,
+    "elapsed_s": 0.07800878211855888,
+    "math_pass": true,
+    "response_type": "action_done"
+  },
+  {
+    "agent": "conversation.local_hermes_hermes_local_ai_agent",
+    "repeat": 0,
+    "elapsed_s": 24.474432323127985,
+    "math_pass": true,
+    "response_type": "action_done"
+  },
+  {
+    "agent": "conversation.local_hermes_hermes_local_ai_agent",
+    "repeat": 1,
+    "elapsed_s": 2.8153712302446365,
+    "math_pass": true,
+    "response_type": "action_done"
+  }
+]

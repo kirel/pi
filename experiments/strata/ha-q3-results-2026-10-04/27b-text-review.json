@@ -1,0 +1,629 @@
+{
+  "judge": "Codex assistant, not blinded or independent; semantic/style rubric only, completion checked separately",
+  "grades": [
+    {
+      "id": "light-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-1",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Widersprüchliche Bestätigung: Deckenlicht aus und zugleich weiterhin an."
+    },
+    {
+      "id": "compound-2",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Klaren Auftrag fälschlich als Fehlauslösung abgebrochen."
+    },
+    {
+      "id": "compound-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-4",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Klaren Auftrag fälschlich als Fehlauslösung abgebrochen."
+    },
+    {
+      "id": "compound-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-6",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-7",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Klaren Auftrag fälschlich als Fehlauslösung abgebrochen."
+    },
+    {
+      "id": "other-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-0",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Vorhandenen Balkonsensor nicht gefunden."
+    },
+    {
+      "id": "state-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-6",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-7",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Unbekannten Batteriestand als 64 Prozent erfunden."
+    },
+    {
+      "id": "state-8",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-9",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-10",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-11",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "clarify-0",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Abgebrochen statt die Mehrdeutigkeit zu klären."
+    },
+    {
+      "id": "clarify-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "clarify-2",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Abgebrochen statt einen konkreten Wunsch zu erfragen."
+    },
+    {
+      "id": "clarify-3",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Abgebrochen statt die Mehrdeutigkeit zu klären."
+    },
+    {
+      "id": "clarify-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "clarify-5",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "clarify-6",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "clarify-7",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-1",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-4",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "voice-stop",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "followup-correction",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "followup-brighter",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "failure-0",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "failure-1",
+      "seed": 20261004,
+      "text_pass": false,
+      "reason": "Erfolg behauptet, obwohl das Rollo nicht erreichbar ist."
+    },
+    {
+      "id": "failure-2",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "failure-3",
+      "seed": 20261004,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "light-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-1",
+      "seed": 20261005,
+      "text_pass": false,
+      "reason": "Behauptet fälschlich, es gäbe nur ein Küchenlicht."
+    },
+    {
+      "id": "compound-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-4",
+      "seed": 20261005,
+      "text_pass": false,
+      "reason": "Klaren Auftrag fälschlich als Fehlauslösung abgebrochen."
+    },
+    {
+      "id": "compound-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-6",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "compound-7",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "other-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-5",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-6",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-7",
+      "seed": 20261005,
+      "text_pass": false,
+      "reason": "Unbekannten Batteriestand als 87 Prozent erfunden."
+    },
+    {
+      "id": "state-8",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-9",
+      "seed": 20261005,
+      "text_pass": false,
+      "reason": "Vorhandenen Wohnzimmerlautsprecher nicht gefunden."
+    },
+    {
+      "id": "state-10",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "state-11",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "clarify-0",
+      "seed": 20261005,
+      "text_pass": false,
+      "reason": "Abgebrochen statt die Mehrdeutigkeit zu klären."
+    },
+    {
+      "id": "clarify-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "clarify-2",
+      "seed": 20261005,
+      "text_pass": false,
+      "reason": "Ungewollte Aktionen angefordert und abgelehnte Aktionen als gesperrte Steuerung ausgelegt."
+    },
+    {
+      "id": "clarify-3",
+      "seed": 20261005,
+      "text_pass": false,
+      "reason": "Abgebrochen statt die Mehrdeutigkeit zu klären."
+    },
+    {
+      "id": "clarify-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "clarify-5",
+      "seed": 20261005,
+      "text_pass": false,
+      "reason": "Gäste-Bad erfunden; fehlende Heizungsaktion nicht erklärt."
+    },
+    {
+      "id": "clarify-6",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "clarify-7",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "noise-4",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "voice-stop",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "followup-correction",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "followup-brighter",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "failure-0",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "failure-1",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "failure-2",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    },
+    {
+      "id": "failure-3",
+      "seed": 20261005,
+      "text_pass": true,
+      "reason": "Rubrik erfüllt; Aktionsbeleg wird separat geprüft."
+    }
+  ]
+}

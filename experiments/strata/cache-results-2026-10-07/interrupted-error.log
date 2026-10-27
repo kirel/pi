@@ -1,0 +1,12 @@
+
+Traceback (most recent call last):
+  File "/home/daniel/code/pi/experiments/strata/benchmark_cache_01401.py", line 213, in <module>
+    if __name__ == '__main__': main()
+                               ^^^^^^
+  File "/home/daniel/code/pi/experiments/strata/benchmark_cache_01401.py", line 191, in main
+    result = generate(history + [{'role': 'user', 'content': 'What is ' + expression + '?'}])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daniel/code/pi/experiments/strata/benchmark_cache_01401.py", line 139, in generate
+    assert finish == 'stop' and re.findall(r'\d+', visible) == ['42'], (finish, visible)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('stop', '44')

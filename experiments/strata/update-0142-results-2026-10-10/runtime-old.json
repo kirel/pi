@@ -1,0 +1,70 @@
+{
+  "image": "kirelabs/strata:fb58e0dbc839-sm86-sm120-vision",
+  "memory": 30064771072,
+  "memory_swap": 30064771072,
+  "devices": [
+    {
+      "Driver": "",
+      "Count": 0,
+      "DeviceIDs": [
+        "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+        "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+      ],
+      "Capabilities": [
+        [
+          "gpu"
+        ]
+      ],
+      "Options": {}
+    }
+  ],
+  "config": {
+    "gpus": null,
+    "layer_split": "auto",
+    "gpu_order": null,
+    "parallel": null,
+    "low_ram": null,
+    "context": null,
+    "kv": null,
+    "vision": {
+      "exe": "/opt/strata/engine/strata-vision",
+      "mmproj": "/data/models/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+      "model": "/data/models/IQ3_XXS/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf",
+      "gpu": true,
+      "max_tokens": 1024
+    }
+  },
+  "feature_env": {
+    "STRATA_ROUTE_TAIL_SKIP": null,
+    "STRATA_PCIE_FRAC_DEFAULT": null,
+    "STRATA_PREFILL_CPU_SHARE": null
+  },
+  "engine": {
+    "model": "qwen3.8-flash-next-iq3_xxs",
+    "max_context": 131072,
+    "images": true,
+    "version": "0.1.41",
+    "context": 131072,
+    "kv": "int8",
+    "kv_resident": 0,
+    "expert_slots": 12910,
+    "expert_cache_mib": 20245,
+    "expert_slots_primary": 7680,
+    "expert_cache_primary_mib": 10962,
+    "spec": 6,
+    "mtp_max": 4,
+    "lookup": 3,
+    "vram_free_mib": 4426,
+    "cvec": 0,
+    "arena_mib": 0,
+    "pool_workers": 5,
+    "pcie_frac": "0.03",
+    "spec_min_p": "0.50",
+    "conversation_cache_mib": 2048,
+    "conversation_cache_slots": 4,
+    "conversation_cache_min_free_mib": 6144,
+    "tail_role_token": -1,
+    "vram_elastic": 0,
+    "engine": "0.1.41"
+  }
+}

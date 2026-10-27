@@ -1,0 +1,98 @@
+{
+  "4096": {
+    "metrics": {
+      "decode_tok_s": {
+        "4": 70.6,
+        "6": 71.5,
+        "change_percent": 1.2747875354107707
+      },
+      "ttft_s": {
+        "4": 13.033776530064642,
+        "6": 13.206832661060616,
+        "change_percent": 1.327751251502507
+      },
+      "elapsed_s": {
+        "4": 27.51364932814613,
+        "6": 27.498266662005335,
+        "change_percent": -0.05590921784794922
+      }
+    },
+    "paired_decode_changes_percent": [
+      1.2747875354107707,
+      -3.53460972017674,
+      -0.13966480446926388
+    ],
+    "thermal_after_samples": 0
+  },
+  "65536": {
+    "metrics": {
+      "decode_tok_s": {
+        "4": 57.9,
+        "6": 57.9,
+        "change_percent": 0.0
+      },
+      "ttft_s": {
+        "4": 84.92054305784404,
+        "6": 69.31586721190251,
+        "change_percent": -18.37561947208972
+      },
+      "elapsed_s": {
+        "4": 102.52029689098708,
+        "6": 87.5764569148887,
+        "change_percent": -14.576469664332537
+      }
+    },
+    "paired_decode_changes_percent": [
+      7.001795332136451,
+      -0.5154639175257825,
+      -3.2815198618307395
+    ],
+    "thermal_after_samples": 6
+  },
+  "quality": {
+    "4": [
+      {
+        "case": "light-0",
+        "passed": true
+      },
+      {
+        "case": "compound-2",
+        "passed": true
+      },
+      {
+        "case": "other-0",
+        "passed": true
+      },
+      {
+        "case": "noise-0",
+        "passed": true
+      },
+      {
+        "case": "failure-0",
+        "passed": true
+      }
+    ],
+    "6": [
+      {
+        "case": "light-0",
+        "passed": true
+      },
+      {
+        "case": "compound-2",
+        "passed": true
+      },
+      {
+        "case": "other-0",
+        "passed": true
+      },
+      {
+        "case": "noise-0",
+        "passed": true
+      },
+      {
+        "case": "failure-0",
+        "passed": true
+      }
+    ]
+  }
+}

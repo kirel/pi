@@ -1,0 +1,107 @@
+{
+  "image": "kirelabs/strata:82f46a8c8f47-sm86-sm120-vision",
+  "devices": [
+    {
+      "Driver": "",
+      "Count": 0,
+      "DeviceIDs": [
+        "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+        "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+      ],
+      "Capabilities": [
+        [
+          "gpu"
+        ]
+      ],
+      "Options": {}
+    }
+  ],
+  "memory_limit": 30064771072,
+  "state": {
+    "Status": "running",
+    "Running": true,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 3801683,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-07T07:53:35.136036921Z",
+    "FinishedAt": "0001-01-01T00:00:00Z",
+    "Health": {
+      "Status": "healthy",
+      "FailingStreak": 0,
+      "Log": [
+        {
+          "Start": "2026-10-07T09:54:00.453398807+02:00",
+          "End": "2026-10-07T09:54:00.489870748+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-07T09:54:05.490199507+02:00",
+          "End": "2026-10-07T09:54:05.518780543+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-07T09:54:10.519572614+02:00",
+          "End": "2026-10-07T09:54:10.565301715+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-07T09:54:15.566311141+02:00",
+          "End": "2026-10-07T09:54:15.594599767+02:00",
+          "ExitCode": 0,
+          "Output": "{\"status\": \"ok\", \"max_context\": 131072, \"model\": \"qwen3.8-flash-next-iq3_xxs\", \"images\": true, \"api_key\": false, \"loaded\": true, \"service\": \"strata\"}"
+        },
+        {
+          "Start": "2026-10-07T09:54:45.594966145+02:00",
+          "End": "2026-10-07T09:54:45.624030513+02:00",
+          "ExitCode": 0,
+          "Output": "{\"status\": \"ok\", \"max_context\": 131072, \"model\": \"qwen3.8-flash-next-iq3_xxs\", \"images\": true, \"api_key\": false, \"loaded\": true, \"service\": \"strata\"}"
+        }
+      ]
+    }
+  },
+  "engine": {
+    "model": "qwen3.8-flash-next-iq3_xxs",
+    "max_context": 131072,
+    "images": true,
+    "version": "0.1.40",
+    "context": 131072,
+    "kv": "int8",
+    "kv_resident": 0,
+    "expert_slots": 12376,
+    "expert_cache_mib": 20305,
+    "expert_slots_primary": 7116,
+    "expert_cache_primary_mib": 10556,
+    "spec": 6,
+    "mtp_max": 4,
+    "lookup": 3,
+    "vram_free_mib": 4374,
+    "cvec": 0,
+    "arena_mib": 0,
+    "pool_workers": 5,
+    "pcie_frac": "0.02",
+    "spec_min_p": "0.50",
+    "conversation_cache_mib": 2048,
+    "conversation_cache_slots": 4,
+    "conversation_cache_min_free_mib": 6144,
+    "tail_role_token": -1,
+    "vram_elastic": 0,
+    "engine": "0.1.40"
+  },
+  "vision": {
+    "enabled": true,
+    "available": true,
+    "error": null
+  },
+  "source_hashes_verified": {
+    "serve/frontend.py": "2c9dca1d85e67953c29f3279714e1323f73242e18ee004b66cfa3061441aeb5e",
+    "serve/server.py": "cfed32b2be52ffde372aebb8a4ab889234a9f4fb3aa4ad17dfdb6f54b833773b"
+  },
+  "source_commit": "82f46a8c8f475f001ad76d92f58f4a4f8ffb0253"
+}

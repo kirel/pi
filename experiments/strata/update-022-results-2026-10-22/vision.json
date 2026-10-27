@@ -1,0 +1,90 @@
+[
+  {
+    "case": "shapes",
+    "model": "qwen3.8-flash-next",
+    "url": "https://strata.kirelabs.org",
+    "passed": true,
+    "elapsed_s": 7.597944238994387,
+    "reply": {
+      "id": "chatcmpl-868ef1d38d024421b6e5eed0",
+      "object": "chat.completion",
+      "created": 1792693720,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Hier sind die drei farbigen Formen im Bild:\n\n1.  **Kreis**: Er ist rot und befindet sich oben links im Bild.\n2.  **Rechteck**: Es ist blau und liegt unten links, direkt unter dem roten Kreis.\n3.  **Dreieck**: Es ist grün und steht auf der rechten Seite des Bildes."
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 442,
+        "completion_tokens": 75,
+        "total_tokens": 517,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 442,
+        "prompt_ms": 6183.3,
+        "prompt_per_token_ms": 13.989,
+        "prompt_per_second": 71.5,
+        "predicted_n": 75,
+        "predicted_ms": 1259.6,
+        "predicted_per_token_ms": 16.795,
+        "predicted_per_second": 59.5,
+        "draft_n": 64,
+        "draft_n_accepted": 43
+      }
+    }
+  },
+  {
+    "case": "ocr",
+    "model": "qwen3.8-flash-next",
+    "url": "https://strata.kirelabs.org",
+    "passed": true,
+    "elapsed_s": 2.836017484005424,
+    "reply": {
+      "id": "chatcmpl-0e79e68ba4054e60ad478d9f",
+      "object": "chat.completion",
+      "created": 1792693727,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "4827"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 442,
+        "completion_tokens": 5,
+        "total_tokens": 447,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 442,
+        "prompt_ms": 2730.6,
+        "prompt_per_token_ms": 6.178,
+        "prompt_per_second": 161.9,
+        "predicted_n": 5,
+        "predicted_ms": 68.8,
+        "predicted_per_token_ms": 13.76,
+        "predicted_per_second": 72.7,
+        "draft_n": 3,
+        "draft_n_accepted": 3
+      }
+    }
+  }
+]

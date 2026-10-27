@@ -1,0 +1,10 @@
+{
+  "tts": {
+    "elapsed_s": 1.3191066759754904,
+    "wav_bytes": 109404
+  },
+  "asr": {
+    "elapsed_s": 0.2883797719841823,
+    "text": " Das ist ein kurzer Funktionstest."
+  }
+}

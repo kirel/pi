@@ -1,0 +1,327 @@
+{
+  "at": 1791265645.3471646,
+  "status": {
+    "service": "strata",
+    "model": "qwen3.8-flash-next-iq2_xs",
+    "loaded": true,
+    "auto_load": true,
+    "structured_output": {
+      "formats": [
+        "json_object",
+        "json_schema"
+      ],
+      "method": "prompt_and_validate",
+      "constrained_decoding": false,
+      "stream_buffered": true
+    },
+    "engine": "0.1.39",
+    "started": 1791265644,
+    "uptime_s": 1,
+    "cache_max_tokens": 131072,
+    "context": {
+      "native": 131072,
+      "max_positions": 131072
+    },
+    "concurrency": {
+      "serving": 1,
+      "requested": 1
+    },
+    "dialects": [
+      "/v1/chat/completions",
+      "/v1/messages",
+      "/v1/responses"
+    ],
+    "vision": {
+      "enabled": false,
+      "available": false,
+      "error": null
+    },
+    "activity": {
+      "requests": 1,
+      "in_flight": 0,
+      "last_request_at": 1791265645
+    },
+    "last_timings": {
+      "cache_n": 0,
+      "prompt_n": 27,
+      "prompt_ms": 689.0,
+      "prompt_per_token_ms": 25.519,
+      "prompt_per_second": 39.2,
+      "predicted_n": 3,
+      "predicted_ms": 231.2,
+      "predicted_per_token_ms": 77.067,
+      "predicted_per_second": 13.0,
+      "draft_n": 3,
+      "draft_n_accepted": 3,
+      "at": 1791265645
+    },
+    "vram": {
+      "elastic": false
+    },
+    "machine": {
+      "at": 1791265645,
+      "gpu": {
+        "name": "NVIDIA GeForce RTX 3090 + NVIDIA GeForce RTX 3090",
+        "used_mib": 40423.0,
+        "total_mib": 49152.0,
+        "util_pct": 3.0,
+        "temp_c": 87,
+        "power_w": 282.23699999999997
+      },
+      "ram": {
+        "used_gib": 15.0,
+        "total_gib": 46.9
+      }
+    }
+  },
+  "metrics": {
+    "engine": {
+      "model": "qwen3.8-flash-next-iq2_xs",
+      "max_context": 131072,
+      "images": false,
+      "version": "0.1.39",
+      "context": 131072,
+      "kv": "int8",
+      "kv_resident": 0,
+      "expert_slots": 16493,
+      "expert_cache_mib": 22632,
+      "expert_slots_primary": 9017,
+      "expert_cache_primary_mib": 12179,
+      "spec": 6,
+      "mtp_max": 4,
+      "lookup": 3,
+      "vram_free_mib": 4389,
+      "cvec": 0,
+      "arena_mib": 0,
+      "pool_workers": 5,
+      "pcie_frac": "0.34",
+      "spec_min_p": "0.50",
+      "conversation_cache_mib": 0,
+      "conversation_cache_slots": 4,
+      "conversation_cache_min_free_mib": 2560,
+      "tail_role_token": -1,
+      "vram_elastic": 0,
+      "engine": "0.1.39"
+    },
+    "live": {
+      "state": "idle",
+      "queued": 0,
+      "phase": null,
+      "prompt_tokens": null,
+      "prompt_read": null,
+      "prompt_total": null,
+      "generated": null,
+      "max_tokens": null,
+      "elapsed_s": null,
+      "tok_s": null,
+      "tok_s_mean": null,
+      "prefill_tok_s_mean": null,
+      "tok_s_window_s": null
+    },
+    "requests": [
+      {
+        "projection": null,
+        "time": 1791265644.4090557,
+        "duration_s": 0.9,
+        "finish": "stop",
+        "prompt_tokens": 27,
+        "reused": 0,
+        "output_tokens": 3,
+        "prompt_total": 27,
+        "prompt_read": 27,
+        "engine_generated": 3,
+        "prompt_ms": 689.0,
+        "decode_ms": 231.2,
+        "decode_tok_s": 13.0,
+        "hit_rate": 0.832,
+        "pcie_share": 0.0,
+        "ram_blobs": 0,
+        "file_blobs": 0,
+        "file_mb": 483.6,
+        "drafts_offered": 3,
+        "drafts_accepted": 3
+      }
+    ],
+    "conversation_cache": {
+      "enabled": false,
+      "budget_mib": 0,
+      "slots": 4,
+      "parked": 0,
+      "bytes": 0,
+      "evictions": 0,
+      "parks": 0,
+      "restores": 0,
+      "last_event": null,
+      "last_tokens": null,
+      "last_at": null,
+      "requests": 1,
+      "requests_reused": 0,
+      "reused_tokens": 0,
+      "prompt_tokens": 27,
+      "last_reused": 0,
+      "last_prompt": 27
+    },
+    "requests_kept": 1,
+    "totals": {
+      "since": 1791265644.289964,
+      "requests": 1,
+      "prompt_tokens": 27,
+      "reused": 0,
+      "output_tokens": 3,
+      "prompt_ms": 689.0,
+      "decode_ms": 231.2,
+      "drafts_offered": 3,
+      "drafts_accepted": 3
+    },
+    "hardware": {
+      "gpus": [
+        {
+          "index": 0,
+          "util": 6,
+          "mem_used": 21167079424,
+          "mem_total": 25769803776,
+          "temp": 87,
+          "power": 151.564
+        },
+        {
+          "index": 1,
+          "util": 0,
+          "mem_used": 21219246080,
+          "mem_total": 25769803776,
+          "temp": 84,
+          "power": 130.673
+        }
+      ],
+      "gpu_util": 3.0,
+      "gpu_mem_used": 42386325504,
+      "gpu_mem_total": 51539607552,
+      "gpu_temp": 87,
+      "gpu_power": 282.23699999999997,
+      "gpu_power_limit": 500.0,
+      "gpu_pcie_gen": 4,
+      "gpu_pcie_gen_max": 4,
+      "gpu_pcie_width": 8,
+      "gpu_pcie_rx_mb": 0.76171875,
+      "gpu_pcie_tx_mb": 2.0966796875,
+      "cpu": 0.0,
+      "ram_used": 16139767808,
+      "ram_total": 50363498496,
+      "disk_read_mb": null,
+      "disk_write_mb": null,
+      "tok_s": 0.0,
+      "tok_s_mean": 0,
+      "prefill_tok_s_mean": null
+    },
+    "hardware_static": {
+      "gpu_name": "NVIDIA GeForce RTX 3090 + NVIDIA GeForce RTX 3090",
+      "gpu_count": 2,
+      "cpu_name": "12th Gen Intel(R) Core(TM) i5-12500",
+      "cores": 6,
+      "threads": 12,
+      "psutil": true
+    },
+    "history": {
+      "gpu_util": [
+        3.0
+      ],
+      "gpu_mem_used": [
+        42386325504
+      ],
+      "gpu_temp": [
+        87
+      ],
+      "gpu_power": [
+        282.24
+      ],
+      "gpu_pcie_rx_mb": [
+        0.76
+      ],
+      "cpu": [
+        0.0
+      ],
+      "ram_used": [
+        16139767808
+      ],
+      "disk_read_mb": [
+        null
+      ],
+      "tok_s": [
+        0.0
+      ],
+      "prefill_tok_s_mean": [
+        null
+      ]
+    },
+    "time": 1791265645.3495111
+  },
+  "image": "kirelabs/strata:6f32ec070f23-sm86-sm120-vision",
+  "state": {
+    "Status": "running",
+    "Running": true,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 3097343,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-06T05:46:53.169020325Z",
+    "FinishedAt": "0001-01-01T00:00:00Z",
+    "Health": {
+      "Status": "starting",
+      "FailingStreak": 0,
+      "Log": [
+        {
+          "Start": "2026-10-06T07:47:03.425787616+02:00",
+          "End": "2026-10-06T07:47:03.452128685+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-06T07:47:08.453300712+02:00",
+          "End": "2026-10-06T07:47:08.480150171+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-06T07:47:13.480683343+02:00",
+          "End": "2026-10-06T07:47:13.515620868+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-06T07:47:18.516527564+02:00",
+          "End": "2026-10-06T07:47:18.562676842+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-06T07:47:23.563687962+02:00",
+          "End": "2026-10-06T07:47:23.596815468+02:00",
+          "ExitCode": 1,
+          "Output": ""
+        }
+      ]
+    }
+  },
+  "memory_limit": 30064771072,
+  "devices": [
+    {
+      "Driver": "",
+      "Count": 0,
+      "DeviceIDs": [
+        "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+        "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+      ],
+      "Capabilities": [
+        [
+          "gpu"
+        ]
+      ],
+      "Options": {}
+    }
+  ],
+  "gpu": "0, NVIDIA GeForce RTX 3090, 19772 MiB, 24576 MiB, 50 %\n1, NVIDIA GeForce RTX 3090, 19831 MiB, 24576 MiB, 58 %\n2, NVIDIA GeForce RTX 5060 Ti, 14831 MiB, 16311 MiB, 0 %\n",
+  "memory": "               total        used        free      shared  buff/cache   available\nMem:           48030       15704        2624        1636       31936       32326\nSwap:          32767       10451       22316\n",
+  "cgroup": "low 0\nhigh 0\nmax 775\noom 0\noom_kill 0\noom_group_kill 0\n"
+}

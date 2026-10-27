@@ -1,0 +1,110 @@
+{
+  "reasoning_effort": "low",
+  "max_tokens": 2048,
+  "reasoning_chars": 432,
+  "actions_pass": true,
+  "finished": true,
+  "final_text": "Deckenlicht im Wohnzimmer aus.",
+  "elapsed_s": 26.087158251029905,
+  "first_reply_s": 24.096227664034814,
+  "first_action_s": 24.096284739032853,
+  "reads": 0,
+  "rounds": 2,
+  "unwanted_or_invalid_calls": [],
+  "done": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "already_satisfied": [],
+  "attempted": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "replies": [
+    {
+      "id": "chatcmpl-4c2217063ce946518e4dea4a",
+      "object": "chat.completion",
+      "created": 1791265045,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "reasoning_content": "The user wants to turn off the ceiling light in the living room (Wohnzimmer). I'll use the HassTurnOff tool with area \"Wohnzimmer\" and domain \"light\". Let me also consider using GetLiveContext first to find the specific entity, but since the request is clear enough, I can directly use HassTurnOff.\n",
+            "tool_calls": [
+              {
+                "id": "call_3fa2e0abd9cc4aed8ee5321b",
+                "type": "function",
+                "function": {
+                  "name": "intent__HassTurnOff",
+                  "arguments": "{\"area\":\"Wohnzimmer\",\"domain\":[\"light\"],\"name\":\"Deckenlicht\"}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6308,
+        "completion_tokens": 132,
+        "total_tokens": 6440,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6308,
+        "prompt_ms": 20807.6,
+        "prompt_per_token_ms": 3.299,
+        "prompt_per_second": 303.2,
+        "predicted_n": 132,
+        "predicted_ms": 3259.5,
+        "predicted_per_token_ms": 24.693,
+        "predicted_per_second": 40.5,
+        "draft_n": 118,
+        "draft_n_accepted": 90
+      }
+    },
+    {
+      "id": "chatcmpl-3ccbec845f1a4e93b468c190",
+      "object": "chat.completion",
+      "created": 1791265069,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Deckenlicht im Wohnzimmer aus.",
+            "reasoning_content": "The tool call was successful. The user asked to turn off the ceiling light in the living room, and I did that. I'll confirm briefly.\n"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6390,
+        "completion_tokens": 41,
+        "total_tokens": 6431,
+        "prompt_tokens_details": {
+          "cached_tokens": 6303
+        }
+      },
+      "timings": {
+        "cache_n": 6303,
+        "prompt_n": 87,
+        "prompt_ms": 1313.2,
+        "prompt_per_token_ms": 15.094,
+        "prompt_per_second": 66.3,
+        "predicted_n": 41,
+        "predicted_ms": 644.5,
+        "predicted_per_token_ms": 15.72,
+        "predicted_per_second": 63.6,
+        "draft_n": 29,
+        "draft_n_accepted": 23
+      }
+    }
+  ],
+  "prompt_sha256": "1afeb255158daa04bc17d1d2e5762c7890dc13dc35eec4391264415ad52a0210"
+}

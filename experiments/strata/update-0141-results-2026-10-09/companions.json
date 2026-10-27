@@ -1,0 +1,15 @@
+{
+  "embedding": {
+    "passed": true,
+    "dimensions": 1024
+  },
+  "tts": {
+    "passed": true,
+    "bytes": 109404,
+    "seconds": 2.24
+  },
+  "asr": {
+    "passed": true,
+    "text": " Das ist ein kurzer Funktionstest."
+  }
+}

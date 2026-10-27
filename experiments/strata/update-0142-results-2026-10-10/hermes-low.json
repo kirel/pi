@@ -1,0 +1,6 @@
+{
+  "model": "home-hermes",
+  "reasoning_enabled": true,
+  "reasoning_effort": "low",
+  "tool_call_count": 0
+}

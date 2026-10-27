@@ -1,0 +1,58 @@
+{
+  "elapsed_s": 43.83310912398156,
+  "first_thought_s": 42.70302909705788,
+  "first_visible_s": 43.8188446869608,
+  "answer": "42",
+  "math_pass": true,
+  "reasoning_chars": 94,
+  "usage": {
+    "prompt_tokens": 58,
+    "completion_tokens": 41,
+    "total_tokens": 99,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "native": {
+    "projection": null,
+    "time": 1791755679.1171184,
+    "duration_s": 3.5,
+    "finish": "stop",
+    "prompt_tokens": 58,
+    "reused": 0,
+    "output_tokens": 41,
+    "prompt_total": 58,
+    "prompt_read": 58,
+    "reasoning_recoveries": 0,
+    "reasoning_repeat_coverage": 0.0,
+    "engine_generated": 41,
+    "prompt_ms": 2369.5,
+    "decode_ms": 1146.6,
+    "decode_tok_s": 35.8,
+    "hit_rate": 0.768,
+    "pcie_share": 0.0,
+    "ram_blobs": 0,
+    "file_blobs": 0,
+    "file_mb": 5040.4,
+    "drafts_offered": 36,
+    "drafts_accepted": 29
+  },
+  "gpus": [
+    {
+      "index": 0,
+      "util": 7,
+      "mem_used": 21151744000,
+      "mem_total": 25769803776,
+      "temp": 65,
+      "power": 126.973
+    },
+    {
+      "index": 1,
+      "util": 83,
+      "mem_used": 21335965696,
+      "mem_total": 25769803776,
+      "temp": 60,
+      "power": 161.092
+    }
+  ]
+}

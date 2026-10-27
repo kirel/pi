@@ -1,0 +1,25 @@
+{
+  "embedding_dimensions": 1024,
+  "embedding_finite": true,
+  "wav_bytes": 109404,
+  "wav_seconds": 2.24,
+  "asr_text": " Das ist ein kurzer Funktionstest.",
+  "running": [
+    {
+      "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-embedding",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-tts",
+      "state": "ready"
+    },
+    {
+      "model": "whisper-large-v3-turbo-q8-crispasr",
+      "state": "ready"
+    }
+  ]
+}

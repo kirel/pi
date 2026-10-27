@@ -1,0 +1,97 @@
+{
+  "at": 1791229132.5031452,
+  "image": "kirelabs/strata:6f32ec070f23-sm86-sm120-vision",
+  "started": "2026-10-05T19:37:32.695801294Z",
+  "devices": [
+    {
+      "Driver": "",
+      "Count": 0,
+      "DeviceIDs": [
+        "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+        "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+      ],
+      "Capabilities": [
+        [
+          "gpu"
+        ]
+      ],
+      "Options": {}
+    }
+  ],
+  "memory_limit": 30064771072,
+  "memory_swap": 30064771072,
+  "status": {
+    "service": "strata",
+    "model": "qwen3.8-flash-next-iq3_xxs",
+    "loaded": true,
+    "auto_load": true,
+    "structured_output": {
+      "formats": [
+        "json_object",
+        "json_schema"
+      ],
+      "method": "prompt_and_validate",
+      "constrained_decoding": false,
+      "stream_buffered": true
+    },
+    "engine": "0.1.39",
+    "started": 1791229079,
+    "uptime_s": 53,
+    "cache_max_tokens": 131072,
+    "context": {
+      "native": 131072,
+      "max_positions": 131072
+    },
+    "concurrency": {
+      "serving": 1,
+      "requested": 1
+    },
+    "dialects": [
+      "/v1/chat/completions",
+      "/v1/messages",
+      "/v1/responses"
+    ],
+    "vision": {
+      "enabled": true,
+      "available": true,
+      "error": null
+    },
+    "activity": {
+      "requests": 4,
+      "in_flight": 1,
+      "last_request_at": 1791229111
+    },
+    "last_timings": {
+      "cache_n": 0,
+      "prompt_n": 16431,
+      "prompt_ms": 12818.3,
+      "prompt_per_token_ms": 0.78,
+      "prompt_per_second": 1281.8,
+      "predicted_n": 3,
+      "predicted_ms": 66.9,
+      "predicted_per_token_ms": 22.3,
+      "predicted_per_second": 44.8,
+      "draft_n": 3,
+      "draft_n_accepted": 3,
+      "at": 1791229111
+    },
+    "vram": {
+      "elastic": false
+    },
+    "machine": {
+      "at": 1791229132,
+      "gpu": {
+        "name": "NVIDIA GeForce RTX 3090 + NVIDIA GeForce RTX 3090",
+        "used_mib": 40675.0,
+        "total_mib": 49152.0,
+        "util_pct": 42.0,
+        "temp_c": 87,
+        "power_w": 399.022
+      },
+      "ram": {
+        "used_gib": 17.5,
+        "total_gib": 46.9
+      }
+    }
+  }
+}

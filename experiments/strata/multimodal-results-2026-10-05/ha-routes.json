@@ -1,0 +1,20 @@
+[
+  {
+    "agent": "conversation.home_nano_ai_agent",
+    "elapsed_s": 21.515864457935095,
+    "math_pass": true,
+    "response_type": "action_done"
+  },
+  {
+    "agent": "conversation.local_hermes_hermes_local_ai_agent",
+    "elapsed_s": 28.130120240151882,
+    "math_pass": true,
+    "response_type": "action_done"
+  },
+  {
+    "ai_task": "home-vision",
+    "elapsed_s": 12.875419069081545,
+    "data": "4827",
+    "ocr_pass": true
+  }
+]

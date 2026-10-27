@@ -1,0 +1,47 @@
+
+PLAY [Set up homelab] **********************************************************
+skipping: no hosts matched
+
+PLAY [Setup Hetzner VPS] *******************************************************
+skipping: no hosts matched
+
+PLAY [Setup Dashserv baseline] *************************************************
+skipping: no hosts matched
+
+PLAY [Setup nameserver] ********************************************************
+skipping: no hosts matched
+
+PLAY [Setup virtualhere Pi] ****************************************************
+skipping: no hosts matched
+
+PLAY [Setup ailabs] ************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ailab-ubuntu]
+
+TASK [llm_inference : Check out the pinned upstream Strata container source] ***
+ok: [ailab-ubuntu]
+
+TASK [llm_inference : Build the upstream Strata image for Ampere and Blackwell] ***
+ok: [ailab-ubuntu]
+
+TASK [llm_inference : Ensure the persistent Strata data directory exists] ******
+ok: [ailab-ubuntu]
+
+TASK [llm_inference : Install the Strata launcher with native memory reserve settings] ***
+ok: [ailab-ubuntu]
+
+TASK [llm_inference : Create llama-swap config file] ***************************
+ok: [ailab-ubuntu]
+
+PLAY [Setup OpenMediaVault backup NAS] *****************************************
+skipping: no hosts matched
+
+PLAY [Setup SSH key distribution] **********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ailab-ubuntu]
+
+PLAY RECAP *********************************************************************
+ailab-ubuntu               : ok=7    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

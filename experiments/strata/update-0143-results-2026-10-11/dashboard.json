@@ -1,0 +1,38 @@
+{
+  "dashboard_status": 200,
+  "assets": [
+    {
+      "path": "web/app.css",
+      "status": 200,
+      "bytes": 13495
+    },
+    {
+      "path": "web/app.js",
+      "status": 200,
+      "bytes": 60284
+    },
+    {
+      "path": "web/components.css",
+      "status": 200,
+      "bytes": 10548
+    },
+    {
+      "path": "web/favicon.svg",
+      "status": 200,
+      "bytes": 614
+    },
+    {
+      "path": "web/sprite.svg",
+      "status": 200,
+      "bytes": 28544
+    },
+    {
+      "path": "web/tokens.css",
+      "status": 200,
+      "bytes": 3991
+    }
+  ],
+  "metrics_version": "0.1.43",
+  "context": 131072,
+  "images": true
+}

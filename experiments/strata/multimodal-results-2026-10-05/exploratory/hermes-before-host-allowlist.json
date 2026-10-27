@@ -1,0 +1,70 @@
+[
+  {
+    "case": "shapes",
+    "model": "hermes-local",
+    "url": "http://127.0.0.1:8642",
+    "elapsed_s": 16.37098204495851,
+    "reply": {
+      "id": "chatcmpl-e6d716088624405cbb303470796c6",
+      "object": "chat.completion",
+      "created": 1791154648,
+      "model": "hermes-local",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "HTTP 403: litellm.APIError: APIError: OpenAIException - {\"error\": {\"type\": \"forbidden\", \"message\": \"Host 'REDACTED:9292' is not allowed (DNS rebinding protection). Reaching Strata under this name on purpose? Add it to \\\"allowed_hosts\\\" in the config (strata-<model>.json) or to the STRATA_ALLOWED_HOSTS environ"
+          },
+          "finish_reason": "error"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "hermes": {
+        "completed": false,
+        "partial": false,
+        "failed": true,
+        "error": "HTTP 403: litellm.APIError: APIError: OpenAIException - {\"error\": {\"type\": \"forbidden\", \"message\": \"Host 'REDACTED:9292' is not allowed (DNS rebinding protection). Reaching Strata under this name on purpose? Add it to \\\"allowed_hosts\\\" in the config (strata-<model>.json) or to the STRATA_ALLOWED_HOSTS environ",
+        "error_code": "agent_error"
+      }
+    }
+  },
+  {
+    "case": "ocr",
+    "model": "hermes-local",
+    "url": "http://127.0.0.1:8642",
+    "elapsed_s": 11.468976009986363,
+    "reply": {
+      "id": "chatcmpl-0b1d5494fd504c5dbea2b3919bfca",
+      "object": "chat.completion",
+      "created": 1791154664,
+      "model": "hermes-local",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "HTTP 403: litellm.APIError: APIError: OpenAIException - {\"error\": {\"type\": \"forbidden\", \"message\": \"Host 'REDACTED:9292' is not allowed (DNS rebinding protection). Reaching Strata under this name on purpose? Add it to \\\"allowed_hosts\\\" in the config (strata-<model>.json) or to the STRATA_ALLOWED_HOSTS environ"
+          },
+          "finish_reason": "error"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "hermes": {
+        "completed": false,
+        "partial": false,
+        "failed": true,
+        "error": "HTTP 403: litellm.APIError: APIError: OpenAIException - {\"error\": {\"type\": \"forbidden\", \"message\": \"Host 'REDACTED:9292' is not allowed (DNS rebinding protection). Reaching Strata under this name on purpose? Add it to \\\"allowed_hosts\\\" in the config (strata-<model>.json) or to the STRATA_ALLOWED_HOSTS environ",
+        "error_code": "agent_error"
+      }
+    }
+  }
+]

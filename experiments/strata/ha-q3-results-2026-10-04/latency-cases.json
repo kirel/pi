@@ -1,0 +1,315 @@
+{
+  "entities": [
+    {
+      "name": "Deckenlicht",
+      "area": "Wohnzimmer",
+      "domain": "light",
+      "state": "on",
+      "brightness": 80,
+      "entity_id": "light.deckenlicht_wohnzimmer",
+      "aliases": [
+        "Deckenlicht",
+        "Deckenlicht Wohnzimmer"
+      ]
+    },
+    {
+      "name": "Leselampe",
+      "area": "Wohnzimmer",
+      "domain": "light",
+      "state": "off",
+      "brightness": 0,
+      "entity_id": "light.leselampe_wohnzimmer",
+      "aliases": [
+        "Leselampe",
+        "Leselampe Wohnzimmer"
+      ]
+    },
+    {
+      "name": "Deckenlicht",
+      "area": "Küche",
+      "domain": "light",
+      "state": "on",
+      "brightness": 60,
+      "entity_id": "light.deckenlicht_kuche",
+      "aliases": [
+        "Deckenlicht",
+        "Deckenlicht Küche"
+      ]
+    },
+    {
+      "name": "Arbeitslicht",
+      "area": "Küche",
+      "domain": "light",
+      "state": "off",
+      "brightness": 0,
+      "entity_id": "light.arbeitslicht_kuche",
+      "aliases": [
+        "Arbeitslicht",
+        "Arbeitslicht Küche"
+      ]
+    },
+    {
+      "name": "Nachtlicht",
+      "area": "Schlafzimmer",
+      "domain": "light",
+      "state": "on",
+      "brightness": 10,
+      "entity_id": "light.nachtlicht_schlafzimmer",
+      "aliases": [
+        "Nachtlicht",
+        "Nachtlicht Schlafzimmer"
+      ]
+    },
+    {
+      "name": "Stehlampe",
+      "area": "Büro",
+      "domain": "light",
+      "state": "off",
+      "brightness": 0,
+      "entity_id": "light.stehlampe_buro",
+      "aliases": [
+        "Stehlampe",
+        "Stehlampe Büro"
+      ]
+    },
+    {
+      "name": "Rollo",
+      "area": "Wohnzimmer",
+      "domain": "cover",
+      "state": "open",
+      "position": 100,
+      "entity_id": "cover.rollo_wohnzimmer",
+      "aliases": [
+        "Rollo",
+        "Rollo Wohnzimmer"
+      ],
+      "device_class": "shutter"
+    },
+    {
+      "name": "Rollo",
+      "area": "Schlafzimmer",
+      "domain": "cover",
+      "state": "closed",
+      "position": 0,
+      "entity_id": "cover.rollo_schlafzimmer",
+      "aliases": [
+        "Rollo",
+        "Rollo Schlafzimmer"
+      ],
+      "device_class": "shutter"
+    },
+    {
+      "name": "Fenster",
+      "area": "Wohnzimmer",
+      "domain": "binary_sensor",
+      "state": "off",
+      "entity_id": "binary_sensor.fenster_wohnzimmer",
+      "aliases": [
+        "Fenster",
+        "Fenster Wohnzimmer"
+      ],
+      "device_class": "window"
+    },
+    {
+      "name": "Fenster",
+      "area": "Küche",
+      "domain": "binary_sensor",
+      "state": "on",
+      "entity_id": "binary_sensor.fenster_kuche",
+      "aliases": [
+        "Fenster",
+        "Fenster Küche"
+      ],
+      "device_class": "window"
+    },
+    {
+      "name": "Fenster",
+      "area": "Bad",
+      "domain": "binary_sensor",
+      "state": "unavailable",
+      "entity_id": "binary_sensor.fenster_bad",
+      "aliases": [
+        "Fenster",
+        "Fenster Bad"
+      ],
+      "device_class": "window"
+    },
+    {
+      "name": "Temperatur",
+      "area": "Wohnzimmer",
+      "domain": "sensor",
+      "state": "21.4",
+      "unit": "°C",
+      "entity_id": "sensor.temperatur_wohnzimmer",
+      "aliases": [
+        "Temperatur",
+        "Temperatur Wohnzimmer"
+      ],
+      "device_class": "temperature"
+    },
+    {
+      "name": "Temperatur",
+      "area": "Balkon",
+      "domain": "sensor",
+      "state": "0.0",
+      "unit": "°C",
+      "entity_id": "sensor.temperatur_balkon",
+      "aliases": [
+        "Temperatur",
+        "Temperatur Balkon"
+      ],
+      "device_class": "temperature"
+    },
+    {
+      "name": "Batterie",
+      "area": "Bad",
+      "domain": "sensor",
+      "state": "unknown",
+      "unit": "%",
+      "entity_id": "sensor.batterie_bad",
+      "aliases": [
+        "Batterie",
+        "Batterie Bad"
+      ],
+      "device_class": "battery"
+    },
+    {
+      "name": "Daniel",
+      "area": "Zuhause",
+      "domain": "person",
+      "state": "home",
+      "entity_id": "person.daniel_kirsch",
+      "aliases": [
+        "Daniel",
+        "Daniel Zuhause"
+      ]
+    },
+    {
+      "name": "Sabine",
+      "area": "Zuhause",
+      "domain": "person",
+      "state": "not_home",
+      "entity_id": "person.sabine_eichling",
+      "aliases": [
+        "Sabine",
+        "Sabine Zuhause"
+      ]
+    },
+    {
+      "name": "Zuhause",
+      "area": "Zuhause",
+      "domain": "weather",
+      "state": "rainy",
+      "temperature": 8.0,
+      "entity_id": "weather.zuhause",
+      "aliases": [
+        "Zuhause",
+        "Zuhause Zuhause"
+      ]
+    },
+    {
+      "name": "Lautsprecher",
+      "area": "Wohnzimmer",
+      "domain": "media_player",
+      "state": "playing",
+      "volume_level": 35,
+      "entity_id": "media_player.lautsprecher_wohnzimmer",
+      "aliases": [
+        "Lautsprecher",
+        "Lautsprecher Wohnzimmer"
+      ],
+      "device_class": "speaker"
+    },
+    {
+      "name": "Lautsprecher",
+      "area": "Schlafzimmer",
+      "domain": "media_player",
+      "state": "paused",
+      "volume_level": 15,
+      "entity_id": "media_player.lautsprecher_schlafzimmer",
+      "aliases": [
+        "Lautsprecher",
+        "Lautsprecher Schlafzimmer"
+      ],
+      "device_class": "speaker"
+    }
+  ],
+  "cases": [
+    {
+      "id": "light-0",
+      "category": "actions",
+      "prompt": "Mach das Deckenlicht im Wohnzimmer aus.",
+      "wanted": [
+        {
+          "name": "Deckenlicht",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Erfolg kurz und auf Deutsch bestätigen."
+    },
+    {
+      "id": "light-1",
+      "category": "actions",
+      "prompt": "Schalte die Leselampe im Wohnzimmer ein.",
+      "wanted": [
+        {
+          "name": "Leselampe",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": true
+        }
+      ],
+      "rubric": "Erfolg kurz und auf Deutsch bestätigen."
+    },
+    {
+      "id": "compound-2",
+      "category": "conditional",
+      "prompt": "Leselampe im Wohnzimmer an und Nachtlicht im Schlafzimmer aus.",
+      "wanted": [
+        {
+          "name": "Leselampe",
+          "area": "Wohnzimmer",
+          "kind": "on",
+          "value": true
+        },
+        {
+          "name": "Nachtlicht",
+          "area": "Schlafzimmer",
+          "kind": "on",
+          "value": false
+        }
+      ],
+      "rubric": "Alle und ausschließlich angeforderten Änderungen. Bedingungen vorher lesen."
+    },
+    {
+      "id": "other-0",
+      "category": "actions",
+      "prompt": "Rollo im Wohnzimmer auf 25 Prozent.",
+      "wanted": [
+        {
+          "name": "Rollo",
+          "area": "Wohnzimmer",
+          "kind": "position",
+          "value": 25
+        }
+      ],
+      "rubric": "Gewünschte Aktion korrekt und kurz bestätigen."
+    },
+    {
+      "id": "state-1",
+      "category": "state",
+      "prompt": "Wie warm ist es im Wohnzimmer?",
+      "wanted": [],
+      "rubric": "21,4 Grad."
+    },
+    {
+      "id": "state-8",
+      "category": "state",
+      "prompt": "Ist das Fenster im Bad zu?",
+      "wanted": [],
+      "rubric": "Nicht bestimmbar: nicht erreichbar."
+    }
+  ]
+}

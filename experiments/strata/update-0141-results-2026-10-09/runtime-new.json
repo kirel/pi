@@ -1,0 +1,105 @@
+{
+  "image": "kirelabs/strata:fb58e0dbc839-sm86-sm120-vision",
+  "memory": 30064771072,
+  "memory_swap": 30064771072,
+  "devices": [
+    {
+      "Driver": "",
+      "Count": 0,
+      "DeviceIDs": [
+        "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+        "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+      ],
+      "Capabilities": [
+        [
+          "gpu"
+        ]
+      ],
+      "Options": {}
+    }
+  ],
+  "engine": {
+    "model": "qwen3.8-flash-next-iq3_xxs",
+    "max_context": 131072,
+    "images": true,
+    "version": "0.1.41",
+    "context": 131072,
+    "kv": "int8",
+    "kv_resident": 0,
+    "expert_slots": 12910,
+    "expert_cache_mib": 20245,
+    "expert_slots_primary": 7680,
+    "expert_cache_primary_mib": 10962,
+    "spec": 6,
+    "mtp_max": 4,
+    "lookup": 3,
+    "vram_free_mib": 4426,
+    "cvec": 0,
+    "arena_mib": 0,
+    "pool_workers": 5,
+    "pcie_frac": "0.02",
+    "spec_min_p": "0.50",
+    "conversation_cache_mib": 2048,
+    "conversation_cache_slots": 4,
+    "conversation_cache_min_free_mib": 6144,
+    "tail_role_token": -1,
+    "vram_elastic": 0,
+    "engine": "0.1.41"
+  },
+  "cache": {
+    "enabled": true,
+    "budget_mib": 2048,
+    "slots": 4,
+    "parked": 2,
+    "bytes": 477836928,
+    "evictions": 0,
+    "parks": 2,
+    "restores": 0,
+    "last_event": "parked",
+    "last_tokens": 156,
+    "last_at": 1791523365.6729622,
+    "requests": 2,
+    "requests_reused": 0,
+    "reused_tokens": 0,
+    "prompt_tokens": 162,
+    "last_reused": 0,
+    "last_prompt": 105
+  },
+  "config": {
+    "gpus": null,
+    "layer_split": "auto",
+    "gpu_order": null,
+    "parallel": null,
+    "low_ram": null,
+    "context": null,
+    "kv": null,
+    "vision": {
+      "exe": "/opt/strata/engine/strata-vision",
+      "mmproj": "/data/models/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+      "model": "/data/models/IQ3_XXS/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf",
+      "gpu": true,
+      "max_tokens": 1024
+    }
+  },
+  "memory_events": "low 0\nhigh 0\nmax 5928\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "memory_stat": "anon 2987237376\nfile 26921406464\nkernel 151924736\nkernel_stack 901120\npagetables 96927744\nsec_pagetables 0\npercpu 1400\nsock 0\nvmalloc 12288\nshmem 1400508416\nzswap 0\nzswapped 0\nfile_mapped 26349064192\nfile_dirty 8192\nfile_writeback 0\nswapcached 0\nanon_thp 0\nfile_thp 0\nshmem_thp 0\ninactive_anon 1072312320\nactive_anon 3315433472\ninactive_file 9866752000\nactive_file 15654125568\nunevictable 0\nslab_reclaimable 44528192\nslab_unreclaimable 1110272\nslab 45638464\nworkingset_refault_anon 0\nworkingset_refault_file 4873065\nworkingset_activate_anon 0\nworkingset_activate_file 1059786\nworkingset_restore_anon 0\nworkingset_restore_file 879859\nworkingset_nodereclaim 0\npgscan 10906905\npgsteal 5683494\npgscan_kswapd 1450826\npgscan_direct 9456079\npgscan_khugepaged 0\npgsteal_kswapd 584421\npgsteal_direct 5099073\npgsteal_khugepaged 0\npgfault 2504176\npgmajfault 46043\npgrefill 2090468\npgactivate 1768181\npgdeactivate 0\npglazyfree 0\npglazyfreed 0\nzswpin 0\nzswpout 0\nzswpwb 0\nthp_fault_alloc 0\nthp_collapse_alloc 0\nthp_swpout 0\nthp_swpout_fallback 0\n",
+  "host_free": "               total        used        free      shared  buff/cache   available\nMem:           48030       19250         463        1794       30727       28779\nSwap:          32767       10478       22289\n",
+  "running": [
+    {
+      "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-embedding",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-tts",
+      "state": "ready"
+    },
+    {
+      "model": "whisper-large-v3-turbo-q8-crispasr",
+      "state": "ready"
+    }
+  ]
+}

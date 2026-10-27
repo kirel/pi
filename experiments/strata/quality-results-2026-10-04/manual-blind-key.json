@@ -1,0 +1,26 @@
+{
+  "german_summary": {
+    "A": "flash-iq2-2gpu",
+    "B": "qwen27b-vllm"
+  },
+  "german_uncertainty": {
+    "A": "qwen27b-vllm",
+    "B": "flash-iq2-2gpu"
+  },
+  "german_rewrite": {
+    "A": "flash-iq2-2gpu",
+    "B": "qwen27b-vllm"
+  },
+  "german_explanation": {
+    "A": "flash-iq2-2gpu",
+    "B": "qwen27b-vllm"
+  },
+  "german_contradiction": {
+    "A": "qwen27b-vllm",
+    "B": "flash-iq2-2gpu"
+  },
+  "code_patch_explanation": {
+    "A": "qwen27b-vllm",
+    "B": "flash-iq2-2gpu"
+  }
+}

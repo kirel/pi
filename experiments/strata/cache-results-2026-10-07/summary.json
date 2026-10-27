@@ -1,0 +1,221 @@
+{
+  "observations": 96,
+  "correct_arithmetic": 95,
+  "isolated_client_observations": 40,
+  "isolated_client_correct": 40,
+  "interrupted_additional_results": 3,
+  "all_arithmetic_results": 139,
+  "all_correct_arithmetic": 137,
+  "interrupted_failure": {
+    "block": "3-off",
+    "kind": "native-warm",
+    "length": 16384,
+    "rep": 1,
+    "expression": "20 + 22",
+    "answer": "44",
+    "expected": "42",
+    "finish": "stop",
+    "timings_available": false,
+    "reason": "Initial runner asserted correctness before saving this row; source traceback retained in failure log.",
+    "handling": "Interrupted block archived; entire last off block repeated. Error counted separately, not erased."
+  },
+  "native_low_reasoning_verified": 56,
+  "temperature_c_ranges": {
+    "0": [
+      81,
+      90
+    ],
+    "1": [
+      71,
+      91
+    ]
+  },
+  "groups": {
+    "native-16384-off": {
+      "n": 6,
+      "median_elapsed_s": 4.279256697976962,
+      "median_prompt_s": 3.9147999999999996,
+      "median_decode_s": 0.32494999999999996,
+      "reused_tokens_range": [
+        16384,
+        16384
+      ],
+      "prompt_read_range": [
+        97,
+        98
+      ],
+      "median_first_visible_s": 4.254945348540787
+    },
+    "native-32768-off": {
+      "n": 6,
+      "median_elapsed_s": 5.7949012169847265,
+      "median_prompt_s": 5.5262,
+      "median_decode_s": 0.21384999999999998,
+      "reused_tokens_range": [
+        32768,
+        32768
+      ],
+      "prompt_read_range": [
+        97,
+        98
+      ],
+      "median_first_visible_s": 5.758809063001536
+    },
+    "ha-off": {
+      "n": 8,
+      "median_elapsed_s": 2.457377441227436,
+      "median_prompt_s": 1.3726500000000001,
+      "median_decode_s": 0.6342,
+      "reused_tokens_range": [
+        8411,
+        8605
+      ],
+      "prompt_read_range": [
+        68,
+        71
+      ]
+    },
+    "hermes-off": {
+      "n": 8,
+      "median_elapsed_s": 11.357213789597154,
+      "median_prompt_s": 10.478449999999999,
+      "median_decode_s": 0.27095,
+      "reused_tokens_range": [
+        16384,
+        16384
+      ],
+      "prompt_read_range": [
+        927,
+        1120
+      ]
+    },
+    "native-16384-on": {
+      "n": 6,
+      "median_elapsed_s": 5.949034283985384,
+      "median_prompt_s": 5.615349999999999,
+      "median_decode_s": 0.28354999999999997,
+      "reused_tokens_range": [
+        16384,
+        16384
+      ],
+      "prompt_read_range": [
+        97,
+        98
+      ],
+      "median_first_visible_s": 5.9228131275158376
+    },
+    "native-32768-on": {
+      "n": 6,
+      "median_elapsed_s": 5.682776599016506,
+      "median_prompt_s": 5.42515,
+      "median_decode_s": 0.1966,
+      "reused_tokens_range": [
+        32768,
+        32768
+      ],
+      "prompt_read_range": [
+        97,
+        98
+      ],
+      "median_first_visible_s": 5.643713035504334
+    },
+    "ha-on": {
+      "n": 8,
+      "median_elapsed_s": 2.8346645142883062,
+      "median_prompt_s": 1.4251999999999998,
+      "median_decode_s": 0.7336,
+      "reused_tokens_range": [
+        8411,
+        8605
+      ],
+      "prompt_read_range": [
+        68,
+        71
+      ]
+    },
+    "hermes-on": {
+      "n": 8,
+      "median_elapsed_s": 11.353003354743123,
+      "median_prompt_s": 10.4488,
+      "median_decode_s": 0.3544,
+      "reused_tokens_range": [
+        16384,
+        16384
+      ],
+      "prompt_read_range": [
+        927,
+        1120
+      ]
+    }
+  },
+  "interpretation": "Both selectors exclude layer-split execution. Timing variation is not a feature speedup.",
+  "settings": [
+    {
+      "flags": {
+        "--layer-split": "auto"
+      },
+      "tail": false,
+      "message_boundary": "0",
+      "cuda_visible": "0,1"
+    },
+    {
+      "flags": {
+        "--layer-split": "auto"
+      },
+      "tail": true,
+      "message_boundary": "1",
+      "cuda_visible": "0,1"
+    },
+    {
+      "flags": {
+        "--layer-split": "auto"
+      },
+      "tail": true,
+      "message_boundary": "1",
+      "cuda_visible": "0,1"
+    },
+    {
+      "flags": {
+        "--layer-split": "auto"
+      },
+      "tail": false,
+      "message_boundary": "0",
+      "cuda_visible": "0,1"
+    }
+  ],
+  "client_settings": [
+    {
+      "flags": {
+        "--layer-split": "auto"
+      },
+      "tail": false,
+      "message_boundary": "0",
+      "cuda_visible": "0,1"
+    },
+    {
+      "flags": {
+        "--layer-split": "auto"
+      },
+      "tail": true,
+      "message_boundary": "1",
+      "cuda_visible": "0,1"
+    },
+    {
+      "flags": {
+        "--layer-split": "auto"
+      },
+      "tail": true,
+      "message_boundary": "1",
+      "cuda_visible": "0,1"
+    },
+    {
+      "flags": {
+        "--layer-split": "auto"
+      },
+      "tail": false,
+      "message_boundary": "0",
+      "cuda_visible": "0,1"
+    }
+  ],
+  "client_cache_correction": "Original HA ON samples hit LiteLLM response cache. Use only the separate isolated client rerun for HA timing and native attribution."
+}

@@ -1,0 +1,44 @@
+{
+  "image": "kirelabs/strata:61b3fb5dd3f1-sm86-sm120-vision",
+  "allowed_hosts": "ailab-ubuntu.lan,strata.kirelabs.org",
+  "memory": 30064771072,
+  "memory_swap": 30064771072,
+  "gpu_uuids": [
+    "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+    "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+  ],
+  "tail_skip_activation": [
+    "strata serve: STRATA_ROUTE_TAIL_SKIP=7 is ON (default): a missed expert that every token of a verify window routes at rank 7 or lower is skipped (+10..20% decode on 12-16 GB cards that miss experts, answers differ slightly from 0.1.41); STRATA_ROUTE_TAIL_SKIP=0 turns it off"
+  ],
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "native_flags": {
+    "flags": {
+      "--layer-split": "auto"
+    },
+    "tail": false,
+    "message_boundary": "0",
+    "cuda_visible": "0,1"
+  },
+  "engine": "0.1.42",
+  "activity": {
+    "requests": 2,
+    "in_flight": 0,
+    "last_request_at": 1791657157
+  },
+  "engine_settings": {
+    "version": "0.1.42",
+    "max_context": 131072,
+    "kv": "int8",
+    "images": true,
+    "conversation_cache_mib": 2048,
+    "conversation_cache_slots": 4,
+    "conversation_cache_min_free_mib": 6144
+  }
+}

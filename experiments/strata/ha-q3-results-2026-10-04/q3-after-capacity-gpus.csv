@@ -1,0 +1,4 @@
+index, uuid, memory.used [MiB], memory.free [MiB], temperature.gpu
+0, GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc, 19854 MiB, 4264 MiB, 89
+1, GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c, 19943 MiB, 4184 MiB, 90
+2, GPU-070fdafb-63c8-9e3e-635e-9c29ba36f82f, 14903 MiB, 949 MiB, 44

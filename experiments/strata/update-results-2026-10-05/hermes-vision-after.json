@@ -1,0 +1,58 @@
+[
+  {
+    "case": "shapes",
+    "model": "hermes-local",
+    "url": "http://127.0.0.1:8642",
+    "passed": true,
+    "elapsed_s": 46.13485735404538,
+    "reply": {
+      "id": "chatcmpl-31c67de0611f4604abd4bc3c702e7",
+      "object": "chat.completion",
+      "created": 1791229436,
+      "model": "hermes-local",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Das Bild zeigt drei farbige Formen auf weißem Grund:\n\n1. Roter Kreis – oben links, ein einfarbig gefüllter, mittelgroßer Kreis ohne Rand.\n2. Blauer Rectangle (Rechteck) – unten links, direkt unter dem Kreis ausgerichtet, horizontal breiter als hoch, ebenfalls ohne Rand.\n3. Grünes Dreieck – auf der rechten Seite, die größte Form, nach oben zeigend, mit einer Basis über etwa 40–50 % der Bildbreite.\n\nDarunter steht zentriert die schwarze Zahl „4827\"."
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 15688,
+        "completion_tokens": 128,
+        "total_tokens": 15816
+      }
+    }
+  },
+  {
+    "case": "ocr",
+    "model": "hermes-local",
+    "url": "http://127.0.0.1:8642",
+    "passed": true,
+    "elapsed_s": 5.687973285035696,
+    "reply": {
+      "id": "chatcmpl-a9caf7bf7d1048f096e28b270f974",
+      "object": "chat.completion",
+      "created": 1791229482,
+      "model": "hermes-local",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "4827"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 15004,
+        "completion_tokens": 5,
+        "total_tokens": 15009
+      }
+    }
+  }
+]

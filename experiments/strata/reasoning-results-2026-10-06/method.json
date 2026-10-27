@@ -1,0 +1,48 @@
+{
+  "quality": {
+    "cases": 52,
+    "seeds": [
+      20261004,
+      20261005
+    ],
+    "output_tokens_per_round": 2048,
+    "max_rounds": 6,
+    "q3_order": "Per task none/low on first seed; reversed on second.",
+    "q2_order": "Mode blocks none/low on first seed; reversed on second.",
+    "excluded": "Incomplete mixed-mode Q2 pilot excluded entirely."
+  },
+  "latency": {
+    "cases": 12,
+    "seeds": [
+      20261006,
+      20261007
+    ],
+    "order": "Fixed-mode blocks, reversed between seeds; Q2 reverses Q3 order.",
+    "paired_selection": "Both modes pass substantive task/action rubric; style-only failures allowed."
+  },
+  "speed": {
+    "q3_cold_repetitions": {
+      "4096": 3,
+      "16384": 3,
+      "65536": 3,
+      "128000": 1
+    },
+    "q2_cold_repetitions": {
+      "4096": 1,
+      "16384": 1,
+      "65536": 1
+    },
+    "decode_tokens": 1024,
+    "decode_lengths_comparable": [
+      4096
+    ],
+    "supplemental": "One unpaired Q3 Low decode at 65536; Q3 128000 math is one sample per arm.",
+    "resume": "Early Q3 speed run interrupted after cold measurements and some decode. Final stage retains these observations and appends warm 16K and Q2 measurements."
+  },
+  "grading": {
+    "reviewer": "Codex; not independent or blind",
+    "side_effects": "All unrequested attempts fail, including unsupported offered broadcast/timer/fan calls.",
+    "style": "Emoji and Markdown are tracked separately from substantive correctness."
+  },
+  "scope": "Direct native Strata model test with mocked HA tools, not the Assist/Hermes/audio route."
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "case": "shapes",
+    "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+    "url": "http://ailab-ubuntu.lan:9292/upstream/Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+    "passed": true,
+    "elapsed_s": 6.3718065220164135,
+    "reply": {
+      "id": "chatcmpl-24897c2db30d4459928f6f86",
+      "object": "chat.completion",
+      "created": 1791656676,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Hier sind die Beschreibungen der drei Formen:\n\n1.  **Form:** Kreis\n    **Farbe:** Rot\n    **Position:** Oben links\n\n2.  **Form:** Rechteck\n    **Farbe:** Blau\n    **Position:** Unten links\n\n3.  **Form:** Dreieck\n    **Farbe:** Grün\n    **Position:** Rechts"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 442,
+        "completion_tokens": 81,
+        "total_tokens": 523,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 442,
+        "prompt_ms": 4940.8,
+        "prompt_per_token_ms": 11.178,
+        "prompt_per_second": 89.5,
+        "predicted_n": 81,
+        "predicted_ms": 1195.0,
+        "predicted_per_token_ms": 14.753,
+        "predicted_per_second": 67.8,
+        "draft_n": 66,
+        "draft_n_accepted": 56
+      }
+    }
+  },
+  {
+    "case": "ocr",
+    "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+    "url": "http://ailab-ubuntu.lan:9292/upstream/Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+    "passed": true,
+    "elapsed_s": 3.0675988249713555,
+    "reply": {
+      "id": "chatcmpl-ba8d45167abd4d3394e02954",
+      "object": "chat.completion",
+      "created": 1791656682,
+      "model": "qwen3.8-flash-next-iq3_xxs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "4827"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 442,
+        "completion_tokens": 5,
+        "total_tokens": 447,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 442,
+        "prompt_ms": 3003.9,
+        "prompt_per_token_ms": 6.796,
+        "prompt_per_second": 147.1,
+        "predicted_n": 5,
+        "predicted_ms": 45.9,
+        "predicted_per_token_ms": 9.18,
+        "predicted_per_second": 108.9,
+        "draft_n": 3,
+        "draft_n_accepted": 3
+      }
+    }
+  }
+]

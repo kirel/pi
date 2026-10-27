@@ -1,0 +1,142 @@
+{
+  "image": "kirelabs/strata:61b3fb5dd3f1-sm86-sm120-vision",
+  "memory": 30064771072,
+  "memory_swap": 30064771072,
+  "devices": [
+    {
+      "Driver": "",
+      "Count": 0,
+      "DeviceIDs": [
+        "GPU-c6f73144-d84f-a322-c5c0-32f97393fbbc",
+        "GPU-7566fbd0-a6b8-d750-7bb1-360da4feee1c"
+      ],
+      "Capabilities": [
+        [
+          "gpu"
+        ]
+      ],
+      "Options": {}
+    }
+  ],
+  "config": {
+    "gpus": null,
+    "layer_split": "auto",
+    "gpu_order": null,
+    "parallel": null,
+    "low_ram": null,
+    "context": null,
+    "kv": null,
+    "vision": {
+      "exe": "/opt/strata/engine/strata-vision",
+      "mmproj": "/data/models/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+      "model": "/data/models/IQ3_XXS/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf",
+      "gpu": true,
+      "max_tokens": 1024
+    }
+  },
+  "feature_env": {
+    "STRATA_ROUTE_TAIL_SKIP": null,
+    "STRATA_PCIE_FRAC_DEFAULT": null,
+    "STRATA_PREFILL_CPU_SHARE": null,
+    "STRATA_ALLOWED_HOSTS": "ailab-ubuntu.lan,strata.kirelabs.org"
+  },
+  "revision": "61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406",
+  "source_sha_matches": {
+    "setup.py": true,
+    "serve/server.py": true
+  },
+  "build": {
+    "source": "local",
+    "version": "0.1.42",
+    "archs": [
+      86,
+      120
+    ],
+    "vision": "gpu",
+    "cuda_dirs": [
+      "/usr/local/cuda/bin",
+      "/usr/local/cuda/lib64"
+    ],
+    "src": "1e0c97588848ea0f",
+    "vision_src": "1fb2b3fb797ec402"
+  },
+  "tail_skip_activation": [
+    "strata serve: STRATA_ROUTE_TAIL_SKIP=7 is ON (default): a missed expert that every token of a verify window routes at rank 7 or lower is skipped (+10..20% decode on 12-16 GB cards that miss experts, answers differ slightly from 0.1.41); STRATA_ROUTE_TAIL_SKIP=0 turns it off"
+  ],
+  "tail_skip_counters": [
+    "strata serve: route tail skip: 2996 missed experts skipped (3286 entries) since the start",
+    "strata serve: route tail skip: 5512 missed experts skipped (6024 entries) since the start",
+    "strata serve: route tail skip: 10736 missed experts skipped (11572 entries) since the start",
+    "strata serve: route tail skip: 15267 missed experts skipped (16387 entries) since the start",
+    "strata serve: route tail skip: 18775 missed experts skipped (20095 entries) since the start",
+    "strata serve: route tail skip: 20626 missed experts skipped (22037 entries) since the start",
+    "strata serve: route tail skip: 22178 missed experts skipped (23642 entries) since the start",
+    "strata serve: route tail skip: 26054 missed experts skipped (27760 entries) since the start",
+    "strata serve: route tail skip: 29098 missed experts skipped (30948 entries) since the start",
+    "strata serve: route tail skip: 44474 missed experts skipped (47100 entries) since the start",
+    "strata serve: route tail skip: 49961 missed experts skipped (52857 entries) since the start",
+    "strata serve: route tail skip: 63276 missed experts skipped (66900 entries) since the start",
+    "strata serve: route tail skip: 74702 missed experts skipped (78913 entries) since the start",
+    "strata serve: route tail skip: 86326 missed experts skipped (91129 entries) since the start",
+    "strata serve: route tail skip: 99900 missed experts skipped (105458 entries) since the start",
+    "strata serve: route tail skip: 115319 missed experts skipped (121733 entries) since the start",
+    "strata serve: route tail skip: 134233 missed experts skipped (141650 entries) since the start",
+    "strata serve: route tail skip: 151903 missed experts skipped (160272 entries) since the start",
+    "strata serve: route tail skip: 207673 missed experts skipped (218532 entries) since the start",
+    "strata serve: route tail skip: 229290 missed experts skipped (241241 entries) since the start",
+    "strata serve: route tail skip: 242353 missed experts skipped (254930 entries) since the start",
+    "strata serve: route tail skip: 246708 missed experts skipped (259524 entries) since the start",
+    "strata serve: route tail skip: 284402 missed experts skipped (299089 entries) since the start",
+    "strata serve: route tail skip: 294643 missed experts skipped (309832 entries) since the start",
+    "strata serve: route tail skip: 296658 missed experts skipped (312029 entries) since the start",
+    "strata serve: route tail skip: 300287 missed experts skipped (315973 entries) since the start",
+    "strata serve: route tail skip: 301115 missed experts skipped (316840 entries) since the start",
+    "strata serve: route tail skip: 303293 missed experts skipped (319116 entries) since the start",
+    "strata serve: route tail skip: 435552 missed experts skipped (456415 entries) since the start"
+  ],
+  "memory_current": 27701800960,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 131063,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "memory_stat": {
+    "anon": 3955208192,
+    "file": 23542575104,
+    "kernel": 204017664,
+    "shmem": 1400508416
+  },
+  "engine": {
+    "model": "qwen3.8-flash-next-iq3_xxs",
+    "max_context": 131072,
+    "images": true,
+    "version": "0.1.42",
+    "logit_bias": 1,
+    "context": 131072,
+    "kv": "int8",
+    "kv_resident": 0,
+    "expert_slots": 12910,
+    "expert_cache_mib": 20245,
+    "expert_slots_primary": 7680,
+    "expert_cache_primary_mib": 10962,
+    "spec": 6,
+    "mtp_max": 4,
+    "lookup": 3,
+    "vram_free_mib": 4426,
+    "cvec": 0,
+    "arena_mib": 0,
+    "pool_workers": 5,
+    "pcie_frac": "0.02",
+    "spec_min_p": "0.50",
+    "conversation_cache_mib": 2048,
+    "conversation_cache_slots": 4,
+    "conversation_cache_min_free_mib": 6144,
+    "conversation_cache_min_tokens": 0,
+    "tail_role_token": -1,
+    "vram_elastic": 0,
+    "engine": "0.1.42"
+  }
+}

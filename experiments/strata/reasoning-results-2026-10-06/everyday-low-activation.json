@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-06",
+  "aliases": {
+    "home-ha": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+    "home-hermes": "Qwen3.8-Flash-Next-IQ3_XXS-Strata",
+    "home-smart": "Qwen3.8-Flash-Next-IQ3_XXS-Strata-nothink",
+    "home-vision": "Qwen3.8-Flash-Next-IQ3_XXS-Strata-nothink"
+  },
+  "default_params": {
+    "reasoning_effort": "low",
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "presence_penalty": 1.5,
+    "chat_template_kwargs": {
+      "enable_thinking": true
+    }
+  },
+  "hermes": {
+    "model": "home-hermes",
+    "reasoning_config": {
+      "enabled": true,
+      "effort": "low"
+    },
+    "smoke_session": "api-97b45ddbc195e5e8",
+    "tool_call_count": 0,
+    "messages_with_tool_calls": 0
+  },
+  "direct_proxy_checks": [
+    {
+      "model": "home-hermes",
+      "key_scope": "Local Hermes existing key",
+      "answer": "42",
+      "reasoning_chars": 98,
+      "output_tokens": 41
+    },
+    {
+      "model": "home-ha",
+      "key_scope": "HA existing integration key",
+      "answer": "42",
+      "reasoning_chars": 98,
+      "output_tokens": 41
+    },
+    {
+      "model": "home-ha",
+      "request_effort": "none",
+      "enable_thinking": false,
+      "answer": "42",
+      "reasoning_chars": 0,
+      "output_tokens": 3
+    },
+    {
+      "model": "Qwen3.8-Flash-Next-IQ3_XXS-Strata-nothink",
+      "answer": "42",
+      "reasoning_chars": 0
+    }
+  ],
+  "ha_conversations": [
+    {
+      "agent": "conversation.home_nano_ai_agent",
+      "conversation_id": "01M48G6BBWTMAPTT2RV11B4YMK",
+      "cold_elapsed_s": 33.385,
+      "followup_elapsed_s": 2.703,
+      "followup_reused_tokens": 8392,
+      "followup_prompt_read": 51
+    },
+    {
+      "agent": "conversation.local_hermes_hermes_local_ai_agent",
+      "conversation_id": "01M48G7BY4NXM51P8513WW5YGR",
+      "cold_elapsed_s": 47.645,
+      "followup_elapsed_s": [
+        7.827,
+        7.868
+      ],
+      "followup_reused_tokens": [
+        16384,
+        16384
+      ],
+      "followup_prompt_read": [
+        890,
+        934
+      ],
+      "followup_prompt_ms": [
+        6679.3,
+        7069.8
+      ],
+      "followup_decode_ms": [
+        532.1,
+        272.5
+      ]
+    }
+  ],
+  "all_answers": "42",
+  "deploy": "uv run ansible-playbook setup.yml --tags llm-tools-config --limit homelab",
+  "checks": [
+    "Ansible syntax and check mode",
+    "Effective proxy config low defaults and intact nothink variant",
+    "Proxy readiness healthy/db connected",
+    "Restricted client keys and actual HA conversation APIs",
+    "Hermes recorded reasoning_config low and no tool calls",
+    "Existing 2-GPU Strata process, vision and cache unchanged; embedding/ASR/TTS ready"
+  ],
+  "scope": "Only central proxy mapping/defaults changed. LiteLLM proxy restarted; inference and Hermes containers did not restart. No device changes, no upstream patches. Voice transport itself was not rebenchmarked."
+}

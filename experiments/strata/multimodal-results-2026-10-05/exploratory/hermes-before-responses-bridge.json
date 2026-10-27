@@ -1,0 +1,72 @@
+[
+  {
+    "case": "shapes",
+    "model": "hermes-local",
+    "url": "http://127.0.0.1:8642",
+    "passed": false,
+    "elapsed_s": 16.248187330027577,
+    "reply": {
+      "id": "chatcmpl-5c3cef7bf15a448cb21332d803f7a",
+      "object": "chat.completion",
+      "created": 1791154802,
+      "model": "hermes-local",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "API call failed after 3 retries: HTTP 404: litellm.NotFoundError: NotFoundError: OpenAIException - {\"error\": {\"message\": \"not found\"}}No fallback model group found for lookup_groups=home-hermes. Fallbacks=[{'home': ['home-remote']}, {'home-fast': ['home-remote']}, {'home-smart': ['home-remote']}]. Received Model Group=home-hermes\nAvailable M"
+          },
+          "finish_reason": "error"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "hermes": {
+        "completed": false,
+        "partial": false,
+        "failed": true,
+        "error": "HTTP 404: litellm.NotFoundError: NotFoundError: OpenAIException - {\"error\": {\"message\": \"not found\"}}No fallback model group found for lookup_groups=home-hermes. Fallbacks=[{'home': ['home-remote']}, {'home-fast': ['home-remote']}, {'home-smart': ['home-remote']}]. Received Model Group=home-hermes\nAvailable M",
+        "error_code": "agent_error"
+      }
+    }
+  },
+  {
+    "case": "ocr",
+    "model": "hermes-local",
+    "url": "http://127.0.0.1:8642",
+    "passed": false,
+    "elapsed_s": 10.689537047001068,
+    "reply": {
+      "id": "chatcmpl-f8c77e28b723492e8c2aec12a7c0d",
+      "object": "chat.completion",
+      "created": 1791154818,
+      "model": "hermes-local",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "API call failed after 3 retries: HTTP 429: No deployments available for selected model, Try again in 5 seconds. All deployments for selected model are in cooldown. Passed model=Qwen3.8-Flash-Next-IQ3_XXS-Strata-nothink. pre-call-checks=False, cooldown_list=['4939795286e7fb714b793fba58854f8fda541d94e6fbf0731530427c9c22b518']"
+          },
+          "finish_reason": "error"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "hermes": {
+        "completed": false,
+        "partial": false,
+        "failed": true,
+        "error": "HTTP 429: No deployments available for selected model, Try again in 5 seconds. All deployments for selected model are in cooldown. Passed model=Qwen3.8-Flash-Next-IQ3_XXS-Strata-nothink. pre-call-checks=False, cooldown_list=['4939795286e7fb714b793fba58854f8fda541d94e6fbf0731530427c9c22b518']",
+        "error_code": "agent_error"
+      }
+    }
+  }
+]

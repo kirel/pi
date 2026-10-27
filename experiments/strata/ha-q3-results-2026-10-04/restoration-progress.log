@@ -1,0 +1,2 @@
+Production completion passed
+{"elapsed_s": 0.7036962509155273, "embedding_dimensions": 1024, "tts_wav_bytes": 109404, "asr": {"text": " Das ist ein kurzer Funktionstest."}, "running": [{"model": "Qwen3.8-27B-Instruct-AutoRound-vLLM", "state": "ready"}, {"model": "qwen3-embedding", "state": "ready"}, {"model": "qwen3-tts", "state": "ready"}, {"model": "whisper-large-v3-turbo-q8-crispasr", "state": "ready"}], "test_containers_absent": true}

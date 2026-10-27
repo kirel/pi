@@ -1,0 +1,1778 @@
+{
+  "qwen27b-vllm": {
+    "n": 151,
+    "passed": 116,
+    "groups": {
+      "arithmetic_de/greedy": {
+        "n": 8,
+        "passed": 6,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.24783927499083802
+      },
+      "arithmetic_de/production": {
+        "n": 8,
+        "passed": 5,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.25355818602838553
+      },
+      "logic_de/greedy": {
+        "n": 8,
+        "passed": 7,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.1815900609944947
+      },
+      "logic_de/production": {
+        "n": 8,
+        "passed": 6,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.18019820854533464
+      },
+      "extraction_de/greedy": {
+        "n": 8,
+        "passed": 7,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.23464367201086134
+      },
+      "extraction_de/production": {
+        "n": 8,
+        "passed": 7,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.2407457854715176
+      },
+      "code_reading_de/greedy": {
+        "n": 6,
+        "passed": 5,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.27149623149307445
+      },
+      "code_reading_de/production": {
+        "n": 6,
+        "passed": 5,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.27157497400185093
+      },
+      "instruction_de/greedy": {
+        "n": 6,
+        "passed": 4,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.18232964802882634
+      },
+      "instruction_de/production": {
+        "n": 6,
+        "passed": 4,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.18524054551380686
+      },
+      "tool_selection_de/greedy": {
+        "n": 8,
+        "passed": 8,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.9835132099979091
+      },
+      "tool_selection_de/production": {
+        "n": 8,
+        "passed": 8,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.9981530834920704
+      },
+      "tool_loop_de/greedy": {
+        "n": 4,
+        "passed": 4,
+        "pending_manual": 0,
+        "median_elapsed_s": 1.3326220519957133
+      },
+      "tool_loop_de/production": {
+        "n": 4,
+        "passed": 4,
+        "pending_manual": 0,
+        "median_elapsed_s": 1.3478190260066185
+      },
+      "multiturn_de/greedy": {
+        "n": 2,
+        "passed": 2,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.24344705897965468
+      },
+      "multiturn_de/production": {
+        "n": 2,
+        "passed": 2,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.25476295448606834
+      },
+      "gsm8k/greedy": {
+        "n": 20,
+        "passed": 11,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.2173890630074311
+      },
+      "gsm8k/production": {
+        "n": 20,
+        "passed": 10,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.21804184099892154
+      },
+      "manual_de/greedy": {
+        "n": 6,
+        "passed": 0,
+        "pending_manual": 6,
+        "median_elapsed_s": 0.8354868719761726
+      },
+      "schema_api/greedy": {
+        "n": 2,
+        "passed": 2,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.48681005398975685
+      },
+      "long_retrieval/greedy": {
+        "n": 9,
+        "passed": 9,
+        "pending_manual": 0,
+        "median_elapsed_s": 41.10852147603873
+      }
+    },
+    "failures": [
+      {
+        "id": "discount",
+        "category": "arithmetic_de",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "cent": 63431
+        },
+        "expected": {
+          "cent": 42745
+        },
+        "error": null
+      },
+      {
+        "id": "discount",
+        "category": "arithmetic_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "cent": 53926
+        },
+        "expected": {
+          "cent": 42745
+        },
+        "error": null
+      },
+      {
+        "id": "backup_space",
+        "category": "arithmetic_de",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "gib": 240
+        },
+        "expected": {
+          "gib": 220
+        },
+        "error": null
+      },
+      {
+        "id": "backup_space",
+        "category": "arithmetic_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "gib": 230
+        },
+        "expected": {
+          "gib": 220
+        },
+        "error": null
+      },
+      {
+        "id": "probability",
+        "category": "arithmetic_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": false,
+          "answer": false
+        },
+        "actual": null,
+        "expected": {
+          "numerator": 3,
+          "denominator": 10
+        },
+        "error": null
+      },
+      {
+        "id": "timezone",
+        "category": "logic_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "date": "2026-05-31",
+          "time": "00:30"
+        },
+        "expected": {
+          "date": "2026-06-01",
+          "time": "00:30"
+        },
+        "error": null
+      },
+      {
+        "id": "latest_revision",
+        "category": "logic_de",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "value": "Revision 12, Wert neu"
+        },
+        "expected": {
+          "value": "neu"
+        },
+        "error": null
+      },
+      {
+        "id": "latest_revision",
+        "category": "logic_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "value": "Revision 12, Wert neu"
+        },
+        "expected": {
+          "value": "neu"
+        },
+        "error": null
+      },
+      {
+        "id": "temperature_missing",
+        "category": "extraction_de",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "values": [
+            {
+              "room": "Küche",
+              "celsius": 21.5
+            }
+          ]
+        },
+        "expected": {
+          "values": [
+            {
+              "room": "Küche",
+              "celsius": 21.5
+            },
+            {
+              "room": "Bad",
+              "celsius": 0.0
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "temperature_missing",
+        "category": "extraction_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": false,
+          "answer": false
+        },
+        "actual": null,
+        "expected": {
+          "values": [
+            {
+              "room": "Küche",
+              "celsius": 21.5
+            },
+            {
+              "room": "Bad",
+              "celsius": 0.0
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "comprehension",
+        "category": "code_reading_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "output": [
+            1,
+            9
+          ]
+        },
+        "expected": {
+          "output": [
+            1,
+            9,
+            25
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "stable_sort",
+        "category": "code_reading_de",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "output": [
+            "a",
+            "b",
+            "c"
+          ]
+        },
+        "expected": {
+          "output": [
+            "b",
+            "a",
+            "c"
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "ordered_names",
+        "category": "instruction_de",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "names": [
+            "Ada",
+            "Ben"
+          ]
+        },
+        "expected": {
+          "names": [
+            "Ada",
+            "Ben",
+            "Zoe"
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "ordered_names",
+        "category": "instruction_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "names": [
+            "Ada",
+            "Ben"
+          ]
+        },
+        "expected": {
+          "names": [
+            "Ada",
+            "Ben",
+            "Zoe"
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "missing_is_null",
+        "category": "instruction_de",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "battery": 0
+        },
+        "expected": {
+          "battery": null
+        },
+        "error": null
+      },
+      {
+        "id": "missing_is_null",
+        "category": "instruction_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "battery": 0
+        },
+        "expected": {
+          "battery": null
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-110",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 108
+        },
+        "expected": {
+          "answer": 45
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-110",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 42
+        },
+        "expected": {
+          "answer": 45
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-259",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 108
+        },
+        "expected": {
+          "answer": 168
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-259",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 108
+        },
+        "expected": {
+          "answer": 168
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-296",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 7
+        },
+        "expected": {
+          "answer": 3
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-296",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 7
+        },
+        "expected": {
+          "answer": 3
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-357",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 3
+        },
+        "expected": {
+          "answer": 2
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-357",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 4
+        },
+        "expected": {
+          "answer": 2
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-367",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 11
+        },
+        "expected": {
+          "answer": 19
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-367",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 29
+        },
+        "expected": {
+          "answer": 19
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-426",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 10
+        },
+        "expected": {
+          "answer": 11
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-426",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 10.5
+        },
+        "expected": {
+          "answer": 11
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-438",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 3
+        },
+        "expected": {
+          "answer": 2
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-736",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 29
+        },
+        "expected": {
+          "answer": 3
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-805",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 279.0
+        },
+        "expected": {
+          "answer": 1170
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-814",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 12.0
+        },
+        "expected": {
+          "answer": 11
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-814",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 48
+        },
+        "expected": {
+          "answer": 11
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-1071",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 155
+        },
+        "expected": {
+          "answer": 251
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-1071",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 409
+        },
+        "expected": {
+          "answer": 251
+        },
+        "error": null
+      }
+    ],
+    "primary_excluding_first_turn_protocol_cases": {
+      "passed": 112,
+      "n": 147,
+      "excluded_ids": [
+        "two_lights",
+        "shopping_exact_ids"
+      ],
+      "reason": "First-turn exact-call grading cannot assess equivalent serial execution or additional reads. Report full-loop diagnostics separately."
+    },
+    "long_retrieval_median_s": {
+      "16384": 8.520309855986852,
+      "65536": 41.10852147603873,
+      "128000": 100.85690772504313
+    },
+    "resources": {
+      "gpu": {
+        "0": {
+          "max_temperature": 91,
+          "min_free_mib": 3676,
+          "thermal_samples": 411
+        },
+        "1": {
+          "max_temperature": 93,
+          "min_free_mib": 3166,
+          "thermal_samples": 203
+        },
+        "2": {
+          "max_temperature": 49,
+          "min_free_mib": 15203,
+          "thermal_samples": 0
+        }
+      },
+      "cgroup_memory_peak_gib": 30.072101593017578,
+      "swap_current_gib": 0.0,
+      "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    }
+  },
+  "flash-iq2-2gpu": {
+    "n": 151,
+    "passed": 113,
+    "groups": {
+      "arithmetic_de/greedy": {
+        "n": 8,
+        "passed": 7,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.7711647325195372
+      },
+      "arithmetic_de/production": {
+        "n": 8,
+        "passed": 5,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.7282789185119327
+      },
+      "logic_de/greedy": {
+        "n": 8,
+        "passed": 8,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.686668993497733
+      },
+      "logic_de/production": {
+        "n": 8,
+        "passed": 7,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.6718340874940623
+      },
+      "extraction_de/greedy": {
+        "n": 8,
+        "passed": 8,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.7716240675363224
+      },
+      "extraction_de/production": {
+        "n": 8,
+        "passed": 8,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.7213073860039003
+      },
+      "code_reading_de/greedy": {
+        "n": 6,
+        "passed": 6,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.7477630774665158
+      },
+      "code_reading_de/production": {
+        "n": 6,
+        "passed": 3,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.723719217494363
+      },
+      "instruction_de/greedy": {
+        "n": 6,
+        "passed": 5,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.685913013498066
+      },
+      "instruction_de/production": {
+        "n": 6,
+        "passed": 5,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.6824299865111243
+      },
+      "tool_selection_de/greedy": {
+        "n": 8,
+        "passed": 7,
+        "pending_manual": 0,
+        "median_elapsed_s": 1.948339512979146
+      },
+      "tool_selection_de/production": {
+        "n": 8,
+        "passed": 6,
+        "pending_manual": 0,
+        "median_elapsed_s": 1.9170349899795838
+      },
+      "tool_loop_de/greedy": {
+        "n": 4,
+        "passed": 4,
+        "pending_manual": 0,
+        "median_elapsed_s": 2.2417749454907607
+      },
+      "tool_loop_de/production": {
+        "n": 4,
+        "passed": 4,
+        "pending_manual": 0,
+        "median_elapsed_s": 2.1862751835142262
+      },
+      "multiturn_de/greedy": {
+        "n": 2,
+        "passed": 2,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.7200461759930477
+      },
+      "multiturn_de/production": {
+        "n": 2,
+        "passed": 2,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.7002461234806105
+      },
+      "gsm8k/greedy": {
+        "n": 20,
+        "passed": 8,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.7977527210023254
+      },
+      "gsm8k/production": {
+        "n": 20,
+        "passed": 7,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.7889755714859348
+      },
+      "manual_de/greedy": {
+        "n": 6,
+        "passed": 0,
+        "pending_manual": 6,
+        "median_elapsed_s": 1.19320843348396
+      },
+      "schema_api/greedy": {
+        "n": 2,
+        "passed": 2,
+        "pending_manual": 0,
+        "median_elapsed_s": 0.8021756889938843
+      },
+      "long_retrieval/greedy": {
+        "n": 9,
+        "passed": 9,
+        "pending_manual": 0,
+        "median_elapsed_s": 30.375303262029774
+      }
+    },
+    "failures": [
+      {
+        "id": "energy",
+        "category": "arithmetic_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "kwh": 4.56,
+          "cent": 146
+        },
+        "expected": {
+          "kwh": 4.5,
+          "cent": 144
+        },
+        "error": null
+      },
+      {
+        "id": "discount",
+        "category": "arithmetic_de",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "cent": 431
+        },
+        "expected": {
+          "cent": 42745
+        },
+        "error": null
+      },
+      {
+        "id": "discount",
+        "category": "arithmetic_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "cent": 547
+        },
+        "expected": {
+          "cent": 42745
+        },
+        "error": null
+      },
+      {
+        "id": "transfer",
+        "category": "arithmetic_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "seconds": 838.86
+        },
+        "expected": {
+          "seconds": 819.2
+        },
+        "error": null
+      },
+      {
+        "id": "timezone",
+        "category": "logic_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "date": "2026-05-31",
+          "time": "24:30"
+        },
+        "expected": {
+          "date": "2026-06-01",
+          "time": "00:30"
+        },
+        "error": null
+      },
+      {
+        "id": "alias_list",
+        "category": "code_reading_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "output": "[1, 2, 3]"
+        },
+        "expected": {
+          "output": [
+            1,
+            2,
+            3
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "copy_list",
+        "category": "code_reading_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "output": "[1, 2]"
+        },
+        "expected": {
+          "output": [
+            1,
+            2
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "boolean_default",
+        "category": "code_reading_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "output": "[0, 5]"
+        },
+        "expected": {
+          "output": [
+            0,
+            5
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "ordered_names",
+        "category": "instruction_de",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "names": [
+            "Ada",
+            "Ben"
+          ]
+        },
+        "expected": {
+          "names": [
+            "Ada",
+            "Ben",
+            "Zoe"
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "ordered_names",
+        "category": "instruction_de",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "names": [
+            "Ada",
+            "Ben"
+          ]
+        },
+        "expected": {
+          "names": [
+            "Ada",
+            "Ben",
+            "Zoe"
+          ]
+        },
+        "error": null
+      },
+      {
+        "id": "shopping_exact_ids",
+        "category": "tool_selection_de",
+        "mode": "production",
+        "checks": {
+          "tool_calls": false,
+          "tool_finish": true
+        },
+        "actual": null,
+        "expected": null,
+        "error": null
+      },
+      {
+        "id": "two_lights",
+        "category": "tool_selection_de",
+        "mode": "greedy",
+        "checks": {
+          "tool_calls": false,
+          "tool_finish": true
+        },
+        "actual": null,
+        "expected": null,
+        "error": null
+      },
+      {
+        "id": "two_lights",
+        "category": "tool_selection_de",
+        "mode": "production",
+        "checks": {
+          "tool_calls": false,
+          "tool_finish": true
+        },
+        "actual": null,
+        "expected": null,
+        "error": null
+      },
+      {
+        "id": "gsm8k-110",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 21
+        },
+        "expected": {
+          "answer": 45
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-110",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 15
+        },
+        "expected": {
+          "answer": 45
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-193",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 12
+        },
+        "expected": {
+          "answer": 24
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-259",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 104
+        },
+        "expected": {
+          "answer": 168
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-259",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 106
+        },
+        "expected": {
+          "answer": 168
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-296",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 7
+        },
+        "expected": {
+          "answer": 3
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-296",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 7
+        },
+        "expected": {
+          "answer": 3
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-357",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 10
+        },
+        "expected": {
+          "answer": 2
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-357",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 4
+        },
+        "expected": {
+          "answer": 2
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-367",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 10
+        },
+        "expected": {
+          "answer": 19
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-367",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 31
+        },
+        "expected": {
+          "answer": 19
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-390",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 8
+        },
+        "expected": {
+          "answer": 12
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-426",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 10
+        },
+        "expected": {
+          "answer": 11
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-426",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 10
+        },
+        "expected": {
+          "answer": 11
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-438",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 3
+        },
+        "expected": {
+          "answer": 2
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-438",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 3
+        },
+        "expected": {
+          "answer": 2
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-620",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 509
+        },
+        "expected": {
+          "answer": 1509
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-620",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 1209
+        },
+        "expected": {
+          "answer": 1509
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-736",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 13
+        },
+        "expected": {
+          "answer": 3
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-736",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 13
+        },
+        "expected": {
+          "answer": 3
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-814",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 10
+        },
+        "expected": {
+          "answer": 11
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-814",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 20
+        },
+        "expected": {
+          "answer": 11
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-974",
+        "category": "gsm8k",
+        "mode": "greedy",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 11
+        },
+        "expected": {
+          "answer": 5
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-974",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 23
+        },
+        "expected": {
+          "answer": 5
+        },
+        "error": null
+      },
+      {
+        "id": "gsm8k-1071",
+        "category": "gsm8k",
+        "mode": "production",
+        "checks": {
+          "finished": true,
+          "no_extra_tools": true,
+          "json": true,
+          "answer": false
+        },
+        "actual": {
+          "answer": 269
+        },
+        "expected": {
+          "answer": 251
+        },
+        "error": null
+      }
+    ],
+    "primary_excluding_first_turn_protocol_cases": {
+      "passed": 112,
+      "n": 147,
+      "excluded_ids": [
+        "two_lights",
+        "shopping_exact_ids"
+      ],
+      "reason": "First-turn exact-call grading cannot assess equivalent serial execution or additional reads. Report full-loop diagnostics separately."
+    },
+    "long_retrieval_median_s": {
+      "16384": 10.793851991998963,
+      "65536": 30.375303262029774,
+      "128000": 54.75602194899693
+    },
+    "resources": {
+      "gpu": {
+        "0": {
+          "max_temperature": 91,
+          "min_free_mib": 4268,
+          "thermal_samples": 238
+        },
+        "1": {
+          "max_temperature": 96,
+          "min_free_mib": 4224,
+          "thermal_samples": 250
+        },
+        "2": {
+          "max_temperature": 51,
+          "min_free_mib": 15203,
+          "thermal_samples": 0
+        }
+      },
+      "cgroup_memory_peak_gib": 28.0,
+      "swap_current_gib": 0.0,
+      "memory_events": "low 0\nhigh 0\nmax 7670\noom 0\noom_kill 0\noom_group_kill 0"
+    }
+  },
+  "paired": {
+    "qwen=True/flash=True": 100,
+    "qwen=True/flash=False": 16,
+    "qwen=False/flash=False": 22,
+    "qwen=False/flash=True": 13
+  },
+  "serving": {
+    "qwen27b-serving": {
+      "4096": {
+        "ttft_s": 2.2056884764751885,
+        "elapsed_s": 12.221031250490341,
+        "decode_s": 10.015342774015153,
+        "output_tokens_per_decode_s": 51.21364252054228
+      },
+      "65536": {
+        "ttft_s": 40.545815791527275,
+        "elapsed_s": 50.10900966502959,
+        "decode_s": 9.563193873502314,
+        "output_tokens_per_decode_s": 53.434061019796076
+      }
+    },
+    "flash-iq2-serving": {
+      "4096": {
+        "ttft_s": 3.554232956521446,
+        "elapsed_s": 10.461675697006285,
+        "decode_s": 6.907442740484839,
+        "output_tokens_per_decode_s": 73.97906676717693
+      },
+      "65536": {
+        "ttft_s": 30.331840189523064,
+        "elapsed_s": 37.0096064840036,
+        "decode_s": 6.677766294480534,
+        "output_tokens_per_decode_s": 76.58748125322938
+      }
+    }
+  },
+  "manual": {
+    "flash-iq2-2gpu": 28,
+    "qwen27b-vllm": 28
+  },
+  "tool_sequence": {
+    "qwen27b-vllm": {
+      "passed": 4,
+      "n": 4,
+      "unsafe_calls": 0,
+      "strict_json_passed": 4
+    },
+    "flash-iq2-2gpu": {
+      "passed": 4,
+      "n": 4,
+      "unsafe_calls": 0,
+      "strict_json_passed": 4
+    }
+  },
+  "paired_correct_short_text": {
+    "n": 68,
+    "median_s": {
+      "qwen27b-vllm": 0.22332359349820763,
+      "flash-iq2-2gpu": 0.7277396434510592
+    }
+  }
+}

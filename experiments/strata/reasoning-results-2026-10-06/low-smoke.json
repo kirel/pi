@@ -1,0 +1,39 @@
+{
+  "raw_text_tokens": 0,
+  "prompt_tokens": 106,
+  "output_tokens": 58,
+  "cached_tokens": 0,
+  "ttft_s": 1.3646716480143368,
+  "elapsed_s": 2.26946829399094,
+  "decode_s": 0.904796645976603,
+  "output_tokens_per_decode_s": 62.99758100725094,
+  "finish_reason": "stop",
+  "input_tokens_per_ttft_s": 77.67436229384198,
+  "first_visible_s": 2.168643908982631,
+  "reasoning_effort": "low",
+  "reasoning": "The user wants me to calculate 19 + 23 and answer only 42. Let me verify: 19 + 23 = 42. Yes, that's correct. They want me to simply answer \"42\".\n",
+  "reasoning_tokens": null,
+  "usage": {
+    "prompt_tokens": 106,
+    "completion_tokens": 58,
+    "total_tokens": 164,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 106,
+    "prompt_ms": 1329.9,
+    "prompt_per_token_ms": 12.546,
+    "prompt_per_second": 79.7,
+    "predicted_n": 58,
+    "predicted_ms": 919.3,
+    "predicted_per_token_ms": 15.85,
+    "predicted_per_second": 63.1,
+    "draft_n": 45,
+    "draft_n_accepted": 41
+  },
+  "answer": "42",
+  "started_at": 1791261842.5529022
+}

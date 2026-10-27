@@ -1,0 +1,260 @@
+{
+  "llamacpp-q3-3gpu": {
+    "measurements": [
+      {
+        "raw_text_tokens": 4096,
+        "repetitions": 3,
+        "prompt_tokens": [
+          4174,
+          4175
+        ],
+        "prefill_tokens_s": 407.2734312240167,
+        "ttft_s": 10.44520626400481,
+        "input_tokens_per_ttft_s": 399.609150312714
+      },
+      {
+        "raw_text_tokens": 16384,
+        "repetitions": 3,
+        "prompt_tokens": [
+          16462,
+          16463
+        ],
+        "prefill_tokens_s": 409.3347926691426,
+        "ttft_s": 40.49348900100449,
+        "input_tokens_per_ttft_s": 406.5591878139129
+      },
+      {
+        "raw_text_tokens": 32768,
+        "repetitions": 3,
+        "prompt_tokens": [
+          32846,
+          32847
+        ],
+        "prefill_tokens_s": 385.88094209600774,
+        "ttft_s": 85.5376722009969,
+        "input_tokens_per_ttft_s": 384.00624139988213
+      },
+      {
+        "raw_text_tokens": 65536,
+        "repetitions": 3,
+        "prompt_tokens": [
+          65614,
+          65615
+        ],
+        "prefill_tokens_s": 350.08429740701206,
+        "ttft_s": 188.0007826780202,
+        "input_tokens_per_ttft_s": 349.00918530947774
+      },
+      {
+        "raw_text_tokens": 128000,
+        "repetitions": 1,
+        "prompt_tokens": [
+          128078
+        ],
+        "prefill_tokens_s": 295.1567693500332,
+        "ttft_s": 434.60868336301064,
+        "input_tokens_per_ttft_s": 294.69728724453887
+      }
+    ],
+    "gpu": [
+      {
+        "gpu_index": 0,
+        "max_temperature_c": 91,
+        "min_free_mib": 2078,
+        "thermal_active_samples": 1151,
+        "samples": 1809
+      },
+      {
+        "gpu_index": 1,
+        "max_temperature_c": 94,
+        "min_free_mib": 2406,
+        "thermal_active_samples": 1193,
+        "samples": 1809
+      },
+      {
+        "gpu_index": 2,
+        "max_temperature_c": 66,
+        "min_free_mib": 2527,
+        "thermal_active_samples": 0,
+        "samples": 1809
+      }
+    ],
+    "cgroup_memory_peak_gib": 43.32659149169922,
+    "cgroup_swap_gib": 0.5582427978515625,
+    "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+  },
+  "strata-iq2-2gpu": {
+    "measurements": [
+      {
+        "raw_text_tokens": 4096,
+        "repetitions": 3,
+        "prompt_tokens": [
+          4174,
+          4175
+        ],
+        "prefill_tokens_s": 1247.4,
+        "ttft_s": 3.370254936016863,
+        "input_tokens_per_ttft_s": 1238.778691600768
+      },
+      {
+        "raw_text_tokens": 16384,
+        "repetitions": 3,
+        "prompt_tokens": [
+          16462,
+          16463
+        ],
+        "prefill_tokens_s": 1737.2,
+        "ttft_s": 9.516295075998642,
+        "input_tokens_per_ttft_s": 1729.9799836516072
+      },
+      {
+        "raw_text_tokens": 32768,
+        "repetitions": 3,
+        "prompt_tokens": [
+          32846,
+          32847
+        ],
+        "prefill_tokens_s": 2005.4,
+        "ttft_s": 16.440335066989064,
+        "input_tokens_per_ttft_s": 1997.9519800636099
+      },
+      {
+        "raw_text_tokens": 65536,
+        "repetitions": 3,
+        "prompt_tokens": [
+          65614,
+          65615
+        ],
+        "prefill_tokens_s": 2258.3,
+        "ttft_s": 29.161206788994605,
+        "input_tokens_per_ttft_s": 2250.0783480868495
+      },
+      {
+        "raw_text_tokens": 128000,
+        "repetitions": 1,
+        "prompt_tokens": [
+          128078
+        ],
+        "prefill_tokens_s": 2376.8,
+        "ttft_s": 54.07570482100709,
+        "input_tokens_per_ttft_s": 2368.4943252047046
+      }
+    ],
+    "gpu": [
+      {
+        "gpu_index": 0,
+        "max_temperature_c": 91,
+        "min_free_mib": 4294,
+        "thermal_active_samples": 61,
+        "samples": 295
+      },
+      {
+        "gpu_index": 1,
+        "max_temperature_c": 92,
+        "min_free_mib": 4244,
+        "thermal_active_samples": 47,
+        "samples": 295
+      },
+      {
+        "gpu_index": 2,
+        "max_temperature_c": 48,
+        "min_free_mib": 15203,
+        "thermal_active_samples": 0,
+        "samples": 295
+      }
+    ],
+    "cgroup_memory_peak_gib": 28.0,
+    "cgroup_swap_gib": 0.0,
+    "memory_events": "low 0\nhigh 0\nmax 16138\noom 0\noom_kill 0\noom_group_kill 0"
+  },
+  "strata-iq2-3gpu-balanced": {
+    "measurements": [
+      {
+        "raw_text_tokens": 4096,
+        "repetitions": 3,
+        "prompt_tokens": [
+          4174,
+          4175
+        ],
+        "prefill_tokens_s": 1028.4,
+        "ttft_s": 4.0851929940108676,
+        "input_tokens_per_ttft_s": 1021.9835405868939
+      },
+      {
+        "raw_text_tokens": 16384,
+        "repetitions": 3,
+        "prompt_tokens": [
+          16462,
+          16463
+        ],
+        "prefill_tokens_s": 1282.1,
+        "ttft_s": 12.883309377997648,
+        "input_tokens_per_ttft_s": 1277.8548986889823
+      },
+      {
+        "raw_text_tokens": 32768,
+        "repetitions": 3,
+        "prompt_tokens": [
+          32846,
+          32847
+        ],
+        "prefill_tokens_s": 1585.2,
+        "ttft_s": 20.784877727011917,
+        "input_tokens_per_ttft_s": 1580.3316445452172
+      },
+      {
+        "raw_text_tokens": 65536,
+        "repetitions": 3,
+        "prompt_tokens": [
+          65614,
+          65615
+        ],
+        "prefill_tokens_s": 1746.1,
+        "ttft_s": 37.69433646000107,
+        "input_tokens_per_ttft_s": 1740.7124295615772
+      },
+      {
+        "raw_text_tokens": 128000,
+        "repetitions": 1,
+        "prompt_tokens": [
+          128078
+        ],
+        "prefill_tokens_s": 1852.5,
+        "ttft_s": 69.3313539949886,
+        "input_tokens_per_ttft_s": 1847.3315840515347
+      }
+    ],
+    "gpu": [
+      {
+        "gpu_index": 0,
+        "max_temperature_c": 92,
+        "min_free_mib": 2112,
+        "thermal_active_samples": 136,
+        "samples": 373
+      },
+      {
+        "gpu_index": 1,
+        "max_temperature_c": 94,
+        "min_free_mib": 5220,
+        "thermal_active_samples": 198,
+        "samples": 373
+      },
+      {
+        "gpu_index": 2,
+        "max_temperature_c": 68,
+        "min_free_mib": 4217,
+        "thermal_active_samples": 0,
+        "samples": 373
+      }
+    ],
+    "cgroup_memory_peak_gib": 28.0,
+    "cgroup_swap_gib": 0.0,
+    "memory_events": "low 0\nhigh 0\nmax 2098\noom 0\noom_kill 0\noom_group_kill 0"
+  },
+  "strata-iq2-2gpu-control": {
+    "raw_text_tokens": 65536,
+    "repetitions": 3,
+    "prefill_tokens_s": 2265.0,
+    "ttft_s": 29.076317958009895
+  }
+}

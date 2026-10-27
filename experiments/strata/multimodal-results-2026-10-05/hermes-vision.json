@@ -1,0 +1,58 @@
+[
+  {
+    "case": "shapes",
+    "model": "hermes-local",
+    "url": "http://127.0.0.1:8642",
+    "passed": true,
+    "elapsed_s": 37.55773072800366,
+    "reply": {
+      "id": "chatcmpl-718895debc124c72b31e6213b4037",
+      "object": "chat.completion",
+      "created": 1791155083,
+      "model": "hermes-local",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Das Bild zeigt drei Formen auf weißem Grund:\n\n1. Roter Kreis – oben links, die flächengrößte der drei Formen.\n2. Blaues Rechteck – unten links, direkt unter dem Kreis, breiter als hoch, linke Kante bündig mit dem Kreis.\n3. Grünes Dreieck – rechts, gleichschenklig und nach oben zeigend, reicht fast von der oberen Bildkante bis etwa zwei Drittel nach unten.\n\nZusätzlich steht unten mittig die schwarze Zahl 4827."
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 15573,
+        "completion_tokens": 119,
+        "total_tokens": 15692
+      }
+    }
+  },
+  {
+    "case": "ocr",
+    "model": "hermes-local",
+    "url": "http://127.0.0.1:8642",
+    "passed": true,
+    "elapsed_s": 38.83599313197192,
+    "reply": {
+      "id": "chatcmpl-c13341bb074448fba26c188902a56",
+      "object": "chat.completion",
+      "created": 1791155120,
+      "model": "hermes-local",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "4827"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 15453,
+        "completion_tokens": 5,
+        "total_tokens": 15458
+      }
+    }
+  }
+]

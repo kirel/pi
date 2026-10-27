@@ -1,0 +1,72 @@
+{
+  "verified_at_utc": "2026-10-03T23:15:29Z",
+  "elapsed_s": 140.910480260849,
+  "production_completion": {
+    "id": "chatcmpl-acc76c3047f42cd2",
+    "object": "chat.completion",
+    "created": 1791069328,
+    "model": "Qwen3.8-27B-Instruct-AutoRound-vLLM",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "42",
+          "refusal": null,
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "reasoning": null
+        },
+        "logprobs": null,
+        "finish_reason": "stop",
+        "stop_reason": null,
+        "token_ids": null,
+        "routed_experts": null
+      }
+    ],
+    "service_tier": null,
+    "system_fingerprint": "vllm-0.27.1-tp2-155d88c3",
+    "usage": {
+      "prompt_tokens": 28,
+      "total_tokens": 31,
+      "completion_tokens": 3,
+      "prompt_tokens_details": null
+    },
+    "prompt_logprobs": null,
+    "prompt_token_ids": null,
+    "prompt_text": null,
+    "kv_transfer_params": null,
+    "ec_transfer_params": null,
+    "metrics": null
+  },
+  "embedding_dimensions": 1024,
+  "tts_wav_bytes": 109404,
+  "asr": {
+    "text": " Das ist ein kurzer Funktionstest."
+  },
+  "running": [
+    {
+      "model": "Qwen3.8-27B-Instruct-AutoRound-vLLM",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-embedding",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-tts",
+      "state": "ready"
+    },
+    {
+      "model": "whisper-large-v3-turbo-q8-crispasr",
+      "state": "ready"
+    }
+  ],
+  "test_containers_absent": true,
+  "comfyui_queue": {
+    "queue_running": [],
+    "queue_pending": []
+  },
+  "wolf_comfyui_running": true
+}

@@ -1,0 +1,50 @@
+{
+  "production_model": "Qwen3.8-27B-Instruct-AutoRound-vLLM",
+  "answer": "42",
+  "usage": {
+    "prompt_tokens": 28,
+    "total_tokens": 31,
+    "completion_tokens": 3,
+    "prompt_tokens_details": null
+  },
+  "elapsed_s": 138.3769283790025,
+  "checked_at": 1791053945.597354,
+  "embedding": {
+    "dimensions": 1024,
+    "usage": {
+      "prompt_tokens": 13,
+      "total_tokens": 13
+    }
+  },
+  "tts": {
+    "voice": "de-host",
+    "wav_bytes": 109404,
+    "riff_wave": true
+  },
+  "asr": {
+    "text": " Das ist ein kurzer Funktionstest."
+  },
+  "running": [
+    {
+      "model": "Qwen3.8-27B-Instruct-AutoRound-vLLM",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-embedding",
+      "state": "ready"
+    },
+    {
+      "model": "qwen3-tts",
+      "state": "ready"
+    },
+    {
+      "model": "whisper-large-v3-turbo-q8-crispasr",
+      "state": "ready"
+    }
+  ],
+  "test_containers_unloaded": true,
+  "comfyui_queue": {
+    "queue_running": [],
+    "queue_pending": []
+  }
+}

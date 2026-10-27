@@ -1,0 +1,108 @@
+{
+  "reasoning_effort": "none",
+  "max_tokens": 2048,
+  "reasoning_chars": 0,
+  "actions_pass": true,
+  "finished": true,
+  "final_text": "Deckenlicht im Wohnzimmer aus. \ud83c\udf1a",
+  "elapsed_s": 6.363824954023585,
+  "first_reply_s": 6.0014600260183215,
+  "first_action_s": 6.001521605008747,
+  "reads": 0,
+  "rounds": 2,
+  "unwanted_or_invalid_calls": [],
+  "done": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "already_satisfied": [],
+  "attempted": [
+    "{\"area\": \"Wohnzimmer\", \"kind\": \"on\", \"name\": \"Deckenlicht\", \"value\": false}"
+  ],
+  "replies": [
+    {
+      "id": "chatcmpl-5403a2a85f98478a90fce064",
+      "object": "chat.completion",
+      "created": 1791264951,
+      "model": "qwen3.8-flash-next-iq2_xs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_66daeff8d5d048a1bd97c4b5",
+                "type": "function",
+                "function": {
+                  "name": "light__HassLightSet",
+                  "arguments": "{\"area\":\"Wohnzimmer\",\"brightness\":0,\"domain\":[\"light\"],\"name\":\"Deckenlicht\"}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6284,
+        "completion_tokens": 72,
+        "total_tokens": 6356,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 6284,
+        "prompt_ms": 5371.5,
+        "prompt_per_token_ms": 0.855,
+        "prompt_per_second": 1169.9,
+        "predicted_n": 72,
+        "predicted_ms": 606.3,
+        "predicted_per_token_ms": 8.421,
+        "predicted_per_second": 118.8,
+        "draft_n": 62,
+        "draft_n_accepted": 51
+      }
+    },
+    {
+      "id": "chatcmpl-768045dec7b44b99829025c9",
+      "object": "chat.completion",
+      "created": 1791264957,
+      "model": "qwen3.8-flash-next-iq2_xs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Deckenlicht im Wohnzimmer aus. \ud83c\udf1a"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 6378,
+        "completion_tokens": 11,
+        "total_tokens": 6389,
+        "prompt_tokens_details": {
+          "cached_tokens": 6356
+        }
+      },
+      "timings": {
+        "cache_n": 6356,
+        "prompt_n": 22,
+        "prompt_ms": 172.9,
+        "prompt_per_token_ms": 7.859,
+        "prompt_per_second": 127.2,
+        "predicted_n": 11,
+        "predicted_ms": 164.7,
+        "predicted_per_token_ms": 14.973,
+        "predicted_per_second": 66.8,
+        "draft_n": 13,
+        "draft_n_accepted": 4
+      }
+    }
+  ],
+  "prompt_sha256": "1afeb255158daa04bc17d1d2e5762c7890dc13dc35eec4391264415ad52a0210"
+}

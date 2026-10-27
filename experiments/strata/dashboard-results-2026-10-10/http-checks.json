@@ -1,0 +1,45 @@
+{
+  "dashboard_title": "Strata",
+  "assets": [
+    {
+      "path": "web/app.css",
+      "status": 200,
+      "bytes": 13495
+    },
+    {
+      "path": "web/app.js",
+      "status": 200,
+      "bytes": 60225
+    },
+    {
+      "path": "web/components.css",
+      "status": 200,
+      "bytes": 10537
+    },
+    {
+      "path": "web/favicon.svg",
+      "status": 200,
+      "bytes": 614
+    },
+    {
+      "path": "web/sprite.svg",
+      "status": 200,
+      "bytes": 28544
+    },
+    {
+      "path": "web/tokens.css",
+      "status": 200,
+      "bytes": 3985
+    }
+  ],
+  "metrics_version": "0.1.42",
+  "context": 131072,
+  "images": true,
+  "same_origin_chat": {
+    "answer": "42",
+    "reasoning_chars": 98,
+    "finish": "stop"
+  },
+  "foreign_origin_status": 403,
+  "query_string_metrics_status": 200
+}

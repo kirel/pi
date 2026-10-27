@@ -1,0 +1,22 @@
+{
+  "run_id": "run_a48ca8ef7060451880423b4eb7466a50",
+  "session_id": "strata-q3-read-warm-04e2a757faea44fcab61d3859097c1eb",
+  "started_at": "2026-10-04T23:09:30.335363+00:00",
+  "ended_at": "2026-10-04T23:09:41.712987+00:00",
+  "status": "completed",
+  "elapsed_seconds": 11.378,
+  "first_delta_seconds": 10.151,
+  "input_tokens": 33800,
+  "output_tokens": 141,
+  "total_tokens": 33941,
+  "tool_calls": 1,
+  "tool_errors": 0,
+  "tool_seconds": 4.166,
+  "tool_names": [
+    "mcp__litellm__home_assistant_homeassistant__GetLiveContext"
+  ],
+  "expected_tool_met": true,
+  "output_chars": 229,
+  "output_sha256": "d732c20f0b3dd4d96c730bf81c98df0cb9a805fc99a35895d8475ff941ad82f8",
+  "passed": true
+}

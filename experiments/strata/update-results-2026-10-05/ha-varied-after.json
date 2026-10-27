@@ -1,0 +1,34 @@
+[
+  {
+    "agent": "conversation.home_nano_ai_agent",
+    "expression": "40 plus zwei",
+    "elapsed_s": 0.748355221003294,
+    "math_pass": true,
+    "last_prompt_tokens": 8347,
+    "last_reused_tokens": 8319
+  },
+  {
+    "agent": "conversation.home_nano_ai_agent",
+    "expression": "84 geteilt durch zwei",
+    "elapsed_s": 0.5597859360277653,
+    "math_pass": true,
+    "last_prompt_tokens": 8350,
+    "last_reused_tokens": 8319
+  },
+  {
+    "agent": "conversation.local_hermes_hermes_local_ai_agent",
+    "expression": "40 plus zwei",
+    "elapsed_s": 2.929485660046339,
+    "math_pass": true,
+    "last_prompt_tokens": 17191,
+    "last_reused_tokens": 16384
+  },
+  {
+    "agent": "conversation.local_hermes_hermes_local_ai_agent",
+    "expression": "84 geteilt durch zwei",
+    "elapsed_s": 2.7323598340153694,
+    "math_pass": true,
+    "last_prompt_tokens": 17194,
+    "last_reused_tokens": 16384
+  }
+]

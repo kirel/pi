@@ -1,0 +1,17 @@
+{
+  "version": "0.1.41",
+  "start_math_pass": true,
+  "embedding": {
+    "dimensions": 1024,
+    "pass": true
+  },
+  "tts": {
+    "bytes": 109404,
+    "seconds": 2.24,
+    "pass": true
+  },
+  "asr": {
+    "text": " Das ist ein kurzer Funktionstest.",
+    "pass": true
+  }
+}

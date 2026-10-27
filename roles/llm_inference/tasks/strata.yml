@@ -1,0 +1,20 @@
+---
+- name: Pull the pinned official Strata CUDA image
+  community.docker.docker_image_pull:
+    name: "{{ llamaswap_strata_image }}"
+    pull: not_present
+  become: true
+
+- name: Ensure the persistent Strata data directory exists
+  ansible.builtin.file:
+    path: "{{ llamaswap_strata_data_path }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Install the Strata launcher with native memory reserve settings
+  ansible.builtin.copy:
+    src: strata-start.sh
+    dest: "{{ llamaswap_config_path }}/strata-start.sh"
+    mode: "0755"
+  become: true

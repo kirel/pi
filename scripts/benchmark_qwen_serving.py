@@ -62,12 +62,12 @@ def generate(url, model, tokens, output):
                 decode_tokens_s=(output-1)/(end-first))
 
 
-def prompt(url, model, length, seed):
+def prompt(url, model, length, seed, tokenizer_field="prompt"):
     rng = random.Random(seed)
     text = f"Unique benchmark {rng.getrandbits(128):032x}\n"
     text += "\n".join(f"item_{i}: value={rng.randrange(1000000)}; category={rng.choice(['alpha','beta','gamma'])}"
                       for i in range(length // 8 + 100))
-    with call(url, "/tokenize", {"model": model, "prompt": text}) as response:
+    with call(url, "/tokenize", {"model": model, tokenizer_field: text}) as response:
         tokens = json.load(response)["tokens"]
     assert len(tokens) >= length, (len(tokens), length)
     return tokens[:length]

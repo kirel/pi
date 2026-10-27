@@ -1,0 +1,91 @@
+{
+  "created_utc": "2026-10-04",
+  "suite": "52 synthetic German HA-like scenarios, two production sampler seeds, Strata Q2/Strata Q3/27B vLLM",
+  "live_schemas": "2026-10-04 read-only tools/list from configured official HA MCP, 46 tools",
+  "actual_device_actions": false,
+  "actual_hermes_path": false,
+  "simulator": "Fresh synthetic home per case. Live HA source verified: exact names/aliases/entity IDs, area/domain/device_class/floor filtering; HA-shaped Live Context result, brightness 0..255 and volume 0..1; successful mutations update state.",
+  "source_revision": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "hf_revision": "ed59f92082b1e93c0e96d60a8b11aab089b52f09",
+  "q3_context": 131072,
+  "q3_memory_limit_gib": 28,
+  "q3_container_swap_limit_gib": 0,
+  "prepare_memory_limit_gib": "28 initially, reduced to 8 after baseline",
+  "baseline_timing_caveat": "Final Q3 and 27B runs start after preparation/download completes.",
+  "baseline_original_grading": "Final runs use corrected fixture/selector. Summary accepts already-satisfied desired states and recoverable read/schema errors; unrequested mutation attempts fail the task.",
+  "manual_review": "Same Codex assistant authored and reviewed semantic rubrics, not blinded or independent",
+  "sampling": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0,
+    "presence_penalty": 1.5,
+    "frequency_penalty": 0,
+    "repetition_penalty": 1,
+    "seeds": [
+      20261004,
+      20261005
+    ],
+    "thinking": false,
+    "max_tokens": 384,
+    "max_turns": 6
+  },
+  "hashes": {
+    "experiments/strata/ha-q3-results-2026-10-04/cases.json": "45fda714232f67c2b0a8fa5169cc29ea184db34905c39bdb1f42bd4ed65ef466",
+    "experiments/strata/ha-q3-results-2026-10-04/ha-tools-live.json": "62f57e049c33dd83292294a0960a51136786e8685e2b7a20aa2c17eaf3902bd3",
+    "experiments/strata/ha-q3-results-2026-10-04/system.txt": "c862baeca352329c66200371c34fcf0dc4b3cc8b45de2f3b72b8593631d9818a",
+    "scripts/benchmark_ha_tool_quality.py": "69857094f139dfd6bf982cdc3faf7e200fbaac95d6c5f4b8ea34e77f61c34300",
+    "scripts/summarize_ha_tool_quality.py": "f28af13e9f5878eb715a6b8849a83082e3e89b4b6a0f3b48c2d7349bbb6903ef",
+    "experiments/strata/ha-q3-results-2026-10-04/latency-cases.json": "6e2fc9a4beff28166e452b92e0b53e5a0487d8264c8d023f77dae229d7987011",
+    "experiments/strata/ha-q3-results-2026-10-04/capacity-corpus.json": "ec58fc390041c4cf027b4823d672859b652fc04047eab33d61e90dcb19d632e2",
+    "scripts/benchmark_flash_prefill.py": "6ffe65edb523cc15e7736458010000d8ad0fbb5eda711773d6fe4d5ddc87457b",
+    "scripts/test_benchmark_ha_tool_quality.py": "a5dc46d2bc93646325021dc19358c541f1d1b72b942829323c99a44d12deae01"
+  },
+  "excluded_runs": "exploratory/ uses a simplified selector without device_class filtering and incomplete entity IDs; intermediate-v2 was interrupted during simulator correction. Neither contributes to final quality counts. pre-equivalent-light-correction/ rejected equivalent light brightness calls and is excluded from quality and short latency; all three quality and short-latency arms were rerun.",
+  "model_download_bytes": [
+    47039860096,
+    28800138432
+  ],
+  "shard_2_hardlinked_to_iq2": true,
+  "native_split": [
+    26,
+    22
+  ],
+  "native_prompt_chunk": 8192,
+  "hardware": {
+    "host": "ailab-ubuntu",
+    "ram_gib": 46.9,
+    "cpu": "Intel i5-12500",
+    "gpus": [
+      "RTX 3090",
+      "RTX 3090"
+    ],
+    "power_limits_w": [
+      250,
+      250
+    ],
+    "gpu2": "RTX 5060 Ti is not assigned to the test containers. Its separate workload memory occupancy changed from about 14903 to 527 MiB during the test."
+  },
+  "q3_container_oom": false,
+  "q3_container_swap_bytes": 0,
+  "q3_peak_gib": 28.000015258789062,
+  "cold_start_note": "q3-cold-startup.json is the first model load; later quality/latency runs reuse the same loaded model. Excluded exploratory quality fixtures do not affect model load measurement.",
+  "strata_image_id": "sha256:bde179b0f68aa01a61a5c6fbc0a65033dc3c0bb172250e1f55cd1ff0dfcc16de",
+  "performance_protocol": "512 German article tokens, greedy, three shared cold prompts at 4K/64K/128K, one sample each. One short and one 64K unscored warmup. Cached tokens must be <=32. Matched six HA latency cases with seeds 20261006 and 20261007, both profiles warm after quality suite.",
+  "q3_quant": "GSQ-RCO IQ3_XXS; existing Unsloth UD-Q3_K_XL unsupported",
+  "models": {
+    "q2": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF IQ2_XS",
+    "q3": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF IQ3_XXS",
+    "27b": "Frozenlock/Qwen3.8-27B-int4-AutoRound vLLM 0.27.1"
+  },
+  "vllm_hf_cache_revision": "b4c61732c4f2d8af323d75ba5702b5c7f3361539",
+  "light_action_equivalence": "Brightness zero fulfills pure turn-off, positive brightness fulfills pure turn-on, only for the requested entity. Actual brightness still updates the simulated state.",
+  "capacity_phase_note": "Q3 and 27B cold capacity samples were completed before the final light-action simulator correction; those independent article-generation probes use unchanged benchmark_flash_prefill.py, same shared corpus, same profiles and 512 output tokens. Q2 capacity probes ran after the correction. No quality records from excluded simulator versions contribute to final counts.",
+  "quality_final_passed": {
+    "q2": 85,
+    "q3": 92,
+    "27b": 80
+  },
+  "quality_final_observations_per_arm": 104,
+  "restoration_verified_at_utc": "2026-10-04T17:36:25Z"
+}

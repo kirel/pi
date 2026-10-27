@@ -1,0 +1,77 @@
+Strata - Qwen3.8-Flash-Next on a normal PC (a GPU + system RAM + CPU)
+  [ok] saved for this model: 4608 MiB of VRAM kept free for other programs (--vram-reserve-mib)
+  [ok] GPUs: GPU 0 (NVIDIA GeForce RTX 3090, 24 GB) + GPU 1 (NVIDIA GeForce RTX 3090, 24 GB) together (layers split auto)
+
+  ----------------------------------------------------------------------------------------------------
+  Starting qwen3.8-flash-next-iq2_xs: it maps about 39 GB of experts from the model files (the OS file cache reads them).
+  While it does, YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES (longer the first time after a
+  restart). That is normal: please wait and don't close this window - the browser opens when it is ready.
+  Later, closing this window stops the model.
+  ----------------------------------------------------------------------------------------------------
+  Settings (strata-iq2_xs.json): --expert-cache auto --prefill auto --spec 4 --spec-min-p 0.5
+    --max-context 131072 --kv int8 --mmap-experts --vram-reserve-mib 4608; server 127.0.0.1:5802, gpu
+    0,1, layer_split auto
+loading the model (the first start takes a minute or two) ...
+[strata] layer split across GPUs [0, 1] (auto)
+[strata] starting the engine: reading the model's weights ...
+[strata] mapping the experts from the model files (about 39 GB, --mmap-experts): they are not loaded into RAM - the OS file cache reads them as the GPU's expert cache fills and as requests need them.
+         YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES NOW - this is normal.
+         Please wait and don't close this window; the browser opens when it is ready.
+[strata] filling the GPU's expert cache (9105 experts, 12.02 GiB of VRAM) ...
+[strata] still starting (25 s) - please wait ...
+[strata] almost ready ...
+ready: http://127.0.0.1:5802/v1  (OpenAI: /v1/chat/completions, Anthropic: /v1/messages, context 131072 tokens)
+       open http://127.0.0.1:5802/ in a browser to chat; close this window to stop the model
+[strata] answering: 2 of max 16 tokens, 10.7 tok/s, 1 s
+[strata] done: 3 tokens in 1 s (16.0 tok/s) (stop, cancel=False), expert cache 84.6% hit
+[strata] done: 3 tokens in 1 s (38.5 tok/s) (stop, cancel=False), expert cache 88.0% hit
+[strata] reading the prompt: 65,615 tokens, 10 s so far
+[strata] reading the prompt: 16,384 of 65,615 tokens, 14 s so far
+[strata] reading the prompt: 24,576 of 65,615 tokens, 17 s so far
+[strata] reading the prompt: 32,768 of 65,615 tokens, 20 s so far
+[strata] reading the prompt: 40,960 of 65,615 tokens, 24 s so far
+[strata] reading the prompt: 49,152 of 65,615 tokens, 27 s so far
+[strata] reading the prompt: 57,344 of 65,615 tokens, 31 s so far
+[strata] reading the prompt: 65,536 of 65,615 tokens, 34 s so far
+[strata] reading the prompt: 65,614 of 65,615 tokens, 35 s so far
+[strata] done: 3 tokens in 35 s (99.6 tok/s) (stop, cancel=False), expert cache 93.2% hit
+[strata] reading the prompt: 8,192 of 65,615 tokens, 5 s so far
+[strata] reading the prompt: 16,384 of 65,615 tokens, 8 s so far
+[strata] reading the prompt: 24,576 of 65,615 tokens, 12 s so far
+[strata] reading the prompt: 32,768 of 65,615 tokens, 15 s so far
+[strata] reading the prompt: 40,960 of 65,615 tokens, 20 s so far
+[strata] reading the prompt: 49,152 of 65,615 tokens, 24 s so far
+[strata] reading the prompt: 57,344 of 65,615 tokens, 28 s so far
+[strata] reading the prompt: 65,536 of 65,615 tokens, 31 s so far
+[strata] reading the prompt: 65,614 of 65,615 tokens, 33 s so far
+[strata] done: 3 tokens in 33 s (66.6 tok/s) (stop, cancel=False), expert cache 93.3% hit
+[strata] reading the prompt: 8,192 of 65,615 tokens, 5 s so far
+[strata] reading the prompt: 16,384 of 65,615 tokens, 8 s so far
+[strata] reading the prompt: 24,576 of 65,615 tokens, 12 s so far
+[strata] reading the prompt: 32,768 of 65,615 tokens, 15 s so far
+[strata] reading the prompt: 40,960 of 65,615 tokens, 18 s so far
+[strata] reading the prompt: 49,152 of 65,615 tokens, 22 s so far
+[strata] reading the prompt: 57,344 of 65,615 tokens, 25 s so far
+[strata] reading the prompt: 65,536 of 65,615 tokens, 28 s so far
+[strata] reading the prompt: 65,614 of 65,615 tokens, 30 s so far
+[strata] done: 3 tokens in 30 s (105.6 tok/s) (stop, cancel=False), expert cache 97.0% hit
+[strata] reading the prompt: 8,192 of 65,615 tokens, 5 s so far
+[strata] reading the prompt: 16,384 of 65,615 tokens, 8 s so far
+[strata] reading the prompt: 24,576 of 65,615 tokens, 11 s so far
+[strata] reading the prompt: 32,768 of 65,615 tokens, 14 s so far
+[strata] reading the prompt: 40,960 of 65,615 tokens, 18 s so far
+[strata] reading the prompt: 49,152 of 65,615 tokens, 21 s so far
+[strata] reading the prompt: 57,344 of 65,615 tokens, 25 s so far
+[strata] reading the prompt: 65,536 of 65,615 tokens, 27 s so far
+[strata] reading the prompt: 65,614 of 65,615 tokens, 29 s so far
+[strata] done: 3 tokens in 29 s (69.6 tok/s) (stop, cancel=False), expert cache 96.5% hit
+[strata] reading the prompt: 8,192 of 65,614 tokens, 5 s so far
+[strata] reading the prompt: 16,384 of 65,614 tokens, 8 s so far
+[strata] reading the prompt: 24,576 of 65,614 tokens, 11 s so far
+[strata] reading the prompt: 32,768 of 65,614 tokens, 14 s so far
+[strata] reading the prompt: 40,960 of 65,614 tokens, 18 s so far
+[strata] reading the prompt: 49,152 of 65,614 tokens, 21 s so far
+[strata] reading the prompt: 57,344 of 65,614 tokens, 25 s so far
+[strata] reading the prompt: 65,536 of 65,614 tokens, 27 s so far
+[strata] reading the prompt: 65,613 of 65,614 tokens, 29 s so far
+[strata] done: 3 tokens in 29 s (107.8 tok/s) (stop, cancel=False), expert cache 99.2% hit

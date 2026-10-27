@@ -1,0 +1,10 @@
+{
+  "old_start_requests": 8,
+  "old_end_requests": 28,
+  "new_start_requests": 1,
+  "new_end_requests": 32,
+  "benchmark_requests_per_version": 20,
+  "additional_new_requests_outside_individually_validated_windows": 11,
+  "origin": "unknown",
+  "note": "Each saved benchmark request independently passed exact one-request native counter increment; totals observed before version switches."
+}

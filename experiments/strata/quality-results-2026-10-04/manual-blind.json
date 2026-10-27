@@ -1,0 +1,86 @@
+[
+  {
+    "id": "german_summary",
+    "rubric": [
+      "Deutsch flüssig",
+      "höchstens zwei Sätze",
+      "Wartung abgeschlossen",
+      "zwei erfolgreich, eines fehlgeschlagen",
+      "keine erfundenen Details"
+    ],
+    "answers": {
+      "A": "Die Wartung ist abgeschlossen und zwei Backups waren erfolgreich. Das dritte Backup ist fehlgeschlagen.",
+      "B": "Die Wartung ist abgeschlossen, wobei zwei Backups erfolgreich erstellt wurden, während das dritte fehlgeschlagen ist. Es liegen keine weiteren Daten vor."
+    }
+  },
+  {
+    "id": "german_uncertainty",
+    "rubric": [
+      "Deutsch natürlich",
+      "kurz, höchstens drei Sätze",
+      "keine pauschale Zusage alles zu",
+      "Bad ausdrücklich unbekannt",
+      "keine erfundene Beobachtung oder Aktion"
+    ],
+    "answers": {
+      "A": "Nein, der Status des Bades ist unbekannt.",
+      "B": "Nein, nicht alle Fenster sind zu, da der Zustand des Bads unbekannt ist."
+    }
+  },
+  {
+    "id": "german_rewrite",
+    "rubric": [
+      "Deutsch flüssig",
+      "du statt Sie",
+      "genau zwei Sätze",
+      "Fehler und Prüfung morgen erhalten",
+      "keine erfundene Ursache oder Zusage"
+    ],
+    "answers": {
+      "A": "Ich schaue mir das Backup morgen noch einmal an. Es ist leider kaputt.",
+      "B": "Entschuldige, das Backup ist leider beschädigt. Ich schaue mir das morgen erneut an."
+    }
+  },
+  {
+    "id": "german_explanation",
+    "rubric": [
+      "verständlich und natürlich",
+      "höchstens 90 Wörter",
+      "Synchronisation gleicht Änderungen ab",
+      "Löschen kann sich fortpflanzen",
+      "Backup ermöglicht Wiederherstellung älteren Zustands"
+    ],
+    "answers": {
+      "A": "Synchronisierte Dateien sind identische Kopien auf verschiedenen Geräten. Wenn du eine Datei versehentlich löschst, verschwindet sie überall. Ein Backup ist eine separate Sicherungskopie. Es bleibt erhalten, auch wenn das Original gelöscht wird. So kannst du versehentliches Löschen rückgängig machen und die Datei wiederherstellen. Synchronisation spiegelt den aktuellen Zustand, während Backup historische Versionen schützt.",
+      "B": "Synchronisierte Dateien halten mehrere Geräte automatisch auf dem gleichen Stand. Ein Backup ist hingegen eine separate, oft ältere Kopie deiner Daten. Wenn du eine Datei versehentlich löschst, kann die Synchronisation das Problem auf andere Geräte übertragen. Ein Backup schützt dich dagegen, da es die Datei in einem früheren Zustand speichert. So kannst du sie sicher wiederherstellen, ohne dass der Verlust auf allen Geräten stattfindet."
+    }
+  },
+  {
+    "id": "german_contradiction",
+    "rubric": [
+      "Deutsch flüssig",
+      "höchstens zwei Sätze",
+      "beide Meldungen mit Zeiten berücksichtigt",
+      "keine Gleichsetzung verschiedener Läufe",
+      "fehlende Zuordnung ausdrücklich kenntlich"
+    ],
+    "answers": {
+      "A": "Sicher ist, dass das Backup um 10:00 Uhr erfolgreich war und um 10:30 Uhr fehlschlug. Nicht sicher ist, ob zwischen diesen Zeitpunkten weitere Backups stattfanden oder welche spezifische Ursache den Fehlschlag um 10:30 Uhr verursachte.",
+      "B": "Sicher ist, dass das Backup um 10:00 Uhr erfolgreich war und um 10:30 Uhr fehlgeschlagen ist. Nicht sicher ist, ob die beiden Meldungen denselben Backup-Prozess betreffen oder ob das Fehlschlagen eine Folge des vorherigen Erfolgs ist."
+    }
+  },
+  {
+    "id": "code_patch_explanation",
+    "rubric": [
+      "Python syntaktisch plausibel",
+      "leere Liste liefert None",
+      "nichtleere Liste bleibt Mittelwert",
+      "minimaler Fix ohne Imports",
+      "deutsche Erklärung genau ein Satz"
+    ],
+    "answers": {
+      "A": "```python\ndef average(xs):\n    if not xs:\n        return None\n    return sum(xs) / len(xs)\n```\n\nDie Funktion prüft zunächst, ob die übergebene Liste leer ist, und gibt in diesem Fall `None` zurück, um eine `ZeroDivisionError` zu vermeiden.",
+      "B": "```python\ndef average(xs):\n    if not xs:\n        return None\n    return sum(xs)/len(xs)\n```\n\nDie Funktion prüft vor der Berechnung, ob die Liste leer ist, und gibt in diesem Fall `None` zurück, um eine Division durch null zu vermeiden."
+    }
+  }
+]

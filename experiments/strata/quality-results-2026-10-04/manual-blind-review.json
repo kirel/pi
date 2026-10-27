@@ -1,0 +1,108 @@
+{
+  "judge": "Current assistant; model labels concealed per case during scoring. Not an independent external judge.",
+  "graded_at_utc": "2026-10-03T23:56:05.412573+00:00",
+  "scores": {
+    "german_summary": {
+      "A": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "B": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "notes": "Beide erhalten die drei Fakten und bleiben bei zwei Sätzen."
+    },
+    "german_uncertainty": {
+      "A": [
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "B": [
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "notes": "Beide nennen den unbekannten Badzustand, verneinen aber die Gesamtfrage pauschal. Unbekannt erlaubt weder alle zu noch nicht alle zu."
+    },
+    "german_rewrite": {
+      "A": [
+        1,
+        0,
+        1,
+        1,
+        1
+      ],
+      "B": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "notes": "A verwendet keine Du-Anrede. B verwendet den Du-Imperativ Entschuldige. Fehler und geplante Prüfung morgen bleiben erhalten."
+    },
+    "german_explanation": {
+      "A": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "B": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "notes": "Beide erklären Abgleich, fortgepflanztes Löschen und Wiederherstellung in weniger als 90 Wörtern."
+    },
+    "german_contradiction": {
+      "A": [
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "B": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "notes": "A erwähnt fehlende weitere Läufe/Ursache, aber nicht die fehlende Zuordnung der beiden Meldungen. B benennt ausdrücklich die unbekannte Prozesszuordnung."
+    },
+    "code_patch_explanation": {
+      "A": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "B": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "notes": "Beide liefern den minimalen funktionalen Guard und eine deutsche Erklärung in einem Satz."
+    }
+  }
+}

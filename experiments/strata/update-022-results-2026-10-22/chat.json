@@ -1,0 +1,62 @@
+{
+  "elapsed_s": 4.032173967993003,
+  "first_thought_s": 2.7317125370027497,
+  "first_visible_s": 4.003425785005675,
+  "answer": "42",
+  "math_pass": true,
+  "reasoning_chars": 94,
+  "usage": {
+    "prompt_tokens": 58,
+    "completion_tokens": 41,
+    "total_tokens": 99,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "native": {
+    "id": "21466f97c6db",
+    "projection": null,
+    "time": 1792693636.6064358,
+    "duration_s": 4.0,
+    "finish": "stop",
+    "prompt_tokens": 58,
+    "reused": 0,
+    "output_tokens": 41,
+    "first_engine_token_s": 2.708,
+    "prompt_total": 58,
+    "prompt_read": 58,
+    "reasoning_recoveries": 0,
+    "reasoning_repeat_coverage": 0.0,
+    "engine_generated": 41,
+    "prompt_ms": 2677.5,
+    "decode_ms": 1300.1,
+    "decode_tok_s": 31.5,
+    "hit_rate": 0.859,
+    "pcie_share": 0.0,
+    "ram_blobs": 0,
+    "file_blobs": 0,
+    "file_mb": 4529.3,
+    "drafts_offered": 37,
+    "drafts_accepted": 28
+  },
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 3090",
+      "util": 66,
+      "mem_used": 21252407296,
+      "mem_total": 25769803776,
+      "temp": 46,
+      "power": 154.273
+    },
+    {
+      "index": 1,
+      "name": "NVIDIA GeForce RTX 3090",
+      "util": 40,
+      "mem_used": 21354840064,
+      "mem_total": 25769803776,
+      "temp": 40,
+      "power": 156.585
+    }
+  ]
+}

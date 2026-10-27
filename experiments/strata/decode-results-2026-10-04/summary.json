@@ -1,0 +1,239 @@
+{
+  "llamacpp-q3-3gpu": {
+    "4096": {
+      "output_tokens_per_decode_s": 18.74669710619096,
+      "decode_s": 27.258134972013067,
+      "ttft_s": 12.377344518958125,
+      "elapsed_s": 39.97837293398334,
+      "n": 3,
+      "prompt_tokens": [
+        4204,
+        4205
+      ],
+      "client_decode_range": [
+        18.513802903149298,
+        18.87661230460177
+      ],
+      "engine_decode_tokens_per_s": 18.754493875850315,
+      "engine_prefill_tokens_per_s": 350.49862492846245
+    },
+    "65536": {
+      "output_tokens_per_decode_s": 12.560194094510678,
+      "decode_s": 40.68408466898836,
+      "ttft_s": 201.48631303501315,
+      "elapsed_s": 242.17039770400152,
+      "n": 3,
+      "prompt_tokens": [
+        65644,
+        65645
+      ],
+      "client_decode_range": [
+        12.324158690063912,
+        12.636010488208322
+      ],
+      "engine_decode_tokens_per_s": 12.5620756442962,
+      "engine_prefill_tokens_per_s": 327.9360211384926
+    },
+    "128000": {
+      "output_tokens_per_decode_s": 9.207611532336674,
+      "decode_s": 55.497562881035265,
+      "ttft_s": 456.563785884995,
+      "elapsed_s": 512.0613487660303,
+      "n": 1,
+      "prompt_tokens": [
+        128108
+      ],
+      "client_decode_range": [
+        9.207611532336674,
+        9.207611532336674
+      ],
+      "engine_decode_tokens_per_s": 9.20884770950097,
+      "engine_prefill_tokens_per_s": 281.477658923672
+    },
+    "resources": {
+      "gpu": {
+        "0": {
+          "max_temperature": 91,
+          "min_free_mib": 2018,
+          "thermal_throttle_samples": 919,
+          "samples": 1650
+        },
+        "1": {
+          "max_temperature": 94,
+          "min_free_mib": 2348,
+          "thermal_throttle_samples": 1067,
+          "samples": 1650
+        },
+        "2": {
+          "max_temperature": 66,
+          "min_free_mib": 2527,
+          "thermal_throttle_samples": 0,
+          "samples": 1650
+        }
+      },
+      "cgroup_memory_peak_gib": 42.74101257324219,
+      "cgroup_swap_current_gib": 0.22512435913085938,
+      "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    }
+  },
+  "strata-iq2-2gpu": {
+    "4096": {
+      "output_tokens_per_decode_s": 87.58283554570482,
+      "decode_s": 5.834476548014209,
+      "ttft_s": 3.3946653390303254,
+      "elapsed_s": 9.233551659039222,
+      "n": 3,
+      "prompt_tokens": [
+        4204,
+        4205
+      ],
+      "client_decode_range": [
+        84.94320719463073,
+        87.9112646722457
+      ],
+      "engine_decode_tokens_per_s": 87.6,
+      "engine_prefill_tokens_per_s": 1247.0,
+      "mtp_acceptance_ratio": 0.4954268292682927
+    },
+    "65536": {
+      "output_tokens_per_decode_s": 77.17489254473578,
+      "decode_s": 6.621324412000831,
+      "ttft_s": 29.167423514998518,
+      "elapsed_s": 35.83047175797401,
+      "n": 3,
+      "prompt_tokens": [
+        65644,
+        65645
+      ],
+      "client_decode_range": [
+        76.547940517811,
+        80.8747231404711
+      ],
+      "engine_decode_tokens_per_s": 77.4,
+      "engine_prefill_tokens_per_s": 2258.8,
+      "mtp_acceptance_ratio": 0.4891808346213292
+    },
+    "128000": {
+      "output_tokens_per_decode_s": 76.03446035382217,
+      "decode_s": 6.7206369009800255,
+      "ttft_s": 53.806519865989685,
+      "elapsed_s": 60.52715676696971,
+      "n": 1,
+      "prompt_tokens": [
+        128108
+      ],
+      "client_decode_range": [
+        76.03446035382217,
+        76.03446035382217
+      ],
+      "engine_decode_tokens_per_s": 76.2,
+      "engine_prefill_tokens_per_s": 2389.3,
+      "mtp_acceptance_ratio": 0.49292452830188677
+    },
+    "resources": {
+      "gpu": {
+        "0": {
+          "max_temperature": 91,
+          "min_free_mib": 4280,
+          "thermal_throttle_samples": 65,
+          "samples": 246
+        },
+        "1": {
+          "max_temperature": 92,
+          "min_free_mib": 4238,
+          "thermal_throttle_samples": 34,
+          "samples": 246
+        },
+        "2": {
+          "max_temperature": 49,
+          "min_free_mib": 15203,
+          "thermal_throttle_samples": 0,
+          "samples": 246
+        }
+      },
+      "cgroup_memory_peak_gib": 28.0,
+      "cgroup_swap_current_gib": 0.0,
+      "memory_events": "low 0\nhigh 0\nmax 5441\noom 0\noom_kill 0\noom_group_kill 0"
+    }
+  },
+  "strata-iq2-3gpu": {
+    "4096": {
+      "output_tokens_per_decode_s": 72.05949818538596,
+      "decode_s": 7.091362178034615,
+      "ttft_s": 4.034863670996856,
+      "elapsed_s": 11.121254137018695,
+      "n": 3,
+      "prompt_tokens": [
+        4204,
+        4205
+      ],
+      "client_decode_range": [
+        71.20821861164723,
+        72.43796091894956
+      ],
+      "engine_decode_tokens_per_s": 72.1,
+      "engine_prefill_tokens_per_s": 1048.8,
+      "mtp_acceptance_ratio": 0.4957064793130367
+    },
+    "65536": {
+      "output_tokens_per_decode_s": 68.68925528642603,
+      "decode_s": 7.439300336991437,
+      "ttft_s": 36.75736348103965,
+      "elapsed_s": 44.196663818031084,
+      "n": 3,
+      "prompt_tokens": [
+        65644,
+        65645
+      ],
+      "client_decode_range": [
+        68.66116749582886,
+        71.61291384935046
+      ],
+      "engine_decode_tokens_per_s": 68.8,
+      "engine_prefill_tokens_per_s": 1791.1,
+      "mtp_acceptance_ratio": 0.5007621951219512
+    },
+    "128000": {
+      "output_tokens_per_decode_s": 68.39991116188375,
+      "decode_s": 7.470769936975557,
+      "ttft_s": 68.64195681200363,
+      "elapsed_s": 76.11272674897918,
+      "n": 1,
+      "prompt_tokens": [
+        128108
+      ],
+      "client_decode_range": [
+        68.39991116188375,
+        68.39991116188375
+      ],
+      "engine_decode_tokens_per_s": 68.5,
+      "engine_prefill_tokens_per_s": 1871.6,
+      "mtp_acceptance_ratio": 0.5452196382428941
+    },
+    "resources": {
+      "gpu": {
+        "0": {
+          "max_temperature": 91,
+          "min_free_mib": 2044,
+          "thermal_throttle_samples": 109,
+          "samples": 297
+        },
+        "1": {
+          "max_temperature": 94,
+          "min_free_mib": 5158,
+          "thermal_throttle_samples": 50,
+          "samples": 297
+        },
+        "2": {
+          "max_temperature": 68,
+          "min_free_mib": 4215,
+          "thermal_throttle_samples": 0,
+          "samples": 297
+        }
+      },
+      "cgroup_memory_peak_gib": 28.0,
+      "cgroup_swap_current_gib": 0.0,
+      "memory_events": "low 0\nhigh 0\nmax 624\noom 0\noom_kill 0\noom_group_kill 0"
+    }
+  }
+}

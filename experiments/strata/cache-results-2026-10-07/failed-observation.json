@@ -1,0 +1,13 @@
+{
+  "block": "3-off",
+  "kind": "native-warm",
+  "length": 16384,
+  "rep": 1,
+  "expression": "20 + 22",
+  "answer": "44",
+  "expected": "42",
+  "finish": "stop",
+  "timings_available": false,
+  "reason": "Initial runner asserted correctness before saving this row; source traceback retained in failure log.",
+  "handling": "Interrupted block archived; entire last off block repeated. Error counted separately, not erased."
+}
