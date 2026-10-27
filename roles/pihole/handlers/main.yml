@@ -1,4 +1,5 @@
 ---
 - name: Reload pihole dns
-  # Use the internal pihole command to reload DNS config without restarting the server
-  ansible.builtin.command: docker exec pihole pihole reloaddns
+  # dnsmasq does not reread configuration files on SIGHUP (reloaddns).
+  # Restart the container so /etc/dnsmasq.d changes actually take effect.
+  ansible.builtin.command: docker restart pihole

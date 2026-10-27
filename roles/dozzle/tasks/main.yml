@@ -132,6 +132,29 @@
   register: dozzle_agent_output
   when: dozzle_agent_enabled | bool
 
+# A container-local healthcheck still passes when Docker loses its endpoint.
+# Compose may leave an already-running container detached after a daemon restart.
+- name: Ensure Dozzle agent is attached to its Compose network
+  community.docker.docker_network:
+    name: dozzle-agent_default
+    connected:
+      - dozzle-agent
+    appends: true
+    state: present
+  when: dozzle_agent_enabled | bool
+
+- name: Verify published Dozzle agent port from the UI host
+  ansible.builtin.wait_for:
+    host: "{{ dozzle_agent_advertise_address | default(ansible_host) }}"
+    port: "{{ dozzle_agent_port }}"
+    connect_timeout: 3
+    timeout: 15
+  delegate_to: "{{ dozzle_ui_host }}"
+  when:
+    - dozzle_agent_enabled | bool
+    - dozzle_ui_host in hostvars
+    - not ansible_check_mode
+
 - name: Assert Dozzle agent container is running
   ansible.builtin.assert:
     that:

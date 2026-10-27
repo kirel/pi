@@ -2,3 +2,7 @@
 # Allow more outstanding upstream requests than dnsmasq's default of 150 so
 # external-query backlogs do not exhaust forwarding capacity for LAN clients.
 dns-forward-max={{ pihole_dns_forward_max }}
+# The router can resolve through its WAN IPv6 connection even when public IPv4
+# DNS is unreachable. Keep local records in Pi-hole; do not bypass it on clients.
+# The router must use ISP/public DNS, not forward DNS back to this Pi-hole.
+server={{ router_ip }}
