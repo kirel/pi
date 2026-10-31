@@ -1,0 +1,8 @@
+---
+router_local_access_workspace: /home/daniel/.local/share/homelab-router-local-access
+# Use LAN resolvers on the router; retain specific public split-DNS exceptions.
+router_local_access_dns_routes: >-
+  {{ internal_dns_split_routes | combine({
+       'lan': internal_dns_resolvers | map(attribute='lan') | list,
+       'kirelabs.org': internal_dns_resolvers | map(attribute='lan') | list
+     }) }}

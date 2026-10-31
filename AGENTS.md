@@ -105,6 +105,14 @@ my_server:
 
 `service.kirelabs.org` → Pi-hole CNAME to `target` host → host A-record (`*.lan`) → Caddy on `homelab-nuc` → container port.
 
+- Beryl local DNS and Tailnet-to-LAN SNAT are managed by `roles/router_local_access/`
+  via `router-local-access.yml`. Its DNS forwarders derive from `internal_dns_split_routes`,
+  using LAN resolver addresses for local suffixes and preserving public exceptions.
+  Keep the scoped Tailnet-to-LAN SNAT: Tailscale hosts reject CGNAT sources arriving
+  on Ethernet. Verify router DNS and HTTPS from an external Tailnet host using the
+  normal LAN-address DNS answer, then test the phone on WLAN with/without Tailscale
+  and on cellular with Tailscale. A direct Tailnet-IP probe misses this failure.
+
 ## Quick Diagnostics
 
 ```bash

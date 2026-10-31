@@ -1,0 +1,6 @@
+---
+- name: Configure Beryl local DNS and Tailnet access through the 1Password execution host
+  hosts: ailab_ubuntus
+  gather_facts: false
+  roles:
+    - router_local_access

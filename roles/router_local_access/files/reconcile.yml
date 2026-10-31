@@ -1,0 +1,71 @@
+---
+- name: Configure Beryl local DNS and Tailnet access
+  hosts: beryl
+  gather_facts: false
+  vars:
+    ansible_connection: ssh
+    ansible_ssh_password_mechanism: ssh_askpass
+    ansible_user: root
+    ansible_password: "{{ lookup('ansible.builtin.pipe', '/usr/local/bin/op-sa read \"op://homelab/uh4haymipguo44r52o3irvvviy/Passwort neu\"') }}"
+  tasks:
+    - name: Forward local DNS domains to the LAN resolver
+      ansible.builtin.raw: |
+        set -eu
+        test -z "$(uci changes dhcp)"
+        # Validate rendered forwarders before touching the working resolver.
+        dnsmasq --test --conf-file=/dev/null \
+        {% for domain, resolvers in local_dns_routes.items() %}
+        {% for resolver in resolvers %}
+          --server={{ ('/' ~ domain ~ '/' ~ resolver) | quote }} \
+        {% endfor %}
+        {% endfor %}
+          >/dev/null
+        test "$(uci -q get dhcp.@dnsmasq[0])" = dnsmasq
+        local_domain="$(uci -q get dhcp.@dnsmasq[0].local || true)"
+        test -z "$local_domain" || test "$local_domain" = /lan/
+        {% for domain, resolvers in local_dns_routes.items() %}
+        desired={{ (resolvers | map('regex_replace', '^', '/' ~ domain ~ '/') | join(' ')) | quote }}
+        current=''
+        for server in $(uci -q get dhcp.@dnsmasq[0].server || true); do
+          case "$server" in /{{ domain }}/*) current="${current:+$current }$server" ;; esac
+        done
+        if [ "$current" != "$desired" ]; then
+          for server in $current; do uci del_list "dhcp.@dnsmasq[0].server=$server"; done
+          for server in $desired; do uci add_list "dhcp.@dnsmasq[0].server=$server"; done
+        fi
+        {% endfor %}
+        # local=/lan/ prevents forwarding that suffix to Pi-hole.
+        if [ "$local_domain" = /lan/ ]; then uci delete dhcp.@dnsmasq[0].local; fi
+        if [ -n "$(uci changes dhcp)" ]; then
+          uci commit dhcp
+          /etc/init.d/dnsmasq restart >/dev/null
+          echo changed
+        else
+          echo unchanged
+        fi
+      register: router_dns_result
+      changed_when: "'changed' in router_dns_result.stdout_lines"
+
+    - name: SNAT Tailnet clients forwarded into the LAN
+      ansible.builtin.raw: |
+        set -eu
+        test -z "$(uci changes firewall)"
+        # Hosts running Tailscale reject CGNAT sources arriving on Ethernet.
+        rule=firewall.ansible_tailnet_to_lan
+        current_type="$(uci -q get "$rule" || true)"
+        test -z "$current_type" || test "$current_type" = nat
+        if [ "$current_type" != nat ]; then uci set "$rule=nat"; fi
+        {% for key, value in {'name': 'Tailnet to LAN SNAT', 'src': 'lan', 'src_ip': tailnet_cidr, 'dest_ip': lan_cidr, 'proto': 'all', 'target': 'MASQUERADE'}.items() %}
+        if [ "$(uci -q get "$rule.{{ key }}" || true)" != {{ value | quote }} ]; then
+          uci set "$rule.{{ key }}="{{ value | quote }}
+        fi
+        {% endfor %}
+        if [ -n "$(uci changes firewall)" ]; then
+          uci commit firewall
+          /etc/init.d/firewall reload >/dev/null
+          echo changed
+        else
+          echo unchanged
+        fi
+      register: router_subnet_nat_result
+      changed_when: "'changed' in router_subnet_nat_result.stdout_lines"

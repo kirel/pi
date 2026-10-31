@@ -1,0 +1,37 @@
+---
+# Run the entire secret-consuming Ansible operation on the authorized op-sa host.
+- name: Create private router Ansible workspace on the AI server
+  ansible.builtin.file:
+    path: "{{ router_local_access_workspace }}"
+    state: directory
+    mode: "0700"
+
+- name: Install local DNS and Tailnet access playbook
+  ansible.builtin.copy:
+    src: reconcile.yml
+    dest: "{{ router_local_access_workspace }}/playbook.yml"
+    mode: "0600"
+
+- name: Install router inventory
+  ansible.builtin.copy:
+    content: "beryl ansible_host=192.168.50.1\n"
+    dest: "{{ router_local_access_workspace }}/inventory"
+    mode: "0600"
+
+- name: Reconcile Beryl local DNS and Tailnet access using its existing 1Password handover
+  ansible.builtin.command:
+    argv:
+      - /snap/bin/uv
+      - run
+      - --with
+      - ansible-core==2.20.1
+      - ansible-playbook
+      - -i
+      - inventory
+      - playbook.yml
+      - -e
+      - "{{ {'local_dns_routes': router_local_access_dns_routes, 'lan_cidr': tailscale_lan_cidr, 'tailnet_cidr': tailscale_cgnat_cidr} | to_json }}"
+    chdir: "{{ router_local_access_workspace }}"
+  register: router_local_access_apply
+  changed_when: "router_local_access_apply.stdout is regex('changed=[1-9][0-9]*')"
+  no_log: true
